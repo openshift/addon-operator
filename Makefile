@@ -141,15 +141,15 @@ run: generate ## Run against the configured Kubernetes cluster in ~/.kube/config
 
 ##@ Generators
 
-generate: $(CONTROLLER_GEN) ## Generate code and manifests e.g. CRD, RBAC etc.
+generate: controller-gen ## Generate code and manifests e.g. CRD, RBAC etc.
 	@echo "generating kubernetes manifests..."
-	@controller-gen crd:crdVersions=v1 \
+	@$(CONTROLLER_GEN) crd:crdVersions=v1 \
 		rbac:roleName=addon-operator-manager \
 		paths="./..." \
 		output:crd:artifacts:config=config/deploy 2>&1 | sed 's/^/  /'
 	@echo
 	@echo "generating code..."
-	@controller-gen object paths=./apis/... 2>&1 | sed 's/^/  /'
+	@$(CONTROLLER_GEN) object paths=./apis/... 2>&1 | sed 's/^/  /'
 	@echo
 .PHONY: generate
 
@@ -163,10 +163,10 @@ endif
 
 ##@ Testing and Linting
 
-lint: generate $(GOLANGCI_LINT) ## Runs code-generators, checks for clean directory and lints the source code.
+lint: generate golangci-lint ## Runs code-generators, checks for clean directory and lints the source code.
 	go fmt ./...
 	@hack/validate-directory-clean.sh
-	golangci-lint run ./... --deadline=15m
+	$(GOLANGCI_LINT) run ./... --deadline=15m
 .PHONY: lint
 
 test-unit: generate ## Runs unittests
@@ -193,7 +193,7 @@ setup-e2e-kind: export KUBECONFIG=$(abspath $(KIND_KUBECONFIG))
 setup-e2e-kind: | create-kind-cluster apply-olm apply-openshift-console load-ao ## make sure that we install our components into the kind cluster and disregard normal $KUBECONFIG
 .PHONY: setup-e2e-kind
 
-create-kind-cluster: $(KIND) ## create kind cluster
+create-kind-cluster: kind ## create kind cluster
 	@echo "creating kind cluster addon-operator-e2e..."
 	@mkdir -p .cache/e2e
 	@(source hack/determine-container-runtime.sh; \
@@ -208,7 +208,7 @@ create-kind-cluster: $(KIND) ## create kind cluster
 	) 2>&1 | sed 's/^/  /'
 .PHONY: create-kind-cluster
 
-delete-kind-cluster: $(KIND) ## delete kind cluster
+delete-kind-cluster: kind ## delete kind cluster
 	@echo "deleting kind cluster addon-operator-e2e..."
 	@(source hack/determine-container-runtime.sh; \
 		$$KIND_COMMAND delete cluster \
@@ -245,11 +245,11 @@ load-ao: build-image-addon-operator-manager ## Load Addon Operator Image into ki
 			--name addon-operator-e2e;
 .PHONY: load-ao
 
-config/deploy/deployment.yaml: FORCE $(YQ) ## Template deployment
-	@yq eval '.spec.template.spec.containers[0].image = "$(ADDON_OPERATOR_MANAGER_IMAGE)"' \
+config/deploy/deployment.yaml: FORCE yq ## Template deployment
+	@$(YQ) eval '.spec.template.spec.containers[0].image = "$(ADDON_OPERATOR_MANAGER_IMAGE)"' \
 		config/deploy/deployment.yaml.tpl > config/deploy/deployment.yaml
 
-apply-ao: $(YQ) load-ao config/deploy/deployment.yaml ## Installs the Addon Operator into the kind e2e cluster.
+apply-ao: yq load-ao config/deploy/deployment.yaml ## Installs the Addon Operator into the kind e2e cluster.
 	@echo "installing Addon Operator $(VERSION)..."
 	@(source hack/determine-container-runtime.sh; \
 		kubectl apply -f config/deploy; \
@@ -262,8 +262,8 @@ apply-ao: $(YQ) load-ao config/deploy/deployment.yaml ## Installs the Addon Oper
 ##@ OLM
 
 
-config/olm/addon-operator.csv.yaml: FORCE $(YQ) ## Template Cluster Service Version / CSV by setting the container image to deploy.
-	@yq eval '.spec.install.spec.deployments[0].spec.template.spec.containers[0].image = "$(ADDON_OPERATOR_MANAGER_IMAGE)" | .metadata.annotations.containerImage = "$(ADDON_OPERATOR_MANAGER_IMAGE)"' \
+config/olm/addon-operator.csv.yaml: FORCE yq ## Template Cluster Service Version / CSV by setting the container image to deploy.
+	@$(YQ) eval '.spec.install.spec.deployments[0].spec.template.spec.containers[0].image = "$(ADDON_OPERATOR_MANAGER_IMAGE)" | .metadata.annotations.containerImage = "$(ADDON_OPERATOR_MANAGER_IMAGE)"' \
 	config/olm/addon-operator.csv.tpl.yaml > config/olm/addon-operator.csv.yaml
 
 # The first few lines of the CRD file need to be removed:
