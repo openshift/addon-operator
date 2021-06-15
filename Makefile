@@ -285,11 +285,11 @@ build-image-addon-operator-bundle: clean-image-cache-addon-operator-bundle confi
 
 # Warning!
 # The bundle image needs to be pushed so the opm CLI can create the index image.
-build-image-addon-operator-index: $(OPM) clean-image-cache-addon-operator-index | build-image-addon-operator-bundle push-image-addon-operator-bundle ## Index image contains a list of bundle images for use in a CatalogSource.
+build-image-addon-operator-index: opm clean-image-cache-addon-operator-index | build-image-addon-operator-bundle push-image-addon-operator-bundle ## Index image contains a list of bundle images for use in a CatalogSource.
 	$(eval IMAGE_NAME := addon-operator-index)
 	@echo "building image ${IMAGE_ORG}/${IMAGE_NAME}:${VERSION}..."
 	@(source hack/determine-container-runtime.sh; \
-		opm index add --container-tool $$CONTAINER_COMMAND \
+		$(OPM) index add --container-tool $$CONTAINER_COMMAND \
 		--bundles ${IMAGE_ORG}/addon-operator-bundle:${VERSION} \
 		--tag ${IMAGE_ORG}/${IMAGE_NAME}:${VERSION}; \
 		$$CONTAINER_COMMAND image save -o ".cache/image/${IMAGE_NAME}.tar" "${IMAGE_ORG}/${IMAGE_NAME}:${VERSION}"; \
