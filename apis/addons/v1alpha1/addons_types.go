@@ -14,6 +14,7 @@ type AddonSpec struct {
 	// Namespaces listed here will be created prior to installation of the Addon and
 	// will be removed from the cluster when the Addon is deleted.
 	// Collisions with existing Namespaces are NOT allowed.
+	// +optional
 	Namespaces []AddonNamespace `json:"namespaces,omitempty"`
 
 	// Defines how an Addon is installed.
@@ -25,36 +26,16 @@ type AddonSpec struct {
 // AddonInstallSpec defines the desired Addon installation type.
 type AddonInstallSpec struct {
 	// Type of installation.
-	// +kubebuilder:validation:Enum={"OwnNamespace","AllNamespaces"}
 	Type AddonInstallType `json:"type"`
 	// AllNamespaces config parameters. Present only if Type = AllNamespaces.
+	// +optional
 	AllNamespaces *AddonInstallAllNamespaces `json:"allNamespaces,omitempty"`
 	// OwnNamespace config parameters. Present only if Type = OwnNamespace.
+	// +optional
 	OwnNamespace *AddonInstallOwnNamespace `json:"ownNamespace,omitempty"`
 }
 
-// Common Addon installation parameters.
-type AddonInstallCommon struct {
-	// Namespace to install the Addon into.
-	// +kubebuilder:validation:MinLength=1
-	Namespace string `json:"namespace"`
-
-	// Defines the CatalogSource image.
-	// Please only use hashes and no tags here!
-	// +kubebuilder:validation:MinLength=1
-	CatalogSourceImage string `json:"catalogSourceImage"`
-}
-
-// AllNamespaces specific Addon installation parameters.
-type AddonInstallAllNamespaces struct {
-	AddonInstallCommon `json:",inline"`
-}
-
-// OwnNamespace specific Addon installation parameters.
-type AddonInstallOwnNamespace struct {
-	AddonInstallCommon `json:",inline"`
-}
-
+// +kubebuilder:validation:Enum=AllNamespaces;OwnNamespace
 type AddonInstallType string
 
 const (
@@ -68,6 +49,28 @@ const (
 	// Maps directly to the OLM install mode "specific namespace"
 	OwnNamespace AddonInstallType = "OwnNamespace"
 )
+
+// AddonInstallCommon configures parameters
+type AddonInstallCommon struct {
+	// Namespace to install the Addon into.
+	// +kubebuilder:validation:MinLength=1
+	Namespace string `json:"namespace"`
+
+	// Defines the CatalogSource image.
+	// Please only use hashes and no tags here!
+	// +kubebuilder:validation:MinLength=1
+	CatalogSourceImage string `json:"catalogSourceImage"`
+}
+
+// AddonInstallAllNamespaces specific Addon installation parameters.
+type AddonInstallAllNamespaces struct {
+	AddonInstallCommon `json:",inline"`
+}
+
+// AddonInstallOwnNamespace specific Addon installation parameters.
+type AddonInstallOwnNamespace struct {
+	AddonInstallCommon `json:",inline"`
+}
 
 type AddonNamespace struct {
 	// Name of the KubernetesNamespace.
@@ -83,12 +86,15 @@ const (
 // AddonStatus defines the observed state of Addon
 type AddonStatus struct {
 	// The most recent generation observed by the controller.
+	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
-	// Conditions is a list of status conditions ths object is in.
+	// Conditions is a list of status conditions this object is in.
+	// +optional
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
 	// DEPRECATED: This field is not part of any API contract
 	// it will go away as soon as kubectl can print conditions!
 	// Human readable status - please use .Conditions from code
+	// +optional
 	Phase AddonPhase `json:"phase,omitempty"`
 }
 
