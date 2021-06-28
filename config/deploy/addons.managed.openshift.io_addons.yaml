@@ -86,7 +86,7 @@ spec:
                 - type
                 type: object
               namespaces:
-                description: Defines a list of Kubernetes Namespaces that belong to this Addon. Namespaces listed here will be created prior to installation of the Addon and will be removed from the cluster when the Addon is deleted. Collisions with existing Namespaces are NOT allowed. TODO why not []string ?
+                description: Defines a list of Kubernetes Namespaces that belong to this Addon. Namespaces listed here will be created prior to installation of the Addon and will be removed from the cluster when the Addon is deleted. Collisions with existing Namespaces are NOT allowed.
                 items:
                   properties:
                     name:
@@ -151,7 +151,7 @@ spec:
                   type: object
                 type: array
               observedGeneration:
-                description: The most recent generation observed by the controller. TODO make a pointer to distinguish between 0 and unset
+                description: The most recent generation observed by the controller.
                 format: int64
                 type: integer
               phase:

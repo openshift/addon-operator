@@ -14,7 +14,6 @@ type AddonSpec struct {
 	// Namespaces listed here will be created prior to installation of the Addon and
 	// will be removed from the cluster when the Addon is deleted.
 	// Collisions with existing Namespaces are NOT allowed.
-	// TODO why not []string ?
 	// +optional
 	Namespaces []AddonNamespace `json:"namespaces,omitempty"`
 
@@ -87,7 +86,6 @@ const (
 // AddonStatus defines the observed state of Addon
 type AddonStatus struct {
 	// The most recent generation observed by the controller.
-	// TODO make a pointer to distinguish between 0 and unset
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 	// Conditions is a list of status conditions this object is in.
