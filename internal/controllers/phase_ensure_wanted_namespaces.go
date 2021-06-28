@@ -51,8 +51,7 @@ func (r *AddonReconciler) ensureWantedNamespaces(
 		})
 		addon.Status.ObservedGeneration = addon.Generation
 		addon.Status.Phase = addonsv1alpha1.PhasePending
-		err := r.Status().Update(ctx, addon)
-		if err != nil {
+		if err := r.Status().Update(ctx, addon); err != nil {
 			return false, err
 		}
 		// collisions occured: signal caller to stop and retry
@@ -78,6 +77,12 @@ func (r *AddonReconciler) ensureWantedNamespaces(
 }
 
 // Ensure a single Namespace for the given Addon resource
+// TODO refactor ideas
+// - create desired ns object
+// - get current ns from apiserver, if dont exist, create desired ns
+// - if exists, try to SetControllerRef + check for AlreadyOwnedError
+// - if success, take ownership + set commonLabels + Update current ns
+// - if fails, report AlreadyOwnedError (replaces errNotOwnedByUs)
 func (r *AddonReconciler) ensureNamespace(ctx context.Context, addon *addonsv1alpha1.Addon, name string) (*corev1.Namespace, error) {
 	namespace := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
@@ -119,8 +124,7 @@ func reconcileNamespace(ctx context.Context, c client.Client, namespace *corev1.
 
 	{
 		ensuredNamespace := namespace.DeepCopy()
-		err := c.Update(ctx, ensuredNamespace)
-		if err != nil {
+		if err := c.Update(ctx, ensuredNamespace); err != nil {
 			return nil, err
 		}
 		return ensuredNamespace, nil
