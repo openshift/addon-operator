@@ -80,6 +80,7 @@ version:
 ## Cleans cached binaries, dependencies and container image tars.
 clean: delete-kind-cluster
 	@rm -rf bin .cache
+	@go clean -testcache
 .PHONY: clean
 
 # ---------

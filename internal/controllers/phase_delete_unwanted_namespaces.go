@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	corev1 "k8s.io/api/core/v1"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -32,8 +31,7 @@ func (r *AddonReconciler) ensureDeletionOfUnwantedNamespaces(
 			continue
 		}
 
-		err := ensureNamespaceDeletion(ctx, r.Client, namespace.Name)
-		if err != nil {
+		if err := ensureNamespaceDeletion(ctx, r.Client, namespace.Name); err != nil {
 			return err
 		}
 	}
@@ -48,12 +46,9 @@ func ensureNamespaceDeletion(ctx context.Context, c client.Client, name string) 
 			Name: name,
 		},
 	}
-	err := c.Delete(ctx, namespace)
 	// don't propagate error if the Namespace is already gone
-	if !k8sApiErrors.IsNotFound(err) {
-		return err
-	}
-	return nil
+	err := c.Delete(ctx, namespace)
+	return client.IgnoreNotFound(err)
 }
 
 // Get all Namespaces that have common labels matching the given Addon resource

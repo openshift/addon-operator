@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -104,6 +104,6 @@ func TestNamespaceCreation(t *testing.T) {
 		err := e2e.Client.Get(ctx, types.NamespacedName{
 			Name: namespace.Name,
 		}, currentNamespace)
-		assert.True(t, k8sApiErrors.IsNotFound(err), "Namespace not deleted: %s", namespace.Name)
+		assert.True(t, apierrors.IsNotFound(err), "Namespace not deleted: %s", namespace.Name)
 	}
 }

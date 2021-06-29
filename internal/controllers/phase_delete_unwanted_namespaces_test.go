@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -120,7 +120,7 @@ func TestEnsureDeletionOfUnwantedNamespaces_NamespacesInSpec_matching_Namespaces
 }
 
 func TestEnsureDeletionOfUnwantedNamespaces_NoNamespacesInSpec_WithClientError(t *testing.T) {
-	timeoutErr := k8sApiErrors.NewTimeoutError("for testing", 1)
+	timeoutErr := apierrors.NewTimeoutError("for testing", 1)
 
 	c := testutil.NewClient()
 	c.On("List", testutil.IsContext, testutil.IsCoreV1NamespaceListPtr, mock.Anything).

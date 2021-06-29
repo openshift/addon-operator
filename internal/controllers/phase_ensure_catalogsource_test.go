@@ -7,7 +7,7 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -41,7 +41,7 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 }
 
 func TestReconcileCatalogSource_NotExistingYet_WithClientErrorGet(t *testing.T) {
-	timeoutErr := k8sApiErrors.NewTimeoutError("for testing", 1)
+	timeoutErr := apierrors.NewTimeoutError("for testing", 1)
 
 	c := testutil.NewClient()
 	c.On("Get",
@@ -58,7 +58,7 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorGet(t *testing.T) 
 }
 
 func TestReconcileCatalogSource_NotExistingYet_WithClientErrorCreate(t *testing.T) {
-	timeoutErr := k8sApiErrors.NewTimeoutError("for testing", 1)
+	timeoutErr := apierrors.NewTimeoutError("for testing", 1)
 
 	c := testutil.NewClient()
 	c.On("Get",

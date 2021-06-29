@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -110,7 +110,7 @@ func reconcileNamespace(ctx context.Context, c client.Client, namespace *corev1.
 			Name: namespace.Name,
 		}, currentNamespace)
 		if err != nil {
-			if k8sApiErrors.IsNotFound(err) {
+			if apierrors.IsNotFound(err) {
 				return namespace, c.Create(ctx, namespace)
 			}
 			return nil, err

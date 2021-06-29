@@ -96,6 +96,7 @@ func (r *AddonReconciler) parseAddonInstallConfig(
 		catalogSourceImage = addon.Spec.Install.AllNamespaces.CatalogSourceImage
 
 	default:
+		// TODO safe to remove this as kubernetes does schema validation??
 		// Unsupported Install Type
 		// This should never happen, unless the schema validation is wrong.
 		// The .install.type property is set to only allow known enum values.

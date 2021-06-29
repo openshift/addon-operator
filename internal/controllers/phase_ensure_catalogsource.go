@@ -7,7 +7,7 @@ import (
 	"github.com/go-logr/logr"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/equality"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -125,7 +125,7 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 			Namespace: catalogSource.Namespace,
 		}, currentCatalogSource)
 		if err != nil {
-			if k8sApiErrors.IsNotFound(err) {
+			if apierrors.IsNotFound(err) {
 				return catalogSource, c.Create(ctx, catalogSource)
 			}
 			return nil, err

@@ -5,7 +5,7 @@ import (
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilpointer "k8s.io/utils/pointer"
@@ -99,8 +99,8 @@ func newTestExistingNamespaceWithOwner() *corev1.Namespace {
 	}
 }
 
-func newTestErrNotFound() *k8sApiErrors.StatusError {
-	return &k8sApiErrors.StatusError{
+func newTestErrNotFound() *apierrors.StatusError {
+	return &apierrors.StatusError{
 		ErrStatus: metav1.Status{
 			Status: metav1.StatusFailure,
 			Code:   http.StatusNotFound,

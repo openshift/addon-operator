@@ -8,7 +8,7 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -101,5 +101,5 @@ func TestAddon_CatalogSource(t *testing.T) {
 		Name:      addon.Name,
 		Namespace: addon.Spec.Install.OwnNamespace.Namespace,
 	}, currentCatalogSource)
-	assert.True(t, k8sApiErrors.IsNotFound(err), "CatalogSource not deleted: %s", currentCatalogSource.Name)
+	assert.True(t, apierrors.IsNotFound(err), "CatalogSource not deleted: %s", currentCatalogSource.Name)
 }

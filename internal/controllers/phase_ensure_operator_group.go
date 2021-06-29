@@ -7,7 +7,7 @@ import (
 	"github.com/go-logr/logr"
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
-	"k8s.io/apimachinery/pkg/api/errors"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -37,6 +37,8 @@ func (r *AddonReconciler) ensureOperatorGroup(
 		desiredOperatorGroup.Spec.TargetNamespaces = []string{targetNamespace}
 	}
 
+	// TODO - if the OG already exists, and is already owned by this controller, will this error?
+	// quickly digged in SetControllerReference and did not see any check for this
 	addCommonLabels(desiredOperatorGroup.Labels, addon)
 	if err := controllerutil.SetControllerReference(addon, desiredOperatorGroup, r.Scheme); err != nil {
 		return false, fmt.Errorf("setting controller reference: %w", err)
@@ -52,13 +54,14 @@ func (r *AddonReconciler) reconcileOperatorGroup(
 	currentOperatorGroup := &operatorsv1.OperatorGroup{}
 
 	err := r.Get(ctx, client.ObjectKeyFromObject(operatorGroup), currentOperatorGroup)
-	if errors.IsNotFound(err) {
+	if apierrors.IsNotFound(err) {
 		return r.Create(ctx, operatorGroup)
 	}
 	if err != nil {
 		return fmt.Errorf("getting OperatorGroup: %w", err)
 	}
 
+	// TODO can't we compare UID?
 	if !equality.Semantic.DeepEqual(currentOperatorGroup.Spec, operatorGroup.Spec) {
 		return r.Update(ctx, operatorGroup)
 	}
