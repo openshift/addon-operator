@@ -37,8 +37,6 @@ func (r *AddonReconciler) ensureOperatorGroup(
 		desiredOperatorGroup.Spec.TargetNamespaces = []string{targetNamespace}
 	}
 
-	// TODO - if the OG already exists, and is already owned by this controller, will this error?
-	// quickly digged in SetControllerReference and did not see any check for this
 	addCommonLabels(desiredOperatorGroup.Labels, addon)
 	if err := controllerutil.SetControllerReference(addon, desiredOperatorGroup, r.Scheme); err != nil {
 		return false, fmt.Errorf("setting controller reference: %w", err)
@@ -61,7 +59,6 @@ func (r *AddonReconciler) reconcileOperatorGroup(
 		return fmt.Errorf("getting OperatorGroup: %w", err)
 	}
 
-	// TODO can't we compare UID?
 	if !equality.Semantic.DeepEqual(currentOperatorGroup.Spec, operatorGroup.Spec) {
 		return r.Update(ctx, operatorGroup)
 	}

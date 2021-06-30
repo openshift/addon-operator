@@ -40,11 +40,7 @@ func (r *AddonReconciler) Reconcile(
 	log := r.Log.WithValues("addon", req.NamespacedName.String())
 
 	addon := &addonsv1alpha1.Addon{}
-	err := r.Get(ctx, req.NamespacedName, addon)
-	if err != nil {
-		if client.IgnoreNotFound(err) != nil {
-			log.Error(err, "unable to fetch Addon")
-		}
+	if err := r.Get(ctx, req.NamespacedName, addon); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
@@ -56,11 +52,7 @@ func (r *AddonReconciler) Reconcile(
 			return ctrl.Result{}, nil
 		}
 
-		err := r.reportTerminationStatus(ctx, addon)
-		if err != nil {
-			log.Error(err, "failed to update termination status")
-		}
-		return ctrl.Result{}, err
+		return ctrl.Result{}, r.reportTerminationStatus(ctx, addon)
 	}
 
 	// Phase 1.
@@ -68,7 +60,6 @@ func (r *AddonReconciler) Reconcile(
 	{
 		stopAndRetry, err := r.ensureWantedNamespaces(ctx, addon)
 		if err != nil {
-			log.Error(err, "failed to ensure wanted namespaces")
 			return ctrl.Result{}, fmt.Errorf("failed to ensure wanted Namespaces: %w", err)
 		}
 		if stopAndRetry {
@@ -81,7 +72,6 @@ func (r *AddonReconciler) Reconcile(
 	// Phase 2.
 	// Ensure unwanted namespaces are removed
 	if err := r.ensureDeletionOfUnwantedNamespaces(ctx, addon); err != nil {
-		log.Error(err, "failed to ensure deletion of unwanted namespaces")
 		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted Namespaces: %w", err)
 	}
 
@@ -90,7 +80,6 @@ func (r *AddonReconciler) Reconcile(
 	{
 		stop, err := r.ensureOperatorGroup(ctx, log, addon)
 		if err != nil {
-			log.Error(err, "failed to ensure operatorgroup")
 			return ctrl.Result{}, fmt.Errorf("failed to ensure OperatorGroup: %w", err)
 		}
 		if stop {
@@ -104,7 +93,6 @@ func (r *AddonReconciler) Reconcile(
 		// TODO dont pass logger, internal to Reconciler struct
 		ensureResult, err := r.ensureCatalogSource(ctx, log, addon)
 		if err != nil {
-			log.Error(err, "failed to ensure catalogsource")
 			return ctrl.Result{}, fmt.Errorf("failed to ensure CatalogSource: %w", err)
 		}
 		switch ensureResult {
@@ -118,9 +106,7 @@ func (r *AddonReconciler) Reconcile(
 	}
 
 	// After last phase and if everything is healthy
-	err = r.reportReadinessStatus(ctx, addon)
-	if err != nil {
-		log.Error(err, "failed to report readiness status")
+	if err := r.reportReadinessStatus(ctx, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to report readiness status: %w", err)
 	}
 
