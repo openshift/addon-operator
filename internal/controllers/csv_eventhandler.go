@@ -13,6 +13,7 @@ import (
 
 var _ handler.EventHandler = (*csvEventHandler)(nil)
 
+// CSV event handler mapping CSV events to registered watching Addons.
 type csvEventHandler struct {
 	addonKeytoCSVKeys map[client.ObjectKey][]client.ObjectKey
 	csvKeyToAddon     map[client.ObjectKey]client.ObjectKey
@@ -26,6 +27,7 @@ func newCSVEventHandler() *csvEventHandler {
 	}
 }
 
+// Free removes all event mappings associated with the given Addon.
 func (h *csvEventHandler) Free(addon *addonsv1alpha1.Addon) {
 	h.mux.Lock()
 	defer h.mux.Unlock()
@@ -37,6 +39,12 @@ func (h *csvEventHandler) Free(addon *addonsv1alpha1.Addon) {
 	delete(h.addonKeytoCSVKeys, addonKey)
 }
 
+// ReplaceMap tells the event handler about a Addon > CSV relation and setup mapping of future events.
+// It returns true when the existing mapping had to be changed.
+// WARNING:
+// This method is potentially racy when the Addon object is not reenqueued by the calling reconcile loop when the mapping changes,
+// as incomming events might be dropped before this method completes and the event mapping is updated.
+// Calling code needs to make sure to reenqueue the Addon object for _every_ mapping change or CSV events might not be processed.
 func (h *csvEventHandler) ReplaceMap(
 	addon *addonsv1alpha1.Addon, csvKeys ...client.ObjectKey,
 ) (changed bool) {
@@ -68,17 +76,17 @@ func (h *csvEventHandler) ReplaceMap(
 	return changed
 }
 
-// Create is called in response to an create event - e.g. Pod Creation.
+// Create is called in response to an create event.
 func (h *csvEventHandler) Create(evt event.CreateEvent, q workqueue.RateLimitingInterface) {
 	h.enqueueObject(evt.Object, q)
 }
 
-// Update is called in response to an update event -  e.g. Pod Updated.
+// Update is called in response to an update event.
 func (h *csvEventHandler) Update(evt event.UpdateEvent, q workqueue.RateLimitingInterface) {
 	h.enqueueObject(evt.ObjectNew, q)
 }
 
-// Delete is called in response to a delete event - e.g. Pod Deleted.
+// Delete is called in response to a delete event.
 func (h *csvEventHandler) Delete(evt event.DeleteEvent, q workqueue.RateLimitingInterface) {
 	h.enqueueObject(evt.Object, q)
 }
@@ -94,7 +102,6 @@ func (h *csvEventHandler) enqueueObject(obj client.Object, q workqueue.RateLimit
 	defer h.mux.RUnlock()
 
 	csvKey := client.ObjectKeyFromObject(obj)
-
 	addonKey, ok := h.csvKeyToAddon[csvKey]
 	if !ok {
 		return
