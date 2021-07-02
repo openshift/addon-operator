@@ -12,25 +12,43 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
 
 // Default timeout when we do a manual RequeueAfter
-const defaultRetryAfterTime = 10 * time.Second
+const (
+	defaultRetryAfterTime = 10 * time.Second
+	cacheFinalizer        = "addons.managed.openshift.io/cache"
+)
 
 type AddonReconciler struct {
 	client.Client
 	Log    logr.Logger
 	Scheme *runtime.Scheme
+
+	csvEventHandler csvEventHandlerInterface
+}
+
+type csvEventHandlerInterface interface {
+	Free(addon *addonsv1alpha1.Addon)
+	ReplaceMap(addon *addonsv1alpha1.Addon, csvKeys ...client.ObjectKey) (changed bool)
 }
 
 func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	csvEventHandler := newCSVEventHandler()
+	r.csvEventHandler = csvEventHandler
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&addonsv1alpha1.Addon{}).
 		Owns(&corev1.Namespace{}).
 		Owns(&operatorsv1.OperatorGroup{}).
 		Owns(&operatorsv1alpha1.CatalogSource{}).
+		Watches(&source.Kind{
+			Type: &operatorsv1alpha1.ClusterServiceVersion{},
+		}, csvEventHandler).
 		Complete(r)
 }
 
@@ -46,14 +64,29 @@ func (r *AddonReconciler) Reconcile(
 	}
 
 	if !addon.DeletionTimestamp.IsZero() {
-		// Addon was already deleted and we don't need to do any cleanup for now
-		// since kubernetes will garbage collect our child objects
+		// Clear from CSV Event Handler
+		r.csvEventHandler.Free(addon)
+
+		if controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
+			controllerutil.RemoveFinalizer(addon, cacheFinalizer)
+			if err := r.Update(ctx, addon); err != nil {
+				return ctrl.Result{}, fmt.Errorf("removing finalizer: %w", err)
+			}
+		}
 
 		if addon.Status.Phase == addonsv1alpha1.PhaseTerminating {
 			return ctrl.Result{}, nil
 		}
-
 		return ctrl.Result{}, r.reportTerminationStatus(ctx, addon)
+	}
+
+	// Phase 0.
+	// Set finalizer
+	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
+		controllerutil.AddFinalizer(addon, cacheFinalizer)
+		if err := r.Update(ctx, addon); err != nil {
+			return ctrl.Result{}, fmt.Errorf("adding finalizer: %w", err)
+		}
 	}
 
 	// Phase 1.
@@ -90,19 +123,24 @@ func (r *AddonReconciler) Reconcile(
 
 	// Phase 4.
 	// Ensure CatalogSource for this Addon
-	{
-		ensureResult, err := r.ensureCatalogSource(ctx, log, addon)
-		if err != nil {
-			return ctrl.Result{}, fmt.Errorf("failed to ensure CatalogSource: %w", err)
-		}
-		switch ensureResult {
-		case ensureCatalogSourceResultRetry:
-			return ctrl.Result{
-				RequeueAfter: defaultRetryAfterTime,
-			}, nil
-		case ensureCatalogSourceResultStop:
-			return ctrl.Result{}, nil
-		}
+	ensureResult, catalogSource, err := r.ensureCatalogSource(ctx, log, addon)
+	if err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to ensure CatalogSource: %w", err)
+	}
+	switch ensureResult {
+	case ensureCatalogSourceResultRetry:
+		return ctrl.Result{
+			RequeueAfter: defaultRetryAfterTime,
+		}, nil
+	case ensureCatalogSourceResultStop:
+		return ctrl.Result{}, nil
+	}
+
+	// Phase 5.
+	// Ensure Subscription for this Addon.
+	_, err = r.ensureSubscription(ctx, addon, catalogSource)
+	if err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to ensure Subscription: %w", err)
 	}
 
 	// After last phase and if everything is healthy
