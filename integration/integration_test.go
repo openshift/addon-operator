@@ -3,7 +3,6 @@ package integration_test
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"testing"
 
@@ -16,8 +15,15 @@ func TestMain(m *testing.M) {
 
 func runTests(m *testing.M) int {
 	defer func() {
+		panicErr := recover()
 		if err := integration.PrintPodStatusAndLogs("addon-operator"); err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err.Error())
+			if panicErr == nil {
+				os.Exit(1) // only exit when we don't want to repanic
+			}
+		}
+		if panicErr != nil {
+			panic(panicErr) // repanic
 		}
 	}()
 
