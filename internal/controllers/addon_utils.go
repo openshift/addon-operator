@@ -10,6 +10,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 // Handle the deletion of an Addon.
@@ -49,6 +50,7 @@ func (r *AddonReconciler) reportReadinessStatus(
 	})
 	addon.Status.ObservedGeneration = addon.Generation
 	addon.Status.Phase = addonsv1alpha1.PhaseReady
+	metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhaseReady)
 	return r.Status().Update(ctx, addon)
 }
 
@@ -63,6 +65,7 @@ func (r *AddonReconciler) reportTerminationStatus(
 	})
 	addon.Status.ObservedGeneration = addon.Generation
 	addon.Status.Phase = addonsv1alpha1.PhaseTerminating
+	metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhaseTerminating)
 	return r.Status().Update(ctx, addon)
 }
 
@@ -79,6 +82,7 @@ func (r *AddonReconciler) reportConfigurationError(
 	})
 	addon.Status.ObservedGeneration = addon.Generation
 	addon.Status.Phase = addonsv1alpha1.PhaseError
+	metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhaseError)
 	return r.Status().Update(ctx, addon)
 }
 
@@ -95,6 +99,7 @@ func (r *AddonReconciler) reportAddonPauseStatus(
 	})
 	addon.Status.ObservedGeneration = addon.Generation
 	addon.Status.Phase = addonsv1alpha1.PhaseReady
+	metrics.UpdateAddonMetrics(addon, addonsv1alpha1.Paused)
 	return r.Status().Update(ctx, addon)
 }
 
@@ -104,6 +109,7 @@ func (r *AddonReconciler) removeAddonPauseCondition(ctx context.Context,
 	meta.RemoveStatusCondition(&addon.Status.Conditions, addonsv1alpha1.Paused)
 	addon.Status.ObservedGeneration = addon.Generation
 	addon.Status.Phase = addonsv1alpha1.PhaseReady
+	metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhaseReady)
 	return r.Status().Update(ctx, addon)
 }
 

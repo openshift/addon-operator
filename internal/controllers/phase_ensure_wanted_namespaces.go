@@ -14,6 +14,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 // Ensure existence of Namespaces specified in the given Addon resource
@@ -51,6 +52,7 @@ func (r *AddonReconciler) ensureWantedNamespaces(
 		})
 		addon.Status.ObservedGeneration = addon.Generation
 		addon.Status.Phase = addonsv1alpha1.PhasePending
+		metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhasePending)
 		err := r.Status().Update(ctx, addon)
 		if err != nil {
 			return false, err
@@ -71,6 +73,7 @@ func (r *AddonReconciler) ensureWantedNamespaces(
 		})
 		addon.Status.ObservedGeneration = addon.Generation
 		addon.Status.Phase = addonsv1alpha1.PhasePending
+		metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhasePending)
 		return false, r.Status().Update(ctx, addon)
 	}
 

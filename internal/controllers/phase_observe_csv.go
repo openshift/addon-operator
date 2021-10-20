@@ -10,6 +10,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 func (r *AddonReconciler) observeCurrentCSV(
@@ -44,6 +45,7 @@ func (r *AddonReconciler) observeCurrentCSV(
 		})
 		addon.Status.ObservedGeneration = addon.Generation
 		addon.Status.Phase = addonsv1alpha1.PhasePending
+		metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhasePending)
 		return true, r.Status().Update(ctx, addon)
 	}
 
