@@ -6,20 +6,20 @@ import (
 )
 
 var (
-	addonsPerPhaseTotal = prometheus.NewGaugeVec(
+	AddonsPerPhaseTotal = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "addon_operator_addons_phase_total",
 			Help: "Total number of addons being reconciled for each phase: Pending, Ready, Termination, Error or Paused.",
 		}, []string{"name", "phase"})
 
-	addonsInstallationTotal = prometheus.NewCounterVec(
+	AddonsInstallationTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "addon_operator_addons_installation_total",
 			Help: "Total number of addons installations.",
 		}, []string{"name"})
 
 	// TODO - need to adjust the bucket here after we do some observation
-	addonsInstallationSuccessTime = prometheus.NewHistogramVec(
+	AddonsInstallationSuccessTimeSeconds = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name: "addon_operator_addons_installation_success_time_seconds",
 			Help: "Tracking installation time per addon.",
@@ -31,8 +31,8 @@ var (
 func init() {
 	// Register custom metrics with the controller runtime prom registry
 	ctrlmetrics.Registry.MustRegister(
-		addonsPerPhaseTotal,
-		addonsInstallationTotal,
-		addonsInstallationSuccessTime,
+		AddonsPerPhaseTotal,
+		AddonsInstallationTotal,
+		AddonsInstallationSuccessTimeSeconds,
 	)
 }

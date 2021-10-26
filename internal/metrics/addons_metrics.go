@@ -35,8 +35,8 @@ func UpdateAddonMetrics(addon *addonsv1alpha1.Addon, currPhaseRaw addonsv1alpha1
 			Phase:     currPhase,
 			CreatedAt: now,
 		}
-		addonsPerPhaseTotal.WithLabelValues(addon.Name, currPhase).Inc()
-		addonsInstallationTotal.WithLabelValues(addon.Name).Inc()
+		AddonsPerPhaseTotal.WithLabelValues(addon.Name, currPhase).Inc()
+		AddonsInstallationTotal.WithLabelValues(addon.Name).Inc()
 	} else if oldState.Phase == currPhase {
 		// nothing to do
 		return
@@ -47,14 +47,14 @@ func UpdateAddonMetrics(addon *addonsv1alpha1.Addon, currPhaseRaw addonsv1alpha1
 			CreatedAt:   oldState.CreatedAt,
 			InstalledAt: oldState.InstalledAt,
 		}
-		addonsPerPhaseTotal.WithLabelValues(addon.Name, currPhase).Inc()
-		addonsPerPhaseTotal.WithLabelValues(addon.Name, oldState.Phase).Dec()
+		AddonsPerPhaseTotal.WithLabelValues(addon.Name, currPhase).Inc()
+		AddonsPerPhaseTotal.WithLabelValues(addon.Name, oldState.Phase).Dec()
 
 		// detect successful installation
 		if currState.InstalledAt.IsZero() && currPhaseRaw == addonsv1alpha1.PhaseReady {
 			currState.InstalledAt = now
 			installTime := now.Sub(currState.CreatedAt).Seconds()
-			addonsInstallationSuccessTime.WithLabelValues(addon.Name).Observe(installTime)
+			AddonsInstallationSuccessTimeSeconds.WithLabelValues(addon.Name).Observe(installTime)
 		}
 
 		// update mapping

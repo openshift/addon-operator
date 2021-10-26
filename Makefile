@@ -85,6 +85,7 @@ version:
 ## Cleans cached binaries, dependencies and container image tars.
 clean: delete-kind-cluster
 	@rm -rf bin .cache
+	@go mod tidy && go mod vendor
 .PHONY: clean
 
 # ---------
@@ -376,6 +377,8 @@ setup-addon-operator: $(YQ) load-addon-operator config/deploy/deployment.yaml
 		kubectl wait --for=condition=available deployment/addon-operator -n addon-operator --timeout=240s; \
 		echo; \
 	) 2>&1 | sed 's/^/  /'
+	@kubectl port-forward -n addon-operator --address 127.0.0.1 svc/addon-operator-metrics 8080:8080 &
+	@echo "access Addon operator metrics here: 127.0.0.1:8080/metrics"
 ifneq ($(ENABLE_WEBHOOK), "false")
 	@make setup-addon-operator-webhook
 endif
