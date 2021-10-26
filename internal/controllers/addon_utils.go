@@ -40,6 +40,22 @@ func (r *AddonReconciler) handleAddonDeletion(
 }
 
 // Report Addon status to communicate that everything is alright
+func (r *AddonReconciler) reportPendingStatus(
+	ctx context.Context, addon *addonsv1alpha1.Addon, reason string, msg string) error {
+	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
+		Type:               addonsv1alpha1.Available,
+		Status:             metav1.ConditionFalse,
+		Reason:             reason,
+		Message:            msg,
+		ObservedGeneration: addon.Generation,
+	})
+	addon.Status.ObservedGeneration = addon.Generation
+	addon.Status.Phase = addonsv1alpha1.PhasePending
+	metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhasePending)
+	return r.Status().Update(ctx, addon)
+}
+
+// Report Addon status to communicate that everything is alright
 func (r *AddonReconciler) reportReadinessStatus(
 	ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
@@ -72,8 +88,6 @@ func (r *AddonReconciler) reportTerminationStatus(
 // Report Addon status to communicate that the resource is misconfigured
 func (r *AddonReconciler) reportConfigurationError(
 	ctx context.Context, addon *addonsv1alpha1.Addon, message string) error {
-	addon.Status.ObservedGeneration = addon.Generation
-	addon.Status.Phase = addonsv1alpha1.PhaseError
 	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
 		Type:    addonsv1alpha1.Available,
 		Status:  metav1.ConditionFalse,

@@ -8,13 +8,11 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 const catalogSourcePublisher = "OSD Red Hat Addons"
@@ -70,50 +68,28 @@ func (r *AddonReconciler) ensureCatalogSource(
 	}
 
 	if observedCatalogSource.Status.GRPCConnectionState == nil {
-		err := r.reportCatalogSourceUnreadinessStatus(ctx, addon, observedCatalogSource, ".Status.GRPCConnectionState is nil")
-		if err != nil {
+		if err := r.reportPendingStatus(
+			ctx,
+			addon,
+			addonsv1alpha1.AddonReasonUnreadyCatalogSource,
+			"CatalogSource connection is not ready: .Status.GRPConnectionState is nil",
+		); err != nil {
 			return ensureCatalogSourceResultNil, nil, err
 		}
 		return ensureCatalogSourceResultRetry, nil, nil
 	}
 	if observedCatalogSource.Status.GRPCConnectionState.LastObservedState != "READY" {
-		err := r.reportCatalogSourceUnreadinessStatus(
-			ctx,
-			addon,
-			observedCatalogSource,
-			fmt.Sprintf(
-				".Status.GRPCConnectionState.LastObservedState == %s",
-				observedCatalogSource.Status.GRPCConnectionState.LastObservedState,
-			),
+		msg := fmt.Sprintf(
+			"CatalogSource connection is not ready: .Status.GRPCConnectionState.LastObservedState == %s",
+			observedCatalogSource.Status.GRPCConnectionState.LastObservedState,
 		)
-		if err != nil {
+		if err := r.reportPendingStatus(ctx, addon, addonsv1alpha1.AddonReasonUnreadyCatalogSource, msg); err != nil {
 			return ensureCatalogSourceResultNil, nil, err
 		}
 		return ensureCatalogSourceResultRetry, nil, err
 	}
 
 	return ensureCatalogSourceResultNil, observedCatalogSource, nil
-}
-
-// Marks Addon as unavailable because the CatalogSource is unready
-func (r *AddonReconciler) reportCatalogSourceUnreadinessStatus(
-	ctx context.Context,
-	addon *addonsv1alpha1.Addon,
-	catalogSource *operatorsv1alpha1.CatalogSource,
-	message string) error {
-	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
-		Type:   addonsv1alpha1.Available,
-		Status: metav1.ConditionFalse,
-		Reason: addonsv1alpha1.AddonReasonUnreadyCatalogSource,
-		Message: fmt.Sprintf(
-			"CatalogSource connection is not ready: %s",
-			message),
-		ObservedGeneration: addon.Generation,
-	})
-	addon.Status.ObservedGeneration = addon.Generation
-	addon.Status.Phase = addonsv1alpha1.PhasePending
-	metrics.UpdateAddonMetrics(addon, addonsv1alpha1.PhasePending)
-	return r.Status().Update(ctx, addon)
 }
 
 // reconciles a CatalogSource and returns a new CatalogSource object with observed state.
