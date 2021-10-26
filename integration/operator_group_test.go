@@ -6,7 +6,6 @@ import (
 
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	"github.com/stretchr/testify/require"
-	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -90,13 +89,7 @@ func TestAddon_OperatorGroup(t *testing.T) {
 				}
 			})
 
-			err = integration.WaitForObject(
-				t, defaultAddonAvailabilityTimeout, addon, "to be Available",
-				func(obj client.Object) (done bool, err error) {
-					a := obj.(*addonsv1alpha1.Addon)
-					return meta.IsStatusConditionTrue(
-						a.Status.Conditions, addonsv1alpha1.Available), nil
-				})
+			err = integration.WaitForAddonToBeAvailable(t, defaultAddonAvailabilityTimeout, addon)
 			require.NoError(t, err)
 
 			// check that there is an OperatorGroup in the target namespace.

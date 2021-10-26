@@ -6,9 +6,12 @@ import (
 	"time"
 
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
+
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
 
 // Default Interval in which to recheck wait conditions.
@@ -65,4 +68,14 @@ func WaitForObject(
 
 		return checkFn(object)
 	})
+}
+
+func WaitForAddonToBeAvailable(t *testing.T, timeout time.Duration, addon client.Object) error {
+	reason := "to be Available"
+	checkFn := func(obj client.Object) (done bool, err error) {
+		a := obj.(*addonsv1alpha1.Addon)
+		return meta.IsStatusConditionTrue(
+			a.Status.Conditions, addonsv1alpha1.Available), nil
+	}
+	return WaitForObject(t, timeout, addon, reason, checkFn)
 }

@@ -45,3 +45,28 @@ func IsWebhookServerEnabled() bool {
 	value, exists := os.LookupEnv("ENABLE_WEBHOOK")
 	return exists && value != "false"
 }
+
+func NewAddonOLMOwnNamespace(addonName, namespace, catalog string) *addonsv1alpha1.Addon {
+	return &addonsv1alpha1.Addon{
+		ObjectMeta: v1.ObjectMeta{
+			Name: addonName,
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			DisplayName: addonName,
+			Namespaces: []addonsv1alpha1.AddonNamespace{
+				{Name: namespace},
+			},
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace:          namespace,
+						CatalogSourceImage: catalog,
+						Channel:            "alpha",
+						PackageName:        "reference-addon",
+					},
+				},
+			},
+		},
+	}
+}

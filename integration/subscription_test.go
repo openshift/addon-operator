@@ -9,13 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/meta"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 func TestAddon_Subscription(t *testing.T) {
@@ -26,29 +24,7 @@ func TestAddon_Subscription(t *testing.T) {
 	uuid := "9c4a3192-6a79-4782-93dd-636e4d308852"
 	addonName := fmt.Sprintf("addon-%s", uuid)
 	addonNamespace := fmt.Sprintf("namespace-%s", uuid)
-
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: v1.ObjectMeta{
-			Name: addonName,
-		},
-		Spec: addonsv1alpha1.AddonSpec{
-			DisplayName: addonName,
-			Namespaces: []addonsv1alpha1.AddonNamespace{
-				{Name: addonNamespace},
-			},
-			Install: addonsv1alpha1.AddonInstallSpec{
-				Type: addonsv1alpha1.OLMOwnNamespace,
-				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
-					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
-						Namespace:          addonNamespace,
-						CatalogSourceImage: referenceAddonCatalogSourceImageWorking,
-						PackageName:        "reference-addon",
-						Channel:            "alpha",
-					},
-				},
-			},
-		},
-	}
+	addon := testutil.NewAddonOLMOwnNamespace(addonName, addonNamespace, referenceAddonCatalogSourceImageWorking)
 
 	err := integration.Client.Create(ctx, addon)
 	require.NoError(t, err)
@@ -60,13 +36,7 @@ func TestAddon_Subscription(t *testing.T) {
 		}
 	})
 
-	err = integration.WaitForObject(
-		t, defaultAddonAvailabilityTimeout, addon, "to be Available",
-		func(obj client.Object) (done bool, err error) {
-			a := obj.(*addonsv1alpha1.Addon)
-			return meta.IsStatusConditionTrue(
-				a.Status.Conditions, addonsv1alpha1.Available), nil
-		})
+	err = integration.WaitForAddonToBeAvailable(t, defaultAddonAvailabilityTimeout, addon)
 	require.NoError(t, err)
 
 	subscription := &operatorsv1alpha1.Subscription{}

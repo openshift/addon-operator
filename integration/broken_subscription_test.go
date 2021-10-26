@@ -16,6 +16,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 // This test deploys a version of our addon where InstallPlan and
@@ -29,29 +30,7 @@ func TestAddon_BrokenSubscription(t *testing.T) {
 	uuid := "c24cd15c-4353-4036-bd86-384046eb4ff8"
 	addonName := fmt.Sprintf("addon-%s", uuid)
 	addonNamespace := fmt.Sprintf("namespace-%s", uuid)
-
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: v1.ObjectMeta{
-			Name: addonName,
-		},
-		Spec: addonsv1alpha1.AddonSpec{
-			DisplayName: addonName,
-			Namespaces: []addonsv1alpha1.AddonNamespace{
-				{Name: addonNamespace},
-			},
-			Install: addonsv1alpha1.AddonInstallSpec{
-				Type: addonsv1alpha1.OLMOwnNamespace,
-				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
-					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
-						Namespace:          addonNamespace,
-						CatalogSourceImage: referenceAddonCatalogSourceImageBroken,
-						PackageName:        "reference-addon",
-						Channel:            "alpha",
-					},
-				},
-			},
-		},
-	}
+	addon := testutil.NewAddonOLMOwnNamespace(addonName, addonNamespace, referenceAddonCatalogSourceImageBroken)
 
 	err := integration.Client.Create(ctx, addon)
 	require.NoError(t, err)

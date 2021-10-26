@@ -8,13 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/meta"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 func TestAddon_CatalogSource(t *testing.T) {
@@ -22,29 +20,11 @@ func TestAddon_CatalogSource(t *testing.T) {
 
 	ctx := context.Background()
 
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: v1.ObjectMeta{
-			Name: "addon-oisafbo12",
-		},
-		Spec: addonsv1alpha1.AddonSpec{
-			DisplayName: "addon-oisafbo12",
-			Namespaces: []addonsv1alpha1.AddonNamespace{
-				{Name: "namespace-onbgdions"},
-				{Name: "namespace-pioghfndb"},
-			},
-			Install: addonsv1alpha1.AddonInstallSpec{
-				Type: addonsv1alpha1.OLMOwnNamespace,
-				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
-					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
-						Namespace:          "namespace-onbgdions",
-						CatalogSourceImage: referenceAddonCatalogSourceImageWorking,
-						Channel:            "alpha",
-						PackageName:        "reference-addon",
-					},
-				},
-			},
-		},
-	}
+	addon := testutil.NewAddonOLMOwnNamespace(
+		"addon-oisafbo12",
+		"namespace-onbgdions",
+		referenceAddonCatalogSourceImageWorking,
+	)
 
 	err := integration.Client.Create(ctx, addon)
 	require.NoError(t, err)
@@ -59,13 +39,7 @@ func TestAddon_CatalogSource(t *testing.T) {
 	})
 
 	// wait until Addon is available
-	err = integration.WaitForObject(
-		t, defaultAddonAvailabilityTimeout, addon, "to be Available",
-		func(obj client.Object) (done bool, err error) {
-			a := obj.(*addonsv1alpha1.Addon)
-			return meta.IsStatusConditionTrue(
-				a.Status.Conditions, addonsv1alpha1.Available), nil
-		})
+	err = integration.WaitForAddonToBeAvailable(t, defaultAddonAvailabilityTimeout, addon)
 	require.NoError(t, err)
 
 	// validate CatalogSource
