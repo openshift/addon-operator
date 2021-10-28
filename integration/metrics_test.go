@@ -83,9 +83,8 @@ func metricsExistForAddon(t *testing.T, metricNames []string, addonName string) 
 }
 
 func scrapeMetrics(t *testing.T) map[string]*dto.MetricFamily {
-	// endpoint will be available on localhost because of port-forwarding
-	// see `$ make test-setup`
-	endpoint := "http://127.0.0.1:8080/metrics"
+	// APIServerProxy URL
+	endpoint := "http://127.0.0.1:8001/api/v1/namespaces/addon-operator/services/addon-operator-metrics:8080/proxy/metrics"
 	resp, err := http.Get(endpoint)
 	require.NoError(t, err)
 

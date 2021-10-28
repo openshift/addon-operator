@@ -33,6 +33,14 @@ func runTests(m *testing.M) int {
 	}
 	fmt.Println()
 
+	// Always run a local API Server proxy, so we can access things on the cluster.
+	// (Like webhooks, metrics, etc...)
+	apiProxyCloseCh := make(chan struct{})
+	defer close(apiProxyCloseCh)
+	if err := integration.RunAPIServerProxy(apiProxyCloseCh); err != nil {
+		log.Fatal(err)
+	}
+
 	// Main tests
 	exitCode := m.Run()
 	if exitCode != 0 {
