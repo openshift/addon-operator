@@ -20,3 +20,5 @@ require (
 )
 
 replace github.com/openshift/addon-operator/apis => ./apis
+
+replace github.com/openshift/addon-operator/clients => ./clients
