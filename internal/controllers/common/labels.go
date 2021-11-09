@@ -1,4 +1,4 @@
-package controllers
+package common
 
 import (
 	"k8s.io/apimachinery/pkg/labels"
@@ -12,7 +12,7 @@ const (
 	commonManagedByValue = "addon-operator"
 )
 
-func addCommonLabels(labels map[string]string, addon *addonsv1alpha1.Addon) {
+func AddCommonLabels(labels map[string]string, addon *addonsv1alpha1.Addon) {
 	if labels == nil {
 		return
 	}
@@ -21,7 +21,7 @@ func addCommonLabels(labels map[string]string, addon *addonsv1alpha1.Addon) {
 	labels[commonInstanceLabel] = addon.Name
 }
 
-func commonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) labels.Selector {
+func CommonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) labels.Selector {
 	labelSet := make(labels.Set)
 	labelSet[commonManagedByLabel] = commonManagedByValue
 	labelSet[commonInstanceLabel] = addon.Name

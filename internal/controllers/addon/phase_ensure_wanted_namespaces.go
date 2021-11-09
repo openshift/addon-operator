@@ -1,4 +1,4 @@
-package controllers
+package addon
 
 import (
 	"context"
@@ -15,6 +15,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers/common"
 )
 
 // Ensure existence of Namespaces specified in the given Addon resource
@@ -27,7 +28,7 @@ func (r *AddonReconciler) ensureWantedNamespaces(
 	for _, namespace := range addon.Spec.Namespaces {
 		ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name)
 		if err != nil {
-			if errors.Is(err, errNotOwnedByUs) {
+			if errors.Is(err, common.ErrNotOwnedByUs) {
 				collidedNamespaces = append(collidedNamespaces, namespace.Name)
 				continue
 			}
@@ -86,7 +87,7 @@ func (r *AddonReconciler) ensureNamespace(ctx context.Context, addon *addonsv1al
 			Labels: map[string]string{},
 		},
 	}
-	addCommonLabels(namespace.Labels, addon)
+	common.AddCommonLabels(namespace.Labels, addon)
 	err := controllerutil.SetControllerReference(addon, namespace, r.Scheme)
 	if err != nil {
 		return nil, err
@@ -121,7 +122,7 @@ func reconcileNamespace(ctx context.Context, c client.Client, scheme *runtime.Sc
 		if strategy == addonsv1alpha1.ResourceAdoptionAdoptAll {
 			return namespace, c.Update(ctx, namespace)
 		}
-		return nil, errNotOwnedByUs
+		return nil, common.ErrNotOwnedByUs
 	}
 	return currentNamespace, nil
 }

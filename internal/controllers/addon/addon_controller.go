@@ -1,10 +1,9 @@
-package controllers
+package addon
 
 import (
 	"context"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/go-logr/logr"
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
@@ -19,13 +18,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers/common"
 	internalhandler "github.com/openshift/addon-operator/internal/handler"
 )
 
-// Default timeout when we do a manual RequeueAfter
 const (
-	defaultRetryAfterTime = 10 * time.Second
-	cacheFinalizer        = "addons.managed.openshift.io/cache"
+	cacheFinalizer = "addons.managed.openshift.io/cache"
 )
 
 type AddonReconciler struct {
@@ -155,7 +153,7 @@ func (r *AddonReconciler) Reconcile(
 		return ctrl.Result{}, fmt.Errorf("failed to ensure wanted Namespaces: %w", err)
 	} else if stopAndRetry {
 		return ctrl.Result{
-			RequeueAfter: defaultRetryAfterTime,
+			RequeueAfter: common.DefaultRetryAfterTime,
 		}, nil
 	}
 
@@ -188,7 +186,7 @@ func (r *AddonReconciler) Reconcile(
 	case ensureCatalogSourceResultRetry:
 		log.Info("requeuing", "reason", "catalogsource unready")
 		return ctrl.Result{
-			RequeueAfter: defaultRetryAfterTime,
+			RequeueAfter: common.DefaultRetryAfterTime,
 		}, nil
 	case ensureCatalogSourceResultStop:
 		return ctrl.Result{}, nil
@@ -203,7 +201,7 @@ func (r *AddonReconciler) Reconcile(
 		return ctrl.Result{}, fmt.Errorf("failed to ensure Subscription: %w", err)
 	} else if requeue {
 		return ctrl.Result{
-			RequeueAfter: defaultRetryAfterTime,
+			RequeueAfter: common.DefaultRetryAfterTime,
 		}, nil
 	}
 
@@ -214,7 +212,7 @@ func (r *AddonReconciler) Reconcile(
 	} else if requeue {
 		log.Info("requeuing", "reason", "csv unready")
 		return ctrl.Result{
-			RequeueAfter: defaultRetryAfterTime,
+			RequeueAfter: common.DefaultRetryAfterTime,
 		}, nil
 	}
 

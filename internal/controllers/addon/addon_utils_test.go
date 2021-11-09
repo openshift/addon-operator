@@ -1,4 +1,4 @@
-package controllers
+package addon
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/event"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers/common"
 	"github.com/openshift/addon-operator/internal/testutil"
 )
 
@@ -32,7 +33,7 @@ func TestHandleAddonDeletion(t *testing.T) {
 		r := &AddonReconciler{
 			Client:          c,
 			Log:             testutil.NewLogger(t),
-			Scheme:          newTestSchemeWithAddonsv1alpha1(),
+			Scheme:          common.NewTestSchemeWithAddonsv1alpha1(),
 			csvEventHandler: csvEventHandlerMock,
 		}
 
@@ -66,7 +67,7 @@ func TestHandleAddonDeletion(t *testing.T) {
 		r := &AddonReconciler{
 			Client:          c,
 			Log:             testutil.NewLogger(t),
-			Scheme:          newTestSchemeWithAddonsv1alpha1(),
+			Scheme:          common.NewTestSchemeWithAddonsv1alpha1(),
 			csvEventHandler: csvEventHandlerMock,
 		}
 

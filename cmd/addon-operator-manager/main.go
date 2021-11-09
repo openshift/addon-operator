@@ -17,7 +17,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	aoapis "github.com/openshift/addon-operator/apis"
-	"github.com/openshift/addon-operator/internal/controllers"
+	"github.com/openshift/addon-operator/internal/controllers/addon"
+	addoninstance "github.com/openshift/addon-operator/internal/controllers/addon-instance"
+	addonoperator "github.com/openshift/addon-operator/internal/controllers/addon-operator"
 )
 
 var (
@@ -30,6 +32,37 @@ func init() {
 	_ = aoapis.AddToScheme(scheme)
 	_ = operatorsv1.AddToScheme(scheme)
 	_ = operatorsv1alpha1.AddToScheme(scheme)
+}
+
+func initReconcilers(mgr manager.Manager) {
+	addonReconciler := &addon.AddonReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("Addon"),
+		Scheme: mgr.GetScheme(),
+	}
+	if err := addonReconciler.SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Addon")
+		os.Exit(1)
+	}
+
+	if err := (&addonoperator.AddonOperatorReconciler{
+		Client:             mgr.GetClient(),
+		Log:                ctrl.Log.WithName("controllers").WithName("AddonOperator"),
+		Scheme:             mgr.GetScheme(),
+		GlobalPauseManager: addonReconciler,
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "AddonOperator")
+		os.Exit(1)
+	}
+
+	if err := (&addoninstance.AddonInstanceReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controller").WithName("AddonInstance"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "AddonInstance")
+		os.Exit(1)
+	}
 }
 
 func main() {
@@ -110,35 +143,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	addonReconciler := &controllers.AddonReconciler{
-		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("Addon"),
-		Scheme: mgr.GetScheme(),
-	}
-
-	if err = addonReconciler.SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Addon")
-		os.Exit(1)
-	}
-
-	if err = (&controllers.AddonOperatorReconciler{
-		Client:             mgr.GetClient(),
-		Log:                ctrl.Log.WithName("controllers").WithName("AddonOperator"),
-		Scheme:             mgr.GetScheme(),
-		GlobalPauseManager: addonReconciler,
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "AddonOperator")
-		os.Exit(1)
-	}
-
-	if err = (&controllers.AddonInstanceReconciler{
-		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controller").WithName("AddonInstance"),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "AddonInstance")
-		os.Exit(1)
-	}
+	initReconcilers(mgr)
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {

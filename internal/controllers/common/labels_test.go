@@ -1,4 +1,4 @@
-package controllers
+package common
 
 import (
 	"testing"
@@ -17,7 +17,7 @@ func TestAddCommonLabels(t *testing.T) {
 
 	labels := make(map[string]string)
 
-	addCommonLabels(labels, addon)
+	AddCommonLabels(labels, addon)
 
 	if labels[commonInstanceLabel] != addon.Name {
 		t.Error("commonInstanceLabel was not set to addon name")
@@ -34,7 +34,7 @@ func TestCommonLabelsAsLabelSelector(t *testing.T) {
 			Name: "test",
 		},
 	}
-	selector := commonLabelsAsLabelSelector(addonWithCorrectName)
+	selector := CommonLabelsAsLabelSelector(addonWithCorrectName)
 
 	if selector.Empty() {
 		t.Fatal("selector is empty but should filter on common labels")

@@ -17,7 +17,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
-	"github.com/openshift/addon-operator/internal/controllers"
+	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
 var (
@@ -265,5 +265,5 @@ func validateOwnerReference(addon *addonsv1alpha1.Addon, obj metav1.Object) (boo
 	if err != nil {
 		return false, err
 	}
-	return controllers.HasEqualControllerReference(obj, ownedObject), nil
+	return addoncontroller.HasEqualControllerReference(obj, ownedObject), nil
 }

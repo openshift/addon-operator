@@ -1,9 +1,8 @@
-package controllers
+package addonoperator
 
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -15,16 +14,13 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers/common"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
-)
-
-const (
-	defaultAddonOperatorRequeueTime = time.Minute
 )
 
 type AddonOperatorReconciler struct {
@@ -80,7 +76,7 @@ func (r *AddonOperatorReconciler) Reconcile(
 	if err != nil {
 		return ctrl.Result{}, err
 	}
-	return ctrl.Result{RequeueAfter: defaultAddonOperatorRequeueTime}, nil
+	return ctrl.Result{RequeueAfter: common.DefaultAddonOperatorRequeueTime}, nil
 }
 
 func (r *AddonOperatorReconciler) handleGlobalPause(
