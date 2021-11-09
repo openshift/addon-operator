@@ -46,7 +46,6 @@ func parseTargetNamespaceFromAddon(addon addonsv1alpha1.Addon) (string, error) {
 
 func upsertAddonInstanceCondition(ctx context.Context, cacheBackedKubeClient client.Client, addonInstance *addonsv1alpha1.AddonInstance, condition metav1.Condition) error {
 	currentTime := metav1.Now()
-	fmt.Printf("\nWriting condition: %+v", condition)
 	if condition.LastTransitionTime.IsZero() {
 		condition.LastTransitionTime = currentTime
 	}
