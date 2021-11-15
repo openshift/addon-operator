@@ -164,9 +164,14 @@ status:
 
 ## How can the addon be programmed to register a heartbeat
 
+Install the addoninstance clients module
+```sh
+go get github.com/openshift/addon-operator/clients
+```
+
 The addon, in its source code, just has to
 ```go
-import "github.com/mt-sre/addon-operator/pkg/addoninstance"  // TODO: change this as the addoninstance package will be later separated out in a different repository
+import "github.com/openshift/addon-operator/clients/addoninstance"
 ```
 and just call
 ```go
@@ -186,7 +191,7 @@ import (
     "os"
     ...
     ...
-    "github.com/mt-sre/addon-operator/pkg/addoninstance"
+    "github.com/openshift/addon-operator/clients/addoninstance"
 )
 
 ...
