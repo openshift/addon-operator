@@ -26,7 +26,7 @@ var (
 		{Name: "TESTING2", Value: "TRUE"},
 	}
 
-	defaultAddonDeletionTimeout     = 2 * time.Minute
+	defaultAddonDeletionTimeout     = 3 * time.Minute
 	defaultAddonAvailabilityTimeout = 5 * time.Minute
 )
 
