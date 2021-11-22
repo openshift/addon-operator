@@ -23,6 +23,7 @@ func TestAddonInstallSpec(t *testing.T) {
 		t.Skip("skipping test as webhook server execution is disabled")
 	}
 
+	t.Fail()
 	t.Parallel()
 
 	ctx := context.Background()
@@ -100,6 +101,7 @@ func TestAddonSpecImmutability(t *testing.T) {
 		t.Skip("skipping test as webhook server execution is disabled")
 	}
 
+	t.Fail()
 	t.Parallel()
 
 	ctx := context.Background()
