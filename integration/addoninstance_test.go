@@ -7,9 +7,10 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	addoninstanceapi "github.com/openshift/addon-operator/clients/addoninstance"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"github.com/openshift/addon-operator/integration"
 )
 

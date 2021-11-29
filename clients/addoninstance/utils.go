@@ -6,6 +6,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -16,6 +17,22 @@ var HeartbeatTimeoutCondition metav1.Condition = metav1.Condition{
 	Status:  "Unknown",
 	Reason:  "HeartbeatTimeout",
 	Message: "Addon failed to send heartbeat.",
+}
+
+func getAddonInstanceByAddon(ctx context.Context, cacheBackedKubeClient client.Client, addonName string) (addonsv1alpha1.AddonInstance, error) {
+	addon := &addonsv1alpha1.Addon{}
+	if err := cacheBackedKubeClient.Get(ctx, types.NamespacedName{Name: addonName}, addon); err != nil {
+		return addonsv1alpha1.AddonInstance{}, err
+	}
+	targetNamespace, err := parseTargetNamespaceFromAddon(*addon)
+	if err != nil {
+		return addonsv1alpha1.AddonInstance{}, fmt.Errorf("failed to parse the target namespace from the Addon: %w", err)
+	}
+	addonInstance := &addonsv1alpha1.AddonInstance{}
+	if err := cacheBackedKubeClient.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonInstanceName, Namespace: targetNamespace}, addonInstance); err != nil {
+		return addonsv1alpha1.AddonInstance{}, fmt.Errorf("failed to fetch the AddonInstance resource in the namespace %s: %w", targetNamespace, err)
+	}
+	return *addonInstance, nil
 }
 
 func parseTargetNamespaceFromAddon(addon addonsv1alpha1.Addon) (string, error) {
