@@ -8,7 +8,6 @@ import (
 	"go/doc"
 	"go/parser"
 	"go/token"
-	"os"
 	"path"
 	"reflect"
 	"sort"
@@ -71,7 +70,6 @@ func ParseDocumentationFrom(src string) []KubeTypes {
 	group = path.Clean(group)
 	group = group + ".managed.openshift.io"
 	gv := group + "/" + version
-	fmt.Fprintln(os.Stderr, src, gv)
 
 	var docForTypes []KubeTypes
 
@@ -321,6 +319,5 @@ func main() {
 		args = args[1:]
 	}
 	sort.Strings(args)
-	_, _ = fmt.Fprint(os.Stderr, len(args), args)
 	printAPIDocs(args, *sectionLink)
 }
