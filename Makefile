@@ -101,7 +101,7 @@ clean: delete-kind-cluster
 bin/linux_amd64/%: GOARGS = GOOS=linux GOARCH=amd64
 
 ## Builds binaries from cmd/%.
-bin/%: generate-code FORCE
+bin/%: generate FORCE
 	$(eval COMPONENT=$(shell basename $*))
 	@echo -e -n "compiling cmd/$(COMPONENT)...\n  "
 	$(GOARGS) go build -ldflags "-w $(LD_FLAGS)" -o bin/$* cmd/$(COMPONENT)/main.go
