@@ -1,12 +1,19 @@
 package dev
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
+	"github.com/go-logr/stdr"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
@@ -16,14 +23,18 @@ type Environment struct {
 	Cluster *KubernetesCluster
 }
 
+const defaultWaitTimeout = 20 * time.Second
+
 // Creates a new development environment.
-func NewEnvironment(name string, opts ...EnvironmentOption) *Environment {
+func NewEnvironment(name, workDir string, opts ...EnvironmentOption) *Environment {
 	config := EnvironmentConfig{
-		Name: name,
+		Name:    name,
+		WorkDir: workDir,
 	}
 	for _, opt := range opts {
 		opt(&config)
 	}
+	config.Default()
 	return &Environment{
 		Config: config,
 	}
@@ -31,20 +42,48 @@ func NewEnvironment(name string, opts ...EnvironmentOption) *Environment {
 
 // Initializes the environment and prepares it for use.
 func (env *Environment) Init(ctx context.Context) error {
-	// Create cluster
-	kindCmd := exec.CommandContext( //nolint:gosec
-		ctx, "kind", "create", "cluster",
-		"--kubeconfig="+env.Config.KubeconfigPath, "--name="+env.Config.Name,
-	)
-	kindCmd.Stdout = os.Stdout
-	err := kindCmd.Run()
-	if err != nil && strings.Contains(
-		err.Error(), "already exist for a cluster with the name") {
-		return fmt.Errorf("creating kind cluster: %w", err)
+	kindConfig := `kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+`
+
+	// Workaround for https://github.com/kubernetes-sigs/kind/issues/2411
+	// For BTRFS on LUKS.
+	if _, err := os.Lstat("/dev/dm-0"); err == nil {
+		kindConfig += `nodes:
+- role: control-plane
+  extraMounts:
+    - hostPath: /dev/dm-0
+      containerPath: /dev/dm-0
+      propagation: HostToContainer
+`
+	}
+
+	kindConfigPath := env.Config.WorkDir + "/kind.yaml"
+	if err := ioutil.WriteFile(
+		kindConfigPath, []byte(kindConfig), os.ModePerm); err != nil {
+		return fmt.Errorf("creating kind cluster config: %w", err)
+	}
+
+	// Needs cluster creation?
+	var checkOutput bytes.Buffer
+	if err := env.execKindCommand(ctx, &checkOutput, nil, "get", "clusters"); err != nil {
+		return fmt.Errorf("getting existing kind clusters: %w", err)
+	}
+	// Only create cluster if it is not already there.
+	if !strings.Contains(checkOutput.String(), env.Config.Name+"\n") {
+		// Create cluster
+		if err := env.execKindCommand(
+			ctx, os.Stdout, os.Stderr,
+			"create", "cluster",
+			"--kubeconfig="+env.Config.KubeconfigPath, "--name="+env.Config.Name,
+			"--config="+kindConfigPath,
+		); err != nil {
+			return fmt.Errorf("creating kind cluster: %w", err)
+		}
 	}
 
 	// Create _all_ the clients
-	cluster, err := NewKubernetesCluster(env.Config.KubeconfigPath)
+	cluster, err := NewKubernetesCluster(env.Config.KubeconfigPath, stdr.New(log.Default()))
 	if err != nil {
 		return fmt.Errorf("creating k8s clients: %w", err)
 	}
@@ -60,6 +99,32 @@ func (env *Environment) Init(ctx context.Context) error {
 	return nil
 }
 
+// Destroy/Teardown the development environment.
+func (env *Environment) Destroy(ctx context.Context) error {
+	if err := env.execKindCommand(
+		ctx, os.Stdout, os.Stderr,
+		"delete", "cluster",
+		"--kubeconfig="+env.Config.KubeconfigPath, "--name="+env.Config.Name,
+	); err != nil {
+		return fmt.Errorf("deleting kind cluster: %w", err)
+	}
+	return nil
+}
+
+func (env *Environment) execKindCommand(
+	ctx context.Context, stdout, stderr io.Writer, args ...string) error {
+	kindCmd := exec.CommandContext( //nolint:gosec
+		ctx, "kind", args...,
+	)
+	kindCmd.Env = os.Environ()
+	if env.Config.ContainerRuntime == "podman" {
+		kindCmd.Env = append(kindCmd.Env, "KIND_EXPERIMENTAL_PROVIDER=podman")
+	}
+	kindCmd.Stdout = stdout
+	kindCmd.Stderr = stderr
+	return kindCmd.Run()
+}
+
 type EnvironmentOption func(c *EnvironmentConfig)
 
 func EnvironmentWithClusterInitializers(init ...ClusterInitializer) EnvironmentOption {
@@ -68,20 +133,32 @@ func EnvironmentWithClusterInitializers(init ...ClusterInitializer) EnvironmentO
 	}
 }
 
+func EnvironmentWithContainerRuntime(containerRuntime string) EnvironmentOption {
+	return func(c *EnvironmentConfig) {
+		c.ContainerRuntime = containerRuntime
+	}
+}
+
 type EnvironmentConfig struct {
 	// Name of the environment.
 	Name string
+	// Working directory of the environment.
+	// Temporary files/kubeconfig etc. will be stored here.
+	WorkDir string
+	// Path to the Kubeconfig
+	KubeconfigPath string
 	// Cluster initializers prepare a cluster for use.
 	ClusterInitializers []ClusterInitializer
-	// Path to the kubeconfig for this cluster.
-	KubeconfigPath string
+	// Container runtime to use
+	ContainerRuntime string
 }
 
 // Apply default configuration.
 func (c *EnvironmentConfig) Default() {
-	if len(c.KubeconfigPath) == 0 {
-		c.KubeconfigPath = ".cache/" + c.Name + "/kubeconfig.yaml"
+	if len(c.ContainerRuntime) == 0 {
+		c.ContainerRuntime = "podman"
 	}
+	c.KubeconfigPath = c.WorkDir + "/kubeconfig.yaml"
 }
 
 type ClusterInitializer interface {
@@ -104,7 +181,8 @@ func (l ClusterLoadObjectsFromFolder) Init(
 	}
 
 	for i := range objects {
-		if err := cluster.CtrlClient.Create(ctx, &objects[i]); err != nil {
+		if err := cluster.CreateAndWaitForReadiness(
+			ctx, defaultWaitTimeout, &objects[i]); err != nil {
 			return fmt.Errorf("creating object: %w", err)
 		}
 	}
@@ -127,7 +205,49 @@ func (l ClusterLoadObjectsFromFiles) Init(
 	}
 
 	for i := range objects {
-		if err := cluster.CtrlClient.Create(ctx, &objects[i]); err != nil {
+		if err := cluster.CreateAndWaitForReadiness(
+			ctx, defaultWaitTimeout, &objects[i]); err != nil {
+			return fmt.Errorf("creating object: %w", err)
+		}
+	}
+	return nil
+}
+
+type ClusterLoadObjectsFromHttp []string
+
+func (l ClusterLoadObjectsFromHttp) Init(
+	ctx context.Context, cluster *KubernetesCluster) error {
+	var client http.Client
+
+	var objects []unstructured.Unstructured
+	for _, url := range l {
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		if err != nil {
+			return fmt.Errorf("creating request: %w", err)
+		}
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return fmt.Errorf("getting %q: %w", url, err)
+		}
+		defer resp.Body.Close()
+
+		var content bytes.Buffer
+		if _, err := io.Copy(&content, resp.Body); err != nil {
+			return fmt.Errorf("reading response %q: %w", url, err)
+		}
+
+		objs, err := LoadKubernetesObjectsFromBytes(content.Bytes())
+		if err != nil {
+			return fmt.Errorf("loading objects from %q: %w", url, err)
+		}
+
+		objects = append(objects, objs...)
+	}
+
+	for i := range objects {
+		if err := cluster.CreateAndWaitForReadiness(
+			ctx, defaultWaitTimeout, &objects[i]); err != nil {
 			return fmt.Errorf("creating object: %w", err)
 		}
 	}

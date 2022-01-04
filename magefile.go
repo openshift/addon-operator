@@ -116,8 +116,11 @@ func init() {
 		containerRuntime = "podman"
 	}
 
-	// Environments
-	defaultDevEnvironment = dev.NewEnvironment("addon-operator-dev",
+	// Development Environments
+	defaultDevEnvironment = dev.NewEnvironment(
+		"addon-operator-dev",
+		cacheDir+"/dev-env",
+		dev.EnvironmentWithContainerRuntime(containerRuntime),
 		dev.EnvironmentWithClusterInitializers(
 			dev.ClusterLoadObjectsFromFiles{
 				// OCP APIs required by the AddonOperator.
@@ -125,6 +128,14 @@ func init() {
 				"config/ocp/config-operator_01_proxy.crd.yaml",
 				"config/ocp/cluster-version.yaml",
 				"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
+
+				// OpenShift console to interact with OLM.
+				"hack/openshift-console.yaml",
+			},
+			dev.ClusterLoadObjectsFromHttp{
+				// Install OLM.
+				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
+				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
 			},
 		))
 }
@@ -252,36 +263,10 @@ func (Dev) Empty() {
 	mg.Deps(Dev.init)
 }
 
-// Creates an empty kind cluster for local development.
-func (Dev) KindCluster() error {
-	// mg.Deps(Dependency.kind)
-
-	// integrationDir := cacheDir + "/integration"
-	// if err := os.MkdirAll(integrationDir, os.ModePerm); err != nil {
-	// 	return fmt.Errorf("creating %s dir: %w", integrationDir, err)
-	// }
-
-	// err := sh.RunV("kind", "create", "cluster",
-	// 	"--kubeconfig="+kubeconfigPath, "--name="+kindClusterName)
-	// if err != nil {
-	// 	return fmt.Errorf("creating kind cluster: %w", err)
-	// }
-
-	// // post setup to register required OCP APIs
-	// client, err := createKubernetesClient(kubeconfigPath)
-	// if err != nil {
-	// 	return fmt.Errorf("creating kubernetes client: %w", err)
-	// }
-
-	// for _, file := range []string{
-	// 	"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
-	// 	"config/ocp/config-operator_01_proxy.crd.yaml",
-	// 	"config/ocp/cluster-version.yaml",
-	// 	"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
-	// } {
-
-	// }
-
+func (Dev) Teardown(ctx context.Context) error {
+	if err := defaultDevEnvironment.Destroy(ctx); err != nil {
+		return fmt.Errorf("destroying dev environment: %w", err)
+	}
 	return nil
 }
 
