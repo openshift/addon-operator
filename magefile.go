@@ -4,6 +4,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -15,6 +16,8 @@ import (
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
+
+	"github.com/openshift/addon-operator/internal/dev"
 )
 
 // Dependency Versions
@@ -27,6 +30,8 @@ const (
 	olmVersion           = "0.19.1"
 	opmVersion           = "1.18.0"
 )
+
+const kindClusterName = "addon-operator"
 
 // Directories
 var (
@@ -48,6 +53,17 @@ var (
 	ldFlags string
 )
 
+// Runtime Configuration
+var (
+	// podman or docker
+	containerRuntime string
+)
+
+// Development Environments
+var (
+	defaultDevEnvironment *dev.Environment
+)
+
 func init() {
 	var err error
 	// Directories
@@ -63,7 +79,6 @@ func init() {
 	os.Setenv("PATH", depsDir+"/bin:"+os.Getenv("PATH"))
 
 	// Build Tags
-
 	branchCmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
 	branchBytes, err := branchCmd.Output()
 	if err != nil {
@@ -94,6 +109,24 @@ func init() {
 		module, shortCommitID,
 		module, buildDate,
 	)
+
+	// Runtime
+	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
+	if len(containerRuntime) == 0 {
+		containerRuntime = "podman"
+	}
+
+	// Environments
+	defaultDevEnvironment = dev.NewEnvironment("addon-operator-dev",
+		dev.EnvironmentWithClusterInitializers(
+			dev.ClusterLoadObjectsFromFiles{
+				// OCP APIs required by the AddonOperator.
+				"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
+				"config/ocp/config-operator_01_proxy.crd.yaml",
+				"config/ocp/cluster-version.yaml",
+				"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
+			},
+		))
 }
 
 // Runs code gens for deepcopy, kubernetes manifests and docs.
@@ -163,7 +196,7 @@ func (Build) cmd(cmd string) error {
 
 // Runs code-generators, checks for clean directory and lints the source code.
 func Lint() error {
-	mg.Deps(Generate)
+	mg.Deps(Generate, Dependency.golangciLint)
 
 	for _, cmd := range [][]string{
 		{"go", "fmt", "./..."},
@@ -199,6 +232,57 @@ func (Test) Integration() error {
 func (Test) IntegrationShort() error {
 	return sh.RunV(
 		"go", "test", "-v", "-count=1", "-short", "./integration/...")
+}
+
+// Development
+// -----------
+type Dev mg.Namespace
+
+func (Dev) init(ctx context.Context) error {
+	mg.Deps(Dependency.kind)
+
+	if err := defaultDevEnvironment.Init(ctx); err != nil {
+		return fmt.Errorf("initializing default dev environment: %w", err)
+	}
+	return nil
+}
+
+// Setup just an empty kubernetes cluster.
+func (Dev) Empty() {
+	mg.Deps(Dev.init)
+}
+
+// Creates an empty kind cluster for local development.
+func (Dev) KindCluster() error {
+	// mg.Deps(Dependency.kind)
+
+	// integrationDir := cacheDir + "/integration"
+	// if err := os.MkdirAll(integrationDir, os.ModePerm); err != nil {
+	// 	return fmt.Errorf("creating %s dir: %w", integrationDir, err)
+	// }
+
+	// err := sh.RunV("kind", "create", "cluster",
+	// 	"--kubeconfig="+kubeconfigPath, "--name="+kindClusterName)
+	// if err != nil {
+	// 	return fmt.Errorf("creating kind cluster: %w", err)
+	// }
+
+	// // post setup to register required OCP APIs
+	// client, err := createKubernetesClient(kubeconfigPath)
+	// if err != nil {
+	// 	return fmt.Errorf("creating kubernetes client: %w", err)
+	// }
+
+	// for _, file := range []string{
+	// 	"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
+	// 	"config/ocp/config-operator_01_proxy.crd.yaml",
+	// 	"config/ocp/cluster-version.yaml",
+	// 	"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
+	// } {
+
+	// }
+
+	return nil
 }
 
 // Generators
