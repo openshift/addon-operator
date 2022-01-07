@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-logr/stdr"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
@@ -316,6 +317,19 @@ func (Test) IntegrationShort() error {
 		"go", "test", "-v", "-count=1", "-short", "./integration/...")
 }
 
+// Deploy the Addon Operator, Mock API Server and Addon Operator webhooks (if env ENABLE_WEBHOOK=true) is set.
+// TODO: Replace with OLM deployment.
+func (Test) Deploy(ctx context.Context) error {
+	cluster, err := dev.NewKubernetesCluster(os.Getenv("KUBECONFIG"), stdr.New(log.Default()))
+	if err != nil {
+		return fmt.Errorf("creating cluster client: %w", err)
+	}
+	if err := deploy(ctx, cluster); err != nil {
+		return fmt.Errorf("deploying: %w", err)
+	}
+	return nil
+}
+
 // Development
 // -----------
 type Dev mg.Namespace
@@ -335,7 +349,7 @@ func (Dev) Empty() {
 }
 
 // Deploy all addon operator components to a cluster.
-func (Dev) deploy(
+func deploy(
 	ctx context.Context, cluster *dev.KubernetesCluster,
 ) error {
 	// API Mock
@@ -440,7 +454,7 @@ func (d Dev) Testing(ctx context.Context) error {
 		Dev.init,
 		Dev.loadAllImages,
 	)
-	if err := d.deploy(ctx, defaultDevEnvironment.Cluster); err != nil {
+	if err := deploy(ctx, defaultDevEnvironment.Cluster); err != nil {
 		return err
 	}
 	return nil

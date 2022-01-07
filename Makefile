@@ -243,7 +243,7 @@ test-integration: export ENABLE_WEBHOOK=true
 test-integration: export ENABLE_API_MOCK=true
 test-integration:
 	@echo "running integration tests..."
-	@./mage test:integration
+	@./mage test:deploy test:integration
 .PHONY: test-integration
 
 # legacy alias for CI/CD
