@@ -2,4 +2,5 @@
 set -euo pipefail
 
 export MAGEFILE_CACHE=$PWD/.cache/magefile
+export GOFLAGS=""
 exec go run ./cmd/mage -v $@
