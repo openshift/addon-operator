@@ -1,15 +1,6 @@
 SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 
-# Dependency Versions
-CONTROLLER_GEN_VERSION:=v0.6.2
-OLM_VERSION:=v0.19.1
-KIND_VERSION:=v0.11.1
-YQ_VERSION:=v4@v4.12.0
-GOIMPORTS_VERSION:=v0.1.5
-GOLANGCI_LINT_VERSION:=v1.43.0
-OPM_VERSION:=v1.18.0
-
 # Build Flags
 export CGO_ENABLED:=0
 BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
@@ -18,14 +9,6 @@ VERSION?=${SHORT_SHA}
 BUILD_DATE=$(shell date +%s)
 MODULE:=github.com/openshift/addon-operator
 GOFLAGS=
-LD_FLAGS=-X $(MODULE)/internal/version.Version=$(VERSION) \
-			-X $(MODULE)/internal/version.Branch=$(BRANCH) \
-			-X $(MODULE)/internal/version.Commit=$(SHORT_SHA) \
-			-X $(MODULE)/internal/version.BuildDate=$(BUILD_DATE)
-
-UNAME_OS:=$(shell uname -s)
-UNAME_OS_LOWER:=$(shell uname -s | awk '{ print tolower($$0); }') # UNAME_OS but in lower case
-UNAME_ARCH:=$(shell uname -m)
 
 # PATH/Bin
 PROJECT_DIR:=$(shell pwd)
@@ -52,10 +35,6 @@ ADDON_OPERATOR_MANAGER_IMAGE?=$(IMAGE_ORG)/addon-operator-manager:$(VERSION)
 ADDON_OPERATOR_WEBHOOK_IMAGE?=$(IMAGE_ORG)/addon-operator-webhook:$(VERSION)
 API_MOCK_IMAGE?=$(IMAGE_ORG)/api-mock:$(VERSION)
 
-# COLORS
-GREEN  := $(shell tput -Txterm setaf 2)
-YELLOW := $(shell tput -Txterm setaf 3)
-RESET  := $(shell tput -Txterm sgr0)
 
 # ---------
 ##@ General
