@@ -61,18 +61,9 @@ func NewKubernetesCluster(kubeconfig string, log logr.Logger) (*KubernetesCluste
 		return nil, fmt.Errorf("adding to scheme: %w", err)
 	}
 
-	kubeconfigBytes, err := ioutil.ReadFile(kubeconfig)
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
-		return nil, fmt.Errorf("reading kubeconfig %s: %w", kubeconfig, err)
-	}
-	clientConfig, err := clientcmd.NewClientConfigFromBytes(kubeconfigBytes)
-	if err != nil {
-		return nil, fmt.Errorf("parsing kubeconfig %s: %w", kubeconfig, err)
-	}
-
-	config, err := clientConfig.ClientConfig()
-	if err != nil {
-		return nil, fmt.Errorf("getting rest.Config from ClientConfig: %w", err)
+		return nil, fmt.Errorf("getting rest.Config from kubeconfig: %w", err)
 	}
 
 	ctrlClient, err := client.New(config, client.Options{
