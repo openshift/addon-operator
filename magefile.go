@@ -181,9 +181,9 @@ type Build mg.Namespace
 // Default build target for CI/CD
 func (Build) All() {
 	mg.Deps(
-		mg.F(Build.cmd, "addon-operator-manager"),
-		mg.F(Build.cmd, "addon-operator-webhook"),
-		mg.F(Build.cmd, "api-mock"),
+		mg.F(Build.cmdWithGOARGS, "addon-operator-manager", "linux", "amd64"),
+		mg.F(Build.cmdWithGOARGS, "addon-operator-webhook", "linux", "amd64"),
+		mg.F(Build.cmdWithGOARGS, "api-mock", "linux", "amd64"),
 	)
 }
 
@@ -193,23 +193,32 @@ func (Build) Docgen() {
 }
 
 // Builds binaries from /cmd directory.
-func (Build) cmd(cmd string) error {
+func (Build) cmdWithGOARGS(cmd, goos, goarch string) error {
 	mg.Deps(
 		Generators.code,
 	)
 
+	env := map[string]string{
+		"GOFLAGS":     "",
+		"CGO_ENABLED": "0",
+		"LDFLAGS":     ldFlags,
+	}
+	if len(goos) != 0 && len(goarch) != 0 {
+		env["GOARGS"] = fmt.Sprintf("GOOS=%s GOARCH=%s", goos, goarch)
+	}
+
 	if err := sh.RunWithV(
-		map[string]string{
-			"GOARGS":      "GOOS=linux GOARCH=amd64",
-			"GOFLAGS":     "",
-			"CGO_ENABLED": "0",
-			"LDFLAGS":     ldFlags,
-		},
-		"go", "build", "-v", "-o", "bin/"+cmd, "./cmd/"+cmd+"/main.go",
+		env,
+		"go", "build", "-v", "-o", fmt.Sprintf("bin/%s_%s/%s", goos, goarch, cmd), "./cmd/"+cmd+"/main.go",
 	); err != nil {
 		return fmt.Errorf("compiling cmd/%s: %w", cmd, err)
 	}
 	return nil
+}
+
+// Builds binaries from /cmd directory.
+func (b Build) cmd(cmd string) error {
+	return b.cmdWithGOARGS(cmd, "", "")
 }
 
 func (Build) image(cmd string) error {
@@ -232,7 +241,7 @@ func (Build) image(cmd string) error {
 	for _, copy := range [][]string{
 		// Copy files for build environment
 		{"cp", "-a",
-			"bin/" + cmd,
+			"bin/linux_amd64/" + cmd,
 			imageCacheDir + "/" + cmd},
 		{"cp", "-a",
 			"config/docker/" + cmd + ".Dockerfile",
@@ -279,7 +288,7 @@ func (Build) imagePush(imageName string) error {
 
 // Runs code-generators, checks for clean directory and lints the source code.
 func Lint() error {
-	mg.Deps(Generate, Dependency.golangciLint)
+	mg.Deps(Generate, Dependency.GolangciLint)
 
 	for _, cmd := range [][]string{
 		{"go", "fmt", "./..."},
@@ -464,7 +473,7 @@ func (d Dev) Testing(ctx context.Context) error {
 func (Dev) IntegrationTests() {
 	mg.SerialDeps(
 		Dev.Testing,
-		Test.IntegrationShort,
+		Test.Integration,
 	)
 }
 
@@ -606,14 +615,14 @@ func (d Dependency) yq() {
 	)
 }
 
-func (d Dependency) goimports() {
+func (d Dependency) Goimports() {
 	mg.Deps(
 		mg.F(Dependency.goInstall, "go-imports",
 			"golang.org/x/tools/cmd/goimports", goimportsVersion),
 	)
 }
 
-func (d Dependency) golangciLint() {
+func (d Dependency) GolangciLint() {
 	mg.Deps(
 		mg.F(Dependency.goInstall, "golangci-lint",
 			"github.com/golangci/golangci-lint/cmd/golangci-lint", golangciLintVersion),
@@ -695,14 +704,14 @@ func (Dependency) dirs() error {
 }
 
 func (Dependency) needsRebuild(tool, version string) (needsRebuild bool, err error) {
-	versionFile := fmt.Sprintf(".deps/versions/%s/v%s", tool, version)
+	versionFile := fmt.Sprintf(depsDir+"/versions/%s/v%s", tool, version)
 	if err := ensureFile(versionFile); err != nil {
 		return false, fmt.Errorf("ensure file: %w", err)
 	}
 
 	// Checks "tool" binary file modification date against version file.
 	// If the version file is newer, tool is of the wrong version.
-	rebuild, err := target.Path(".deps/bin/"+tool, versionFile)
+	rebuild, err := target.Path(depsDir+"/bin/"+tool, versionFile)
 	if err != nil {
 		return false, fmt.Errorf("rebuild check: %w", err)
 	}
