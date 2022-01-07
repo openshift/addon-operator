@@ -252,7 +252,7 @@ func (c *KubernetesCluster) WaitForObject(
 	c.log.Info(fmt.Sprintf("waiting %s on %s %s %s...",
 		timeout, gvk, key, waitReason))
 
-	return wait.PollImmediate(time.Second, timeout, func() (done bool, err error) {
+	return wait.PollImmediateWithContext(ctx, time.Second, timeout, func(ctx context.Context) (done bool, err error) {
 		err = c.CtrlClient.Get(ctx, client.ObjectKeyFromObject(object), object)
 		if err != nil {
 			//nolint:nilerr // retry on transient errors
