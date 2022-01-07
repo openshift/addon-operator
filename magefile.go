@@ -31,6 +31,7 @@ const (
 	golangciLintVersion  = "1.43.0"
 	olmVersion           = "0.19.1"
 	opmVersion           = "1.18.0"
+	helmVersion          = "3.7.2"
 )
 
 const (
@@ -596,39 +597,33 @@ func (Generators) docs() error {
 
 type Dependency mg.Namespace
 
-func (d Dependency) kind() {
-	mg.Deps(
-		mg.F(Dependency.goInstall, "kind",
-			"sigs.k8s.io/kind", kindVersion),
-	)
+func (d Dependency) kind() error {
+	return d.goInstall("kind",
+		"sigs.k8s.io/kind", kindVersion)
 }
 
-func (d Dependency) controllerGen() {
-	mg.Deps(
-		mg.F(Dependency.goInstall, "controller-gen",
-			"sigs.k8s.io/controller-tools/cmd/controller-gen", controllerGenVersion),
-	)
+func (d Dependency) controllerGen() error {
+	return d.goInstall("controller-gen",
+		"sigs.k8s.io/controller-tools/cmd/controller-gen", controllerGenVersion)
 }
 
-func (d Dependency) yq() {
-	mg.Deps(
-		mg.F(Dependency.goInstall, "yq",
-			"github.com/mikefarah/yq/v4", yqVersion),
-	)
+func (d Dependency) yq() error {
+	return d.goInstall("yq",
+		"github.com/mikefarah/yq/v4", yqVersion)
 }
 
-func (d Dependency) Goimports() {
-	mg.Deps(
-		mg.F(Dependency.goInstall, "go-imports",
-			"golang.org/x/tools/cmd/goimports", goimportsVersion),
-	)
+func (d Dependency) Goimports() error {
+	return d.goInstall("go-imports",
+		"golang.org/x/tools/cmd/goimports", goimportsVersion)
 }
 
-func (d Dependency) GolangciLint() {
-	mg.Deps(
-		mg.F(Dependency.goInstall, "golangci-lint",
-			"github.com/golangci/golangci-lint/cmd/golangci-lint", golangciLintVersion),
-	)
+func (d Dependency) GolangciLint() error {
+	return d.goInstall("golangci-lint",
+		"github.com/golangci/golangci-lint/cmd/golangci-lint", golangciLintVersion)
+}
+
+func (d Dependency) helm() error {
+	return d.goInstall("helm", "helm.sh/helm/v3/cmd/helm", helmVersion)
 }
 
 func (d Dependency) opm() error {
