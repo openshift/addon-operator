@@ -203,13 +203,15 @@ func (Build) cmdWithGOARGS(cmd, goos, goarch string) error {
 		"CGO_ENABLED": "0",
 		"LDFLAGS":     ldFlags,
 	}
+	bin := "bin/" + cmd
 	if len(goos) != 0 && len(goarch) != 0 {
+		bin = fmt.Sprintf("bin/%s_%s/%s", goos, goarch, cmd)
 		env["GOARGS"] = fmt.Sprintf("GOOS=%s GOARCH=%s", goos, goarch)
 	}
 
 	if err := sh.RunWithV(
 		env,
-		"go", "build", "-v", "-o", fmt.Sprintf("bin/%s_%s/%s", goos, goarch, cmd), "./cmd/"+cmd+"/main.go",
+		"go", "build", "-v", "-o", bin, "./cmd/"+cmd+"/main.go",
 	); err != nil {
 		return fmt.Errorf("compiling cmd/%s: %w", cmd, err)
 	}
