@@ -5,7 +5,9 @@ import (
 	"context"
 	goerrors "errors"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 	"sort"
@@ -96,6 +98,92 @@ func (e *UnknownTypeError) Error() string {
 	return fmt.Sprintf("unknown type: %s", e.GK)
 }
 
+// Load kube objects from a list of http urls,
+// create these objects and wait for them to be ready.
+func (c *KubernetesCluster) CreateAndWaitFromHttp(
+	ctx context.Context, urls []string) error {
+	var client http.Client
+	var objects []unstructured.Unstructured
+	for _, url := range urls {
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		if err != nil {
+			return fmt.Errorf("creating request: %w", err)
+		}
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return fmt.Errorf("getting %q: %w", url, err)
+		}
+		defer resp.Body.Close()
+
+		var content bytes.Buffer
+		if _, err := io.Copy(&content, resp.Body); err != nil {
+			return fmt.Errorf("reading response %q: %w", url, err)
+		}
+
+		objs, err := LoadKubernetesObjectsFromBytes(content.Bytes())
+		if err != nil {
+			return fmt.Errorf("loading objects from %q: %w", url, err)
+		}
+
+		objects = append(objects, objs...)
+	}
+
+	for i := range objects {
+		if err := c.CreateAndWaitForReadiness(
+			ctx, DefaultWaitTimeout, &objects[i]); err != nil {
+			return fmt.Errorf("creating object: %w", err)
+		}
+	}
+	return nil
+}
+
+// Load kube objects from a list of files,
+// create these objects and wait for them to be ready.
+func (c *KubernetesCluster) CreateAndWaitFromFiles(
+	ctx context.Context, files []string) error {
+	var objects []unstructured.Unstructured
+	for _, file := range files {
+		objs, err := LoadKubernetesObjectsFromFile(file)
+		if err != nil {
+			return fmt.Errorf("loading objects from file %q: %w", file, err)
+		}
+
+		objects = append(objects, objs...)
+	}
+
+	for i := range objects {
+		if err := c.CreateAndWaitForReadiness(
+			ctx, DefaultWaitTimeout, &objects[i]); err != nil {
+			return fmt.Errorf("creating object: %w", err)
+		}
+	}
+	return nil
+}
+
+// Load kube objects from a list of folders,
+// create these objects and wait for them to be ready.
+func (c *KubernetesCluster) CreateAndWaitFromFolders(
+	ctx context.Context, folders []string) error {
+	var objects []unstructured.Unstructured
+	for _, folder := range folders {
+		objs, err := LoadKubernetesObjectsFromFolder(folder)
+		if err != nil {
+			return fmt.Errorf("loading objects from folder %q: %w", folder, err)
+		}
+
+		objects = append(objects, objs...)
+	}
+
+	for i := range objects {
+		if err := c.CreateAndWaitForReadiness(
+			ctx, DefaultWaitTimeout, &objects[i]); err != nil {
+			return fmt.Errorf("creating object: %w", err)
+		}
+	}
+	return nil
+}
+
 // Creates the given objects and waits for them to be considered ready.
 func (c *KubernetesCluster) CreateAndWaitForReadiness(
 	ctx context.Context, timeout time.Duration, object client.Object,
@@ -105,7 +193,7 @@ func (c *KubernetesCluster) CreateAndWaitForReadiness(
 		return fmt.Errorf("creating object: %w", err)
 	}
 
-	if err := c.WaitForReadiness(ctx, defaultWaitTimeout, object); err != nil {
+	if err := c.WaitForReadiness(ctx, DefaultWaitTimeout, object); err != nil {
 		var unknownTypeErr *UnknownTypeError
 		if goerrors.As(err, &unknownTypeErr) {
 			// A lot of types don't require waiting for readiness,

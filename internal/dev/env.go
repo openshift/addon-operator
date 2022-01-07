@@ -7,14 +7,11 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"strings"
-	"time"
 
 	"github.com/go-logr/stdr"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 // Environment represents a development environment.
@@ -22,8 +19,6 @@ type Environment struct {
 	Config  EnvironmentConfig
 	Cluster *KubernetesCluster
 }
-
-const defaultWaitTimeout = 20 * time.Second
 
 // Creates a new development environment.
 func NewEnvironment(name, workDir string, opts ...EnvironmentOption) *Environment {
@@ -111,6 +106,19 @@ func (env *Environment) Destroy(ctx context.Context) error {
 	return nil
 }
 
+// Load an image from a tar archive into the environment.
+func (env *Environment) LoadImageFromTar(
+	ctx context.Context, filePath string) error {
+	if err := env.execKindCommand(
+		ctx, os.Stdout, os.Stderr,
+		"load", "image-archive", filePath,
+		"--name="+env.Config.Name,
+	); err != nil {
+		return fmt.Errorf("loading image archive: %w", err)
+	}
+	return nil
+}
+
 func (env *Environment) execKindCommand(
 	ctx context.Context, stdout, stderr io.Writer, args ...string) error {
 	kindCmd := exec.CommandContext( //nolint:gosec
@@ -170,23 +178,7 @@ type ClusterLoadObjectsFromFolder []string
 
 func (l ClusterLoadObjectsFromFolder) Init(
 	ctx context.Context, cluster *KubernetesCluster) error {
-	var objects []unstructured.Unstructured
-	for _, folder := range l {
-		objs, err := LoadKubernetesObjectsFromFolder(folder)
-		if err != nil {
-			return fmt.Errorf("loading objects from folder %q: %w", folder, err)
-		}
-
-		objects = append(objects, objs...)
-	}
-
-	for i := range objects {
-		if err := cluster.CreateAndWaitForReadiness(
-			ctx, defaultWaitTimeout, &objects[i]); err != nil {
-			return fmt.Errorf("creating object: %w", err)
-		}
-	}
-	return nil
+	return cluster.CreateAndWaitFromFolders(ctx, l)
 }
 
 // Load objects from given file paths and applies them into the cluster.
@@ -194,62 +186,12 @@ type ClusterLoadObjectsFromFiles []string
 
 func (l ClusterLoadObjectsFromFiles) Init(
 	ctx context.Context, cluster *KubernetesCluster) error {
-	var objects []unstructured.Unstructured
-	for _, file := range l {
-		objs, err := LoadKubernetesObjectsFromFile(file)
-		if err != nil {
-			return fmt.Errorf("loading objects from file %q: %w", file, err)
-		}
-
-		objects = append(objects, objs...)
-	}
-
-	for i := range objects {
-		if err := cluster.CreateAndWaitForReadiness(
-			ctx, defaultWaitTimeout, &objects[i]); err != nil {
-			return fmt.Errorf("creating object: %w", err)
-		}
-	}
-	return nil
+	return cluster.CreateAndWaitFromFiles(ctx, l)
 }
 
 type ClusterLoadObjectsFromHttp []string
 
 func (l ClusterLoadObjectsFromHttp) Init(
 	ctx context.Context, cluster *KubernetesCluster) error {
-	var client http.Client
-
-	var objects []unstructured.Unstructured
-	for _, url := range l {
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-		if err != nil {
-			return fmt.Errorf("creating request: %w", err)
-		}
-
-		resp, err := client.Do(req)
-		if err != nil {
-			return fmt.Errorf("getting %q: %w", url, err)
-		}
-		defer resp.Body.Close()
-
-		var content bytes.Buffer
-		if _, err := io.Copy(&content, resp.Body); err != nil {
-			return fmt.Errorf("reading response %q: %w", url, err)
-		}
-
-		objs, err := LoadKubernetesObjectsFromBytes(content.Bytes())
-		if err != nil {
-			return fmt.Errorf("loading objects from %q: %w", url, err)
-		}
-
-		objects = append(objects, objs...)
-	}
-
-	for i := range objects {
-		if err := cluster.CreateAndWaitForReadiness(
-			ctx, defaultWaitTimeout, &objects[i]); err != nil {
-			return fmt.Errorf("creating object: %w", err)
-		}
-	}
-	return nil
+	return cluster.CreateAndWaitFromHttp(ctx, l)
 }

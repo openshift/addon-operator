@@ -16,6 +16,7 @@ import (
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
+	appsv1 "k8s.io/api/apps/v1"
 
 	"github.com/openshift/addon-operator/internal/dev"
 )
@@ -31,7 +32,9 @@ const (
 	opmVersion           = "1.18.0"
 )
 
-const kindClusterName = "addon-operator"
+const (
+	kindClusterName = "addon-operator"
+)
 
 // Directories
 var (
@@ -57,6 +60,8 @@ var (
 var (
 	// podman or docker
 	containerRuntime string
+
+	imageOrg string
 )
 
 // Development Environments
@@ -84,16 +89,16 @@ func init() {
 	if err != nil {
 		panic(fmt.Errorf("getting git branch: %w", err))
 	}
-	branch = string(branchBytes)
+	branch = strings.TrimSpace(string(branchBytes))
 
 	shortCommitIDCmd := exec.Command("git", "rev-parse", "--short", "HEAD")
 	shortCommitIDBytes, err := shortCommitIDCmd.Output()
 	if err != nil {
 		panic(fmt.Errorf("getting git short commit id"))
 	}
-	shortCommitID = string(shortCommitIDBytes)
+	shortCommitID = strings.TrimSpace(string(shortCommitIDBytes))
 
-	version = os.Getenv("VERSION")
+	version = strings.TrimSpace(os.Getenv("VERSION"))
 	if len(version) == 0 {
 		version = shortCommitID
 	}
@@ -114,6 +119,10 @@ func init() {
 	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
 	if len(containerRuntime) == 0 {
 		containerRuntime = "podman"
+	}
+	imageOrg = os.Getenv("IMAGE_ORG")
+	if len(imageOrg) == 0 {
+		imageOrg = "quay.io/app-sre"
 	}
 
 	// Development Environments
@@ -202,6 +211,68 @@ func (Build) cmd(cmd string) error {
 	return nil
 }
 
+func (Build) image(cmd string) error {
+	mg.Deps(
+		mg.F(Build.cmd, cmd),
+	)
+
+	imageCacheDir := cacheDir + "/image/" + cmd
+	if err := os.RemoveAll(imageCacheDir); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("deleting image cache: %w", err)
+	}
+	if err := os.Remove(imageCacheDir + ".tar"); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("deleting image cache: %w", err)
+	}
+	if err := os.MkdirAll(imageCacheDir, os.ModePerm); err != nil {
+		return fmt.Errorf("create image cache dir: %w", err)
+	}
+
+	imageTag := imageOrg + "/" + cmd + ":" + version
+	for _, copy := range [][]string{
+		// Copy files for build environment
+		{"cp", "-a",
+			"bin/" + cmd,
+			imageCacheDir + "/" + cmd},
+		{"cp", "-a",
+			"config/docker/" + cmd + ".Dockerfile",
+			imageCacheDir + "/Dockerfile"},
+
+		// Build image!
+		{containerRuntime, "build", "-t", imageTag, imageCacheDir},
+		{containerRuntime, "image", "save",
+			"-o", imageCacheDir + ".tar", imageTag},
+	} {
+		if err := sh.Run(copy[0], copy[1:]...); err != nil {
+			return fmt.Errorf("running %q: %w", strings.Join(copy, " "), err)
+		}
+	}
+
+	return nil
+}
+
+func (Build) imagePush(imageName string) error {
+	mg.Deps(
+		mg.F(Build.image, imageName),
+	)
+
+	// Login to container registry when running on AppSRE Jenkins.
+	if _, ok := os.LookupEnv("JENKINS_HOME"); ok {
+		log.Println("running in Jenkins, calling container runtime login")
+		if err := sh.Run(containerRuntime,
+			"login", "-u="+os.Getenv("QUAY_USER"),
+			"-p="+os.Getenv("QUAY_TOKEN"), "quay.io"); err != nil {
+			return fmt.Errorf("registry login: %w", err)
+		}
+	}
+
+	imageTag := imageOrg + "/" + imageName + ":" + version
+	if err := sh.Run(containerRuntime, "push", imageTag); err != nil {
+		return fmt.Errorf("pushing image: %w", err)
+	}
+
+	return nil
+}
+
 // Testing and Linting
 // -------------------
 
@@ -261,6 +332,149 @@ func (Dev) init(ctx context.Context) error {
 // Setup just an empty kubernetes cluster.
 func (Dev) Empty() {
 	mg.Deps(Dev.init)
+}
+
+// Deploy all addon operator components to a cluster.
+func (Dev) deploy(
+	ctx context.Context, cluster *dev.KubernetesCluster,
+) error {
+	// API Mock
+	// --------
+	objs, err := dev.LoadKubernetesObjectsFromFile(
+		"config/deploy/api-mock/deployment.yaml.tpl")
+	if err != nil {
+		return fmt.Errorf("loading api-mock deployment.yaml.tpl: %w", err)
+	}
+	// Replace image
+	apiMockDeployment := &appsv1.Deployment{}
+	if err := cluster.Scheme.Convert(
+		&objs[0], apiMockDeployment, nil); err != nil {
+		return fmt.Errorf("converting to Deployment: %w", err)
+	}
+	apiMockImage := imageOrg + "/api-mock:" + version
+	apiMockDeployment.Spec.Template.Spec.Containers[0].Image =
+		apiMockImage
+	// Deploy
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
+		"config/deploy/api-mock/00-namespace.yaml",
+		"config/deploy/api-mock/api-mock.yaml",
+	}); err != nil {
+		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
+	}
+	if err := cluster.CreateAndWaitForReadiness(
+		ctx, dev.DefaultWaitTimeout, apiMockDeployment); err != nil {
+		return fmt.Errorf("deploy api-mock: %w", err)
+	}
+
+	// Addon Operator Manager
+	// ----------------------
+	objs, err = dev.LoadKubernetesObjectsFromFile(
+		"config/deploy/deployment.yaml.tpl")
+	if err != nil {
+		return fmt.Errorf("loading addon-operator-manager deployment.yaml.tpl: %w", err)
+	}
+	// Replace image
+	addonOperatorDeployment := &appsv1.Deployment{}
+	if err := cluster.Scheme.Convert(
+		&objs[0], addonOperatorDeployment, nil); err != nil {
+		return fmt.Errorf("converting to Deployment: %w", err)
+	}
+	addonOperatorManagerImage := imageOrg + "/addon-operator-manager:" + version
+	addonOperatorDeployment.Spec.Template.Spec.Containers[0].Image = addonOperatorManagerImage
+	// Deploy
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
+		"config/deploy/00-namespace.yaml",
+		"config/deploy/addons.managed.openshift.io_addoninstances.yaml",
+		"config/deploy/addons.managed.openshift.io_addonoperators.yaml",
+		"config/deploy/addons.managed.openshift.io_addons.yaml",
+		"config/deploy/rbac.yaml",
+	}); err != nil {
+		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
+	}
+	if err := cluster.CreateAndWaitForReadiness(
+		ctx, dev.DefaultWaitTimeout, addonOperatorDeployment); err != nil {
+		return fmt.Errorf("deploy addon-operator-manager: %w", err)
+	}
+
+	// Addon Operator Webhook
+	// ----------------------
+	if enableWebhooks, ok := os.LookupEnv("ENABLE_WEBHOOK"); ok &&
+		enableWebhooks == "true" {
+		objs, err := dev.LoadKubernetesObjectsFromFile(
+			"config/deploy/webhook/deployment.yaml.tpl")
+		if err != nil {
+			return fmt.Errorf("loading addon-operator-webhook deployment.yaml.tpl: %w", err)
+		}
+
+		// Replace image
+		addonOperatorWebhookDeployment := &appsv1.Deployment{}
+		if err := cluster.Scheme.Convert(
+			&objs[0], addonOperatorWebhookDeployment, nil); err != nil {
+			return fmt.Errorf("converting to Deployment: %w", err)
+		}
+		addonOperatorWebhookImage := imageOrg + "/addon-operator-webhook:" + version
+		addonOperatorWebhookDeployment.Spec.Template.Spec.Containers[0].Image = addonOperatorWebhookImage
+		// Deploy
+		if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+			// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
+			"config/deploy/webhook/00-tls-secret.yaml",
+			"config/deploy/webhook/service.yaml",
+			"config/deploy/webhook/validatingwebhookconfig.yaml",
+		}); err != nil {
+			return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
+		}
+		if err := cluster.CreateAndWaitForReadiness(
+			ctx, dev.DefaultWaitTimeout, addonOperatorWebhookDeployment); err != nil {
+			return fmt.Errorf("deploy addon-operator-webhook: %w", err)
+		}
+	}
+	return nil
+}
+
+// Setup a local cluster with all Addon Operator components running.
+// Used to develop new test suites and for manual verification testing.
+func (d Dev) Testing(ctx context.Context) error {
+	mg.SerialDeps(
+		Dev.init,
+		Dev.loadAllImages,
+	)
+	if err := d.deploy(ctx, defaultDevEnvironment.Cluster); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Run integration test locally.
+func (Dev) IntegrationTests() {
+	mg.SerialDeps(
+		Dev.Testing,
+		Test.IntegrationShort,
+	)
+}
+
+// Build and load container images into the dev environment.
+func (Dev) loadAllImages() {
+	mg.Deps(
+		mg.F(Dev.imageLoad, "api-mock"),
+		mg.F(Dev.imageLoad, "addon-operator-manager"),
+		mg.F(Dev.imageLoad, "addon-operator-webhook"),
+	)
+}
+
+// Load an image into the main kind cluster.
+func (Dev) imageLoad(ctx context.Context, imageName string) error {
+	mg.Deps(
+		Dev.init,
+		mg.F(Build.image, imageName),
+	)
+
+	imageTar := cacheDir + "/image/" + imageName + ".tar"
+	if err := defaultDevEnvironment.LoadImageFromTar(ctx, imageTar); err != nil {
+		return fmt.Errorf("load image: %w", err)
+	}
+	return nil
 }
 
 func (Dev) Teardown(ctx context.Context) error {
