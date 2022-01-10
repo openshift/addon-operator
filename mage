@@ -4,10 +4,8 @@ set -euo pipefail
 export MAGEFILE_CACHE=$PWD/.cache/magefile
 export GOFLAGS=""
 
-if [ -f "bin/mage" ]; then
-  echo "running ./bin/mage"
-  exec ./bin/mage -v $@
-else
-  echo "running go run ./cmd/mage"
-  exec go run ./cmd/mage -v $@
+if [ ! -f "bin/mage" ]; then
+  go build -o bin/mage ./cmd/mage
 fi
+
+exec ./bin/mage -v $@
