@@ -3,4 +3,4 @@ package dev
 
 import "time"
 
-const DefaultWaitTimeout = 20 * time.Second
+const DefaultWaitTimeout = 60 * time.Second
