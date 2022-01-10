@@ -185,6 +185,7 @@ func (Build) All() {
 		mg.F(Build.cmdWithGOARGS, "addon-operator-manager", "linux", "amd64"),
 		mg.F(Build.cmdWithGOARGS, "addon-operator-webhook", "linux", "amd64"),
 		mg.F(Build.cmdWithGOARGS, "api-mock", "linux", "amd64"),
+		mg.F(Build.cmd, "mage"),
 	)
 }
 

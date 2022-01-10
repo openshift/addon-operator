@@ -119,7 +119,7 @@ test-integration:
 .PHONY: test-integration
 
 # legacy alias for CI/CD
-test-e2e:
+test-e2e: \
 	test-integration
 .PHONY: test-e2e
 
