@@ -378,9 +378,11 @@ func deploy(
 		&objs[0], apiMockDeployment, nil); err != nil {
 		return fmt.Errorf("converting to Deployment: %w", err)
 	}
-	apiMockImage := imageOrg + "/api-mock:" + version
-	apiMockDeployment.Spec.Template.Spec.Containers[0].Image =
-		apiMockImage
+	apiMockImage := os.Getenv("API_MOCK_IMAGE")
+	if len(apiMockImage) == 0 {
+		apiMockImage = imageOrg + "/api-mock:" + version
+	}
+	apiMockDeployment.Spec.Template.Spec.Containers[0].Image = apiMockImage
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
@@ -407,7 +409,10 @@ func deploy(
 		&objs[0], addonOperatorDeployment, nil); err != nil {
 		return fmt.Errorf("converting to Deployment: %w", err)
 	}
-	addonOperatorManagerImage := imageOrg + "/addon-operator-manager:" + version
+	addonOperatorManagerImage := os.Getenv("ADDON_OPERATOR_MANAGER_IMAGE")
+	if len(addonOperatorManagerImage) == 0 {
+		addonOperatorManagerImage = imageOrg + "/addon-operator-manager:" + version
+	}
 	addonOperatorDeployment.Spec.Template.Spec.Containers[0].Image = addonOperatorManagerImage
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
@@ -441,7 +446,10 @@ func deploy(
 			&objs[0], addonOperatorWebhookDeployment, nil); err != nil {
 			return fmt.Errorf("converting to Deployment: %w", err)
 		}
-		addonOperatorWebhookImage := imageOrg + "/addon-operator-webhook:" + version
+		addonOperatorWebhookImage := os.Getenv("ADDON_OPERATOR_WEBHOOK_IMAGE")
+		if len(addonOperatorWebhookImage) == 0 {
+			addonOperatorWebhookImage = imageOrg + "/addon-operator-webhook:" + version
+		}
 		addonOperatorWebhookDeployment.Spec.Template.Spec.Containers[0].Image = addonOperatorWebhookImage
 		// Deploy
 		if err := cluster.CreateAndWaitFromFiles(ctx, []string{
