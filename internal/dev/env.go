@@ -53,6 +53,10 @@ apiVersion: kind.x-k8s.io/v1alpha4
 `
 	}
 
+	if err := os.MkdirAll(env.Config.WorkDir, os.ModePerm); err != nil {
+		return fmt.Errorf("creating workdir: %w", err)
+	}
+
 	kindConfigPath := env.Config.WorkDir + "/kind.yaml"
 	if err := ioutil.WriteFile(
 		kindConfigPath, []byte(kindConfig), os.ModePerm); err != nil {
