@@ -149,6 +149,18 @@ func init() {
 				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
 				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
 			},
+			dev.ClusterHelmInstall{
+				RepoName:    "prometheus-community",
+				RepoURL:     "https://prometheus-community.github.io/helm-charts",
+				PackageName: "kube-prometheus-stack",
+				ReleaseName: "prometheus",
+				Namespace:   "monitoring",
+				SetVars: []string{
+					"grafana.enabled=false",
+					"kubeStateMetrics.enabled=false",
+					"nodeExporter.enabled=false",
+				},
+			},
 		})
 
 	logger = stdr.New(log.Default())
