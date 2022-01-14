@@ -9,17 +9,18 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
+	"path"
 	"strings"
 	"time"
 
+	"github.com/go-logr/logr"
 	"github.com/go-logr/stdr"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
-	"github.com/magefile/mage/target"
 	appsv1 "k8s.io/api/apps/v1"
 
-	"github.com/openshift/addon-operator/internal/dev"
+	"github.com/mt-sre/devkube/dev"
+	"github.com/mt-sre/devkube/magedeps"
 )
 
 // Dependency Versions
@@ -45,7 +46,7 @@ var (
 	// Cache directory for temporary build files.
 	cacheDir string
 	// Dependency directory.
-	depsDir string
+	depsDir magedeps.DependencyDirectory
 )
 
 // Build Tags
@@ -62,13 +63,13 @@ var (
 var (
 	// podman or docker
 	containerRuntime string
-
-	imageOrg string
+	imageOrg         string
 )
 
 // Development Environments
 var (
 	defaultDevEnvironment *dev.Environment
+	logger                logr.Logger
 )
 
 func init() {
@@ -79,11 +80,11 @@ func init() {
 		panic(fmt.Errorf("getting work dir: %w", err))
 	}
 
-	depsDir = workDir + "/.deps"
-	cacheDir = workDir + "/.cache"
+	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
+	cacheDir = path.Join(workDir + ".cache")
 
 	// Path
-	os.Setenv("PATH", depsDir+"/bin:"+os.Getenv("PATH"))
+	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
 
 	// Build Tags
 	branchCmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
@@ -130,9 +131,9 @@ func init() {
 	// Development Environments
 	defaultDevEnvironment = dev.NewEnvironment(
 		"addon-operator-dev",
-		cacheDir+"/dev-env",
-		dev.EnvironmentWithContainerRuntime(containerRuntime),
-		dev.EnvironmentWithClusterInitializers(
+		path.Join(cacheDir, "dev-env"),
+		dev.WithContainerRuntime(containerRuntime),
+		dev.WithClusterInitializers{
 			dev.ClusterLoadObjectsFromFiles{
 				// OCP APIs required by the AddonOperator.
 				"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
@@ -148,7 +149,9 @@ func init() {
 				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
 				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
 			},
-		))
+		})
+
+	logger = stdr.New(log.Default())
 }
 
 // Runs code gens for deepcopy, kubernetes manifests and docs.
@@ -163,7 +166,7 @@ func Generate() {
 // Runs go mod tidy in all go modules of the repository.
 func Tidy() error {
 	apisTidyCmd := exec.Command("go", "mod", "tidy")
-	apisTidyCmd.Dir = workDir + "/apis"
+	apisTidyCmd.Dir = path.Join(workDir, "apis")
 	if err := apisTidyCmd.Run(); err != nil {
 		return fmt.Errorf("tidy apis module: %w", err)
 	}
@@ -205,9 +208,9 @@ func (Build) cmdWithGOARGS(cmd, goos, goarch string) error {
 		"CGO_ENABLED": "0",
 		"LDFLAGS":     ldFlags,
 	}
-	bin := "bin/" + cmd
+	bin := path.Join("bin", cmd)
 	if len(goos) != 0 && len(goarch) != 0 {
-		bin = fmt.Sprintf("bin/%s_%s/%s", goos, goarch, cmd)
+		bin = path.Join("bin", goos+"_"+goarch, cmd)
 		env["GOARGS"] = fmt.Sprintf("GOOS=%s GOARCH=%s", goos, goarch)
 	}
 
@@ -230,7 +233,7 @@ func (Build) image(cmd string) error {
 		mg.F(Build.cmd, cmd),
 	)
 
-	imageCacheDir := cacheDir + "/image/" + cmd
+	imageCacheDir := path.Join(cacheDir, "image", cmd)
 	if err := os.RemoveAll(imageCacheDir); err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("deleting image cache: %w", err)
 	}
@@ -333,7 +336,7 @@ func (Test) IntegrationShort() error {
 // Deploy the Addon Operator, Mock API Server and Addon Operator webhooks (if env ENABLE_WEBHOOK=true) is set.
 // TODO: Replace with OLM deployment.
 func (Test) Deploy(ctx context.Context) error {
-	cluster, err := dev.NewKubernetesCluster(os.Getenv("KUBECONFIG"), stdr.New(log.Default()))
+	cluster, err := dev.NewCluster(os.Getenv("KUBECONFIG"), dev.WithLogger(logger))
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
@@ -363,7 +366,7 @@ func (Dev) Empty() {
 
 // Deploy all addon operator components to a cluster.
 func deploy(
-	ctx context.Context, cluster *dev.KubernetesCluster,
+	ctx context.Context, cluster *dev.Cluster,
 ) error {
 	// API Mock
 	// --------
@@ -391,8 +394,7 @@ func deploy(
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(
-		ctx, dev.DefaultWaitTimeout, apiMockDeployment); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, apiMockDeployment); err != nil {
 		return fmt.Errorf("deploy api-mock: %w", err)
 	}
 
@@ -425,8 +427,7 @@ func deploy(
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(
-		ctx, dev.DefaultWaitTimeout, addonOperatorDeployment); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorDeployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager: %w", err)
 	}
 
@@ -460,8 +461,7 @@ func deploy(
 		}); err != nil {
 			return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
 		}
-		if err := cluster.CreateAndWaitForReadiness(
-			ctx, dev.DefaultWaitTimeout, addonOperatorWebhookDeployment); err != nil {
+		if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment); err != nil {
 			return fmt.Errorf("deploy addon-operator-webhook: %w", err)
 		}
 	}
@@ -607,38 +607,36 @@ func (Generators) docs() error {
 type Dependency mg.Namespace
 
 func (d Dependency) kind() error {
-	return d.goInstall("kind",
+	return depsDir.GoInstall("kind",
 		"sigs.k8s.io/kind", kindVersion)
 }
 
 func (d Dependency) controllerGen() error {
-	return d.goInstall("controller-gen",
+	return depsDir.GoInstall("controller-gen",
 		"sigs.k8s.io/controller-tools/cmd/controller-gen", controllerGenVersion)
 }
 
 func (d Dependency) yq() error {
-	return d.goInstall("yq",
+	return depsDir.GoInstall("yq",
 		"github.com/mikefarah/yq/v4", yqVersion)
 }
 
 func (d Dependency) Goimports() error {
-	return d.goInstall("go-imports",
+	return depsDir.GoInstall("go-imports",
 		"golang.org/x/tools/cmd/goimports", goimportsVersion)
 }
 
 func (d Dependency) GolangciLint() error {
-	return d.goInstall("golangci-lint",
+	return depsDir.GoInstall("golangci-lint",
 		"github.com/golangci/golangci-lint/cmd/golangci-lint", golangciLintVersion)
 }
 
 func (d Dependency) helm() error {
-	return d.goInstall("helm", "helm.sh/helm/v3/cmd/helm", helmVersion)
+	return depsDir.GoInstall("helm", "helm.sh/helm/v3/cmd/helm", helmVersion)
 }
 
 func (d Dependency) opm() error {
-	mg.Deps(Dependency.dirs)
-
-	needsRebuild, err := d.needsRebuild("opm", opmVersion)
+	needsRebuild, err := depsDir.NeedsRebuild("opm", opmVersion)
 	if err != nil {
 		return err
 	}
@@ -654,9 +652,10 @@ func (d Dependency) opm() error {
 	defer os.RemoveAll(tempDir)
 
 	// Download
+	tempOPMBin := path.Join(tempDir, "opm")
 	if err := sh.Run(
 		"curl", "-L", "--fail",
-		"-o", tempDir+"/opm",
+		"-o", tempOPMBin,
 		fmt.Sprintf(
 			"https://github.com/protocolbuffers/protobuf/releases/download/%s/linux-amd64-opm",
 			opmVersion,
@@ -665,84 +664,13 @@ func (d Dependency) opm() error {
 		return fmt.Errorf("downloading protoc: %w", err)
 	}
 
+	if err := os.Chmod(tempOPMBin, 0755); err != nil {
+		return fmt.Errorf("make opm executable: %w", err)
+	}
+
 	// Move
-	if err := os.Rename(tempDir+"/opm", depsDir+"/bin/opm"); err != nil {
+	if err := os.Rename(tempOPMBin, path.Join(depsDir.Bin(), "opm")); err != nil {
 		return fmt.Errorf("move protoc: %w", err)
-	}
-	return nil
-}
-
-// Installs a tool from the packageURL and given version.
-// Will remember the version the tool was last installed as and not try to reinstall again until the version changed.
-func (d Dependency) goInstall(tool, packageURl, version string) error {
-	mg.Deps(Dependency.dirs)
-
-	needsRebuild, err := d.needsRebuild(tool, version)
-	if err != nil {
-		return err
-	}
-	if !needsRebuild {
-		return nil
-	}
-
-	url := packageURl + "@v" + version
-	if err := sh.RunWithV(map[string]string{
-		"GOBIN": depsDir + "/bin",
-	}, mg.GoCmd(),
-		"install", url,
-	); err != nil {
-		return fmt.Errorf("install %s: %w", url, err)
-	}
-	return nil
-}
-
-// Always required directories
-func (Dependency) dirs() error {
-	for _, dir := range []string{
-		cacheDir, depsDir,
-	} {
-		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-			return fmt.Errorf("creating %q directory: %w", dir, err)
-		}
-	}
-
-	return nil
-}
-
-func (Dependency) needsRebuild(tool, version string) (needsRebuild bool, err error) {
-	versionFile := fmt.Sprintf(depsDir+"/versions/%s/v%s", tool, version)
-	if err := ensureFile(versionFile); err != nil {
-		return false, fmt.Errorf("ensure file: %w", err)
-	}
-
-	// Checks "tool" binary file modification date against version file.
-	// If the version file is newer, tool is of the wrong version.
-	rebuild, err := target.Path(depsDir+"/bin/"+tool, versionFile)
-	if err != nil {
-		return false, fmt.Errorf("rebuild check: %w", err)
-	}
-
-	return rebuild, nil
-}
-
-// ensure a file and it's file path exist.
-func ensureFile(file string) error {
-	dir := filepath.Dir(file)
-	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return fmt.Errorf("creating directory %s: %w", dir, err)
-	}
-
-	_, err := os.Stat(file)
-	if os.IsNotExist(err) {
-		f, err := os.Create(file)
-		if err != nil {
-			return fmt.Errorf("creating file %s: %w", file, err)
-		}
-		defer f.Close()
-		return nil
-	}
-	if err != nil {
-		return fmt.Errorf("checking file %s: %w", file, err)
 	}
 	return nil
 }
