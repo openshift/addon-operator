@@ -110,17 +110,17 @@ test-unit: generate
 	@./mage test:unit
 .PHONY: test-unit
 
-## Runs the Integration testsuite against the current $KUBECONFIG cluster
+## Deploys components and runs the Integration testsuite against the current $KUBECONFIG cluster
 test-integration: export ENABLE_WEBHOOK=true
 test-integration: export ENABLE_API_MOCK=true
 test-integration:
 	@echo "running integration tests..."
-	@./mage test:deploy test:integration
+	@./mage dev:deploy test:integration
 .PHONY: test-integration
 
-# legacy alias for CI/CD
-test-e2e: \
-	test-integration
+# CI/CD entry point
+test-e2e:
+	@./mage cicd:DeployAPIMock test:integration
 .PHONY: test-e2e
 
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster. Skips operator setup and teardown.

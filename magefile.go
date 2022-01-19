@@ -345,17 +345,19 @@ func (Test) IntegrationShort() error {
 		"go", "test", "-v", "-count=1", "-short", "./integration/...")
 }
 
-// Deploy the Addon Operator, Mock API Server and Addon Operator webhooks (if env ENABLE_WEBHOOK=true) is set.
-// TODO: Replace with OLM deployment.
-func (Test) Deploy(ctx context.Context) error {
-	cluster, err := dev.NewCluster(os.Getenv("KUBECONFIG"), dev.WithLogger(logger))
+// CI/CD specific
+// --------------
+type CICD mg.Namespace
+
+// Deploy the API Mock to run the integration test suite.
+func (CICD) DeployAPIMock(ctx context.Context) error {
+	kubeconfigPath := os.Getenv("KUBECONFIG")
+	cluster, err := dev.NewCluster(path.Base(kubeconfigPath), dev.WithKubeconfigPath(kubeconfigPath))
 	if err != nil {
-		return fmt.Errorf("creating cluster client: %w", err)
+		return err
 	}
-	if err := deploy(ctx, cluster); err != nil {
-		return fmt.Errorf("deploying: %w", err)
-	}
-	return nil
+
+	return deployAddonOperatorWebhook(ctx, cluster)
 }
 
 // Development
@@ -376,12 +378,17 @@ func (Dev) Empty() {
 	mg.Deps(Dev.init)
 }
 
-// Deploy all addon operator components to a cluster.
-func deploy(
-	ctx context.Context, cluster *dev.Cluster,
-) error {
-	// API Mock
-	// --------
+// Deploy the Addon Operator, Mock API Server and Addon Operator webhooks (if env ENABLE_WEBHOOK=true) is set.
+// All components are deployed via static manifests.
+func (Dev) Deploy(ctx context.Context) error {
+	if err := deploy(ctx, defaultDevEnvironment.Cluster); err != nil {
+		return fmt.Errorf("deploying: %w", err)
+	}
+	return nil
+}
+
+// deploy the API Mock server from local files.
+func deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 	objs, err := dev.LoadKubernetesObjectsFromFile(
 		"config/deploy/api-mock/deployment.yaml.tpl")
 	if err != nil {
@@ -409,10 +416,12 @@ func deploy(
 	if err := cluster.CreateAndWaitForReadiness(ctx, apiMockDeployment); err != nil {
 		return fmt.Errorf("deploy api-mock: %w", err)
 	}
+	return nil
+}
 
-	// Addon Operator Manager
-	// ----------------------
-	objs, err = dev.LoadKubernetesObjectsFromFile(
+// deploy the Addon Operator Manager from local files.
+func deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluster) error {
+	objs, err := dev.LoadKubernetesObjectsFromFile(
 		"config/deploy/deployment.yaml.tpl")
 	if err != nil {
 		return fmt.Errorf("loading addon-operator-manager deployment.yaml.tpl: %w", err)
@@ -442,39 +451,59 @@ func deploy(
 	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorDeployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager: %w", err)
 	}
+	return nil
+}
 
-	// Addon Operator Webhook
-	// ----------------------
+// Addon Operator Webhook server from local files.
+func deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluster) error {
+	objs, err := dev.LoadKubernetesObjectsFromFile(
+		"config/deploy/webhook/deployment.yaml.tpl")
+	if err != nil {
+		return fmt.Errorf("loading addon-operator-webhook deployment.yaml.tpl: %w", err)
+	}
+
+	// Replace image
+	addonOperatorWebhookDeployment := &appsv1.Deployment{}
+	if err := cluster.Scheme.Convert(
+		&objs[0], addonOperatorWebhookDeployment, nil); err != nil {
+		return fmt.Errorf("converting to Deployment: %w", err)
+	}
+	addonOperatorWebhookImage := os.Getenv("ADDON_OPERATOR_WEBHOOK_IMAGE")
+	if len(addonOperatorWebhookImage) == 0 {
+		addonOperatorWebhookImage = imageOrg + "/addon-operator-webhook:" + version
+	}
+	addonOperatorWebhookDeployment.Spec.Template.Spec.Containers[0].Image = addonOperatorWebhookImage
+	// Deploy
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
+		"config/deploy/webhook/00-tls-secret.yaml",
+		"config/deploy/webhook/service.yaml",
+		"config/deploy/webhook/validatingwebhookconfig.yaml",
+	}); err != nil {
+		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
+	}
+	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment); err != nil {
+		return fmt.Errorf("deploy addon-operator-webhook: %w", err)
+	}
+	return nil
+}
+
+// Deploy all addon operator components to a cluster.
+func deploy(
+	ctx context.Context, cluster *dev.Cluster,
+) error {
+	if err := deployAPIMock(ctx, cluster); err != nil {
+		return err
+	}
+
+	if err := deployAddonOperatorManager(ctx, cluster); err != nil {
+		return err
+	}
+
 	if enableWebhooks, ok := os.LookupEnv("ENABLE_WEBHOOK"); ok &&
 		enableWebhooks == "true" {
-		objs, err := dev.LoadKubernetesObjectsFromFile(
-			"config/deploy/webhook/deployment.yaml.tpl")
-		if err != nil {
-			return fmt.Errorf("loading addon-operator-webhook deployment.yaml.tpl: %w", err)
-		}
-
-		// Replace image
-		addonOperatorWebhookDeployment := &appsv1.Deployment{}
-		if err := cluster.Scheme.Convert(
-			&objs[0], addonOperatorWebhookDeployment, nil); err != nil {
-			return fmt.Errorf("converting to Deployment: %w", err)
-		}
-		addonOperatorWebhookImage := os.Getenv("ADDON_OPERATOR_WEBHOOK_IMAGE")
-		if len(addonOperatorWebhookImage) == 0 {
-			addonOperatorWebhookImage = imageOrg + "/addon-operator-webhook:" + version
-		}
-		addonOperatorWebhookDeployment.Spec.Template.Spec.Containers[0].Image = addonOperatorWebhookImage
-		// Deploy
-		if err := cluster.CreateAndWaitFromFiles(ctx, []string{
-			// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
-			"config/deploy/webhook/00-tls-secret.yaml",
-			"config/deploy/webhook/service.yaml",
-			"config/deploy/webhook/validatingwebhookconfig.yaml",
-		}); err != nil {
-			return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
-		}
-		if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment); err != nil {
-			return fmt.Errorf("deploy addon-operator-webhook: %w", err)
+		if err := deployAddonOperatorWebhook(ctx, cluster); err != nil {
+			return err
 		}
 	}
 	return nil
