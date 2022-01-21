@@ -357,7 +357,7 @@ func (CICD) DeployAPIMock(ctx context.Context) error {
 		return err
 	}
 
-	return deployAddonOperatorWebhook(ctx, cluster)
+	return deployAPIMock(ctx, cluster)
 }
 
 // Development
