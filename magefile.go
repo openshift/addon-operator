@@ -17,6 +17,7 @@ import (
 
 	"github.com/blang/semver/v4"
 	"github.com/go-logr/logr"
+	"github.com/go-logr/stdr"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/mt-sre/devkube/dev"
@@ -41,7 +42,7 @@ var (
 	depsDir  magedeps.DependencyDirectory
 	cacheDir string
 
-	logger *logr.Logger
+	logger logr.Logger
 )
 
 // Prepare a new release of the Addon Operator.
@@ -502,6 +503,37 @@ func (Test) Unit() error {
 	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...")
 }
 
+func (Test) Integration() error {
+	return sh.Run("go", "test", "-v",
+		"-count=1", // will force a new run, instead of using the cache
+		"-timeout=20m", "./integration/...")
+}
+
+// Target to run within OpenShift CI, where the Addon Operator and webhook is already deployed via the framework.
+// This target will additionally deploy the API Mock before starting the integration test suite.
+func (t Test) IntegrationCI(ctx context.Context) error {
+	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
+		dev.WithLogger(logger),
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
+	if err != nil {
+		return fmt.Errorf("creating cluster client: %w", err)
+	}
+
+	var dev Dev
+	if err := dev.deployAPIMock(ctx, cluster); err != nil {
+		return fmt.Errorf("deploy API mock: %w", err)
+	}
+
+	return t.Integration()
+}
+
+func (Test) IntegrationShort() error {
+	return sh.Run("go", "test", "-v",
+		"-count=1", // will force a new run, instead of using the cache
+		"-short",
+		"-timeout=20m", "./integration/...")
+}
+
 // Dependencies
 // ------------
 
@@ -512,7 +544,7 @@ const (
 	yqVersion            = "4.12.0"
 	goimportsVersion     = "0.1.5"
 	golangciLintVersion  = "1.43.0"
-	olmVersion           = "0.19.1"
+	olmVersion           = "0.20.0"
 	opmVersion           = "1.18.0"
 	helmVersion          = "3.7.2"
 )
@@ -616,9 +648,48 @@ var (
 	devEnvironment *dev.Environment
 )
 
-func (d Dev) SetupEnv(ctx context.Context) error {
+func (d Dev) Setup(ctx context.Context) error {
+	if err := d.init(); err != nil {
+		return err
+	}
+
 	if err := devEnvironment.Init(ctx); err != nil {
-		return fmt.Errorf("initializing default dev environment: %w", err)
+		return fmt.Errorf("initializing dev environment: %w", err)
+	}
+	return nil
+}
+
+func (d Dev) Teardown(ctx context.Context) error {
+	if err := d.init(); err != nil {
+		return err
+	}
+
+	if err := devEnvironment.Destroy(ctx); err != nil {
+		return fmt.Errorf("tearing down dev environment: %w", err)
+	}
+	return nil
+}
+
+// Setup local dev environment with the addon operator installed and run the integration test suite.
+func (d Dev) Integration(ctx context.Context) error {
+	mg.SerialDeps(
+		Dev.Deploy,
+	)
+
+	os.Setenv("KUBECONFIG", devEnvironment.Cluster.Kubeconfig())
+
+	mg.SerialDeps(Test.Integration)
+	return nil
+}
+
+func (d Dev) LoadImage(ctx context.Context, image string) error {
+	mg.Deps(
+		mg.F(Build.ImageBuild, image),
+	)
+
+	imageTar := path.Join(cacheDir, "image", image+".tar")
+	if err := devEnvironment.LoadImageFromTar(ctx, imageTar); err != nil {
+		return fmt.Errorf("load image from tar: %w", err)
 	}
 	return nil
 }
@@ -626,6 +697,15 @@ func (d Dev) SetupEnv(ctx context.Context) error {
 // Deploy the Addon Operator, Mock API Server and Addon Operator webhooks (if env ENABLE_WEBHOOK=true) is set.
 // All components are deployed via static manifests.
 func (d Dev) Deploy(ctx context.Context) error {
+	mg.Deps(
+		d.Setup, // setup is a pre-requesite and needs to run before we can load images.
+	)
+	mg.Deps(
+		mg.F(Dev.LoadImage, "api-mock"),
+		mg.F(Dev.LoadImage, "addon-operator-manager"),
+		mg.F(Dev.LoadImage, "addon-operator-webhook"),
+	)
+
 	if err := d.deploy(ctx, devEnvironment.Cluster); err != nil {
 		return fmt.Errorf("deploying: %w", err)
 	}
@@ -660,6 +740,7 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 	if err != nil {
 		return fmt.Errorf("loading api-mock deployment.yaml.tpl: %w", err)
 	}
+
 	// Replace image
 	apiMockDeployment := &appsv1.Deployment{}
 	if err := cluster.Scheme.Convert(
@@ -668,18 +749,26 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 	}
 	apiMockImage := os.Getenv("API_MOCK_IMAGE")
 	if len(apiMockImage) == 0 {
-		apiMockImage = imageOrg + "/api-mock:" + version
+		apiMockImage = imageURL("api-mock")
 	}
-	apiMockDeployment.Spec.Template.Spec.Containers[0].Image = apiMockImage
+	for i := range apiMockDeployment.Spec.Template.Spec.Containers {
+		container := &apiMockDeployment.Spec.Template.Spec.Containers[i]
+
+		switch container.Name {
+		case "manager":
+			container.Image = apiMockImage
+		}
+	}
+
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
 		"config/deploy/api-mock/00-namespace.yaml",
 		"config/deploy/api-mock/api-mock.yaml",
-	}); err != nil {
+	}, dev.WithLogger(logger)); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(ctx, apiMockDeployment); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, apiMockDeployment, dev.WithLogger(logger)); err != nil {
 		return fmt.Errorf("deploy api-mock: %w", err)
 	}
 	return nil
@@ -692,6 +781,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	if err != nil {
 		return fmt.Errorf("loading addon-operator-manager deployment.yaml.tpl: %w", err)
 	}
+
 	// Replace image
 	addonOperatorDeployment := &appsv1.Deployment{}
 	if err := cluster.Scheme.Convert(
@@ -700,21 +790,30 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	}
 	addonOperatorManagerImage := os.Getenv("ADDON_OPERATOR_MANAGER_IMAGE")
 	if len(addonOperatorManagerImage) == 0 {
-		addonOperatorManagerImage = imageOrg + "/addon-operator-manager:" + version
+		addonOperatorManagerImage = imageURL("addon-operator-manager")
 	}
-	addonOperatorDeployment.Spec.Template.Spec.Containers[0].Image = addonOperatorManagerImage
+	for i := range addonOperatorDeployment.Spec.Template.Spec.Containers {
+		container := &addonOperatorDeployment.Spec.Template.Spec.Containers[i]
+
+		switch container.Name {
+		case "manager":
+			container.Image = addonOperatorManagerImage
+		}
+	}
+
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
 		"config/deploy/00-namespace.yaml",
+		"config/deploy/01-metrics-server-tls-secret.yaml",
 		"config/deploy/addons.managed.openshift.io_addoninstances.yaml",
 		"config/deploy/addons.managed.openshift.io_addonoperators.yaml",
 		"config/deploy/addons.managed.openshift.io_addons.yaml",
 		"config/deploy/rbac.yaml",
-	}); err != nil {
+	}, dev.WithLogger(logger)); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorDeployment); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorDeployment, dev.WithLogger(logger)); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager: %w", err)
 	}
 	return nil
@@ -736,19 +835,27 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 	}
 	addonOperatorWebhookImage := os.Getenv("ADDON_OPERATOR_WEBHOOK_IMAGE")
 	if len(addonOperatorWebhookImage) == 0 {
-		addonOperatorWebhookImage = imageOrg + "/addon-operator-webhook:" + version
+		addonOperatorWebhookImage = imageURL("addon-operator-webhook")
 	}
-	addonOperatorWebhookDeployment.Spec.Template.Spec.Containers[0].Image = addonOperatorWebhookImage
+	for i := range addonOperatorWebhookDeployment.Spec.Template.Spec.Containers {
+		container := &addonOperatorWebhookDeployment.Spec.Template.Spec.Containers[i]
+
+		switch container.Name {
+		case "webhook":
+			container.Image = addonOperatorWebhookImage
+		}
+	}
+
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
 		"config/deploy/webhook/00-tls-secret.yaml",
 		"config/deploy/webhook/service.yaml",
 		"config/deploy/webhook/validatingwebhookconfig.yaml",
-	}); err != nil {
+	}, dev.WithLogger(logger)); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment, dev.WithLogger(logger)); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhook: %w", err)
 	}
 	return nil
@@ -760,6 +867,12 @@ func (d Dev) init() error {
 	devEnvironment = dev.NewEnvironment(
 		"addon-operator-dev",
 		path.Join(cacheDir, "dev-env"),
+		dev.WithLogger(logger),
+		dev.WithClusterOptions([]dev.ClusterOption{
+			dev.WithWaitOptions([]dev.WaitOption{
+				dev.WithTimeout(2 * time.Minute),
+			}),
+		}),
 		dev.WithContainerRuntime(containerRuntime),
 		dev.WithClusterInitializers{
 			dev.ClusterLoadObjectsFromFiles{
@@ -804,4 +917,5 @@ func init() {
 	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
 	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
 
+	logger = stdr.New(nil)
 }
