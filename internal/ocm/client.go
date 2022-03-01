@@ -19,6 +19,10 @@ type Client struct {
 	httpClient *http.Client
 }
 
+func (c *Client) ClientOpts() ClientOptions {
+	return c.opts
+}
+
 // Creates a new OCM client with the given options.
 func NewClient(ctx context.Context, opts ...Option) (*Client, error) {
 	c := &Client{}

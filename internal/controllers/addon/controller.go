@@ -54,6 +54,7 @@ type ocmClient interface {
 		ctx context.Context,
 		req ocm.ClusterGetRequest,
 	) (res ocm.ClusterGetResponse, err error)
+	ClientOpts() ocm.ClientOptions
 	PatchUpgradePolicy(
 		ctx context.Context,
 		req ocm.UpgradePolicyPatchRequest,
@@ -146,10 +147,22 @@ func (r *AddonReconciler) Reconcile(
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
+	var (
+		clusterID       string
+		currentCSVKey   client.ObjectKey
+		installedCSVKey client.ObjectKey
+	)
+
+	if r.ocmClient != nil {
+		clusterID = r.ocmClient.ClientOpts().ClusterID
+	}
+
 	defer func() {
 		// Update metrics only if a Recorder is initialized
 		if r.Recorder != nil {
 			r.Recorder.RecordAddonMetrics(addon)
+			r.Recorder.RecordAddonHealthInfo(addon.Status, addon.Name,
+				installedCSVKey.Name, clusterID)
 		}
 
 		// Ensure we report to the UpgradePolicy endpoint, when we are done with whatever we are doing.
@@ -240,7 +253,7 @@ func (r *AddonReconciler) Reconcile(
 
 	// Phase 6.
 	// Ensure Subscription for this Addon.
-	requeueResult, currentCSVKey, err := r.ensureSubscription(
+	requeueResult, currentCSVKey, installedCSVKey, err = r.ensureSubscription(
 		ctx, log.WithName("phase-ensure-subscription"),
 		addon, catalogSource)
 	if err != nil {

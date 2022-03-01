@@ -1,8 +1,11 @@
 package metrics
 
 import (
+	"fmt"
+	"regexp"
 	"sync"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrlmetrics "sigs.k8s.io/controller-runtime/pkg/metrics"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -32,6 +35,7 @@ type Recorder struct {
 	addonsCount           *prometheus.GaugeVec
 	addonOperatorPaused   prometheus.Gauge // 0 - Not paused , 1 - Paused
 	ocmAPIRequestDuration prometheus.Summary
+	addonHealthInfo       *prometheus.GaugeVec
 	// .. TODO: More metrics!
 }
 
@@ -65,6 +69,13 @@ func NewRecorder(register bool) *Recorder {
 			Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
 		})
 
+	addonHealthInfo := prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "addon_operator_addon_health_info",
+			Help: "Addon Health information",
+		}, []string{"name", "version", "_id", "reason", "observed_generation"},
+	)
+
 	// Register metrics if `register` is true
 	// This allows us to skip registering metrics
 	// and re-use the recorder when testing.
@@ -73,6 +84,7 @@ func NewRecorder(register bool) *Recorder {
 			addonsCount,
 			addonOperatorPaused,
 			ocmAPIReqDuration,
+			addonHealthInfo,
 		)
 	}
 
@@ -83,7 +95,56 @@ func NewRecorder(register bool) *Recorder {
 		addonsCount:           addonsCount,
 		addonOperatorPaused:   addonOperatorPaused,
 		ocmAPIRequestDuration: ocmAPIReqDuration,
+		addonHealthInfo:       addonHealthInfo,
 	}
+}
+
+func (r *Recorder) RecordAddonHealthInfo(addonStatus addonsv1alpha1.AddonStatus,
+	addonName, csvName, clusterID string) {
+
+	var (
+		// Regex for separating version from addon name
+		versionRegExp, _ = regexp.Compile(".v[0-9]+.[0-9]+.[0-9]+")
+		// Start and end index of the version substring
+		versionIndex []int
+		version      = "0.0.0" // default version when CSV is unavailable / installing
+
+		// `healthStatus` defaults to unknown unless status conditions say otherwise
+		healthStatus = 2
+		healthReason = "Unknown"
+		healthCond   = meta.FindStatusCondition(addonStatus.Conditions,
+			addonsv1alpha1.Available)
+	)
+
+	if csvName != "" {
+		// The following lines separate the version and addonName from the CSV Name
+		// For example, in `reference-addon.v.1.1.1`, `addonName` is "reference-addon"
+		// and `version` is "1.1.1"
+		versionIndex = versionRegExp.FindStringIndex(csvName) // index of the version substring
+		version = csvName[versionIndex[0]+2:]                 // version
+	}
+
+	if healthCond != nil {
+		healthReason = healthCond.Reason
+		switch healthCond.Status {
+		case metav1.ConditionFalse:
+			healthStatus = 0
+		case metav1.ConditionTrue:
+			healthStatus = 1
+		default:
+			healthStatus = 2
+		}
+
+	}
+
+	if clusterID == "" {
+		clusterID = "unknown"
+	}
+	r.addonHealthInfo.WithLabelValues(addonName,
+		version,
+		clusterID,
+		healthReason,
+		fmt.Sprintf("%d", addonStatus.ObservedGeneration)).Set(float64(healthStatus))
 }
 
 // InjectOCMAPIRequestDuration allows us to override `r.ocmAPIRequestDuration` metric
