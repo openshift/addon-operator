@@ -677,6 +677,8 @@ func (d Dev) Integration(ctx context.Context) error {
 	)
 
 	os.Setenv("KUBECONFIG", devEnvironment.Cluster.Kubeconfig())
+	os.Setenv("ENABLE_WEBHOOK", "true")
+	os.Setenv("ENABLE_API_MOCK", "true")
 
 	mg.SerialDeps(Test.Integration)
 	return nil

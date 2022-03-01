@@ -2,9 +2,6 @@ package integration_test
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/openshift/addon-operator/internal/ocm"
 
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/client-go/util/retry"
@@ -38,20 +35,6 @@ func (s *integrationTestSuite) Setup() {
 			})
 		s.Require().NoError(err)
 	})
-
-	// creating the OCMClient after applying all deployments, as ocm.NewClient() will
-	// talk to the OCM API to resolve the ClusterID from the ClusterExternalID
-	OCMClient, err := ocm.NewClient(
-		context.Background(),
-		ocm.WithEndpoint("http://127.0.0.1:8001/api/v1/namespaces/api-mock/services/api-mock:80/proxy"),
-		ocm.WithAccessToken("accessToken"), //TODO: Needs to be supplied from the outside, does not matter for mock.
-		ocm.WithClusterExternalID(string(integration.Cv.Spec.ClusterID)),
-	)
-	if err != nil {
-		panic(fmt.Errorf("initializing ocm client: %w", err))
-	}
-
-	integration.OCMClient = OCMClient
 
 	s.Run("Patch AddonOperator with OCM mock configuration", func() {
 		addonOperator := &addonsv1alpha1.AddonOperator{}
