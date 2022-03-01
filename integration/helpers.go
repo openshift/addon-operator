@@ -18,6 +18,7 @@ import (
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -49,6 +50,9 @@ var (
 	Scheme    = runtime.NewScheme()
 	Cv        *configv1.ClusterVersion
 	OCMClient *ocm.Client
+	// Namespace that the Addon Operator is running in.
+	// Needs to be auto-discovered, because OpenShift CI is installing the Operator in a non deterministic namespace.
+	AddonOperatorNamespace string
 
 	// Typed K8s Clients
 	CoreV1Client corev1client.CoreV1Interface
@@ -81,10 +85,40 @@ func init() {
 
 	// Typed Kubernetes Clients
 	CoreV1Client = corev1client.NewForConfigOrDie(Config)
+	ctx := context.Background()
 
+	// Get the OCP cluster version object
 	Cv = &configv1.ClusterVersion{}
-	if err := Client.Get(context.Background(), client.ObjectKey{Name: "version"}, Cv); err != nil {
+	if err := Client.Get(ctx, client.ObjectKey{Name: "version"}, Cv); err != nil {
 		panic(fmt.Errorf("getting clusterversion: %w", err))
+	}
+
+	// Create a client to talk with the OCM mock API for testing
+	ocmClient, err := ocm.NewClient(
+		ctx,
+		ocm.WithEndpoint("http://127.0.0.1:8001/api/v1/namespaces/api-mock/services/api-mock:80/proxy"),
+		ocm.WithAccessToken("accessToken"), //TODO: Needs to be supplied from the outside, does not matter for mock.
+		ocm.WithClusterExternalID(string(Cv.Spec.ClusterID)),
+	)
+	if err != nil {
+		panic(fmt.Errorf("initializing ocm client: %w", err))
+	}
+	OCMClient = ocmClient
+
+	// discover AddonOperator Namespace
+	addonOperatorDeploymentList := &appsv1.DeploymentList{}
+	if err := Client.List(ctx, addonOperatorDeploymentList, client.MatchingLabels{
+		"app.kubernetes.io/name": "addon-operator",
+	}); err != nil {
+		panic(fmt.Errorf("listing addon-operator deployments on the cluster: %w", err))
+	}
+	switch l := len(addonOperatorDeploymentList.Items); l {
+	case 0:
+		panic(fmt.Errorf("no AddonOperator deployment found on the cluster!"))
+	case 1:
+		AddonOperatorNamespace = addonOperatorDeploymentList.Items[0].Namespace
+	default:
+		panic(fmt.Errorf("multiple AddonOperator deployments found on the cluster!"))
 	}
 }
 
