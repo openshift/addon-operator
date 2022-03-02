@@ -94,17 +94,22 @@ func init() {
 	}
 
 	// discover AddonOperator Namespace
-	addonOperatorDeploymentList := &appsv1.DeploymentList{}
-	if err := Client.List(ctx, addonOperatorDeploymentList, client.MatchingLabels{
-		"app.kubernetes.io/name": "addon-operator",
-	}); err != nil {
+	deploymentList := &appsv1.DeploymentList{}
+	// We can't use a label-selector, because OLM is overriding the deployment labels...
+	if err := Client.List(ctx, deploymentList); err != nil {
 		panic(fmt.Errorf("listing addon-operator deployments on the cluster: %w", err))
 	}
-	switch l := len(addonOperatorDeploymentList.Items); l {
+	var addonOperatorDeployments []appsv1.Deployment
+	for _, deployment := range deploymentList.Items {
+		if deployment.Name == "addon-operator-manager" {
+			addonOperatorDeployments = append(addonOperatorDeployments, deployment)
+		}
+	}
+	switch len(addonOperatorDeployments) {
 	case 0:
 		panic(fmt.Errorf("no AddonOperator deployment found on the cluster!"))
 	case 1:
-		AddonOperatorNamespace = addonOperatorDeploymentList.Items[0].Namespace
+		AddonOperatorNamespace = addonOperatorDeployments[0].Namespace
 	default:
 		panic(fmt.Errorf("multiple AddonOperator deployments found on the cluster!"))
 	}
