@@ -58,7 +58,7 @@ var (
 	CoreV1Client corev1client.CoreV1Interface
 )
 
-func InitClients() error {
+func init() {
 	// Client/Scheme setup.
 	AddToSchemes := runtime.SchemeBuilder{
 		clientgoscheme.AddToScheme,
@@ -70,7 +70,7 @@ func InitClients() error {
 		monitoringv1.AddToScheme,
 	}
 	if err := AddToSchemes.AddToScheme(Scheme); err != nil {
-		return fmt.Errorf("could not load schemes: %w", err)
+		panic(fmt.Errorf("could not load schemes: %w", err))
 	}
 
 	Config = ctrl.GetConfigOrDie()
@@ -80,7 +80,7 @@ func InitClients() error {
 		Scheme: Scheme,
 	})
 	if err != nil {
-		return fmt.Errorf("creating runtime client: %w", err)
+		panic(fmt.Errorf("creating runtime client: %w", err))
 	}
 
 	// Typed Kubernetes Clients
@@ -90,12 +90,30 @@ func InitClients() error {
 	// Get the OCP cluster version object
 	Cv = &configv1.ClusterVersion{}
 	if err := Client.Get(ctx, client.ObjectKey{Name: "version"}, Cv); err != nil {
-		return fmt.Errorf("getting clusterversion: %w", err)
+		panic(fmt.Errorf("getting clusterversion: %w", err))
 	}
 
+	// discover AddonOperator Namespace
+	addonOperatorDeploymentList := &appsv1.DeploymentList{}
+	if err := Client.List(ctx, addonOperatorDeploymentList, client.MatchingLabels{
+		"app.kubernetes.io/name": "addon-operator",
+	}); err != nil {
+		panic(fmt.Errorf("listing addon-operator deployments on the cluster: %w", err))
+	}
+	switch l := len(addonOperatorDeploymentList.Items); l {
+	case 0:
+		panic(fmt.Errorf("no AddonOperator deployment found on the cluster!"))
+	case 1:
+		AddonOperatorNamespace = addonOperatorDeploymentList.Items[0].Namespace
+	default:
+		panic(fmt.Errorf("multiple AddonOperator deployments found on the cluster!"))
+	}
+}
+
+func InitOCMClient() error {
 	// Create a client to talk with the OCM mock API for testing
 	ocmClient, err := ocm.NewClient(
-		ctx,
+		context.Background(),
 		ocm.WithEndpoint("http://127.0.0.1:8001/api/v1/namespaces/api-mock/services/api-mock:80/proxy"),
 		ocm.WithAccessToken("accessToken"), //TODO: Needs to be supplied from the outside, does not matter for mock.
 		ocm.WithClusterExternalID(string(Cv.Spec.ClusterID)),
@@ -104,22 +122,6 @@ func InitClients() error {
 		return fmt.Errorf("initializing ocm client: %w", err)
 	}
 	OCMClient = ocmClient
-
-	// discover AddonOperator Namespace
-	addonOperatorDeploymentList := &appsv1.DeploymentList{}
-	if err := Client.List(ctx, addonOperatorDeploymentList, client.MatchingLabels{
-		"app.kubernetes.io/name": "addon-operator",
-	}); err != nil {
-		return fmt.Errorf("listing addon-operator deployments on the cluster: %w", err)
-	}
-	switch l := len(addonOperatorDeploymentList.Items); l {
-	case 0:
-		return fmt.Errorf("no AddonOperator deployment found on the cluster!")
-	case 1:
-		AddonOperatorNamespace = addonOperatorDeploymentList.Items[0].Namespace
-	default:
-		return fmt.Errorf("multiple AddonOperator deployments found on the cluster!")
-	}
 	return nil
 }
 
