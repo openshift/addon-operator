@@ -47,7 +47,7 @@ func (s *integrationTestSuite) Setup() {
 		addonOperator.Spec.OCM = &addonsv1alpha1.AddonOperatorOCM{
 			Endpoint: integration.OCMAPIEndpoint,
 			Secret: addonsv1alpha1.ClusterSecretReference{
-				Name:      "api-mock",
+				Name:      "pull-secret",
 				Namespace: "api-mock",
 			},
 		}
