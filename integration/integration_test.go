@@ -53,6 +53,11 @@ func TestIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Initialize all the clients after the proxy has started.
+	if err := integration.InitClients(); err != nil {
+		t.Fatal(err)
+	}
+
 	// does not support parallel test runs
 	suite.Run(t, new(integrationTestSuite))
 }

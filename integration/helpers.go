@@ -58,7 +58,7 @@ var (
 	CoreV1Client corev1client.CoreV1Interface
 )
 
-func init() {
+func InitClients() error {
 	// Client/Scheme setup.
 	AddToSchemes := runtime.SchemeBuilder{
 		clientgoscheme.AddToScheme,
@@ -70,7 +70,7 @@ func init() {
 		monitoringv1.AddToScheme,
 	}
 	if err := AddToSchemes.AddToScheme(Scheme); err != nil {
-		panic(fmt.Errorf("could not load schemes: %w", err))
+		return fmt.Errorf("could not load schemes: %w", err)
 	}
 
 	Config = ctrl.GetConfigOrDie()
@@ -80,7 +80,7 @@ func init() {
 		Scheme: Scheme,
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("creating runtime client: %w", err)
 	}
 
 	// Typed Kubernetes Clients
@@ -90,7 +90,7 @@ func init() {
 	// Get the OCP cluster version object
 	Cv = &configv1.ClusterVersion{}
 	if err := Client.Get(ctx, client.ObjectKey{Name: "version"}, Cv); err != nil {
-		panic(fmt.Errorf("getting clusterversion: %w", err))
+		return fmt.Errorf("getting clusterversion: %w", err)
 	}
 
 	// Create a client to talk with the OCM mock API for testing
@@ -101,7 +101,7 @@ func init() {
 		ocm.WithClusterExternalID(string(Cv.Spec.ClusterID)),
 	)
 	if err != nil {
-		panic(fmt.Errorf("initializing ocm client: %w", err))
+		return fmt.Errorf("initializing ocm client: %w", err)
 	}
 	OCMClient = ocmClient
 
@@ -110,16 +110,17 @@ func init() {
 	if err := Client.List(ctx, addonOperatorDeploymentList, client.MatchingLabels{
 		"app.kubernetes.io/name": "addon-operator",
 	}); err != nil {
-		panic(fmt.Errorf("listing addon-operator deployments on the cluster: %w", err))
+		return fmt.Errorf("listing addon-operator deployments on the cluster: %w", err)
 	}
 	switch l := len(addonOperatorDeploymentList.Items); l {
 	case 0:
-		panic(fmt.Errorf("no AddonOperator deployment found on the cluster!"))
+		return fmt.Errorf("no AddonOperator deployment found on the cluster!")
 	case 1:
 		AddonOperatorNamespace = addonOperatorDeploymentList.Items[0].Namespace
 	default:
-		panic(fmt.Errorf("multiple AddonOperator deployments found on the cluster!"))
+		return fmt.Errorf("multiple AddonOperator deployments found on the cluster!")
 	}
+	return nil
 }
 
 // Prints the phase of a pod together with the logs of every container.
