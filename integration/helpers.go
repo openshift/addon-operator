@@ -337,7 +337,7 @@ func ExecCommandInPod(namespace string, pod string, container string, command []
 	err = exec.Stream(streamOptions)
 	stdout, stderr := strings.TrimSpace(stdoutStream.String()), strings.TrimSpace(stderrStream.String())
 	if err != nil {
-		return stdout, stderr, fmt.Errorf("failed to transport shell streams: %w", err)
+		return "", "", fmt.Errorf("failed to transport shell streams: %w\n%s", err, stderr)
 	}
 
 	return stdout, stderr, nil

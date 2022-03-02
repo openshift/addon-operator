@@ -524,6 +524,9 @@ func (t Test) IntegrationCI(ctx context.Context) error {
 		return fmt.Errorf("deploy API mock: %w", err)
 	}
 
+	os.Setenv("ENABLE_WEBHOOK", "true")
+	os.Setenv("ENABLE_API_MOCK", "true")
+
 	return t.Integration()
 }
 
