@@ -29,9 +29,8 @@ import (
 )
 
 const (
-	module                  = "github.com/openshift/addon-operator"
-	defaultImageOrg         = "quay.io/app-sre"
-	defaultContainerRuntime = "podman"
+	module          = "github.com/openshift/addon-operator"
+	defaultImageOrg = "quay.io/app-sre"
 )
 
 // Directories
@@ -42,7 +41,8 @@ var (
 	depsDir  magedeps.DependencyDirectory
 	cacheDir string
 
-	logger logr.Logger
+	logger           logr.Logger
+	containerRuntime string
 )
 
 // Prepare a new release of the Addon Operator.
@@ -91,6 +91,21 @@ func Prepare_Release() error {
 	return nil
 }
 
+func init() {
+	var err error
+	// Directories
+	workDir, err = os.Getwd()
+	if err != nil {
+		panic(fmt.Errorf("getting work dir: %w", err))
+	}
+	cacheDir = path.Join(workDir + "/" + ".cache")
+	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
+	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
+
+	logger = stdr.New(nil)
+	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
+}
+
 // Building
 // --------
 type Build mg.Namespace
@@ -104,8 +119,7 @@ var (
 
 	ldFlags string
 
-	imageOrg         string
-	containerRuntime string
+	imageOrg string
 )
 
 // init build variables
@@ -144,11 +158,6 @@ func (Build) init() error {
 	imageOrg = os.Getenv("IMAGE_ORG")
 	if len(imageOrg) == 0 {
 		imageOrg = defaultImageOrg
-	}
-
-	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
-	if len(containerRuntime) == 0 {
-		containerRuntime = defaultContainerRuntime
 	}
 
 	return nil
@@ -703,7 +712,7 @@ func (d Dev) LoadImage(ctx context.Context, image string) error {
 // All components are deployed via static manifests.
 func (d Dev) Deploy(ctx context.Context) error {
 	mg.Deps(
-		d.Setup, // setup is a pre-requesite and needs to run before we can load images.
+		Dev.Setup, // setup is a pre-requesite and needs to run before we can load images.
 	)
 	mg.Deps(
 		mg.F(Dev.LoadImage, "api-mock"),
@@ -909,18 +918,4 @@ func (d Dev) init() error {
 			},
 		})
 	return nil
-}
-
-func init() {
-	var err error
-	// Directories
-	workDir, err = os.Getwd()
-	if err != nil {
-		panic(fmt.Errorf("getting work dir: %w", err))
-	}
-	cacheDir = path.Join(workDir + "/" + ".cache")
-	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
-	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
-
-	logger = stdr.New(nil)
 }
