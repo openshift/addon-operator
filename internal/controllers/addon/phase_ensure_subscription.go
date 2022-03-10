@@ -26,7 +26,6 @@ func (r *AddonReconciler) ensureSubscription(
 ) (
 	requeueResult,
 	client.ObjectKey,
-	client.ObjectKey,
 	error,
 ) {
 	var commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon
@@ -63,19 +62,19 @@ func (r *AddonReconciler) ensureSubscription(
 	}
 	controllers.AddCommonLabels(desiredSubscription.Labels, addon)
 	if err := controllerutil.SetControllerReference(addon, desiredSubscription, r.Scheme); err != nil {
-		return resultNil, client.ObjectKey{}, client.ObjectKey{}, fmt.Errorf("setting controller reference: %w", err)
+		return resultNil, client.ObjectKey{}, fmt.Errorf("setting controller reference: %w", err)
 	}
 
 	observedSubscription, err := r.reconcileSubscription(
 		ctx, desiredSubscription, addon.Spec.ResourceAdoptionStrategy)
 	if err != nil {
-		return resultNil, client.ObjectKey{}, client.ObjectKey{}, fmt.Errorf("reconciling Subscription: %w", err)
+		return resultNil, client.ObjectKey{}, fmt.Errorf("reconciling Subscription: %w", err)
 	}
 
 	if len(observedSubscription.Status.InstalledCSV) == 0 ||
 		len(observedSubscription.Status.CurrentCSV) == 0 {
 		log.Info("requeue", "reason", "csv not linked in subscription")
-		return resultRetry, client.ObjectKey{}, client.ObjectKey{}, nil
+		return resultRetry, client.ObjectKey{}, nil
 	}
 
 	installedCSVKey := client.ObjectKey{
@@ -92,10 +91,10 @@ func (r *AddonReconciler) ensureSubscription(
 		// Mapping changes need to requeue, because we could have lost events before or during
 		// setting up the mapping, see csvEventHandler implementation for a longer description.
 		log.Info("requeue", "reason", "csv-addon mapping changed")
-		return resultRetry, client.ObjectKey{}, client.ObjectKey{}, nil
+		return resultRetry, client.ObjectKey{}, nil
 	}
 
-	return resultNil, currentCSVKey, installedCSVKey, nil
+	return resultNil, currentCSVKey, nil
 }
 
 func (r *AddonReconciler) reconcileSubscription(

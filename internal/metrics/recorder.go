@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"fmt"
-	"regexp"
 	"sync"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -99,33 +98,20 @@ func NewRecorder(register bool) *Recorder {
 	}
 }
 
-func (r *Recorder) RecordAddonHealthInfo(addonStatus addonsv1alpha1.AddonStatus,
-	addonName, csvName, clusterID string) {
+func (r *Recorder) RecordAddonHealthInfo(addon *addonsv1alpha1.Addon,
+	clusterID string) {
 
 	var (
-		// Regex for separating version from addon name
-		versionRegExp, _ = regexp.Compile(".v[0-9]+.[0-9]+.[0-9]+")
-		// Start and end index of the version substring
-		versionIndex []int
-		version      = "0.0.0" // default version when CSV is unavailable / installing
-
 		// `healthStatus` defaults to unknown unless status conditions say otherwise
 		healthStatus = 2
 		healthReason = "Unknown"
-		healthCond   = meta.FindStatusCondition(addonStatus.Conditions,
+		healthCond   = meta.FindStatusCondition(addon.Status.Conditions,
 			addonsv1alpha1.Available)
 	)
 
-	if csvName != "" {
-		// The following lines separate the version and addonName from the CSV Name
-		// For example, in `reference-addon.v.1.1.1`, `addonName` is "reference-addon"
-		// and `version` is "1.1.1"
-		versionIndex = versionRegExp.FindStringIndex(csvName) // index of the version substring
-		version = csvName[versionIndex[0]+2:]                 // version
-	}
-
 	if healthCond != nil {
 		healthReason = healthCond.Reason
+
 		switch healthCond.Status {
 		case metav1.ConditionFalse:
 			healthStatus = 0
@@ -140,11 +126,17 @@ func (r *Recorder) RecordAddonHealthInfo(addonStatus addonsv1alpha1.AddonStatus,
 	if clusterID == "" {
 		clusterID = "unknown"
 	}
-	r.addonHealthInfo.WithLabelValues(addonName,
-		version,
+
+	addonVersion := "0.0.0" // default value when addon version is missing
+	if addon.Status.ObservedVersion != "" {
+		addonVersion = addon.Status.ObservedVersion
+	}
+
+	r.addonHealthInfo.WithLabelValues(addon.Name,
+		addonVersion,
 		clusterID,
 		healthReason,
-		fmt.Sprintf("%d", addonStatus.ObservedGeneration)).Set(float64(healthStatus))
+		fmt.Sprintf("%d", addon.Status.ObservedGeneration)).Set(float64(healthStatus))
 }
 
 // InjectOCMAPIRequestDuration allows us to override `r.ocmAPIRequestDuration` metric

@@ -147,11 +147,7 @@ func (r *AddonReconciler) Reconcile(
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	var (
-		clusterID       string
-		currentCSVKey   client.ObjectKey
-		installedCSVKey client.ObjectKey
-	)
+	var clusterID string
 
 	if r.ocmClient != nil {
 		clusterID = r.ocmClient.ClientOpts().ClusterID
@@ -161,8 +157,7 @@ func (r *AddonReconciler) Reconcile(
 		// Update metrics only if a Recorder is initialized
 		if r.Recorder != nil {
 			r.Recorder.RecordAddonMetrics(addon)
-			r.Recorder.RecordAddonHealthInfo(addon.Status, addon.Name,
-				installedCSVKey.Name, clusterID)
+			r.Recorder.RecordAddonHealthInfo(addon, clusterID)
 		}
 
 		// Ensure we report to the UpgradePolicy endpoint, when we are done with whatever we are doing.
@@ -253,7 +248,7 @@ func (r *AddonReconciler) Reconcile(
 
 	// Phase 6.
 	// Ensure Subscription for this Addon.
-	requeueResult, currentCSVKey, installedCSVKey, err = r.ensureSubscription(
+	requeueResult, currentCSVKey, err := r.ensureSubscription(
 		ctx, log.WithName("phase-ensure-subscription"),
 		addon, catalogSource)
 	if err != nil {
