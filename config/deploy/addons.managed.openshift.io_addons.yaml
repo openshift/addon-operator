@@ -243,6 +243,38 @@ spec:
                 - Prevent
                 - AdoptAll
                 type: string
+              secretPropagation:
+                description: Settings for propagating secrets from the Addon Operator
+                  install namespace into Addon namespaces.
+                properties:
+                  secrets:
+                    items:
+                      properties:
+                        destinationSecret:
+                          description: Destination secret name in every Addon namespace.
+                          properties:
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?'
+                              type: string
+                          type: object
+                        sourceSecret:
+                          description: Source secret name in the Addon Operator install
+                            namespace.
+                          properties:
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?'
+                              type: string
+                          type: object
+                      required:
+                      - destinationSecret
+                      - sourceSecret
+                      type: object
+                    type: array
+                required:
+                - secrets
+                type: object
               upgradePolicy:
                 description: UpgradePolicy enables status reporting via upgrade policies.
                 properties:

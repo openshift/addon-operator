@@ -42,6 +42,11 @@ func (r *AddonReconciler) ensureCatalogSource(
 			Image:       commonConfig.CatalogSourceImage,
 		},
 	}
+	if len(commonConfig.PullSecretName) > 0 {
+		catalogSource.Spec.Secrets = []string{
+			commonConfig.PullSecretName,
+		}
+	}
 
 	controllers.AddCommonLabels(catalogSource, addon)
 

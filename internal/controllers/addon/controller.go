@@ -36,18 +36,21 @@ const (
 
 type AddonReconciler struct {
 	client.Client
-	Log      logr.Logger
-	Scheme   *runtime.Scheme
-	Recorder *metrics.Recorder
+	Log               logr.Logger
+	Scheme            *runtime.Scheme
+	Recorder          *metrics.Recorder
+	UncachedClient    client.Client
+	ClusterExternalID string
+	// Namespace the AddonOperator is deployed into
+	AddonOperatorNamespace string
 
 	csvEventHandler csvEventHandler
 	globalPause     bool
 	globalPauseMux  sync.RWMutex
 	addonRequeueCh  chan event.GenericEvent
 
-	ocmClient         ocmClient
-	ocmClientMux      sync.RWMutex
-	ClusterExternalID string
+	ocmClient    ocmClient
+	ocmClientMux sync.RWMutex
 }
 
 type ocmClient interface {
@@ -128,6 +131,12 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Owns(&operatorsv1alpha1.Subscription{}).
 		Owns(&addonsv1alpha1.AddonInstance{}).
 		Owns(&monitoringv1.ServiceMonitor{}).
+		Watches(&source.Kind{
+			Type: &corev1.Secret{},
+		}, &handler.EnqueueRequestForOwner{
+			OwnerType:    &addonsv1alpha1.Addon{},
+			IsController: false, // this is why we can't just use Owns()
+		}).
 		Watches(&source.Kind{
 			Type: &operatorsv1alpha1.ClusterServiceVersion{},
 		}, r.csvEventHandler).
@@ -216,12 +225,20 @@ func (r *AddonReconciler) Reconcile(
 	}
 
 	// Phase 3.
+	// Ensure the addon-pullsecret secrets are in all namespaces
+	if requeueResult, err := r.ensureSecretPropagation(ctx, log, addon); err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to ensure pull secret: %w", err)
+	} else if requeueResult != resultNil {
+		return r.handleExit(requeueResult), nil
+	}
+
+	// Phase 4.
 	// Ensure the creation of the corresponding AddonInstance in .spec.install.olmOwnNamespace/.spec.install.olmAllNamespaces namespace
 	if err := r.ensureAddonInstance(ctx, log, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure the creation of addoninstance: %w", err)
 	}
 
-	// Phase 4.
+	// Phase 5.
 	// Ensure OperatorGroup
 	if requeueResult, err := r.ensureOperatorGroup(ctx, log, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure OperatorGroup: %w", err)
@@ -229,7 +246,7 @@ func (r *AddonReconciler) Reconcile(
 		return r.handleExit(requeueResult), nil
 	}
 
-	// Phase 5.
+	// Phase 6.
 	var (
 		catalogSource *operatorsv1alpha1.CatalogSource
 		requeueResult requeueResult
@@ -240,7 +257,7 @@ func (r *AddonReconciler) Reconcile(
 		return r.handleExit(requeueResult), nil
 	}
 
-	// Phase 6.
+	// Phase 7.
 	// Ensure Subscription for this Addon.
 	requeueResult, currentCSVKey, err := r.ensureSubscription(
 		ctx, log.WithName("phase-ensure-subscription"),
@@ -251,7 +268,7 @@ func (r *AddonReconciler) Reconcile(
 		return r.handleExit(requeueResult), nil
 	}
 
-	// Phase 7.
+	// Phase 8.
 	// Observe current csv
 	if requeueResult, err := r.observeCurrentCSV(ctx, addon, currentCSVKey); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to observe current CSV: %w", err)
@@ -259,7 +276,7 @@ func (r *AddonReconciler) Reconcile(
 		return r.handleExit(requeueResult), nil
 	}
 
-	// Phase 8.
+	// Phase 9.
 	// Possibly ensure monitoring federation
 	// Normally this would be configured before the addon workload is installed
 	// but currently the addon workload creates the monitoring stack by itself
@@ -273,7 +290,7 @@ func (r *AddonReconciler) Reconcile(
 		return ctrl.Result{}, fmt.Errorf("failed to ensure ServiceMonitor: %w", err)
 	}
 
-	// Phase 9.
+	// Phase 10.
 	// Remove possibly unwanted monitoring federation
 	if err := r.ensureDeletionOfUnwantedMonitoringFederation(ctx, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted ServiceMonitors: %w", err)

@@ -2,6 +2,7 @@ package webhooks
 
 import (
 	"errors"
+	"fmt"
 
 	"k8s.io/apimachinery/pkg/api/equality"
 
@@ -16,7 +17,37 @@ var (
 )
 
 func validateAddon(addon *addonsv1alpha1.Addon) error {
-	return validateInstallSpec(addon.Spec.Install)
+	if err := validateInstallSpec(addon.Spec.Install); err != nil {
+		return err
+	}
+	if err := validateSecretPropagation(addon); err != nil {
+		return err
+	}
+	return nil
+}
+
+func validateSecretPropagation(addon *addonsv1alpha1.Addon) error {
+	var pullSecretName string
+	switch addon.Spec.Install.Type {
+	case addonsv1alpha1.OLMAllNamespaces:
+		pullSecretName = addon.Spec.Install.OLMAllNamespaces.PullSecretName
+	case addonsv1alpha1.OLMOwnNamespace:
+		pullSecretName = addon.Spec.Install.OLMOwnNamespace.PullSecretName
+	}
+
+	if len(pullSecretName) == 0 || addon.Spec.SecretPropagation == nil {
+		return nil
+	}
+
+	for _, secret := range addon.Spec.SecretPropagation.Secrets {
+		if secret.DestinationSecret.Name == pullSecretName {
+			// pullSecretName is part of the secret list!
+			return nil
+		}
+	}
+
+	// we have not found pullSecretName in the secret propagation list.
+	return fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", pullSecretName)
 }
 
 func validateInstallSpec(addonSpecInstall addonsv1alpha1.AddonInstallSpec) error {
@@ -65,20 +96,24 @@ func validateAddonImmutability(addon, oldAddon *addonsv1alpha1.Addon) error {
 	if oldSpecInstall.OLMAllNamespaces != nil {
 		oldSpecInstall.OLMAllNamespaces.CatalogSourceImage = ""
 		oldSpecInstall.OLMAllNamespaces.Config = nil
+		oldSpecInstall.OLMAllNamespaces.PullSecretName = ""
 	}
 	if oldSpecInstall.OLMOwnNamespace != nil {
 		oldSpecInstall.OLMOwnNamespace.CatalogSourceImage = ""
 		oldSpecInstall.OLMOwnNamespace.Config = nil
+		oldSpecInstall.OLMOwnNamespace.PullSecretName = ""
 	}
 
 	specInstall := addon.Spec.Install.DeepCopy()
 	if specInstall.OLMAllNamespaces != nil {
 		specInstall.OLMAllNamespaces.CatalogSourceImage = ""
 		specInstall.OLMAllNamespaces.Config = nil
+		specInstall.OLMAllNamespaces.PullSecretName = ""
 	}
 	if specInstall.OLMOwnNamespace != nil {
 		specInstall.OLMOwnNamespace.CatalogSourceImage = ""
 		specInstall.OLMOwnNamespace.Config = nil
+		specInstall.OLMOwnNamespace.PullSecretName = ""
 	}
 
 	// Do semantic DeepEqual instead of reflect.DeepEqual

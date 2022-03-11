@@ -182,6 +182,7 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Return(testutil.NewTestErrNotFound())
+	var createdCatalogSource *operatorsv1alpha1.CatalogSource
 	c.On("Create",
 		testutil.IsContext,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
@@ -191,6 +192,7 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
+		createdCatalogSource = arg
 	}).Return(nil)
 
 	r := &AddonReconciler{
@@ -205,7 +207,9 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 	requeueResult, _, err := r.ensureCatalogSource(ctx, log, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
-	c.AssertExpectations(t)
+	if c.AssertExpectations(t) {
+		assert.Equal(t, []string{"test-pull-secret"}, createdCatalogSource.Spec.Secrets)
+	}
 }
 
 func TestEnsureCatalogSource_Update(t *testing.T) {

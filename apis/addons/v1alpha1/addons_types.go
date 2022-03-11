@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -40,6 +41,20 @@ type AddonSpec struct {
 
 	// Defines how an addon is monitored.
 	Monitoring *MonitoringSpec `json:"monitoring,omitempty"`
+
+	// Settings for propagating secrets from the Addon Operator install namespace into Addon namespaces.
+	SecretPropagation *AddonSecretPropagation `json:"secretPropagation,omitempty"`
+}
+
+type AddonSecretPropagation struct {
+	Secrets []AddonSecretPropagationReference `json:"secrets"`
+}
+
+type AddonSecretPropagationReference struct {
+	// Source secret name in the Addon Operator install namespace.
+	SourceSecret corev1.LocalObjectReference `json:"sourceSecret"`
+	// Destination secret name in every Addon namespace.
+	DestinationSecret corev1.LocalObjectReference `json:"destinationSecret"`
 }
 
 type AddonUpgradePolicy struct {
@@ -203,6 +218,9 @@ const (
 
 	// Addon has unready CSV
 	AddonReasonUnreadyCSV = "UnreadyCSV"
+
+	// Addon cannot find a referenced secret to propagate
+	AddonReasonMissingSecretForPropagation = "MissingSecretForPropagation"
 )
 
 type AddonNamespace struct {
