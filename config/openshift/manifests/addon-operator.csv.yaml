@@ -78,6 +78,7 @@ spec:
           - ""
           resources:
           - namespaces
+          - secrets
           verbs:
           - create
           - get
@@ -128,14 +129,6 @@ spec:
           - get
           - list
           - patch
-        - apiGroups:
-          - ""
-          resourceNames:
-          - pull-secret
-          resources:
-          - secrets
-          verbs:
-          - get
         serviceAccountName: addon-operator
       deployments:
       - name: addon-operator-manager
