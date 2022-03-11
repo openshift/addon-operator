@@ -173,7 +173,7 @@ func reportPendingStatus(addon *addonsv1alpha1.Addon, reason, msg string) {
 // targetNamespace and catalogSourceImage from it
 func (r *AddonReconciler) parseAddonInstallConfig(
 	log logr.Logger, addon *addonsv1alpha1.Addon) (
-	targetNamespace, catalogSourceImage string, stop bool,
+	common *addonsv1alpha1.AddonInstallOLMCommon, stop bool,
 ) {
 	switch addon.Spec.Install.Type {
 	case addonsv1alpha1.OLMOwnNamespace:
@@ -182,17 +182,17 @@ func (r *AddonReconciler) parseAddonInstallConfig(
 			// invalid/missing configuration
 			reportConfigurationError(addon,
 				".spec.install.ownNamespace.namespace is required when .spec.install.type = OwnNamespace")
-			return "", "", true
+			return nil, true
 		}
-		targetNamespace = addon.Spec.Install.OLMOwnNamespace.Namespace
+
 		if len(addon.Spec.Install.OLMOwnNamespace.CatalogSourceImage) == 0 {
 			// invalid/missing configuration
 			reportConfigurationError(addon,
 				".spec.install.ownNamespacee.catalogSourceImage is"+
 					"required when .spec.install.type = OwnNamespace")
-			return "", "", true
+			return nil, true
 		}
-		catalogSourceImage = addon.Spec.Install.OLMOwnNamespace.CatalogSourceImage
+		return &addon.Spec.Install.OLMOwnNamespace.AddonInstallOLMCommon, false
 
 	case addonsv1alpha1.OLMAllNamespaces:
 		if addon.Spec.Install.OLMAllNamespaces == nil ||
@@ -201,17 +201,18 @@ func (r *AddonReconciler) parseAddonInstallConfig(
 			reportConfigurationError(addon,
 				".spec.install.allNamespaces.namespace is required when"+
 					" .spec.install.type = AllNamespaces")
-			return "", "", true
+			return nil, true
 		}
-		targetNamespace = addon.Spec.Install.OLMAllNamespaces.Namespace
+
 		if len(addon.Spec.Install.OLMAllNamespaces.CatalogSourceImage) == 0 {
 			// invalid/missing configuration
 			reportConfigurationError(addon,
 				".spec.install.allNamespaces.catalogSourceImage is required"+
 					"when .spec.install.type = AllNamespaces")
-			return "", "", true
+			return nil, true
 		}
-		catalogSourceImage = addon.Spec.Install.OLMAllNamespaces.CatalogSourceImage
+
+		return &addon.Spec.Install.OLMAllNamespaces.AddonInstallOLMCommon, false
 
 	default:
 		// Unsupported Install Type
@@ -219,9 +220,8 @@ func (r *AddonReconciler) parseAddonInstallConfig(
 		// The .install.type property is set to only allow known enum values.
 		log.Error(fmt.Errorf("invalid Addon install type: %q", addon.Spec.Install.Type),
 			"stopping Addon reconcilation")
-		return "", "", true
+		return nil, true
 	}
-	return targetNamespace, catalogSourceImage, false
 }
 
 // HasMonitoringFederation is a helper to determine if a given addon's spec

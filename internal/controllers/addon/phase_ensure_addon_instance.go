@@ -19,7 +19,7 @@ import (
 func (r *AddonReconciler) ensureAddonInstance(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (err error) {
 	// not capturing "stop" because it won't ever be reached due to the guard rails of CRD Enum-Validation Markers
-	targetNamespace, _, stop := r.parseAddonInstallConfig(log, addon)
+	commonConfig, stop := r.parseAddonInstallConfig(log, addon)
 	if stop {
 		return fmt.Errorf("failed to create addonInstance due to misconfigured install.spec.type")
 	}
@@ -27,7 +27,7 @@ func (r *AddonReconciler) ensureAddonInstance(
 	desiredAddonInstance := &addonsv1alpha1.AddonInstance{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      addonsv1alpha1.DefaultAddonInstanceName,
-			Namespace: targetNamespace,
+			Namespace: commonConfig.Namespace,
 		},
 		// Can't skip specifying spec because in this case, the zero-value for metav1.Duration will be perceived beforehand i.e. 0s instead of CRD's default value of 10s
 		Spec: addonsv1alpha1.AddonInstanceSpec{

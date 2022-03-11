@@ -25,7 +25,7 @@ const catalogSourcePublisher = "OSD Red Hat Addons"
 func (r *AddonReconciler) ensureCatalogSource(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
 ) (requeueResult, *operatorsv1alpha1.CatalogSource, error) {
-	targetNamespace, catalogSourceImage, stop := r.parseAddonInstallConfig(log, addon)
+	commonConfig, stop := r.parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil, nil
 	}
@@ -33,13 +33,13 @@ func (r *AddonReconciler) ensureCatalogSource(
 	catalogSource := &operatorsv1alpha1.CatalogSource{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      addon.Name,
-			Namespace: targetNamespace,
+			Namespace: commonConfig.Namespace,
 		},
 		Spec: operatorsv1alpha1.CatalogSourceSpec{
 			SourceType:  operatorsv1alpha1.SourceTypeGrpc,
 			Publisher:   catalogSourcePublisher,
 			DisplayName: addon.Spec.DisplayName,
-			Image:       catalogSourceImage,
+			Image:       commonConfig.CatalogSourceImage,
 		},
 	}
 
