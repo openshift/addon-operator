@@ -85,10 +85,11 @@ func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder) error {
 	clusterExternalID := string(cv.Spec.ClusterID)
 
 	addonReconciler := &addoncontroller.AddonReconciler{
-		Client:   mgr.GetClient(),
-		Log:      ctrl.Log.WithName("controllers").WithName("Addon"),
-		Scheme:   mgr.GetScheme(),
-		Recorder: recorder,
+		Client:            mgr.GetClient(),
+		Log:               ctrl.Log.WithName("controllers").WithName("Addon"),
+		Scheme:            mgr.GetScheme(),
+		Recorder:          recorder,
+		ClusterExternalID: clusterExternalID,
 	}
 
 	if err := addonReconciler.SetupWithManager(mgr); err != nil {

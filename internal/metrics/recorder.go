@@ -123,10 +123,6 @@ func (r *Recorder) RecordAddonHealthInfo(addon *addonsv1alpha1.Addon,
 
 	}
 
-	if clusterID == "" {
-		clusterID = "unknown"
-	}
-
 	addonVersion := "0.0.0" // default value when addon version is missing
 	if addon.Status.ObservedVersion != "" {
 		addonVersion = addon.Status.ObservedVersion

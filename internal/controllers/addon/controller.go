@@ -45,8 +45,9 @@ type AddonReconciler struct {
 	globalPauseMux  sync.RWMutex
 	addonRequeueCh  chan event.GenericEvent
 
-	ocmClient    ocmClient
-	ocmClientMux sync.RWMutex
+	ocmClient         ocmClient
+	ocmClientMux      sync.RWMutex
+	ClusterExternalID string
 }
 
 type ocmClient interface {
@@ -54,7 +55,6 @@ type ocmClient interface {
 		ctx context.Context,
 		req ocm.ClusterGetRequest,
 	) (res ocm.ClusterGetResponse, err error)
-	ClientOpts() ocm.ClientOptions
 	PatchUpgradePolicy(
 		ctx context.Context,
 		req ocm.UpgradePolicyPatchRequest,
@@ -147,17 +147,11 @@ func (r *AddonReconciler) Reconcile(
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	var clusterID string
-
-	if r.ocmClient != nil {
-		clusterID = r.ocmClient.ClientOpts().ClusterID
-	}
-
 	defer func() {
 		// Update metrics only if a Recorder is initialized
 		if r.Recorder != nil {
 			r.Recorder.RecordAddonMetrics(addon)
-			r.Recorder.RecordAddonHealthInfo(addon, clusterID)
+			r.Recorder.RecordAddonHealthInfo(addon, r.ClusterExternalID)
 		}
 
 		// Ensure we report to the UpgradePolicy endpoint, when we are done with whatever we are doing.

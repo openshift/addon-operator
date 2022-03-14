@@ -33,8 +33,3 @@ func (c *Client) GetCluster(
 	return args.Get(0).(ocm.ClusterGetResponse),
 		args.Error(1)
 }
-
-func (c *Client) ClientOpts() ocm.ClientOptions {
-	args := c.Called()
-	return args.Get(0).(ocm.ClientOptions)
-}
