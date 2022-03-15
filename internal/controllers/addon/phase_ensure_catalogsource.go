@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -42,7 +43,7 @@ func (r *AddonReconciler) ensureCatalogSource(
 		},
 	}
 
-	controllers.AddCommonLabels(catalogSource.Labels, addon)
+	controllers.AddCommonLabels(catalogSource, addon)
 
 	if err := controllerutil.SetControllerReference(addon, catalogSource, r.Scheme); err != nil {
 		return resultNil, nil, err
@@ -97,7 +98,10 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 	// only update when spec or ownerReference has changed
 	ownedByAddon := controllers.HasEqualControllerReference(currentCatalogSource, catalogSource)
 	specChanged := !equality.Semantic.DeepEqual(catalogSource.Spec, currentCatalogSource.Spec)
-	if specChanged || !ownedByAddon {
+	currentLabels := labels.Set(currentCatalogSource.Labels)
+	newLabels := labels.Merge(currentLabels, labels.Set(catalogSource.Labels))
+
+	if specChanged || !ownedByAddon || !labels.Equals(newLabels, currentLabels) {
 		// TODO: remove this condition once resourceAdoptionStrategy is discontinued
 		if strategy != addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
 			return nil, controllers.ErrNotOwnedByUs
@@ -105,6 +109,7 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 		// copy new spec into existing object and update in the k8s api
 		currentCatalogSource.Spec = catalogSource.Spec
 		currentCatalogSource.OwnerReferences = catalogSource.OwnerReferences
+		currentCatalogSource.Labels = newLabels
 		return currentCatalogSource, c.Update(ctx, currentCatalogSource)
 	}
 

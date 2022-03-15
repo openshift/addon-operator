@@ -13,13 +13,15 @@ const (
 	commonManagedByValue = "addon-operator"
 )
 
-func AddCommonLabels(labels map[string]string, addon *addonsv1alpha1.Addon) {
+func AddCommonLabels(obj metav1.Object, addon *addonsv1alpha1.Addon) {
+	labels := obj.GetLabels()
 	if labels == nil {
-		return
+		labels = map[string]string{}
 	}
 
 	labels[commonManagedByLabel] = commonManagedByValue
 	labels[commonInstanceLabel] = addon.Name
+	obj.SetLabels(labels)
 }
 
 func CommonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) labels.Selector {

@@ -131,7 +131,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 			err := controllerutil.SetControllerReference(addon, namespace, r.Scheme)
 			// mocked Namespace has desired labels
 			namespace.Labels = map[string]string{"openshift.io/cluster-monitoring": "true"}
-			controllers.AddCommonLabels(namespace.Labels, addon)
+			controllers.AddCommonLabels(namespace, addon)
 			assert.NoError(t, err)
 		}).
 		Return(nil)
@@ -143,6 +143,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 			assert.Equal(t, GetMonitoringNamespaceName(addon), namespacedName.Namespace)
 			// mocked ServiceMonitor is owned by Addon
 			serviceMonitor := args.Get(2).(*monitoringv1.ServiceMonitor)
+			controllers.AddCommonLabels(serviceMonitor, addon)
 			err := controllerutil.SetControllerReference(addon, serviceMonitor, r.Scheme)
 			assert.NoError(t, err)
 			// inject expected ServiceMonitor spec into response

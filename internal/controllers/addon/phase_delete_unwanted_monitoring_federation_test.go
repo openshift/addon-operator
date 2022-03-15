@@ -147,7 +147,7 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_Prese
 			},
 		},
 	}
-	controllers.AddCommonLabels(serviceMonitorsInCluster.Items[0].Labels, addon)
+	controllers.AddCommonLabels(serviceMonitorsInCluster.Items[0], addon)
 
 	c.On("List", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitorList{}), mock.Anything).
 		Run(func(args mock.Arguments) {
