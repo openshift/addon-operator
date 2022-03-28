@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
-	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -35,8 +33,7 @@ func (r *AddonReconciler) ensureDeletionOfUnwantedMonitoringFederation(
 			continue
 		}
 
-		err := r.ensureServiceMonitorDeletion(ctx, r.Client, serviceMonitor.Name)
-		if err != nil {
+		if err := client.IgnoreNotFound(r.Client.Delete(ctx, serviceMonitor)); err != nil {
 			return fmt.Errorf("could not remove monitoring federation ServiceMonitor: %w", err)
 		}
 	}
@@ -48,26 +45,6 @@ func (r *AddonReconciler) ensureDeletionOfUnwantedMonitoringFederation(
 		}
 	}
 
-	return nil
-}
-
-// Ensure that the given ServiceMonitor is deleted
-func (r *AddonReconciler) ensureServiceMonitorDeletion(
-	ctx context.Context,
-	c client.Client,
-	name string,
-) error {
-	serviceMonitor := &monitoringv1.ServiceMonitor{
-		ObjectMeta: v1.ObjectMeta{
-			Name: name,
-		},
-	}
-	err := c.Delete(ctx, serviceMonitor)
-
-	// don't propagate error if the ServiceMonitor is already gone
-	if !k8sApiErrors.IsNotFound(err) {
-		return err
-	}
 	return nil
 }
 

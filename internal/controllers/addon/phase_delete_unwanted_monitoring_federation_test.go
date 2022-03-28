@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
@@ -72,7 +73,7 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_Prese
 			},
 		},
 	}
-	deletedServiceMons := []string{}
+	deletedServiceMons := []client.ObjectKey{}
 
 	c.On("List", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitorList{}), mock.Anything).
 		Run(func(args mock.Arguments) {
@@ -91,7 +92,7 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_Prese
 				}
 				return false
 			})
-			deletedServiceMons = append(deletedServiceMons, sm.Name)
+			deletedServiceMons = append(deletedServiceMons, client.ObjectKeyFromObject(sm))
 		}).
 		Return(nil)
 	c.On("Delete", testutil.IsContext, mock.IsType(&corev1.Namespace{}), mock.Anything).
@@ -113,7 +114,10 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_Prese
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Delete", testutil.IsContext, mock.IsType(&corev1.Namespace{}), mock.Anything)
-	assert.Equal(t, []string{"foo", "qux"}, deletedServiceMons)
+	assert.Equal(t, []client.ObjectKey{
+		{Name: "foo", Namespace: "bar"},
+		{Name: "qux", Namespace: "bar"},
+	}, deletedServiceMons)
 }
 
 func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_PresentInCluster(t *testing.T) {
