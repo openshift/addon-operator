@@ -8,7 +8,6 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
@@ -35,7 +34,7 @@ var (
 
 func addon_OwnNamespace_UpgradePolicyReporting() *addonsv1alpha1.Addon {
 	return &addonsv1alpha1.Addon{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: "addon-aefigh1x",
 		},
 		Spec: addonsv1alpha1.AddonSpec{
@@ -67,7 +66,7 @@ func addon_OwnNamespace_UpgradePolicyReporting() *addonsv1alpha1.Addon {
 
 func addon_OwnNamespace() *addonsv1alpha1.Addon {
 	return &addonsv1alpha1.Addon{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: "addon-oisafbo12",
 		},
 		Spec: addonsv1alpha1.AddonSpec{
@@ -132,7 +131,7 @@ func addon_OwnNamespace_TestBrokenSubscription() *addonsv1alpha1.Addon {
 	addonNamespace := fmt.Sprintf("namespace-%s", uuid)
 
 	return &addonsv1alpha1.Addon{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: addonName,
 		},
 		Spec: addonsv1alpha1.AddonSpec{
