@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -91,7 +92,7 @@ func (r *AddonReconciler) desiredMonitoringNamespace(addon *addonsv1alpha1.Addon
 		},
 	}
 
-	controllers.AddCommonLabels(namespace.Labels, addon)
+	controllers.AddCommonLabels(namespace, addon)
 
 	if err := controllerutil.SetControllerReference(addon, namespace, r.Scheme); err != nil {
 		return nil, err
@@ -127,12 +128,16 @@ func (r *AddonReconciler) ensureServiceMonitor(ctx context.Context, addon *addon
 		return fmt.Errorf("getting ServiceMonitor: %w", err)
 	}
 
+	currentLabels := labels.Set(actual.Labels)
+	newLabels := labels.Merge(currentLabels, labels.Set(desired.Labels))
+
 	var (
-		mustAdopt   = !controllers.HasEqualControllerReference(actual, desired)
-		specChanged = !equality.Semantic.DeepEqual(actual.Spec, desired.Spec)
+		mustAdopt     = !controllers.HasEqualControllerReference(actual, desired)
+		specChanged   = !equality.Semantic.DeepEqual(actual.Spec, desired.Spec)
+		labelsChanged = !labels.Equals(currentLabels, newLabels)
 	)
 
-	if !mustAdopt && !specChanged {
+	if !mustAdopt && !specChanged && !labelsChanged {
 		return nil
 	}
 
@@ -140,7 +145,9 @@ func (r *AddonReconciler) ensureServiceMonitor(ctx context.Context, addon *addon
 		return controllers.ErrNotOwnedByUs
 	}
 
-	actual.Spec, actual.OwnerReferences = desired.Spec, desired.OwnerReferences
+	actual.Spec = desired.Spec
+	actual.Labels = newLabels
+	actual.OwnerReferences = desired.OwnerReferences
 
 	return r.Update(ctx, actual)
 }
@@ -162,7 +169,7 @@ func (r *AddonReconciler) desiredServiceMonitor(addon *addonsv1alpha1.Addon) (*m
 		},
 	}
 
-	controllers.AddCommonLabels(serviceMonitor.Labels, addon)
+	controllers.AddCommonLabels(serviceMonitor, addon)
 
 	if err := controllerutil.SetControllerReference(addon, serviceMonitor, r.Scheme); err != nil {
 		return nil, fmt.Errorf("setting controller reference on ServiceMonitor: %w", err)

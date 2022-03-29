@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -60,7 +61,7 @@ func (r *AddonReconciler) ensureSubscription(
 			// make sure to keep the current value of this field
 		},
 	}
-	controllers.AddCommonLabels(desiredSubscription.Labels, addon)
+	controllers.AddCommonLabels(desiredSubscription, addon)
 	if err := controllerutil.SetControllerReference(addon, desiredSubscription, r.Scheme); err != nil {
 		return resultNil, client.ObjectKey{}, fmt.Errorf("setting controller reference: %w", err)
 	}
@@ -118,9 +119,11 @@ func (r *AddonReconciler) reconcileSubscription(
 	subscription.Spec.InstallPlanApproval = currentSubscription.Spec.InstallPlanApproval
 
 	// only update when spec has changed or owner reference has changed
+	currentLabels := labels.Set(currentSubscription.Labels)
+	newLabels := labels.Merge(currentLabels, labels.Set(subscription.Labels))
 	ownedByAddon := controllers.HasEqualControllerReference(currentSubscription, subscription)
 	specChanged := !equality.Semantic.DeepEqual(subscription.Spec, currentSubscription.Spec)
-	if specChanged || !ownedByAddon {
+	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {
 		// TODO: remove this condition once resourceAdoptionStrategy is discontinued
 		if strategy != addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
 			return nil, controllers.ErrNotOwnedByUs
@@ -128,6 +131,7 @@ func (r *AddonReconciler) reconcileSubscription(
 		// copy new spec into existing object and update in the k8s api
 		currentSubscription.Spec = subscription.Spec
 		currentSubscription.OwnerReferences = subscription.OwnerReferences
+		currentSubscription.Labels = newLabels
 		return currentSubscription, r.Update(ctx, currentSubscription)
 	}
 	return currentSubscription, nil

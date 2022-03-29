@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -35,7 +36,7 @@ func (r *AddonReconciler) ensureOperatorGroup(
 		desiredOperatorGroup.Spec.TargetNamespaces = []string{targetNamespace}
 	}
 
-	controllers.AddCommonLabels(desiredOperatorGroup.Labels, addon)
+	controllers.AddCommonLabels(desiredOperatorGroup, addon)
 	if err := controllerutil.SetControllerReference(addon, desiredOperatorGroup, r.Scheme); err != nil {
 		return resultNil, fmt.Errorf("setting controller reference: %w", err)
 	}
@@ -56,15 +57,18 @@ func (r *AddonReconciler) reconcileOperatorGroup(
 		return fmt.Errorf("getting OperatorGroup: %w", err)
 	}
 
+	currentLabels := labels.Set(currentOperatorGroup.Labels)
+	newLabels := labels.Merge(currentLabels, labels.Set(operatorGroup.Labels))
 	ownedByAddon := controllers.HasEqualControllerReference(currentOperatorGroup, operatorGroup)
 	specChanged := !equality.Semantic.DeepEqual(currentOperatorGroup.Spec, operatorGroup.Spec)
-	if specChanged || !ownedByAddon {
+	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {
 		// TODO: remove this condition once resourceAdoptionStrategy is discontinued
 		if strategy != addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
 			return controllers.ErrNotOwnedByUs
 		}
 		currentOperatorGroup.Spec = operatorGroup.Spec
 		currentOperatorGroup.OwnerReferences = operatorGroup.OwnerReferences
+		currentOperatorGroup.Labels = newLabels
 		return r.Update(ctx, currentOperatorGroup)
 	}
 	return nil

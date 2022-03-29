@@ -7,6 +7,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -63,7 +64,7 @@ func (r *AddonReconciler) ensureNamespaceWithLabels(ctx context.Context, addon *
 			Labels: labels,
 		},
 	}
-	controllers.AddCommonLabels(namespace.Labels, addon)
+	controllers.AddCommonLabels(namespace, addon)
 	err := controllerutil.SetControllerReference(addon, namespace, r.Scheme)
 	if err != nil {
 		return nil, err
@@ -85,6 +86,8 @@ func reconcileNamespace(ctx context.Context, c client.Client,
 		return nil, err
 	}
 
+	currentLabels := labels.Set(currentNamespace.Labels)
+	newLabels := labels.Merge(currentLabels, labels.Set(namespace.Labels))
 	mustAdopt := len(currentNamespace.OwnerReferences) == 0 ||
 		!controllers.HasEqualControllerReference(currentNamespace, namespace)
 
@@ -97,6 +100,7 @@ func reconcileNamespace(ctx context.Context, c client.Client,
 		currentNamespace.Labels[k] = v
 	}
 	currentNamespace.OwnerReferences = namespace.OwnerReferences
+	currentNamespace.Labels = newLabels
 
 	return currentNamespace, c.Update(ctx, currentNamespace)
 }

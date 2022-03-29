@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -34,10 +35,10 @@ func TestAddCommonLabels(t *testing.T) {
 		},
 	}
 
-	labels := make(map[string]string)
+	obj := &unstructured.Unstructured{} // some arbitrary object
+	AddCommonLabels(obj, addon)
 
-	AddCommonLabels(labels, addon)
-
+	labels := obj.GetLabels()
 	if labels[commonInstanceLabel] != addon.Name {
 		t.Error("commonInstanceLabel was not set to addon name")
 	}
