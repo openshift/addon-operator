@@ -4,6 +4,7 @@ metadata:
   name: addon-operator-servicemonitor
   namespace: addon-operator
   annotations:
+    service.beta.openshift.io/serving-cert-secret-name: addon-operator-servicemonitor-tls
   labels:
       app: addon-operator-servicemonitor
 spec:
@@ -11,10 +12,27 @@ spec:
   - interval: 10s
     path: /metrics
     port: http
-    scheme: http
+  - interval: 10s
+    path: /metrics
+    port: https
+  tlsConfig:
+    ca:
+      secret:
+        name: addon-operator-servicemonitor-tls
+        key: ca.crt
+        optional: false
+    cert:
+      secret:
+        name: addon-operator-servicemonitor-tls
+        key: tls.crt
+        optional: false
+    keySecret:
+      name: addon-operator-servicemonitor-tls
+      key: tls.key
+      optional: false 
   namespaceSelector:
     matchNames:
     - openshift-addon-operator
   selector:
     matchLabels:
-      app: addon-operator
+      app: addon-operator-metrics-service
