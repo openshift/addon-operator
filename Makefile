@@ -426,6 +426,9 @@ openshift-ci-test-build: \
 	@cp "config/olm/annotations.yaml" "config/openshift/metadata";
 	@cp "config/olm/metrics.service.yaml" "config/openshift/manifests/metrics.service.yaml";
 	@cp "config/olm/addon-operator-servicemonitor.yaml" "config/openshift/manifests/addon-operator-servicemonitor.yaml";
+	@cp "config/olm/prometheus-sa.yaml" "config/openshift/manifests/prometheus-sa.yaml";
+	@cp "config/olm/prometheus-role.yaml" "config/openshift/manifests/prometheus-role.yaml";
+	@cp "config/olm/prometheus-rb.yaml" "config/openshift/manifests/prometheus-rb.yaml";
 	@cp "config/olm/addon-operator.csv.yaml" "config/openshift/manifests/addon-operator.csv.yaml";
 	@tail -n"+3" "config/deploy/addons.managed.openshift.io_addons.yaml" > "config/openshift/manifests/addons.crd.yaml";
 	@tail -n"+3" "config/deploy/addons.managed.openshift.io_addonoperators.yaml" > "config/openshift/manifests/addonoperators.crd.yaml";
