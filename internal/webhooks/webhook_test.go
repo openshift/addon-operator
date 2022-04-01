@@ -78,15 +78,38 @@ func TestValidateAddonInstallImmutability(t *testing.T) {
 		},
 	}, addonName)
 
+	baseAddon_withEnv := testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{
+		Type: addonsv1alpha1.OLMAllNamespaces,
+		OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+			AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+				Namespace:          "reference-addon",
+				PackageName:        addonName,
+				Channel:            "alpha",
+				CatalogSourceImage: catalogSource,
+				Config: &addonsv1alpha1.SubscriptionConfig{
+					EnvironmentVariables: []addonsv1alpha1.EnvObject{
+						{
+							Name:  "key-1",
+							Value: "value-1",
+						},
+					},
+				},
+			},
+		},
+	}, addonName)
+
 	testCases := []struct {
+		baseAddon    *addonsv1alpha1.Addon
 		updatedAddon *addonsv1alpha1.Addon
 		expectedErr  error
 	}{
 		{
+			baseAddon:    baseAddon,
 			updatedAddon: baseAddon,
 			expectedErr:  nil,
 		},
 		{
+			baseAddon: baseAddon,
 			updatedAddon: testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{
 				Type: addonsv1alpha1.OLMAllNamespaces,
 				OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
@@ -101,6 +124,7 @@ func TestValidateAddonInstallImmutability(t *testing.T) {
 			expectedErr: errInstallImmutable,
 		},
 		{
+			baseAddon: baseAddon,
 			updatedAddon: testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{
 				Type: addonsv1alpha1.OLMAllNamespaces,
 				OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
@@ -115,15 +139,64 @@ func TestValidateAddonInstallImmutability(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
+			baseAddon: baseAddon,
 			updatedAddon: testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{
 				Type: addonsv1alpha1.OLMOwnNamespace,
 			}, addonName),
 			expectedErr: errInstallTypeImmutable,
 		},
+		{
+			baseAddon: baseAddon,
+			updatedAddon: testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMAllNamespaces,
+				OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace:          "reference-addon",
+						PackageName:        addonName,
+						Channel:            "alpha",
+						CatalogSourceImage: catalogSource,
+						// changed (added)
+						Config: &addonsv1alpha1.SubscriptionConfig{
+							EnvironmentVariables: []addonsv1alpha1.EnvObject{
+								{
+									Name:  "key1",
+									Value: "value1",
+								},
+							},
+						},
+					},
+				},
+			}, addonName),
+			expectedErr: nil,
+		},
+		{
+			baseAddon: baseAddon_withEnv,
+			updatedAddon: testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMAllNamespaces,
+				OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace:          "reference-addon",
+						PackageName:        addonName,
+						Channel:            "alpha",
+						CatalogSourceImage: catalogSource,
+						// changed
+						Config: &addonsv1alpha1.SubscriptionConfig{
+							EnvironmentVariables: []addonsv1alpha1.EnvObject{
+								{
+									Name:  "key-2",
+									Value: "value-2",
+								},
+							},
+						},
+					},
+				},
+			}, addonName),
+			expectedErr: nil,
+		},
 	}
 
 	for _, tc := range testCases {
-		err := validateAddonImmutability(tc.updatedAddon, baseAddon)
+		err := validateAddonImmutability(tc.updatedAddon, tc.baseAddon)
 		assert.EqualValues(t, tc.expectedErr, err)
 	}
 }
