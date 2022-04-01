@@ -2,4 +2,4 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   namespace: addon-operator
-  name: prometheus-sa
+  name: prometheus-k8s

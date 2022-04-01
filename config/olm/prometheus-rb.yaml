@@ -1,14 +1,14 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: prometheus-rb
+  name: prometheus-k8s
   namespace: addon-operator
   annotations:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name:  prometheus-role
+  name:  prometheus-k8s
 subjects:
 - kind: ServiceAccount
-  name: prometheus-sa
+  name: prometheus-k8s
   namespace: openshift-addon-operator
