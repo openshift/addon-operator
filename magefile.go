@@ -249,7 +249,6 @@ func (b Build) buildOLMBundleImage(imageCacheDir string) error {
 
 		{"cp", "-a", "config/olm/addon-operator.csv.yaml", manifestsDir},
 		{"cp", "-a", "config/olm/metrics.service.yaml", manifestsDir},
-		{"cp", "-a", "config/olm/addon-operator-metrics-service-tls.yaml", manifestsDir},
 		{"cp", "-a", "config/olm/addon-operator-servicemonitor.yaml", manifestsDir},
 		{"cp", "-a", "config/olm/prometheus-sa.yaml", manifestsDir},
 		{"cp", "-a", "config/olm/prometheus-role.yaml", manifestsDir},

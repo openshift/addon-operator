@@ -7,17 +7,21 @@ metadata:
       app: addon-operator-servicemonitor
 spec:
   endpoints:
-  - interval: 10s
+  - interval: 30s
     path: /metrics
     port: http
-  - interval: 10s
+  - interval: 30s
     path: /metrics
     port: https
-  tlsConfig:
-    ca:
-      configMap:
-        name: addon-operator-metrics-service-tls
-        key: service-ca.crt
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    interval: 30s
+    port: https
+    scheme: https
+    tlsConfig:
+      caFile: /etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt
+      serverName: addon-operator-metrics.openshift-addon-operator.svc
+      certFile: /etc/prometheus/secrets/metrics-client-certs/tls.crt
+      keyFile: /etc/prometheus/secrets/metrics-client-certs/tls.key
   namespaceSelector:
     matchNames:
     - openshift-addon-operator
