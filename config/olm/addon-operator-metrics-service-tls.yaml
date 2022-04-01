@@ -1,0 +1,8 @@
+apiVersion: v1
+data: {}
+kind: ConfigMap
+metadata:
+  annotations:
+    service.beta.openshift.io/inject-cabundle: "true"
+  name: addon-operator-metrics-service-tls
+  namespace: addon-operator
