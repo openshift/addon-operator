@@ -11,10 +11,7 @@ import (
 )
 
 func (r *AddonReconciler) observeCurrentCSV(
-	ctx context.Context,
-	addon *addonsv1alpha1.Addon,
-	csvKey client.ObjectKey,
-) (requeueResult, error) {
+	ctx context.Context, addon *addonsv1alpha1.Addon, csvKey client.ObjectKey) (requeueResult, error) {
 	csv := &operatorsv1alpha1.ClusterServiceVersion{}
 	if err := r.Get(ctx, csvKey, csv); err != nil {
 		return resultNil, fmt.Errorf("getting installed CSV: %w", err)

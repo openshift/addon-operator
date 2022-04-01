@@ -20,15 +20,8 @@ import (
 )
 
 func (r *AddonReconciler) ensureSubscription(
-	ctx context.Context,
-	log logr.Logger,
-	addon *addonsv1alpha1.Addon,
-	catalogSource *operatorsv1alpha1.CatalogSource,
-) (
-	requeueResult,
-	client.ObjectKey,
-	error,
-) {
+	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
+	catalogSource *operatorsv1alpha1.CatalogSource) (requeueResult, client.ObjectKey, error) {
 	var commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon
 	switch addon.Spec.Install.Type {
 	case addonsv1alpha1.OLMAllNamespaces:
@@ -99,10 +92,8 @@ func (r *AddonReconciler) ensureSubscription(
 }
 
 func (r *AddonReconciler) reconcileSubscription(
-	ctx context.Context,
-	subscription *operatorsv1alpha1.Subscription,
-	strategy addonsv1alpha1.ResourceAdoptionStrategyType,
-) (currentSubscription *operatorsv1alpha1.Subscription, err error) {
+	ctx context.Context, subscription *operatorsv1alpha1.Subscription,
+	strategy addonsv1alpha1.ResourceAdoptionStrategyType) (currentSubscription *operatorsv1alpha1.Subscription, err error) {
 	currentSubscription = &operatorsv1alpha1.Subscription{}
 	err = r.Get(ctx, client.ObjectKey{
 		Name:      subscription.Name,

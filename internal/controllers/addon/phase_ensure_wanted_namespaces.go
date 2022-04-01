@@ -57,7 +57,8 @@ func (r *AddonReconciler) ensureNamespace(ctx context.Context, addon *addonsv1al
 }
 
 // Ensure a single Namespace with a set of labels for the given Addon resource
-func (r *AddonReconciler) ensureNamespaceWithLabels(ctx context.Context, addon *addonsv1alpha1.Addon, name string, labels map[string]string) (*corev1.Namespace, error) {
+func (r *AddonReconciler) ensureNamespaceWithLabels(ctx context.Context, addon *addonsv1alpha1.Addon,
+	name string, labels map[string]string) (*corev1.Namespace, error) {
 	namespace := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   name,

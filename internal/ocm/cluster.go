@@ -19,9 +19,7 @@ type Cluster struct {
 }
 
 func (c *Client) GetCluster(
-	ctx context.Context,
-	req ClusterGetRequest,
-) (res ClusterGetResponse, err error) {
+	ctx context.Context, req ClusterGetRequest) (res ClusterGetResponse, err error) {
 	urlParams := url.Values{}
 	urlParams.Add("search",
 		fmt.Sprintf("external_id = '%s'", c.opts.ClusterExternalID))

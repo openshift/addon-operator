@@ -23,8 +23,7 @@ const catalogSourcePublisher = "OSD Red Hat Addons"
 // returns an ensureCatalogSourceResult that signals the caller if they have to
 // stop or retry reconciliation of the surrounding Addon resource
 func (r *AddonReconciler) ensureCatalogSource(
-	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
-) (requeueResult, *operatorsv1alpha1.CatalogSource, error) {
+	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (requeueResult, *operatorsv1alpha1.CatalogSource, error) {
 	targetNamespace, catalogSourceImage, stop := r.parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil, nil
@@ -78,8 +77,9 @@ func (r *AddonReconciler) ensureCatalogSource(
 
 // reconciles a CatalogSource and returns a new CatalogSource object with observed state.
 // Warning: Will adopt existing CatalogSource
-func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource *operatorsv1alpha1.CatalogSource, strategy addonsv1alpha1.ResourceAdoptionStrategyType) (
-	*operatorsv1alpha1.CatalogSource, error) {
+func reconcileCatalogSource(
+	ctx context.Context, c client.Client, catalogSource *operatorsv1alpha1.CatalogSource,
+	strategy addonsv1alpha1.ResourceAdoptionStrategyType) (*operatorsv1alpha1.CatalogSource, error) {
 	currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
 
 	{

@@ -17,8 +17,7 @@ import (
 // easier to record OCM API metrics, and unit test the instrumentation.
 // This also allows us to re-use the Recorder in AddonReconciler for recording
 // OCM API metrics, rather than passing it down to the ocmClient object.
-func (r *AddonReconciler) handlePatchUpgradePolicy(ctx context.Context,
-	req ocm.UpgradePolicyPatchRequest) error {
+func (r *AddonReconciler) handlePatchUpgradePolicy(ctx context.Context, req ocm.UpgradePolicyPatchRequest) error {
 	if r.Recorder != nil {
 		// TODO: do not count metrics when API returns 5XX response
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
@@ -32,10 +31,7 @@ func (r *AddonReconciler) handlePatchUpgradePolicy(ctx context.Context,
 }
 
 func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
-	ctx context.Context,
-	log logr.Logger,
-	addon *addonsv1alpha1.Addon,
-) error {
+	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) error {
 	if addon.Spec.UpgradePolicy == nil {
 		// Addons without UpgradePolicy can be skipped silently.
 		return nil

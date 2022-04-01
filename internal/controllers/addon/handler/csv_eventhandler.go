@@ -46,9 +46,7 @@ func (h *CSVEventHandler) Free(addon *addonsv1alpha1.Addon) {
 // This method is potentially racy when the Addon object is not reenqueued by the calling reconcile loop when the mapping changes,
 // as incomming events might be dropped before this method completes and the event mapping is updated.
 // Calling code needs to make sure to reenqueue the Addon object for _every_ mapping change or CSV events might not be processed.
-func (h *CSVEventHandler) ReplaceMap(
-	addon *addonsv1alpha1.Addon, csvKeys ...client.ObjectKey,
-) (changed bool) {
+func (h *CSVEventHandler) ReplaceMap(addon *addonsv1alpha1.Addon, csvKeys ...client.ObjectKey) (changed bool) {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 

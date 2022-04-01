@@ -13,9 +13,7 @@ import (
 
 // Ensure cleanup of ServiceMonitors that are not needed anymore for the given Addon resource
 func (r *AddonReconciler) ensureDeletionOfUnwantedMonitoringFederation(
-	ctx context.Context,
-	addon *addonsv1alpha1.Addon,
-) error {
+	ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	currentServiceMonitors, err := r.getOwnedServiceMonitorsViaCommonLabels(ctx, r.Client, addon)
 	if err != nil {
 		return err
@@ -50,9 +48,7 @@ func (r *AddonReconciler) ensureDeletionOfUnwantedMonitoringFederation(
 
 // Get all ServiceMonitors that have common labels matching the given Addon resource
 func (r *AddonReconciler) getOwnedServiceMonitorsViaCommonLabels(
-	ctx context.Context,
-	c client.Client,
-	addon *addonsv1alpha1.Addon) ([]*monitoringv1.ServiceMonitor, error) {
+	ctx context.Context, c client.Client, addon *addonsv1alpha1.Addon) ([]*monitoringv1.ServiceMonitor, error) {
 	selector := controllers.CommonLabelsAsLabelSelector(addon)
 
 	list := &monitoringv1.ServiceMonitorList{}

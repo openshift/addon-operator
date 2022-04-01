@@ -41,8 +41,7 @@ func (r *AddonOperatorReconciler) handleAddonOperatorCreation(
 
 // Marks AddonOperator as available
 func (r *AddonOperatorReconciler) reportAddonOperatorReadinessStatus(
-	ctx context.Context,
-	addonOperator *addonsv1alpha1.AddonOperator) error {
+	ctx context.Context, addonOperator *addonsv1alpha1.AddonOperator) error {
 	meta.SetStatusCondition(&addonOperator.Status.Conditions, metav1.Condition{
 		Type:               addonsv1alpha1.AddonOperatorAvailable,
 		Status:             metav1.ConditionTrue,
@@ -58,8 +57,7 @@ func (r *AddonOperatorReconciler) reportAddonOperatorReadinessStatus(
 
 // Marks AddonOperator as paused
 func (r *AddonOperatorReconciler) reportAddonOperatorPauseStatus(
-	ctx context.Context,
-	addonOperator *addonsv1alpha1.AddonOperator) error {
+	ctx context.Context, addonOperator *addonsv1alpha1.AddonOperator) error {
 	meta.SetStatusCondition(&addonOperator.Status.Conditions, metav1.Condition{
 		Type:               addonsv1alpha1.AddonOperatorPaused,
 		Status:             metav1.ConditionTrue,

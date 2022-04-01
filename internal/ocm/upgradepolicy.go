@@ -23,9 +23,7 @@ type UpgradePolicyPatchRequest struct {
 type UpgradePolicyPatchResponse struct{}
 
 func (c *Client) PatchUpgradePolicy(
-	ctx context.Context,
-	req UpgradePolicyPatchRequest,
-) (res UpgradePolicyPatchResponse, err error) {
+	ctx context.Context, req UpgradePolicyPatchRequest) (res UpgradePolicyPatchResponse, err error) {
 	urlParams := url.Values{}
 	return res, c.do(ctx, http.MethodPatch, fmt.Sprintf(
 		"api/clusters_mgmt/v1/clusters/%s/addon_upgrade_policies/%s/state",
@@ -48,9 +46,7 @@ type UpgradePolicyGetResponse struct {
 }
 
 func (c *Client) GetUpgradePolicy(
-	ctx context.Context,
-	req UpgradePolicyGetRequest,
-) (res UpgradePolicyGetResponse, err error) {
+	ctx context.Context, req UpgradePolicyGetRequest) (res UpgradePolicyGetResponse, err error) {
 	urlParams := url.Values{}
 	return res, c.do(ctx, http.MethodGet, fmt.Sprintf(
 		"api/clusters_mgmt/v1/clusters/%s/addon_upgrade_policies/%s/state",

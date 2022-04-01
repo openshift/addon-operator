@@ -44,9 +44,7 @@ func (r *AddonReconciler) handleExit(result requeueResult) ctrl.Result {
 }
 
 // Handle the deletion of an Addon.
-func (r *AddonReconciler) handleAddonDeletion(
-	ctx context.Context, addon *addonsv1alpha1.Addon,
-) error {
+func (r *AddonReconciler) handleAddonDeletion(ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
 		// The finalizer is already gone and the deletion timestamp is set.
 		// kube-apiserver should have garbage collected this object already,
@@ -172,9 +170,7 @@ func reportPendingStatus(addon *addonsv1alpha1.Addon, reason, msg string) {
 // Validate addon.Spec.Install then extract
 // targetNamespace and catalogSourceImage from it
 func (r *AddonReconciler) parseAddonInstallConfig(
-	log logr.Logger, addon *addonsv1alpha1.Addon) (
-	targetNamespace, catalogSourceImage string, stop bool,
-) {
+	log logr.Logger, addon *addonsv1alpha1.Addon) (targetNamespace, catalogSourceImage string, stop bool) {
 	switch addon.Spec.Install.Type {
 	case addonsv1alpha1.OLMOwnNamespace:
 		if addon.Spec.Install.OLMOwnNamespace == nil ||

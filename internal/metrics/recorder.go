@@ -98,8 +98,7 @@ func NewRecorder(register bool) *Recorder {
 	}
 }
 
-func (r *Recorder) RecordAddonHealthInfo(addon *addonsv1alpha1.Addon,
-	clusterID string) {
+func (r *Recorder) RecordAddonHealthInfo(addon *addonsv1alpha1.Addon, clusterID string) {
 
 	var (
 		// `healthStatus` defaults to unknown unless status conditions say otherwise

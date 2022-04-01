@@ -17,7 +17,7 @@ import (
 
 // Ensures the presence of an AddonInstance well-compliant with the provided Addon object
 func (r *AddonReconciler) ensureAddonInstance(
-	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (err error) {
+	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) error {
 	// not capturing "stop" because it won't ever be reached due to the guard rails of CRD Enum-Validation Markers
 	targetNamespace, _, stop := r.parseAddonInstallConfig(log, addon)
 	if stop {

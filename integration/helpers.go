@@ -288,10 +288,8 @@ func WaitToBeGone(t *testing.T, timeout time.Duration, object client.Object) err
 
 // Wait that something happens with an object.
 func WaitForObject(
-	t *testing.T, timeout time.Duration,
-	object client.Object, reason string,
-	checkFn func(obj client.Object) (done bool, err error),
-) error {
+	t *testing.T, timeout time.Duration, object client.Object, reason string,
+	checkFn func(obj client.Object) (done bool, err error)) error {
 	gvk, err := apiutil.GVKForObject(object, Scheme)
 	if err != nil {
 		return err
@@ -318,8 +316,7 @@ func WaitForObject(
 // matches the generation of it's addon object.
 func WaitForFreshAddonCondition(
 	t *testing.T, timeout time.Duration,
-	a *addonsv1alpha1.Addon, conditionType string, conditionStatus metav1.ConditionStatus,
-) error {
+	a *addonsv1alpha1.Addon, conditionType string, conditionStatus metav1.ConditionStatus) error {
 	return WaitForObject(
 		t, timeout, a, fmt.Sprintf("to be %s: %s", conditionType, conditionStatus),
 		func(obj client.Object) (done bool, err error) {
