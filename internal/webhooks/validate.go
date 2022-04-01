@@ -64,17 +64,21 @@ func validateAddonImmutability(addon, oldAddon *addonsv1alpha1.Addon) error {
 	oldSpecInstall := oldAddon.Spec.Install.DeepCopy()
 	if oldSpecInstall.OLMAllNamespaces != nil {
 		oldSpecInstall.OLMAllNamespaces.CatalogSourceImage = ""
+		oldSpecInstall.OLMAllNamespaces.Config = nil
 	}
 	if oldSpecInstall.OLMOwnNamespace != nil {
 		oldSpecInstall.OLMOwnNamespace.CatalogSourceImage = ""
+		oldSpecInstall.OLMOwnNamespace.Config = nil
 	}
 
 	specInstall := addon.Spec.Install.DeepCopy()
 	if specInstall.OLMAllNamespaces != nil {
 		specInstall.OLMAllNamespaces.CatalogSourceImage = ""
+		specInstall.OLMAllNamespaces.Config = nil
 	}
 	if specInstall.OLMOwnNamespace != nil {
 		specInstall.OLMOwnNamespace.CatalogSourceImage = ""
+		specInstall.OLMOwnNamespace.Config = nil
 	}
 
 	// Do semantic DeepEqual instead of reflect.DeepEqual
