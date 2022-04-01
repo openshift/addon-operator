@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: addon-operator-servicemonitor
+  namespace: addon-operator
+  labels:
+      app: addon-operator-servicemonitor
+spec:
+  endpoints:
+  - interval: 10s
+    path: /metrics
+    port: http
+  - interval: 10s
+    path: /metrics
+    port: https
+  tlsConfig:
+    ca:
+      configMap:
+        name: addon-operator-metrics-service-tls
+        key: service-ca.crt
+  namespaceSelector:
+    matchNames:
+    - openshift-addon-operator
+  selector:
+    matchLabels:
+      app: addon-operator-metrics-service
