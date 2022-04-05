@@ -145,5 +145,6 @@ The AddonOperator is instrumented with the prometheus-client provided by control
 | `addon_operator_addons_count`               | `GaugeVec` | Total number of Addon installations, grouped by 'available', 'paused' and 'total'       |
 | `addon_operator_paused`                     | `Gauge`    | A boolean that tells if the AddonOperator is paused (1 - paused; 0 - unpaused)          |
 | `addon_operator_ocm_api_requests_durations` | `Summary`  | OCM API request latencies in microseconds. Grouped using tail-latencies (p50, p90, p99) |
+| `addon_operator_addon_health_info`          | `GaugeVec` | Addon Health information (0 - Unhealthy; 1 - Healthy; 2 - Unknown)                      |
 
 See [Quickstart](https://github.com/openshift/addon-operator#quickstart--develop-integration-tests) for instructions on how to setup a local monitoring stack for development / testing.
