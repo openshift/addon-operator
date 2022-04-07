@@ -134,11 +134,24 @@ type AddonInstallOLMCommon struct {
 	// Configs to be passed to subscription OLM object
 	// +optional
 	Config *SubscriptionConfig `json:"config,omitempty"`
+
+	// Additional catalog source objects to be created in the cluster
+	// +optional
+	AdditionalCatalogSources []AdditionalCatalogSource `json:"additionalCatalogSources,omitempty"`
 }
 
 type SubscriptionConfig struct {
 	// Array of env variables to be passed to the subscription object.
 	EnvironmentVariables []EnvObject `json:"env"`
+}
+
+type AdditionalCatalogSource struct {
+	// Name of the additional catalog source
+	// +kubebuilder:validation:MinLength=1
+	Name string `json:"name"`
+	// Image url of the additional catalog source
+	// +kubebuilder:validation:MinLength=1
+	Image string `json:"image"`
 }
 
 type EnvObject struct {
