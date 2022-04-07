@@ -18,6 +18,7 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [AddonOperatorOCM](#addonoperatorocmaddonsmanagedopenshiftiov1alpha1)
 	* [AddonOperatorSpec](#addonoperatorspecaddonsmanagedopenshiftiov1alpha1)
 	* [AddonOperatorStatus](#addonoperatorstatusaddonsmanagedopenshiftiov1alpha1)
+	* [AdditionalCatalogSource](#additionalcatalogsourceaddonsmanagedopenshiftiov1alpha1)
 * [Addon](#addonaddonsmanagedopenshiftiov1alpha1)
 	* [AddonInstallOLMAllNamespaces](#addoninstallolmallnamespacesaddonsmanagedopenshiftiov1alpha1)
 	* [AddonInstallOLMCommon](#addoninstallolmcommonaddonsmanagedopenshiftiov1alpha1)
@@ -133,6 +134,17 @@ AddonOperatorStatus defines the observed state of Addon
 
 [Back to Group]()
 
+### AdditionalCatalogSource.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| name | Name of the additional catalog source | string | true |
+| image | Image url of the additional catalog source | string | true |
+
+[Back to Group]()
+
 ### Addon.addons.managed.openshift.io/v1alpha1
 
 Addon is the Schema for the Addons API
@@ -185,6 +197,7 @@ Common Addon installation parameters.
 | packageName | Name of the package to install via OLM. OLM will resove this package name to install the matching bundle. | string | true |
 | pullSecretName | Reference to a secret of type kubernetes.io/dockercfg or kubernetes.io/dockerconfigjson in the addon operators installation namespace. The secret referenced here, will be made available to the addon in the addon installation namespace, as addon-pullsecret prior to installing the addon itself. | string | false |
 | config | Configs to be passed to subscription OLM object | *[SubscriptionConfig.addons.managed.openshift.io/v1alpha1](#subscriptionconfigaddonsmanagedopenshiftiov1alpha1) | false |
+| additionalCatalogSources | Additional catalog source objects to be created in the cluster | [][AdditionalCatalogSource.addons.managed.openshift.io/v1alpha1](#additionalcatalogsourceaddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()
 
