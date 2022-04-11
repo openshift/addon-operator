@@ -196,7 +196,9 @@ func TestValidateAddonInstallImmutability(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		err := validateAddonImmutability(tc.updatedAddon, tc.baseAddon)
-		assert.EqualValues(t, tc.expectedErr, err)
+		t.Run("addon install immutability test", func(t *testing.T) {
+			err := validateAddonImmutability(tc.updatedAddon, tc.baseAddon)
+			assert.EqualValues(t, tc.expectedErr, err)
+		})
 	}
 }
