@@ -42,8 +42,13 @@ var (
 )
 
 // Prepare a new release of the Addon Operator.
-func Prepare_Release(version string) error {
-	version = strings.TrimLeft(version, "v")
+func Prepare_Release() error {
+	versionBytes, err := ioutil.ReadFile(path.Join(workDir, "VERSION"))
+	if err != nil {
+		return fmt.Errorf("reading VERSION file: %w", err)
+	}
+
+	version = strings.TrimSpace(strings.TrimLeft(string(versionBytes), "v"))
 	semverVersion, err := semver.New(version)
 	if err != nil {
 		return fmt.Errorf("parse semver: %w", err)
