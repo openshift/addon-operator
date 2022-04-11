@@ -3,6 +3,7 @@ module github.com/openshift/addon-operator
 go 1.16
 
 require (
+	github.com/blang/semver/v4 v4.0.0
 	github.com/go-logr/logr v1.2.2
 	github.com/gorilla/mux v1.8.0
 	github.com/magefile/mage v1.12.1
