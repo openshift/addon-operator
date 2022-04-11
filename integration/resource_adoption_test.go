@@ -125,7 +125,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 		{
 			observedOG := &operatorsv1.OperatorGroup{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      referenceAddonName,
+					Name:      controllers.DefaultOperatorGroupName,
 					Namespace: referenceAddonNamespace,
 				},
 			}

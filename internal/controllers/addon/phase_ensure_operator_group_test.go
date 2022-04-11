@@ -90,10 +90,10 @@ func TestEnsureOperatorGroup(t *testing.T) {
 						"Get",
 						mock.Anything,
 						client.ObjectKey{
-							Name:      addon.Name,
+							Name:      controllers.DefaultOperatorGroupName,
 							Namespace: test.targetNamespace,
 						},
-						mock.Anything,
+						mock.IsType(&operatorsv1.OperatorGroup{}),
 					).
 					Return(errors.NewNotFound(schema.GroupResource{}, ""))
 				var createdOpeatorGroup *operatorsv1.OperatorGroup
@@ -121,7 +121,7 @@ func TestEnsureOperatorGroup(t *testing.T) {
 					mock.IsType(&operatorsv1.OperatorGroup{}),
 					mock.Anything,
 				) {
-					assert.Equal(t, addon.Name, createdOpeatorGroup.Name)
+					assert.Equal(t, controllers.DefaultOperatorGroupName, createdOpeatorGroup.Name)
 					assert.Equal(t, test.targetNamespace, createdOpeatorGroup.Namespace)
 
 					assert.Equal(t, test.expectedTargetNamespaces, createdOpeatorGroup.Spec.TargetNamespaces)

@@ -9,6 +9,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
+	"github.com/openshift/addon-operator/internal/controllers"
 )
 
 func (s *integrationTestSuite) TestAddon_OperatorGroup() {
@@ -55,7 +56,7 @@ func (s *integrationTestSuite) TestAddon_OperatorGroup() {
 			// check that there is an OperatorGroup in the target namespace.
 			operatorGroup := &operatorsv1.OperatorGroup{}
 			s.Require().NoError(integration.Client.Get(ctx, client.ObjectKey{
-				Name:      addon.Name,
+				Name:      controllers.DefaultOperatorGroupName,
 				Namespace: test.targetNamespace,
 			}, operatorGroup))
 		})
