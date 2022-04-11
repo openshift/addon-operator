@@ -10,6 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
 )
 
 var (
@@ -192,7 +193,7 @@ func catalogsource_TestResourceAdoption() *operatorsv1alpha1.CatalogSource {
 func operatorgroup_TestResourceAdoption() *operatorsv1.OperatorGroup {
 	return &operatorsv1.OperatorGroup{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      referenceAddonName,
+			Name:      controllers.DefaultOperatorGroupName,
 			Namespace: referenceAddonNamespace,
 		},
 		Spec: operatorsv1.OperatorGroupSpec{

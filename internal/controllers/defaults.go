@@ -8,6 +8,7 @@ import (
 
 const (
 	DefaultAddonInstanceHeartbeatTimeoutThresholdMultiplier int64 = 3
+	DefaultOperatorGroupName                                      = "redhat-layered-product-og"
 )
 
 var DefaultAddonInstanceHeartbeatUpdatePeriod metav1.Duration = metav1.Duration{

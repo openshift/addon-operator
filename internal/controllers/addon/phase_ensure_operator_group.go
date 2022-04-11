@@ -27,7 +27,7 @@ func (r *AddonReconciler) ensureOperatorGroup(
 
 	desiredOperatorGroup := &operatorsv1.OperatorGroup{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      addon.Name,
+			Name:      controllers.DefaultOperatorGroupName,
 			Namespace: targetNamespace,
 			Labels:    map[string]string{},
 		},
