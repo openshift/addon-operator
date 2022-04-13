@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"go.opentelemetry.io/otel"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -16,6 +17,9 @@ func (r *AddonReconciler) ensureDeletionOfUnwantedMonitoringFederation(
 	ctx context.Context,
 	addon *addonsv1alpha1.Addon,
 ) error {
+	_, span := otel.Tracer(addonTracer).Start(ctx, "ensureDeletionOfUnwantedMonitoringFederation")
+	defer span.End()
+
 	currentServiceMonitors, err := r.getOwnedServiceMonitorsViaCommonLabels(ctx, r.Client, addon)
 	if err != nil {
 		return err

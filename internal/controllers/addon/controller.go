@@ -9,6 +9,8 @@ import (
 
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/metrics"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 
 	"github.com/go-logr/logr"
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
@@ -32,6 +34,7 @@ import (
 const (
 	defaultRetryAfterTime = 10 * time.Second
 	cacheFinalizer        = "addons.managed.openshift.io/cache"
+	addonTracer           = "addon-tracer"
 )
 
 type AddonReconciler struct {
@@ -147,6 +150,10 @@ func (r *AddonReconciler) Reconcile(
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
+	ctx, span := otel.Tracer(addonTracer).Start(ctx, "Reconcile")
+	span.SetAttributes(attribute.String("clusterID", r.ClusterExternalID))
+	span.SetAttributes(attribute.String("addonName", addon.Name))
+
 	defer func() {
 		// Update metrics only if a Recorder is initialized
 		if r.Recorder != nil {
@@ -166,6 +173,7 @@ func (r *AddonReconciler) Reconcile(
 			return
 		}
 		err = r.Status().Update(ctx, addon)
+		span.End()
 	}()
 
 	// Handle addon deletion before checking for pause condition.

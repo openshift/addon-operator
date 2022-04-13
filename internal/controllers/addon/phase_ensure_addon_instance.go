@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-logr/logr"
+	"go.opentelemetry.io/otel"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -18,6 +19,9 @@ import (
 // Ensures the presence of an AddonInstance well-compliant with the provided Addon object
 func (r *AddonReconciler) ensureAddonInstance(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (err error) {
+
+	_, span := otel.Tracer(addonTracer).Start(ctx, "ensureAddonInstance")
+	defer span.End()
 	// not capturing "stop" because it won't ever be reached due to the guard rails of CRD Enum-Validation Markers
 	targetNamespace, _, stop := r.parseAddonInstallConfig(log, addon)
 	if stop {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"go.opentelemetry.io/otel"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
@@ -21,6 +22,9 @@ import (
 // and if it exists ensures that a ServiceMonitor is present in the desired monitoring
 // namespace.
 func (r *AddonReconciler) ensureMonitoringFederation(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+	_, span := otel.Tracer(addonTracer).Start(ctx, "ensureMonitoringFederation")
+	defer span.End()
+
 	if !HasMonitoringFederation(addon) {
 		return nil
 	}

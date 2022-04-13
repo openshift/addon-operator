@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"go.opentelemetry.io/otel"
 	corev1 "k8s.io/api/core/v1"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -21,6 +22,9 @@ func (r *AddonReconciler) ensureWantedNamespaces(
 	ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
 	var unreadyNamespaces []string
 	var collidedNamespaces []string
+
+	_, span := otel.Tracer(addonTracer).Start(ctx, "ensureWantedNamespaces")
+	defer span.End()
 
 	for _, namespace := range addon.Spec.Namespaces {
 		ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name)

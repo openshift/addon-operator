@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+	"go.opentelemetry.io/otel"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -15,6 +16,10 @@ func (r *AddonReconciler) observeCurrentCSV(
 	addon *addonsv1alpha1.Addon,
 	csvKey client.ObjectKey,
 ) (requeueResult, error) {
+
+	_, span := otel.Tracer(addonTracer).Start(ctx, "observeCurrentCSV")
+	defer span.End()
+
 	csv := &operatorsv1alpha1.ClusterServiceVersion{}
 	if err := r.Get(ctx, csvKey, csv); err != nil {
 		return resultNil, fmt.Errorf("getting installed CSV: %w", err)

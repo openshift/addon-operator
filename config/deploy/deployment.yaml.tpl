@@ -69,3 +69,8 @@ spec:
           requests:
             cpu: 100m
             memory: 300Mi
+      - name: jaeger
+        image: jaegertracing/all-in-one:1.22.0
+        ports:
+        - containerPort: 14268
+        - containerPort: 16686

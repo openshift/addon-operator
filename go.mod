@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/blang/semver/v4 v4.0.0
-	github.com/go-logr/logr v1.2.2
+	github.com/go-logr/logr v1.2.3
 	github.com/gorilla/mux v1.8.0
 	github.com/magefile/mage v1.12.1
 	github.com/mt-sre/devkube v0.2.1
@@ -14,7 +14,9 @@ require (
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.51.2
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/client_model v0.2.0
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
+	go.opentelemetry.io/otel v1.6.3
+	go.opentelemetry.io/otel/exporters/jaeger v1.6.3
 	k8s.io/api v0.23.3
 	k8s.io/apiextensions-apiserver v0.23.0
 	k8s.io/apimachinery v0.23.3

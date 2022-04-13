@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-logr/logr"
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
+	"go.opentelemetry.io/otel"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -20,6 +21,10 @@ import (
 // Ensures the presense or absense of an OperatorGroup depending on the Addon install type.
 func (r *AddonReconciler) ensureOperatorGroup(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (requeueResult, error) {
+
+	_, span := otel.Tracer(addonTracer).Start(ctx, "ensureOperatorGroup")
+	defer span.End()
+
 	targetNamespace, _, stop := r.parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil

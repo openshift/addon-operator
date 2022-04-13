@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"go.opentelemetry.io/otel"
 	corev1 "k8s.io/api/core/v1"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -16,6 +17,10 @@ import (
 // Ensure cleanup of Namespaces that are not needed anymore for the given Addon resource
 func (r *AddonReconciler) ensureDeletionOfUnwantedNamespaces(
 	ctx context.Context, addon *addonsv1alpha1.Addon) error {
+
+	_, span := otel.Tracer(addonTracer).Start(ctx, "ensureDeletionOfUnwantedNamespaces")
+	defer span.End()
+
 	currentNamespaces, err := getOwnedNamespacesViaCommonLabels(ctx, r.Client, addon)
 	if err != nil {
 		return err

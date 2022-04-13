@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-logr/logr"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+	"go.opentelemetry.io/otel"
 	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -29,6 +30,9 @@ func (r *AddonReconciler) ensureSubscription(
 	client.ObjectKey,
 	error,
 ) {
+	_, span := otel.Tracer(addonTracer).Start(ctx, "ensureSubscription")
+	defer span.End()
+
 	var commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon
 	switch addon.Spec.Install.Type {
 	case addonsv1alpha1.OLMAllNamespaces:

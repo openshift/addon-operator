@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-logr/logr"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+	"go.opentelemetry.io/otel"
 	"k8s.io/apimachinery/pkg/api/equality"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -25,6 +26,10 @@ const catalogSourcePublisher = "OSD Red Hat Addons"
 func (r *AddonReconciler) ensureCatalogSource(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
 ) (requeueResult, *operatorsv1alpha1.CatalogSource, error) {
+
+	_, span := otel.Tracer(addonTracer).Start(ctx, "ensureCatalogSource")
+	defer span.End()
+
 	targetNamespace, catalogSourceImage, stop := r.parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil, nil
