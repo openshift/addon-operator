@@ -10,6 +10,8 @@ metadata:
   annotations:
     service.beta.openshift.io/serving-cert-secret-name: metrics-server-cert
 spec:
+  type: ClusterIP
+  sessionAffinity: None
   ports:
     - port: 8443
       name: https
