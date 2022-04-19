@@ -7,12 +7,6 @@ metadata:
     app.kubernetes.io/name: addon-operator
 spec:
   endpoints:
-  - interval: 30s
-    path: /metrics
-    port: http
-  - interval: 30s
-    path: /metrics
-    port: https
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     interval: 30s
     port: https
