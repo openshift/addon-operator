@@ -16,5 +16,8 @@ spec:
     - port: 8443
       name: https
       targetPort: 8443
+    - port: 8080
+      name: http
+      targetPort: 8080
   selector:
     app.kubernetes.io/name: addon-operator
