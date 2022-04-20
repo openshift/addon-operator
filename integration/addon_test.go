@@ -7,7 +7,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
-	"k8s.io/apimachinery/pkg/types"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -17,9 +17,35 @@ import (
 func (s *integrationTestSuite) TestAddon() {
 	ctx := context.Background()
 
-	addon := addon_OwnNamespace()
+	srcSecret1 := &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "addon-src-secret-1",
+			Namespace: integration.AddonOperatorNamespace,
+		},
+		Data: map[string][]byte{
+			"test": []byte("xxx"),
+		},
+		Type: corev1.SecretTypeBasicAuth,
+	}
+	err := integration.Client.Create(ctx, srcSecret1)
+	s.Require().NoError(err)
 
-	err := integration.Client.Create(ctx, addon)
+	const secretPropagationDestName = "destination-secret-1"
+	addon := addon_OwnNamespace()
+	addon.Spec.SecretPropagation = &addonsv1alpha1.AddonSecretPropagation{
+		Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+			{
+				SourceSecret: corev1.LocalObjectReference{
+					Name: srcSecret1.Name,
+				},
+				DestinationSecret: corev1.LocalObjectReference{
+					Name: secretPropagationDestName,
+				},
+			},
+		},
+	}
+
+	err = integration.Client.Create(ctx, addon)
 	s.Require().NoError(err)
 
 	// wait until Addon is available
@@ -36,11 +62,10 @@ func (s *integrationTestSuite) TestAddon() {
 	s.Require().NoError(err)
 	s.Assert().Equal(addon.Spec.Version, addon.Status.ObservedVersion, "addon version should be reported")
 
-	s.Run("test_namespaces", func() {
-
+	s.Run("namespaces exist", func() {
 		for _, namespace := range addon.Spec.Namespaces {
 			currentNamespace := &corev1.Namespace{}
-			err := integration.Client.Get(ctx, types.NamespacedName{
+			err := integration.Client.Get(ctx, client.ObjectKey{
 				Name: namespace.Name,
 			}, currentNamespace)
 			s.Assert().NoError(err, "could not get Namespace %s", namespace.Name)
@@ -49,10 +74,21 @@ func (s *integrationTestSuite) TestAddon() {
 		}
 	})
 
-	s.Run("test_catalogsource", func() {
+	s.Run("secrets propagated", func() {
+		for _, namespace := range addon.Spec.Namespaces {
+			destSecret := &corev1.Secret{}
+			key := client.ObjectKey{
+				Name:      secretPropagationDestName,
+				Namespace: namespace.Name,
+			}
+			err := integration.Client.Get(ctx, key, destSecret)
+			s.Assert().NoError(err, "could not get propagated Secret %s", key)
+		}
+	})
 
+	s.Run("catalogsource exists", func() {
 		currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
-		err := integration.Client.Get(ctx, types.NamespacedName{
+		err := integration.Client.Get(ctx, client.ObjectKey{
 			Name:      addon.Name,
 			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
 		}, currentCatalogSource)
@@ -61,7 +97,7 @@ func (s *integrationTestSuite) TestAddon() {
 		s.Assert().Equal(addon.Spec.DisplayName, currentCatalogSource.Spec.DisplayName)
 	})
 
-	s.Run("test_subscription_csv", func() {
+	s.Run("subscription_csv status", func() {
 
 		subscription := &operatorsv1alpha1.Subscription{}
 		{
@@ -120,7 +156,7 @@ func (s *integrationTestSuite) TestAddon() {
 
 		// assert that CatalogSource is gone
 		currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
-		err = integration.Client.Get(ctx, types.NamespacedName{
+		err = integration.Client.Get(ctx, client.ObjectKey{
 			Name:      addon.Name,
 			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
 		}, currentCatalogSource)
@@ -129,7 +165,7 @@ func (s *integrationTestSuite) TestAddon() {
 		// assert that all Namespaces are gone
 		for _, namespace := range addon.Spec.Namespaces {
 			currentNamespace := &corev1.Namespace{}
-			err := integration.Client.Get(ctx, types.NamespacedName{
+			err := integration.Client.Get(ctx, client.ObjectKey{
 				Name: namespace.Name,
 			}, currentNamespace)
 			s.Assert().True(k8sApiErrors.IsNotFound(err), "Namespace not deleted: %s", namespace.Name)
