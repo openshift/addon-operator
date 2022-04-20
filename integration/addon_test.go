@@ -23,7 +23,8 @@ func (s *integrationTestSuite) TestAddon() {
 			Namespace: integration.AddonOperatorNamespace,
 		},
 		Data: map[string][]byte{
-			"test": []byte("xxx"),
+			corev1.BasicAuthUsernameKey: []byte("xxx"),
+			corev1.BasicAuthPasswordKey: []byte("xxx"),
 		},
 		Type: corev1.SecretTypeBasicAuth,
 	}
