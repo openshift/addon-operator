@@ -132,8 +132,7 @@ func reconcileSecret(
 			return fmt.Errorf("creating secret: %w", err)
 		}
 		return nil
-	}
-	if err != nil {
+	} else if err != nil {
 		return fmt.Errorf("getting secret: %w", err)
 	}
 
@@ -143,8 +142,9 @@ func reconcileSecret(
 	for k, v := range desiredSecret.GetLabels() {
 		actualSecret.Labels[k] = v
 	}
+	// Type is immutable, so we can't reconcile it
+	// actualSecret.Type = desiredSecret.Type
 	actualSecret.Data = desiredSecret.Data
-	actualSecret.Type = desiredSecret.Type
 	actualSecret.OwnerReferences = desiredSecret.OwnerReferences
 
 	if err := c.Update(ctx, actualSecret); err != nil {
