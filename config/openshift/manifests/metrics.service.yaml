@@ -5,11 +5,13 @@ metadata:
   name: addon-operator-metrics
   namespace: addon-operator
   labels:
-    app: addon-operator-metrics-service
+    app.kubernetes.io/name: addon-operator
   # In production, the following annotation will make service-ca-operator to create a Secret called `metrics-server-cert` on the fly and manage its lifecycle
   annotations:
     service.beta.openshift.io/serving-cert-secret-name: metrics-server-cert
 spec:
+  type: ClusterIP
+  sessionAffinity: None
   ports:
     - port: 8443
       name: https

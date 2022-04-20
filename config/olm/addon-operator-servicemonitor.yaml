@@ -4,15 +4,9 @@ metadata:
   name: addon-operator-servicemonitor
   namespace: addon-operator
   labels:
-      app: addon-operator-servicemonitor
+      app.kubernetes.io/name: addon-operator
 spec:
   endpoints:
-  - interval: 30s
-    path: /metrics
-    port: http
-  - interval: 30s
-    path: /metrics
-    port: https
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     interval: 30s
     port: https
@@ -27,4 +21,4 @@ spec:
     - openshift-addon-operator
   selector:
     matchLabels:
-      app: addon-operator-metrics-service
+      app.kubernetes.io/name: addon-operator
