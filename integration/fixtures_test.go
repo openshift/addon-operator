@@ -10,6 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/integration"
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
@@ -248,7 +249,7 @@ func pod_metricsClient() *corev1.Pod {
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "sample-metrics-client",
-			Namespace: "addon-operator",
+			Namespace: integration.AddonOperatorNamespace,
 		},
 		Spec: corev1.PodSpec{
 			Volumes: []corev1.Volume{

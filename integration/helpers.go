@@ -7,14 +7,9 @@ import (
 	goerrors "errors"
 	"fmt"
 	"io"
-	"io/fs"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
-	"path"
-	"path/filepath"
-	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -23,12 +18,11 @@ import (
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
-	"github.com/stretchr/testify/require"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -39,36 +33,15 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
-	"sigs.k8s.io/yaml"
 
 	aoapis "github.com/openshift/addon-operator/apis"
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/ocm"
-	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 const (
-	relativeConfigDeployPath           = "../config/deploy"
-	relativeWebhookConfigDeployPath    = "../config/deploy/webhook"
-	relativeOCMAPIMockConfigDeployPath = "../config/deploy/api-mock"
-	OCMAPIEndpoint                     = "http://api-mock.api-mock.svc.cluster.local"
+	OCMAPIEndpoint = "http://api-mock.api-mock.svc.cluster.local"
 )
-
-type fileInfosByName []fs.FileInfo
-
-type fileInfoMap struct {
-	absPath  string
-	fileInfo []os.FileInfo
-}
-
-func (x fileInfosByName) Len() int { return len(x) }
-
-func (x fileInfosByName) Less(i, j int) bool {
-	iName := path.Base(x[i].Name())
-	jName := path.Base(x[j].Name())
-	return iName < jName
-}
-func (x fileInfosByName) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 
 var (
 	// Client pointing to the e2e test cluster.
@@ -77,18 +50,12 @@ var (
 	Scheme    = runtime.NewScheme()
 	Cv        *configv1.ClusterVersion
 	OCMClient *ocm.Client
+	// Namespace that the Addon Operator is running in.
+	// Needs to be auto-discovered, because OpenShift CI is installing the Operator in a non deterministic namespace.
+	AddonOperatorNamespace string
 
 	// Typed K8s Clients
 	CoreV1Client corev1client.CoreV1Interface
-
-	// Path to the deployment configuration directory.
-	PathConfigDeploy string
-
-	// Path to the webhook deployment configuration directory.
-	PathWebhookConfigDeploy string
-
-	// Path to the OCM API
-	PathOCMAPIMockDeploy string
 )
 
 func init() {
@@ -113,105 +80,54 @@ func init() {
 		Scheme: Scheme,
 	})
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("creating runtime client: %w", err))
 	}
 
 	// Typed Kubernetes Clients
 	CoreV1Client = corev1client.NewForConfigOrDie(Config)
+	ctx := context.Background()
 
+	// Get the OCP cluster version object
 	Cv = &configv1.ClusterVersion{}
-	if err := Client.Get(context.Background(), client.ObjectKey{Name: "version"}, Cv); err != nil {
+	if err := Client.Get(ctx, client.ObjectKey{Name: "version"}, Cv); err != nil {
 		panic(fmt.Errorf("getting clusterversion: %w", err))
 	}
 
-	// Paths
-	PathConfigDeploy, err = filepath.Abs(relativeConfigDeployPath)
-	if err != nil {
-		panic(err)
+	// discover AddonOperator Namespace
+	deploymentList := &appsv1.DeploymentList{}
+	// We can't use a label-selector, because OLM is overriding the deployment labels...
+	if err := Client.List(ctx, deploymentList); err != nil {
+		panic(fmt.Errorf("listing addon-operator deployments on the cluster: %w", err))
 	}
-
-	PathWebhookConfigDeploy, err = filepath.Abs(relativeWebhookConfigDeployPath)
-	if err != nil {
-		panic(err)
+	var addonOperatorDeployments []appsv1.Deployment
+	for _, deployment := range deploymentList.Items {
+		if deployment.Name == "addon-operator-manager" {
+			addonOperatorDeployments = append(addonOperatorDeployments, deployment)
+		}
 	}
-
-	PathOCMAPIMockDeploy, err = filepath.Abs(relativeOCMAPIMockConfigDeployPath)
-	if err != nil {
-		panic(err)
+	switch len(addonOperatorDeployments) {
+	case 0:
+		panic(fmt.Errorf("no AddonOperator deployment found on the cluster!"))
+	case 1:
+		AddonOperatorNamespace = addonOperatorDeployments[0].Namespace
+	default:
+		panic(fmt.Errorf("multiple AddonOperator deployments found on the cluster!"))
 	}
 }
 
-func getFileInfoFromPath(paths []string) ([]fileInfoMap, error) {
-	fileInfo := []fileInfoMap{}
-
-	for _, path := range paths {
-		config, err := os.Open(path)
-		if err != nil {
-			return fileInfo, err
-		}
-
-		files, err := config.Readdir(-1)
-		if err != nil {
-			return fileInfo, err
-		}
-
-		sort.Sort(fileInfosByName(files))
-
-		fileInfo = append(fileInfo, fileInfoMap{
-			absPath:  path,
-			fileInfo: files,
-		})
+func InitOCMClient() error {
+	// Create a client to talk with the OCM mock API for testing
+	ocmClient, err := ocm.NewClient(
+		context.Background(),
+		ocm.WithEndpoint("http://127.0.0.1:8001/api/v1/namespaces/api-mock/services/api-mock:80/proxy"),
+		ocm.WithAccessToken("accessToken"), //TODO: Needs to be supplied from the outside, does not matter for mock.
+		ocm.WithClusterExternalID(string(Cv.Spec.ClusterID)),
+	)
+	if err != nil {
+		return fmt.Errorf("initializing ocm client: %w", err)
 	}
-
-	return fileInfo, nil
-}
-
-// Load all k8s objects from .yaml files in config/deploy.
-// File/Object order is preserved.
-func LoadObjectsFromDeploymentFiles(t *testing.T) []unstructured.Unstructured {
-	paths := []string{PathConfigDeploy}
-
-	if testutil.IsApiMockEnabled() {
-		t.Log("api mock is enabled: loading manifests")
-		paths = append(paths, PathOCMAPIMockDeploy)
-	}
-	if testutil.IsWebhookServerEnabled() {
-		t.Log("webhook server is enabled: loading manifests")
-		paths = append(paths, PathWebhookConfigDeploy)
-	}
-
-	fileInfoMap, err := getFileInfoFromPath(paths)
-	require.NoError(t, err)
-
-	var objects []unstructured.Unstructured
-
-	for _, m := range fileInfoMap {
-		for _, f := range m.fileInfo {
-			if f.IsDir() {
-				continue
-			}
-			if path.Ext(f.Name()) != ".yaml" {
-				continue
-			}
-
-			fileYaml, err := ioutil.ReadFile(path.Join(
-				m.absPath, f.Name()))
-			require.NoError(t, err)
-
-			// Trim empty starting and ending objects
-			fileYaml = bytes.Trim(fileYaml, "---\n")
-
-			// Split for every included yaml document.
-			for _, yamlDocument := range bytes.Split(fileYaml, []byte("---\n")) {
-				obj := unstructured.Unstructured{}
-				require.NoError(t, yaml.Unmarshal(yamlDocument, &obj))
-
-				objects = append(objects, obj)
-			}
-		}
-	}
-
-	return objects
+	OCMClient = ocmClient
+	return nil
 }
 
 // Prints the phase of a pod together with the logs of every container.
@@ -421,7 +337,7 @@ func ExecCommandInPod(namespace string, pod string, container string, command []
 	err = exec.Stream(streamOptions)
 	stdout, stderr := strings.TrimSpace(stdoutStream.String()), strings.TrimSpace(stderrStream.String())
 	if err != nil {
-		return stdout, stderr, fmt.Errorf("failed to transport shell streams: %w", err)
+		return "", "", fmt.Errorf("failed to transport shell streams: %w\n%s", err, stderr)
 	}
 
 	return stdout, stderr, nil

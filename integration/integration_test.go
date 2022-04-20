@@ -53,6 +53,11 @@ func TestIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Initialize the OCM client after the proxy has started.
+	if err := integration.InitOCMClient(); err != nil {
+		t.Fatal(err)
+	}
+
 	// does not support parallel test runs
 	suite.Run(t, new(integrationTestSuite))
 }

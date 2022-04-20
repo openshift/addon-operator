@@ -15,7 +15,8 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: api-mock
+  # needs to be called pull-secret, because we scope RBAC to just this secret name.
+  name: pull-secret
   namespace: api-mock
 type: kubernetes.io/dockerconfigjson
 stringData:

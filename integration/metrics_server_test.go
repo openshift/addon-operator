@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"context"
+	"fmt"
 
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -32,8 +33,8 @@ func (s *integrationTestSuite) TestMetricsServer() {
 	s.Require().NoError(err)
 
 	s.Run("test_https_endpoint", func() {
-		httpsMetricsAddr := "https://addon-operator-metrics.addon-operator.svc:8443/healthz"
-		caCertPath := pod.Spec.Containers[0].VolumeMounts[0].MountPath + "ca-bundle.crt"
+		httpsMetricsAddr := fmt.Sprintf("https://addon-operator-metrics.%s.svc:8443/healthz", integration.AddonOperatorNamespace)
+		caCertPath := pod.Spec.Containers[0].VolumeMounts[0].MountPath + "tls.crt"
 
 		command := []string{"curl", "--cacert", caCertPath, httpsMetricsAddr}
 
@@ -43,7 +44,7 @@ func (s *integrationTestSuite) TestMetricsServer() {
 	})
 
 	s.Run("test_http_endpoint", func() {
-		httpMetricsAddr := "http://addon-operator-metrics.addon-operator.svc:8080/healthz"
+		httpMetricsAddr := fmt.Sprintf("http://addon-operator-metrics.%s.svc:8080/healthz", integration.AddonOperatorNamespace)
 
 		command := []string{"curl", httpMetricsAddr}
 

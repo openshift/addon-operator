@@ -4,6 +4,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -16,18 +17,20 @@ import (
 
 	"github.com/blang/semver/v4"
 	"github.com/go-logr/logr"
+	"github.com/go-logr/stdr"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
+	"github.com/mt-sre/devkube/dev"
 	"github.com/mt-sre/devkube/magedeps"
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+	appsv1 "k8s.io/api/apps/v1"
 	"sigs.k8s.io/yaml"
 )
 
 const (
-	module                  = "github.com/openshift/addon-operator"
-	defaultImageOrg         = "quay.io/app-sre"
-	defaultContainerRuntime = "podman"
+	module          = "github.com/openshift/addon-operator"
+	defaultImageOrg = "quay.io/app-sre"
 )
 
 // Directories
@@ -38,7 +41,8 @@ var (
 	depsDir  magedeps.DependencyDirectory
 	cacheDir string
 
-	logger *logr.Logger
+	logger           logr.Logger
+	containerRuntime string
 )
 
 // Prepare a new release of the Addon Operator.
@@ -87,6 +91,21 @@ func Prepare_Release() error {
 	return nil
 }
 
+func init() {
+	var err error
+	// Directories
+	workDir, err = os.Getwd()
+	if err != nil {
+		panic(fmt.Errorf("getting work dir: %w", err))
+	}
+	cacheDir = path.Join(workDir + "/" + ".cache")
+	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
+	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
+
+	logger = stdr.New(nil)
+	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
+}
+
 // Building
 // --------
 type Build mg.Namespace
@@ -100,8 +119,7 @@ var (
 
 	ldFlags string
 
-	imageOrg         string
-	containerRuntime string
+	imageOrg string
 )
 
 // init build variables
@@ -140,11 +158,6 @@ func (Build) init() error {
 	imageOrg = os.Getenv("IMAGE_ORG")
 	if len(imageOrg) == 0 {
 		imageOrg = defaultImageOrg
-	}
-
-	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
-	if len(containerRuntime) == 0 {
-		containerRuntime = defaultContainerRuntime
 	}
 
 	return nil
@@ -499,6 +512,40 @@ func (Test) Unit() error {
 	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...")
 }
 
+func (Test) Integration() error {
+	return sh.Run("go", "test", "-v",
+		"-count=1", // will force a new run, instead of using the cache
+		"-timeout=20m", "./integration/...")
+}
+
+// Target to run within OpenShift CI, where the Addon Operator and webhook is already deployed via the framework.
+// This target will additionally deploy the API Mock before starting the integration test suite.
+func (t Test) IntegrationCI(ctx context.Context) error {
+	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
+		dev.WithLogger(logger),
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
+	if err != nil {
+		return fmt.Errorf("creating cluster client: %w", err)
+	}
+
+	var dev Dev
+	if err := dev.deployAPIMock(ctx, cluster); err != nil {
+		return fmt.Errorf("deploy API mock: %w", err)
+	}
+
+	os.Setenv("ENABLE_WEBHOOK", "true")
+	os.Setenv("ENABLE_API_MOCK", "true")
+
+	return t.Integration()
+}
+
+func (Test) IntegrationShort() error {
+	return sh.Run("go", "test", "-v",
+		"-count=1", // will force a new run, instead of using the cache
+		"-short",
+		"-timeout=20m", "./integration/...")
+}
+
 // Dependencies
 // ------------
 
@@ -509,7 +556,7 @@ const (
 	yqVersion            = "4.12.0"
 	goimportsVersion     = "0.1.5"
 	golangciLintVersion  = "1.43.0"
-	olmVersion           = "0.19.1"
+	olmVersion           = "0.20.0"
 	opmVersion           = "1.18.0"
 	helmVersion          = "3.7.2"
 )
@@ -605,15 +652,270 @@ func (d Dependency) Opm() error {
 	return nil
 }
 
-func init() {
-	var err error
-	// Directories
-	workDir, err = os.Getwd()
-	if err != nil {
-		panic(fmt.Errorf("getting work dir: %w", err))
-	}
-	cacheDir = path.Join(workDir + "/" + ".cache")
-	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
-	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
+// Development
+// --------
+type Dev mg.Namespace
 
+var (
+	devEnvironment *dev.Environment
+)
+
+func (d Dev) Setup(ctx context.Context) error {
+	if err := d.init(); err != nil {
+		return err
+	}
+
+	if err := devEnvironment.Init(ctx); err != nil {
+		return fmt.Errorf("initializing dev environment: %w", err)
+	}
+	return nil
+}
+
+func (d Dev) Teardown(ctx context.Context) error {
+	if err := d.init(); err != nil {
+		return err
+	}
+
+	if err := devEnvironment.Destroy(ctx); err != nil {
+		return fmt.Errorf("tearing down dev environment: %w", err)
+	}
+	return nil
+}
+
+// Setup local dev environment with the addon operator installed and run the integration test suite.
+func (d Dev) Integration(ctx context.Context) error {
+	mg.SerialDeps(
+		Dev.Deploy,
+	)
+
+	os.Setenv("KUBECONFIG", devEnvironment.Cluster.Kubeconfig())
+	os.Setenv("ENABLE_WEBHOOK", "true")
+	os.Setenv("ENABLE_API_MOCK", "true")
+
+	mg.SerialDeps(Test.Integration)
+	return nil
+}
+
+func (d Dev) LoadImage(ctx context.Context, image string) error {
+	mg.Deps(
+		mg.F(Build.ImageBuild, image),
+	)
+
+	imageTar := path.Join(cacheDir, "image", image+".tar")
+	if err := devEnvironment.LoadImageFromTar(ctx, imageTar); err != nil {
+		return fmt.Errorf("load image from tar: %w", err)
+	}
+	return nil
+}
+
+// Deploy the Addon Operator, Mock API Server and Addon Operator webhooks (if env ENABLE_WEBHOOK=true) is set.
+// All components are deployed via static manifests.
+func (d Dev) Deploy(ctx context.Context) error {
+	mg.Deps(
+		Dev.Setup, // setup is a pre-requesite and needs to run before we can load images.
+	)
+	mg.Deps(
+		mg.F(Dev.LoadImage, "api-mock"),
+		mg.F(Dev.LoadImage, "addon-operator-manager"),
+		mg.F(Dev.LoadImage, "addon-operator-webhook"),
+	)
+
+	if err := d.deploy(ctx, devEnvironment.Cluster); err != nil {
+		return fmt.Errorf("deploying: %w", err)
+	}
+	return nil
+}
+
+// Deploy all addon operator components to a cluster.
+func (d Dev) deploy(
+	ctx context.Context, cluster *dev.Cluster,
+) error {
+	if err := d.deployAPIMock(ctx, cluster); err != nil {
+		return err
+	}
+
+	if err := d.deployAddonOperatorManager(ctx, cluster); err != nil {
+		return err
+	}
+
+	if enableWebhooks, ok := os.LookupEnv("ENABLE_WEBHOOK"); ok &&
+		enableWebhooks == "true" {
+		if err := d.deployAddonOperatorWebhook(ctx, cluster); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// deploy the API Mock server from local files.
+func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
+	objs, err := dev.LoadKubernetesObjectsFromFile(
+		"config/deploy/api-mock/deployment.yaml.tpl")
+	if err != nil {
+		return fmt.Errorf("loading api-mock deployment.yaml.tpl: %w", err)
+	}
+
+	// Replace image
+	apiMockDeployment := &appsv1.Deployment{}
+	if err := cluster.Scheme.Convert(
+		&objs[0], apiMockDeployment, nil); err != nil {
+		return fmt.Errorf("converting to Deployment: %w", err)
+	}
+	apiMockImage := os.Getenv("API_MOCK_IMAGE")
+	if len(apiMockImage) == 0 {
+		apiMockImage = imageURL("api-mock")
+	}
+	for i := range apiMockDeployment.Spec.Template.Spec.Containers {
+		container := &apiMockDeployment.Spec.Template.Spec.Containers[i]
+
+		switch container.Name {
+		case "manager":
+			container.Image = apiMockImage
+		}
+	}
+
+	// Deploy
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
+		"config/deploy/api-mock/00-namespace.yaml",
+		"config/deploy/api-mock/api-mock.yaml",
+	}, dev.WithLogger(logger)); err != nil {
+		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
+	}
+	if err := cluster.CreateAndWaitForReadiness(ctx, apiMockDeployment, dev.WithLogger(logger)); err != nil {
+		return fmt.Errorf("deploy api-mock: %w", err)
+	}
+	return nil
+}
+
+// deploy the Addon Operator Manager from local files.
+func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluster) error {
+	objs, err := dev.LoadKubernetesObjectsFromFile(
+		"config/deploy/deployment.yaml.tpl")
+	if err != nil {
+		return fmt.Errorf("loading addon-operator-manager deployment.yaml.tpl: %w", err)
+	}
+
+	// Replace image
+	addonOperatorDeployment := &appsv1.Deployment{}
+	if err := cluster.Scheme.Convert(
+		&objs[0], addonOperatorDeployment, nil); err != nil {
+		return fmt.Errorf("converting to Deployment: %w", err)
+	}
+	addonOperatorManagerImage := os.Getenv("ADDON_OPERATOR_MANAGER_IMAGE")
+	if len(addonOperatorManagerImage) == 0 {
+		addonOperatorManagerImage = imageURL("addon-operator-manager")
+	}
+	for i := range addonOperatorDeployment.Spec.Template.Spec.Containers {
+		container := &addonOperatorDeployment.Spec.Template.Spec.Containers[i]
+
+		switch container.Name {
+		case "manager":
+			container.Image = addonOperatorManagerImage
+		}
+	}
+
+	// Deploy
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
+		"config/deploy/00-namespace.yaml",
+		"config/deploy/01-metrics-server-tls-secret.yaml",
+		"config/deploy/addons.managed.openshift.io_addoninstances.yaml",
+		"config/deploy/addons.managed.openshift.io_addonoperators.yaml",
+		"config/deploy/addons.managed.openshift.io_addons.yaml",
+		"config/deploy/rbac.yaml",
+	}, dev.WithLogger(logger)); err != nil {
+		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
+	}
+	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorDeployment, dev.WithLogger(logger)); err != nil {
+		return fmt.Errorf("deploy addon-operator-manager: %w", err)
+	}
+	return nil
+}
+
+// Addon Operator Webhook server from local files.
+func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluster) error {
+	objs, err := dev.LoadKubernetesObjectsFromFile(
+		"config/deploy/webhook/deployment.yaml.tpl")
+	if err != nil {
+		return fmt.Errorf("loading addon-operator-webhook deployment.yaml.tpl: %w", err)
+	}
+
+	// Replace image
+	addonOperatorWebhookDeployment := &appsv1.Deployment{}
+	if err := cluster.Scheme.Convert(
+		&objs[0], addonOperatorWebhookDeployment, nil); err != nil {
+		return fmt.Errorf("converting to Deployment: %w", err)
+	}
+	addonOperatorWebhookImage := os.Getenv("ADDON_OPERATOR_WEBHOOK_IMAGE")
+	if len(addonOperatorWebhookImage) == 0 {
+		addonOperatorWebhookImage = imageURL("addon-operator-webhook")
+	}
+	for i := range addonOperatorWebhookDeployment.Spec.Template.Spec.Containers {
+		container := &addonOperatorWebhookDeployment.Spec.Template.Spec.Containers[i]
+
+		switch container.Name {
+		case "webhook":
+			container.Image = addonOperatorWebhookImage
+		}
+	}
+
+	// Deploy
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
+		"config/deploy/webhook/00-tls-secret.yaml",
+		"config/deploy/webhook/service.yaml",
+		"config/deploy/webhook/validatingwebhookconfig.yaml",
+	}, dev.WithLogger(logger)); err != nil {
+		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
+	}
+	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment, dev.WithLogger(logger)); err != nil {
+		return fmt.Errorf("deploy addon-operator-webhook: %w", err)
+	}
+	return nil
+}
+
+func (d Dev) init() error {
+	mg.Deps(Dependency.Kind)
+
+	devEnvironment = dev.NewEnvironment(
+		"addon-operator-dev",
+		path.Join(cacheDir, "dev-env"),
+		dev.WithLogger(logger),
+		dev.WithClusterOptions([]dev.ClusterOption{
+			dev.WithWaitOptions([]dev.WaitOption{
+				dev.WithTimeout(2 * time.Minute),
+			}),
+		}),
+		dev.WithContainerRuntime(containerRuntime),
+		dev.WithClusterInitializers{
+			dev.ClusterLoadObjectsFromFiles{
+				// OCP APIs required by the AddonOperator.
+				"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
+				"config/ocp/config-operator_01_proxy.crd.yaml",
+				"config/ocp/cluster-version.yaml",
+				"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
+
+				// OpenShift console to interact with OLM.
+				"hack/openshift-console.yaml",
+			},
+			dev.ClusterLoadObjectsFromHttp{
+				// Install OLM.
+				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
+				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
+			},
+			dev.ClusterHelmInstall{
+				RepoName:    "prometheus-community",
+				RepoURL:     "https://prometheus-community.github.io/helm-charts",
+				PackageName: "kube-prometheus-stack",
+				ReleaseName: "prometheus",
+				Namespace:   "monitoring",
+				SetVars: []string{
+					"grafana.enabled=false",
+					"kubeStateMetrics.enabled=false",
+					"nodeExporter.enabled=false",
+				},
+			},
+		})
+	return nil
 }
