@@ -8,15 +8,19 @@ import (
 	"net/http/pprof"
 	"os"
 
+	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/metrics"
 
 	configv1 "github.com/openshift/api/config/v1"
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
@@ -69,6 +73,11 @@ func parseFlags() *options {
 func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder) error {
 	ctx := context.Background()
 
+	addonOperatorNamespace, err := controllers.CurrentNamespace()
+	if err != nil {
+		return err
+	}
+
 	// Create a client that does not cache resources cluster-wide.
 	uncachedClient, err := client.New(
 		mgr.GetConfig(), client.Options{Scheme: mgr.GetScheme(), Mapper: mgr.GetRESTMapper()})
@@ -85,11 +94,13 @@ func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder) error {
 	clusterExternalID := string(cv.Spec.ClusterID)
 
 	addonReconciler := &addoncontroller.AddonReconciler{
-		Client:            mgr.GetClient(),
-		Log:               ctrl.Log.WithName("controllers").WithName("Addon"),
-		Scheme:            mgr.GetScheme(),
-		Recorder:          recorder,
-		ClusterExternalID: clusterExternalID,
+		Client:                 mgr.GetClient(),
+		UncachedClient:         uncachedClient,
+		Log:                    ctrl.Log.WithName("controllers").WithName("Addon"),
+		Scheme:                 mgr.GetScheme(),
+		Recorder:               recorder,
+		ClusterExternalID:      clusterExternalID,
+		AddonOperatorNamespace: addonOperatorNamespace,
 	}
 
 	if err := addonReconciler.SetupWithManager(mgr); err != nil {
@@ -166,6 +177,15 @@ func setup() error {
 		LeaderElectionResourceLock: "leases",
 		LeaderElection:             opts.enableLeaderElection,
 		LeaderElectionID:           "8a4hp84a6s.addon-operator-lock",
+		NewCache: cache.BuilderWithOptions(cache.Options{
+			SelectorsByObject: cache.SelectorsByObject{
+				&corev1.Secret{}: {
+					Label: labels.SelectorFromSet(labels.Set{
+						controllers.CommonManagedByLabel: controllers.CommonManagedByValue,
+					}),
+				},
+			},
+		}),
 	})
 	if err != nil {
 		return fmt.Errorf("unable to start manager: %w", err)

@@ -24,6 +24,8 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [AddonInstallOLMOwnNamespace](#addoninstallolmownnamespaceaddonsmanagedopenshiftiov1alpha1)
 	* [AddonInstallSpec](#addoninstallspecaddonsmanagedopenshiftiov1alpha1)
 	* [AddonNamespace](#addonnamespaceaddonsmanagedopenshiftiov1alpha1)
+	* [AddonSecretPropagation](#addonsecretpropagationaddonsmanagedopenshiftiov1alpha1)
+	* [AddonSecretPropagationReference](#addonsecretpropagationreferenceaddonsmanagedopenshiftiov1alpha1)
 	* [AddonSpec](#addonspecaddonsmanagedopenshiftiov1alpha1)
 	* [AddonStatus](#addonstatusaddonsmanagedopenshiftiov1alpha1)
 	* [AddonUpgradePolicy](#addonupgradepolicyaddonsmanagedopenshiftiov1alpha1)
@@ -217,6 +219,27 @@ AddonInstallSpec defines the desired Addon installation type.
 
 [Back to Group]()
 
+### AddonSecretPropagation.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| secrets |  | [][AddonSecretPropagationReference.addons.managed.openshift.io/v1alpha1](#addonsecretpropagationreferenceaddonsmanagedopenshiftiov1alpha1) | true |
+
+[Back to Group]()
+
+### AddonSecretPropagationReference.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| sourceSecret | Source secret name in the Addon Operator install namespace. | corev1.LocalObjectReference | true |
+| destinationSecret | Destination secret name in every Addon namespace. | corev1.LocalObjectReference | true |
+
+[Back to Group]()
+
 ### AddonSpec.addons.managed.openshift.io/v1alpha1
 
 AddonSpec defines the desired state of Addon.
@@ -231,6 +254,7 @@ AddonSpec defines the desired state of Addon.
 | resourceAdoptionStrategy | ResourceAdoptionStrategy coordinates resource adoption for an Addon Originally introduced for coordinating fleetwide migration on OSD with pre-existing OLM objects. NOTE: This field is for internal usage only and not to be modified by the user. | ResourceAdoptionStrategyType.addons.managed.openshift.io/v1alpha1 | false |
 | upgradePolicy | UpgradePolicy enables status reporting via upgrade policies. | *[AddonUpgradePolicy.addons.managed.openshift.io/v1alpha1](#addonupgradepolicyaddonsmanagedopenshiftiov1alpha1) | false |
 | monitoring | Defines how an addon is monitored. | *[MonitoringSpec.addons.managed.openshift.io/v1alpha1](#monitoringspecaddonsmanagedopenshiftiov1alpha1) | false |
+| secretPropagation | Settings for propagating secrets from the Addon Operator install namespace into Addon namespaces. | *[AddonSecretPropagation.addons.managed.openshift.io/v1alpha1](#addonsecretpropagationaddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()
 

@@ -78,6 +78,7 @@ rules:
   - ""
   resources:
   - namespaces
+  - secrets
   verbs:
   - create
   - get
@@ -116,14 +117,6 @@ rules:
   - watch
   - get
   - list
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - get
-  # can be used to limit RBAC scope:
-  # resourceNames:
 - apiGroups:
   - monitoring.coreos.com
   resources:

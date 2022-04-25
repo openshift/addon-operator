@@ -20,7 +20,7 @@ import (
 // Ensures the presense or absense of an OperatorGroup depending on the Addon install type.
 func (r *AddonReconciler) ensureOperatorGroup(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (requeueResult, error) {
-	targetNamespace, _, stop := r.parseAddonInstallConfig(log, addon)
+	commonConfig, stop := r.parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil
 	}
@@ -28,12 +28,12 @@ func (r *AddonReconciler) ensureOperatorGroup(
 	desiredOperatorGroup := &operatorsv1.OperatorGroup{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      controllers.DefaultOperatorGroupName,
-			Namespace: targetNamespace,
+			Namespace: commonConfig.Namespace,
 			Labels:    map[string]string{},
 		},
 	}
 	if addon.Spec.Install.Type == addonsv1alpha1.OLMOwnNamespace {
-		desiredOperatorGroup.Spec.TargetNamespaces = []string{targetNamespace}
+		desiredOperatorGroup.Spec.TargetNamespaces = []string{commonConfig.Namespace}
 	}
 
 	controllers.AddCommonLabels(desiredOperatorGroup, addon)
