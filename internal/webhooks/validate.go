@@ -10,14 +10,15 @@ import (
 )
 
 var (
-	errSpecInstallTypeInvalid             = errors.New("invalid Addon .spec.install.type")
-	errSpecInstallOwnNamespaceRequired    = errors.New(".spec.install.olmOwnNamespace is required when .spec.install.type = OLMOwnNamespace")
-	errSpecInstallAllNamespacesRequired   = errors.New(".spec.install.olmAllNamespaces is required when .spec.install.type = OLMAllNamespaces")
-	errSpecInstallConfigMutuallyExclusive = errors.New(".spec.install.olmAllNamespaces is mutually exclusive with .spec.install.olmOwnNamespace")
+	errSpecInstallTypeInvalid               = errors.New("invalid Addon .spec.install.type")
+	errSpecInstallOwnNamespaceRequired      = errors.New(".spec.install.olmOwnNamespace is required when .spec.install.type = OLMOwnNamespace")
+	errSpecInstallAllNamespacesRequired     = errors.New(".spec.install.olmAllNamespaces is required when .spec.install.type = OLMAllNamespaces")
+	errSpecInstallConfigMutuallyExclusive   = errors.New(".spec.install.olmAllNamespaces is mutually exclusive with .spec.install.olmOwnNamespace")
+	errAdditionalCatalogSourceNameCollision = errors.New("additional catalog source name collides with the main catalog source name")
 )
 
 func validateAddon(addon *addonsv1alpha1.Addon) error {
-	if err := validateInstallSpec(addon.Spec.Install); err != nil {
+	if err := validateInstallSpec(addon.Spec.Install, addon.Name); err != nil {
 		return err
 	}
 	if err := validateSecretPropagation(addon); err != nil {
@@ -50,7 +51,7 @@ func validateSecretPropagation(addon *addonsv1alpha1.Addon) error {
 	return fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", pullSecretName)
 }
 
-func validateInstallSpec(addonSpecInstall addonsv1alpha1.AddonInstallSpec) error {
+func validateInstallSpec(addonSpecInstall addonsv1alpha1.AddonInstallSpec, addonName string) error {
 	if addonSpecInstall.OLMAllNamespaces != nil &&
 		addonSpecInstall.OLMOwnNamespace != nil {
 		return errSpecInstallConfigMutuallyExclusive
@@ -62,6 +63,15 @@ func validateInstallSpec(addonSpecInstall addonsv1alpha1.AddonInstallSpec) error
 			// missing configuration
 			return errSpecInstallOwnNamespaceRequired
 		}
+		// Check if there is a catalog source name collision.
+		additionalCtlgSrcs := addonSpecInstall.OLMOwnNamespace.AdditionalCatalogSources
+		if len(additionalCtlgSrcs) > 0 {
+			for _, additionalCtlgSrc := range additionalCtlgSrcs {
+				if additionalCtlgSrc.Name == addonName {
+					return errAdditionalCatalogSourceNameCollision
+				}
+			}
+		}
 
 		return nil
 
@@ -69,6 +79,15 @@ func validateInstallSpec(addonSpecInstall addonsv1alpha1.AddonInstallSpec) error
 		if addonSpecInstall.OLMAllNamespaces == nil {
 			// missing configuration
 			return errSpecInstallAllNamespacesRequired
+		}
+		// Check if there is a catalog source name collision.
+		additionalCtlgSrcs := addonSpecInstall.OLMAllNamespaces.AdditionalCatalogSources
+		if len(additionalCtlgSrcs) > 0 {
+			for _, additionalCtlgSrc := range additionalCtlgSrcs {
+				if additionalCtlgSrc.Name == addonName {
+					return errAdditionalCatalogSourceNameCollision
+				}
+			}
 		}
 
 		return nil

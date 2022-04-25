@@ -13,6 +13,7 @@ func Test_validateInstallSpec(t *testing.T) {
 	testCases := []struct {
 		name             string
 		addonInstallSpec addonsv1alpha1.AddonInstallSpec
+		addonName        string
 		expectedErr      error
 	}{
 		{
@@ -50,11 +51,33 @@ func Test_validateInstallSpec(t *testing.T) {
 			},
 			expectedErr: errSpecInstallConfigMutuallyExclusive,
 		},
+		{
+			name: "main catalog and additional catalog source name collision",
+			addonInstallSpec: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+							{
+								Name:  "test-1",
+								Image: "image-1",
+							},
+							{
+								Name:  "test-2",
+								Image: "image-2",
+							},
+						},
+					},
+				},
+			},
+			addonName:   "test-2",
+			expectedErr: errAdditionalCatalogSourceNameCollision,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := validateInstallSpec(tc.addonInstallSpec)
+			err := validateInstallSpec(tc.addonInstallSpec, tc.addonName)
 			assert.EqualValues(t, tc.expectedErr, err)
 		})
 	}
