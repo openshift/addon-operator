@@ -81,6 +81,61 @@ func (r *AddonReconciler) ensureCatalogSource(
 	return resultNil, observedCatalogSource, nil
 }
 
+func (r *AddonReconciler) ensureAdditionalCatalogSources(
+	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
+) (requeueResult, error) {
+	if !HasAdditionalCatalogSources(addon) {
+		return resultNil, nil
+	}
+	additionalCatalogSrcs, targetNamespace, stop := r.parseAddonInstallConfigForAdditionalCatalogSources(
+		log,
+		addon,
+	)
+	if stop {
+		return resultStop, nil
+	}
+	for _, additionalCatalogSrc := range additionalCatalogSrcs {
+		currentCatalogSrc := &operatorsv1alpha1.CatalogSource{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      additionalCatalogSrc.Name,
+				Namespace: targetNamespace,
+			},
+			Spec: operatorsv1alpha1.CatalogSourceSpec{
+				SourceType:  operatorsv1alpha1.SourceTypeGrpc,
+				Publisher:   catalogSourcePublisher,
+				DisplayName: addon.Spec.DisplayName,
+				Image:       additionalCatalogSrc.Image,
+			},
+		}
+		controllers.AddCommonLabels(currentCatalogSrc, addon)
+		if err := controllerutil.SetControllerReference(addon, currentCatalogSrc, r.Scheme); err != nil {
+			return resultNil, err
+		}
+		var observedCatalogSource *operatorsv1alpha1.CatalogSource
+		var err error
+		observedCatalogSource, err = reconcileCatalogSource(ctx, r.Client, currentCatalogSrc, addon.Spec.ResourceAdoptionStrategy)
+		if err != nil {
+			return resultNil, err
+		}
+
+		if observedCatalogSource.Status.GRPCConnectionState == nil {
+			reportAdditionalCatalogSourceUnreadinessStatus(addon, ".Status.GRPCConnectionState is nil")
+			return resultRetry, nil
+		}
+		if observedCatalogSource.Status.GRPCConnectionState.LastObservedState != "READY" {
+			reportAdditionalCatalogSourceUnreadinessStatus(
+				addon,
+				fmt.Sprintf(
+					".Status.GRPCConnectionState.LastObservedState == %s",
+					observedCatalogSource.Status.GRPCConnectionState.LastObservedState,
+				),
+			)
+			return resultRetry, nil
+		}
+	}
+	return resultNil, nil
+}
+
 // reconciles a CatalogSource and returns a new CatalogSource object with observed state.
 // Warning: Will adopt existing CatalogSource
 func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource *operatorsv1alpha1.CatalogSource, strategy addonsv1alpha1.ResourceAdoptionStrategyType) (
