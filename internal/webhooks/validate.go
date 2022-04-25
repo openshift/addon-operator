@@ -97,11 +97,13 @@ func validateAddonImmutability(addon, oldAddon *addonsv1alpha1.Addon) error {
 		oldSpecInstall.OLMAllNamespaces.CatalogSourceImage = ""
 		oldSpecInstall.OLMAllNamespaces.Config = nil
 		oldSpecInstall.OLMAllNamespaces.PullSecretName = ""
+		oldSpecInstall.OLMAllNamespaces.AdditionalCatalogSources = nil
 	}
 	if oldSpecInstall.OLMOwnNamespace != nil {
 		oldSpecInstall.OLMOwnNamespace.CatalogSourceImage = ""
 		oldSpecInstall.OLMOwnNamespace.Config = nil
 		oldSpecInstall.OLMOwnNamespace.PullSecretName = ""
+		oldSpecInstall.OLMOwnNamespace.AdditionalCatalogSources = nil
 	}
 
 	specInstall := addon.Spec.Install.DeepCopy()
@@ -109,11 +111,13 @@ func validateAddonImmutability(addon, oldAddon *addonsv1alpha1.Addon) error {
 		specInstall.OLMAllNamespaces.CatalogSourceImage = ""
 		specInstall.OLMAllNamespaces.Config = nil
 		specInstall.OLMAllNamespaces.PullSecretName = ""
+		specInstall.OLMAllNamespaces.AdditionalCatalogSources = nil
 	}
 	if specInstall.OLMOwnNamespace != nil {
 		specInstall.OLMOwnNamespace.CatalogSourceImage = ""
 		specInstall.OLMOwnNamespace.Config = nil
 		specInstall.OLMOwnNamespace.PullSecretName = ""
+		specInstall.OLMOwnNamespace.AdditionalCatalogSources = nil
 	}
 
 	// Do semantic DeepEqual instead of reflect.DeepEqual
