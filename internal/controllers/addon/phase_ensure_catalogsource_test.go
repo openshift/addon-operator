@@ -212,6 +212,74 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 	}
 }
 
+func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
+	addon := testutil.NewTestAddonWithAdditionalCatalogSource()
+	c := testutil.NewClient()
+	c.On("Get",
+		testutil.IsContext,
+		testutil.IsObjectKey,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+	).Return(testutil.NewTestErrNotFound())
+	c.On("Create",
+		testutil.IsContext,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
+	).Run(func(args mock.Arguments) {
+		arg := args.Get(1).(*operatorsv1alpha1.CatalogSource)
+		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+			LastObservedState: "READY",
+		}
+	}).Return(nil)
+	r := &AddonReconciler{
+		Client: c,
+		Log:    testutil.NewLogger(t),
+		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	}
+
+	log := testutil.NewLogger(t)
+
+	ctx := context.Background()
+	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, log, addon)
+	assert.NoError(t, err)
+	assert.Equal(t, resultNil, requeueResult)
+	c.AssertExpectations(t)
+	c.AssertNumberOfCalls(t, "Get", 2)
+	c.AssertNumberOfCalls(t, "Create", 2)
+}
+
+func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
+	addon := testutil.NewTestAddonWithAdditionalCatalogSourceAndResourceAdoptionStrategy(addonsv1alpha1.ResourceAdoptionAdoptAll)
+	c := testutil.NewClient()
+	c.On("Get",
+		testutil.IsContext,
+		testutil.IsObjectKey,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+	).Run(func(args mock.Arguments) {
+		arg := args.Get(2).(*operatorsv1alpha1.CatalogSource)
+		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+			LastObservedState: "READY",
+		}
+	}).Return(nil)
+	c.On("Update",
+		testutil.IsContext,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
+	).Return(nil)
+	r := &AddonReconciler{
+		Client: c,
+		Log:    testutil.NewLogger(t),
+		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	}
+	log := testutil.NewLogger(t)
+	ctx := context.Background()
+	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, log, addon)
+	assert.NoError(t, err)
+	assert.Equal(t, resultNil, requeueResult)
+	c.AssertExpectations(t)
+	c.AssertNumberOfCalls(t, "Get", 2)
+	c.AssertNumberOfCalls(t, "Update", 2)
+}
+
 func TestEnsureCatalogSource_Update(t *testing.T) {
 	addon := testutil.NewTestAddonWithCatalogSourceImageWithResourceAdoptionStrategy(addonsv1alpha1.ResourceAdoptionAdoptAll)
 
