@@ -214,22 +214,5 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 
 	s.T().Cleanup(func() {
 		s.addonCleanup(addon, ctx)
-
-		// assert that CatalogSource is gone
-		currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
-		err = integration.Client.Get(ctx, types.NamespacedName{
-			Name:      addon.Name,
-			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
-		}, currentCatalogSource)
-		s.Assert().True(k8sApiErrors.IsNotFound(err), "CatalogSource not deleted: %s", currentCatalogSource.Name)
-
-		// assert that all Namespaces are gone
-		for _, namespace := range addon.Spec.Namespaces {
-			currentNamespace := &corev1.Namespace{}
-			err := integration.Client.Get(ctx, types.NamespacedName{
-				Name: namespace.Name,
-			}, currentNamespace)
-			s.Assert().True(k8sApiErrors.IsNotFound(err), "Namespace not deleted: %s", namespace.Name)
-		}
 	})
 }

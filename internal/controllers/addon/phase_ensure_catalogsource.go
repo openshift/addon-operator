@@ -87,7 +87,7 @@ func (r *AddonReconciler) ensureAdditionalCatalogSources(
 	if !HasAdditionalCatalogSources(addon) {
 		return resultNil, nil
 	}
-	additionalCatalogSrcs, targetNamespace, stop := r.parseAddonInstallConfigForAdditionalCatalogSources(
+	additionalCatalogSrcs, targetNamespace, pullSecret, stop := r.parseAddonInstallConfigForAdditionalCatalogSources(
 		log,
 		addon,
 	)
@@ -107,6 +107,13 @@ func (r *AddonReconciler) ensureAdditionalCatalogSources(
 				Image:       additionalCatalogSrc.Image,
 			},
 		}
+
+		if len(pullSecret) > 0 {
+			currentCatalogSrc.Spec.Secrets = []string{
+				pullSecret,
+			}
+		}
+
 		controllers.AddCommonLabels(currentCatalogSrc, addon)
 		if err := controllerutil.SetControllerReference(addon, currentCatalogSrc, r.Scheme); err != nil {
 			return resultNil, err

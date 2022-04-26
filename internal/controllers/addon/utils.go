@@ -233,6 +233,7 @@ func (r *AddonReconciler) parseAddonInstallConfigForAdditionalCatalogSources(
 	log logr.Logger, addon *addonsv1alpha1.Addon) (
 	additionalCatalogSrcs []addonsv1alpha1.AdditionalCatalogSource,
 	targetNamespace string,
+	pullSecretName string,
 	stop bool) {
 	switch addon.Spec.Install.Type {
 	case addonsv1alpha1.OLMOwnNamespace:
@@ -241,10 +242,11 @@ func (r *AddonReconciler) parseAddonInstallConfigForAdditionalCatalogSources(
 				reportConfigurationError(addon,
 					".spec.install.ownNamespace.additionalCatalogSources"+
 						"requires both image and name")
-				return []addonsv1alpha1.AdditionalCatalogSource{}, "", true
+				return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
 			}
 			additionalCatalogSrcs = append(additionalCatalogSrcs, additionalCatalogSrc)
 			targetNamespace = addon.Spec.Install.OLMOwnNamespace.Namespace
+			pullSecretName = addon.Spec.Install.OLMOwnNamespace.PullSecretName
 		}
 	case addonsv1alpha1.OLMAllNamespaces:
 		for _, additionalCatalogSrc := range addon.Spec.Install.OLMAllNamespaces.AdditionalCatalogSources {
@@ -252,9 +254,10 @@ func (r *AddonReconciler) parseAddonInstallConfigForAdditionalCatalogSources(
 				reportConfigurationError(addon,
 					".spec.install.allNamespaces.additionalCatalogSources"+
 						"requires both image and name")
-				return []addonsv1alpha1.AdditionalCatalogSource{}, "", true
+				return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
 			}
 			targetNamespace = addon.Spec.Install.OLMAllNamespaces.Namespace
+			pullSecretName = addon.Spec.Install.OLMAllNamespaces.PullSecretName
 			additionalCatalogSrcs = append(additionalCatalogSrcs, additionalCatalogSrc)
 		}
 	default:
@@ -263,9 +266,9 @@ func (r *AddonReconciler) parseAddonInstallConfigForAdditionalCatalogSources(
 		// The .install.type property is set to only allow known enum values.
 		log.Error(fmt.Errorf("invalid Addon install type: %q", addon.Spec.Install.Type),
 			"stopping Addon reconcilation")
-		return []addonsv1alpha1.AdditionalCatalogSource{}, "", true
+		return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
 	}
-	return additionalCatalogSrcs, targetNamespace, false
+	return additionalCatalogSrcs, targetNamespace, pullSecretName, false
 }
 
 // HasMonitoringFederation is a helper to determine if a given addon's spec
