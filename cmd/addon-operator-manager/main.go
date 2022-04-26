@@ -90,19 +90,18 @@ func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder) error {
 	if err := uncachedClient.Get(ctx, client.ObjectKey{Name: "version"}, cv); err != nil {
 		return fmt.Errorf("getting clusterversion: %w", err)
 	}
-	// calling this external ID to differenciate it from the cluster ID we use to contact OCM
+	// calling this external ID to differentiate it from the cluster ID we use to contact OCM
 	clusterExternalID := string(cv.Spec.ClusterID)
 
-	addonReconciler := &addoncontroller.AddonReconciler{
-		Client:                 mgr.GetClient(),
-		UncachedClient:         uncachedClient,
-		Log:                    ctrl.Log.WithName("controllers").WithName("Addon"),
-		Scheme:                 mgr.GetScheme(),
-		Recorder:               recorder,
-		ClusterExternalID:      clusterExternalID,
-		AddonOperatorNamespace: addonOperatorNamespace,
-	}
-
+	addonReconciler := addoncontroller.NewAddonReconciler(
+		mgr.GetClient(),
+		uncachedClient,
+		ctrl.Log.WithName("controllers").WithName("Addon"),
+		mgr.GetScheme(),
+		recorder,
+		clusterExternalID,
+		addonOperatorNamespace,
+	)
 	if err := addonReconciler.SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create Addon controller: %w", err)
 	}
@@ -181,7 +180,7 @@ func setup() error {
 			SelectorsByObject: cache.SelectorsByObject{
 				&corev1.Secret{}: {
 					Label: labels.SelectorFromSet(labels.Set{
-						controllers.CommonManagedByLabel: controllers.CommonManagedByValue,
+						controllers.CommonCacheLabel: controllers.CommonCacheValue,
 					}),
 				},
 			},

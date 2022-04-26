@@ -13,9 +13,11 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
 )
 
@@ -90,19 +92,18 @@ func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
 		mock.Anything,
 	).Return(nil)
 
-	r := &AddonReconciler{
-		Client:                 c,
-		UncachedClient:         uncachedC,
-		Log:                    testutil.NewLogger(t),
-		Scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
-		AddonOperatorNamespace: "xxx-addon-operator",
+	r := &addonSecretPropagationReconciler{
+		cachedClient:           c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	ctx := context.Background()
-	secret, result, err := getReferencedSecret(ctx, r.Log.WithName("pullsecret"), c, uncachedC, r.Scheme, addon, addonPullSecretKey)
+	secret, result, err := r.getReferencedSecret(ctx, addon, addonPullSecretKey)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, resultNil, result)
+	assert.Equal(t, ctrl.Result{}, result) // empty reconcile result
 	assert.NotNil(t, secret)
 }
 
@@ -144,19 +145,20 @@ func Test_getReferencedPullSecret_retry(t *testing.T) {
 		).
 		Return(testutil.NewTestErrNotFound())
 
-	r := &AddonReconciler{
-		Client:                 c,
-		UncachedClient:         uncachedC,
-		Log:                    testutil.NewLogger(t),
-		Scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
-		AddonOperatorNamespace: "xxx-addon-operator",
+	r := &addonSecretPropagationReconciler{
+		cachedClient:           c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	ctx := context.Background()
-	secret, result, err := getReferencedSecret(ctx, r.Log.WithName("pullsecret"), c, uncachedC, r.Scheme, addon, addonPullSecretKey)
+	secret, result, err := r.getReferencedSecret(ctx, addon, addonPullSecretKey)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, resultRetry, result)
+	assert.Equal(t, ctrl.Result{
+		RequeueAfter: defaultRetryAfterTime,
+	}, result) // retry
 	assert.Nil(t, secret)
 
 	condition := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.AddonOperatorAvailable)
@@ -352,24 +354,24 @@ func TestEnsureSecretPropagation(t *testing.T) {
 		On("Delete", testutil.IsContext, secretToDelete, mock.Anything).
 		Return(nil)
 
-	r := &AddonReconciler{
-		Client:                 c,
-		Log:                    testutil.NewLogger(t),
-		Scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
-		AddonOperatorNamespace: "xxx-addon-operator",
+	r := &addonSecretPropagationReconciler{
+		cachedClient:           c,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	ctx := context.Background()
-	result, err := r.ensureSecretPropagation(ctx, r.Log.WithName("pullsecret"), addon)
+	result, err := r.Reconcile(ctx, addon)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, resultNil, result)
+	assert.Equal(t, ctrl.Result{}, result)
 
 	if assert.NotNil(t, createdDestSecret) {
 		assert.Equal(t, srcSecret1.Type, createdDestSecret.Type)
 		assert.Equal(t, map[string]string{
-			"app.kubernetes.io/instance":   "addon-xxx",
-			"app.kubernetes.io/managed-by": "addon-operator",
+			controllers.CommonInstanceLabel:  "addon-xxx",
+			controllers.CommonManagedByLabel: controllers.CommonManagedByValue,
+			controllers.CommonCacheLabel:     controllers.CommonCacheValue,
 		}, createdDestSecret.Labels)
 	}
 }
@@ -421,16 +423,14 @@ func TestEnsureSecretPropagation_cleanup_when_nil(t *testing.T) {
 		On("Delete", testutil.IsContext, secretToDelete, mock.Anything).
 		Return(nil)
 
-	r := &AddonReconciler{
-		Client:                 c,
-		Log:                    testutil.NewLogger(t),
-		Scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
-		AddonOperatorNamespace: "xxx-addon-operator",
+	r := &addonSecretPropagationReconciler{
+		cachedClient:           c,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
-
 	ctx := context.Background()
-	result, err := r.ensureSecretPropagation(ctx, r.Log.WithName("pullsecret"), addon)
+	result, err := r.Reconcile(ctx, addon)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, resultNil, result)
+	assert.Equal(t, ctrl.Result{}, result)
 }

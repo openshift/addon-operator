@@ -39,12 +39,16 @@ func TestAddCommonLabels(t *testing.T) {
 	AddCommonLabels(obj, addon)
 
 	labels := obj.GetLabels()
-	if labels[commonInstanceLabel] != addon.Name {
+	if labels[CommonInstanceLabel] != addon.Name {
 		t.Error("commonInstanceLabel was not set to addon name")
 	}
 
 	if labels[CommonManagedByLabel] != CommonManagedByValue {
 		t.Error("commonManagedByLabel was not set to operator name")
+	}
+
+	if labels[CommonCacheLabel] != CommonCacheValue {
+		t.Error("commonCacheLabel was not set to operator name")
 	}
 }
 
