@@ -46,43 +46,6 @@ func TestReconcileSecret_CreateWithClientError(t *testing.T) {
 	}, mock.IsType(&corev1.Secret{}))
 }
 
-func TestEnsureSecretPropagation_NoOp(t *testing.T) {
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{},
-		Spec: addonsv1alpha1.AddonSpec{
-			Namespaces: []addonsv1alpha1.AddonNamespace{
-				{Name: "test"},
-			},
-			Install: addonsv1alpha1.AddonInstallSpec{
-				Type: addonsv1alpha1.OLMOwnNamespace,
-				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
-					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
-						CatalogSourceImage: "xxx",
-						Namespace:          "test",
-					},
-				},
-			},
-			// not set -> no op
-			// SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{},
-		},
-	}
-
-	c := testutil.NewClient() // default cached client
-
-	r := &AddonReconciler{
-		Client:                 c,
-		Log:                    testutil.NewLogger(t),
-		Scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
-		AddonOperatorNamespace: "xxx-addon-operator",
-	}
-
-	ctx := context.Background()
-	result, err := r.ensureSecretPropagation(ctx, r.Log.WithName("pullsecret"), addon)
-	c.AssertExpectations(t)
-	require.NoError(t, err)
-	assert.Equal(t, resultNil, result)
-}
-
 func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
 	addon := &addonsv1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{},
@@ -403,4 +366,65 @@ func TestEnsureSecretPropagation(t *testing.T) {
 			"app.kubernetes.io/managed-by": "addon-operator",
 		}, createdDestSecret.Labels)
 	}
+}
+
+func TestEnsureSecretPropagation_cleanup_when_nil(t *testing.T) {
+	addon := &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-xxx",
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			Namespaces: []addonsv1alpha1.AddonNamespace{
+				{Name: "test"},
+			},
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						CatalogSourceImage: "xxx",
+						Namespace:          "test",
+					},
+				},
+			},
+			SecretPropagation: nil,
+		},
+	}
+
+	c := testutil.NewClient() // default cached client
+
+	secretToDelete := &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test",
+			Namespace: "xxx",
+		},
+	}
+	c.
+		On("List", testutil.IsContext, mock.IsType(&corev1.SecretList{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			out := args.Get(1).(*corev1.SecretList)
+			*out = corev1.SecretList{
+				Items: []corev1.Secret{
+					// this is some leftover secret on the cluster,
+					// it should be deleted
+					*secretToDelete,
+				},
+			}
+		}).
+		Return(nil)
+	c.
+		On("Delete", testutil.IsContext, secretToDelete, mock.Anything).
+		Return(nil)
+
+	r := &AddonReconciler{
+		Client:                 c,
+		Log:                    testutil.NewLogger(t),
+		Scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		AddonOperatorNamespace: "xxx-addon-operator",
+	}
+
+	ctx := context.Background()
+	result, err := r.ensureSecretPropagation(ctx, r.Log.WithName("pullsecret"), addon)
+	c.AssertExpectations(t)
+	require.NoError(t, err)
+	assert.Equal(t, resultNil, result)
 }

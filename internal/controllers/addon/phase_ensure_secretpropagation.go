@@ -21,14 +21,14 @@ func (r *AddonReconciler) ensureSecretPropagation(
 	ctx context.Context, log logr.Logger,
 	addon *addonsv1alpha1.Addon,
 ) (requeueResult, error) {
-	if addon.Spec.SecretPropagation == nil {
-		// nothing to do
-		return resultNil, nil
+	var secrets []addonsv1alpha1.AddonSecretPropagationReference
+	if addon.Spec.SecretPropagation != nil {
+		secrets = addon.Spec.SecretPropagation.Secrets
 	}
 
 	// Lookup source secrets
 	var destinationSecrets []corev1.Secret
-	for _, secretRef := range addon.Spec.SecretPropagation.Secrets {
+	for _, secretRef := range secrets {
 		srcSecret, result, err := getReferencedSecret(ctx, log, r.Client, r.UncachedClient, addon, client.ObjectKey{
 			Name:      secretRef.SourceSecret.Name,
 			Namespace: r.AddonOperatorNamespace,
