@@ -27,6 +27,7 @@ var (
 		{Name: "TESTING2", Value: "TRUE"},
 	}
 
+	defaultReconcileTimeout         = 1 * time.Minute
 	defaultAddonDeletionTimeout     = 4 * time.Minute
 	defaultAddonAvailabilityTimeout = 10 * time.Minute
 

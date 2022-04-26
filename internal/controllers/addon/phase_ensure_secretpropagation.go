@@ -7,6 +7,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -29,7 +30,7 @@ func (r *AddonReconciler) ensureSecretPropagation(
 	// Lookup source secrets
 	var destinationSecrets []corev1.Secret
 	for _, secretRef := range secrets {
-		srcSecret, result, err := getReferencedSecret(ctx, log, r.Client, r.UncachedClient, addon, client.ObjectKey{
+		srcSecret, result, err := getReferencedSecret(ctx, log, r.Client, r.UncachedClient, r.Scheme, addon, client.ObjectKey{
 			Name:      secretRef.SourceSecret.Name,
 			Namespace: r.AddonOperatorNamespace,
 		})
@@ -95,32 +96,43 @@ func getReferencedSecret(
 	ctx context.Context,
 	log logr.Logger,
 	c client.Client, uncachedClient client.Client,
+	scheme *runtime.Scheme,
 	addon *addonsv1alpha1.Addon,
 	pullSecretKey client.ObjectKey,
 ) (*corev1.Secret, requeueResult, error) {
 	// Lookup configured secret.
-	addonPullSecret := &corev1.Secret{}
+	referencedSecret := &corev1.Secret{}
 
-	err := c.Get(ctx, pullSecretKey, addonPullSecret)
+	err := c.Get(ctx, pullSecretKey, referencedSecret)
 	if errors.IsNotFound(err) {
 		// the referenced secret might not be labeled correctly for the cache to pick up,
 		// fallback to a uncached read to discover.
-		if err := uncachedClient.Get(ctx, pullSecretKey, addonPullSecret); errors.IsNotFound(err) {
+		if err := uncachedClient.Get(ctx, pullSecretKey, referencedSecret); errors.IsNotFound(err) {
 			// Secret does not exist for sure, break and keep retrying later.
 			reportPendingStatus(addon, addonsv1alpha1.AddonReasonMissingSecretForPropagation, err.Error())
 			return nil, resultRetry, nil
 		} else if err != nil {
-			return addonPullSecret, resultNil, fmt.Errorf("getting addonPullSecret via uncached client: %w", err)
+			return nil, resultNil, fmt.Errorf("getting source Secret for propagation via uncached client: %w", err)
 		}
 		log.Info(
 			fmt.Sprintf(
-				"found addon pull secret via uncached read, ensure the referenced secret is labeled with %s=%s",
+				"found addon pull secret via uncached read, ensuring the referenced secret is labeled with %s=%s",
 				controllers.CommonManagedByLabel, controllers.CommonManagedByValue),
 		)
+
+		// Update Secret to ensure it is part of our cache and we get events to reconcile.
+		updatedReferenceSecret := referencedSecret.DeepCopy()
+		if err := controllerutil.SetOwnerReference(addon, updatedReferenceSecret, scheme); err != nil {
+			return nil, resultNil, fmt.Errorf("adding OwnerReference for AddonOperator to referenced source Secret: %w", err)
+		}
+		controllers.AddCommonLabels(updatedReferenceSecret, addon)
+		if err := c.Patch(ctx, updatedReferenceSecret, client.MergeFrom(referencedSecret)); err != nil {
+			return nil, resultNil, fmt.Errorf("patching source Secret for cache and ownership: %w", err)
+		}
 	} else if err != nil {
-		return addonPullSecret, resultNil, fmt.Errorf("getting addonPullSecret: %w", err)
+		return referencedSecret, resultNil, fmt.Errorf("getting source Secret for propagation: %w", err)
 	}
-	return addonPullSecret, resultNil, nil
+	return referencedSecret, resultNil, nil
 }
 
 func reconcileSecret(

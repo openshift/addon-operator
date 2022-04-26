@@ -135,7 +135,7 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			Type: &corev1.Secret{},
 		}, &handler.EnqueueRequestForOwner{
 			OwnerType:    &addonsv1alpha1.Addon{},
-			IsController: false, // this is why we can't just use Owns()
+			IsController: false, // We don't "control" the source secret, so we are only adding ourselves as owner/watcher
 		}).
 		Watches(&source.Kind{
 			Type: &operatorsv1alpha1.ClusterServiceVersion{},

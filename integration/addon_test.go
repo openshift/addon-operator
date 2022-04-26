@@ -1,7 +1,9 @@
 package integration_test
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -84,6 +86,33 @@ func (s *integrationTestSuite) TestAddon() {
 			}
 			err := integration.Client.Get(ctx, key, destSecret)
 			s.Assert().NoError(err, "could not get propagated Secret %s", key)
+		}
+	})
+
+	s.Run("changes to secrets are propagated", func() {
+		updatedUsername := []byte("hans")
+
+		// Update secret data
+		updatedSrcSecret1 := srcSecret1.DeepCopy()
+		updatedSrcSecret1.Data[corev1.BasicAuthUsernameKey] = updatedUsername
+		s.Require().NoError(integration.Client.Patch(ctx, updatedSrcSecret1, client.MergeFrom(updatedSrcSecret1)))
+
+		for _, namespace := range addon.Spec.Namespaces {
+			destSecret := &corev1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      secretPropagationDestName,
+					Namespace: namespace.Name,
+				},
+			}
+			err := integration.WaitForObject(
+				s.T(), defaultReconcileTimeout, destSecret,
+				fmt.Sprintf("Wait for destination secret %s to be updated", client.ObjectKeyFromObject(destSecret)),
+				func(obj client.Object) (done bool, err error) {
+					secret := obj.(*corev1.Secret)
+					done = bytes.Equal(secret.Data[corev1.BasicAuthUsernameKey], updatedUsername)
+					return
+				})
+			s.Assert().NoError(err, "secret data has not been reconciled")
 		}
 	})
 

@@ -83,6 +83,12 @@ func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
 			mock.IsType(&corev1.Secret{}),
 		).
 		Return(nil)
+	c.On("Patch", // patch referenced Secret to add it to cache
+		testutil.IsContext,
+		mock.IsType(&corev1.Secret{}),
+		mock.Anything,
+		mock.Anything,
+	).Return(nil)
 
 	r := &AddonReconciler{
 		Client:                 c,
@@ -93,7 +99,7 @@ func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	secret, result, err := getReferencedSecret(ctx, r.Log.WithName("pullsecret"), c, uncachedC, addon, addonPullSecretKey)
+	secret, result, err := getReferencedSecret(ctx, r.Log.WithName("pullsecret"), c, uncachedC, r.Scheme, addon, addonPullSecretKey)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
 	assert.Equal(t, resultNil, result)
@@ -147,7 +153,7 @@ func Test_getReferencedPullSecret_retry(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	secret, result, err := getReferencedSecret(ctx, r.Log.WithName("pullsecret"), c, uncachedC, addon, addonPullSecretKey)
+	secret, result, err := getReferencedSecret(ctx, r.Log.WithName("pullsecret"), c, uncachedC, r.Scheme, addon, addonPullSecretKey)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
 	assert.Equal(t, resultRetry, result)
