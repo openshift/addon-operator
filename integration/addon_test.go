@@ -95,7 +95,7 @@ func (s *integrationTestSuite) TestAddon() {
 		// Update secret data
 		updatedSrcSecret1 := srcSecret1.DeepCopy()
 		updatedSrcSecret1.Data[corev1.BasicAuthUsernameKey] = updatedUsername
-		s.Require().NoError(integration.Client.Patch(ctx, updatedSrcSecret1, client.MergeFrom(updatedSrcSecret1)))
+		s.Require().NoError(integration.Client.Patch(ctx, srcSecret1, client.MergeFrom(updatedSrcSecret1)))
 
 		for _, namespace := range addon.Spec.Namespaces {
 			destSecret := &corev1.Secret{
