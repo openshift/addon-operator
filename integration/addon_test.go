@@ -7,6 +7,7 @@ import (
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
+	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -179,25 +180,25 @@ func (s *integrationTestSuite) TestAddon() {
 		}
 	})
 
-	// s.T().Cleanup(func() {
+	s.T().Cleanup(func() {
 
-	// 	s.addonCleanup(addon, ctx)
+		s.addonCleanup(addon, ctx)
 
-	// 	// assert that CatalogSource is gone
-	// 	currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
-	// 	err = integration.Client.Get(ctx, client.ObjectKey{
-	// 		Name:      addon.Name,
-	// 		Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
-	// 	}, currentCatalogSource)
-	// 	s.Assert().True(k8sApiErrors.IsNotFound(err), "CatalogSource not deleted: %s", currentCatalogSource.Name)
+		// assert that CatalogSource is gone
+		currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
+		err = integration.Client.Get(ctx, client.ObjectKey{
+			Name:      addon.Name,
+			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
+		}, currentCatalogSource)
+		s.Assert().True(k8sApiErrors.IsNotFound(err), "CatalogSource not deleted: %s", currentCatalogSource.Name)
 
-	// 	// assert that all Namespaces are gone
-	// 	for _, namespace := range addon.Spec.Namespaces {
-	// 		currentNamespace := &corev1.Namespace{}
-	// 		err := integration.Client.Get(ctx, client.ObjectKey{
-	// 			Name: namespace.Name,
-	// 		}, currentNamespace)
-	// 		s.Assert().True(k8sApiErrors.IsNotFound(err), "Namespace not deleted: %s", namespace.Name)
-	// 	}
-	// })
+		// assert that all Namespaces are gone
+		for _, namespace := range addon.Spec.Namespaces {
+			currentNamespace := &corev1.Namespace{}
+			err := integration.Client.Get(ctx, client.ObjectKey{
+				Name: namespace.Name,
+			}, currentNamespace)
+			s.Assert().True(k8sApiErrors.IsNotFound(err), "Namespace not deleted: %s", namespace.Name)
+		}
+	})
 }
