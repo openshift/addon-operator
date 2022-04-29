@@ -135,6 +135,11 @@ func reportCatalogSourceUnreadinessStatus(addon *addonsv1alpha1.Addon, message s
 		fmt.Sprintf("CatalogSource connection is not ready: %s", message))
 }
 
+func reportAdditionalCatalogSourceUnreadinessStatus(addon *addonsv1alpha1.Addon, message string) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyAdditionalCatalogSource,
+		fmt.Sprintf("CatalogSource connection is not ready: %s", message))
+}
+
 func reportUnreadyNamespaces(addon *addonsv1alpha1.Addon, unreadyNamespaces []string) {
 	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyNamespaces,
 		fmt.Sprintf("Namespaces not yet in Active phase: %s", strings.Join(unreadyNamespaces, ", ")))
@@ -188,7 +193,7 @@ func (r *AddonReconciler) parseAddonInstallConfig(
 		if len(addon.Spec.Install.OLMOwnNamespace.CatalogSourceImage) == 0 {
 			// invalid/missing configuration
 			reportConfigurationError(addon,
-				".spec.install.ownNamespacee.catalogSourceImage is"+
+				".spec.install.ownNamespace.catalogSourceImage is"+
 					"required when .spec.install.type = OwnNamespace")
 			return nil, true
 		}
@@ -224,10 +229,65 @@ func (r *AddonReconciler) parseAddonInstallConfig(
 	}
 }
 
+func (r *AddonReconciler) parseAddonInstallConfigForAdditionalCatalogSources(
+	log logr.Logger, addon *addonsv1alpha1.Addon) (
+	additionalCatalogSrcs []addonsv1alpha1.AdditionalCatalogSource,
+	targetNamespace string,
+	pullSecretName string,
+	stop bool) {
+	switch addon.Spec.Install.Type {
+	case addonsv1alpha1.OLMOwnNamespace:
+		for _, additionalCatalogSrc := range addon.Spec.Install.OLMOwnNamespace.AdditionalCatalogSources {
+			if len(additionalCatalogSrc.Image) == 0 || len(additionalCatalogSrc.Name) == 0 {
+				reportConfigurationError(addon,
+					".spec.install.ownNamespace.additionalCatalogSources"+
+						"requires both image and name")
+				return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
+			}
+			additionalCatalogSrcs = append(additionalCatalogSrcs, additionalCatalogSrc)
+			targetNamespace = addon.Spec.Install.OLMOwnNamespace.Namespace
+			pullSecretName = addon.Spec.Install.OLMOwnNamespace.PullSecretName
+		}
+	case addonsv1alpha1.OLMAllNamespaces:
+		for _, additionalCatalogSrc := range addon.Spec.Install.OLMAllNamespaces.AdditionalCatalogSources {
+			if len(additionalCatalogSrc.Image) == 0 || len(additionalCatalogSrc.Name) == 0 {
+				reportConfigurationError(addon,
+					".spec.install.allNamespaces.additionalCatalogSources"+
+						"requires both image and name")
+				return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
+			}
+			targetNamespace = addon.Spec.Install.OLMAllNamespaces.Namespace
+			pullSecretName = addon.Spec.Install.OLMAllNamespaces.PullSecretName
+			additionalCatalogSrcs = append(additionalCatalogSrcs, additionalCatalogSrc)
+		}
+	default:
+		// Unsupported Install Type
+		// This should never happen, unless the schema validation is wrong.
+		// The .install.type property is set to only allow known enum values.
+		log.Error(fmt.Errorf("invalid Addon install type: %q", addon.Spec.Install.Type),
+			"stopping Addon reconcilation")
+		return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
+	}
+	return additionalCatalogSrcs, targetNamespace, pullSecretName, false
+}
+
 // HasMonitoringFederation is a helper to determine if a given addon's spec
 // defines a Monitoring.Federation.
 func HasMonitoringFederation(addon *addonsv1alpha1.Addon) bool {
 	return addon.Spec.Monitoring != nil && addon.Spec.Monitoring.Federation != nil
+}
+
+// HasAdditionalCatalogSources determines whether the passed addon's spec
+// contains additional catalog sources
+func HasAdditionalCatalogSources(addon *addonsv1alpha1.Addon) bool {
+	switch addon.Spec.Install.Type {
+	case addonsv1alpha1.OLMOwnNamespace:
+		return len(addon.Spec.Install.OLMOwnNamespace.AdditionalCatalogSources) > 0
+	case addonsv1alpha1.OLMAllNamespaces:
+		return len(addon.Spec.Install.OLMAllNamespaces.AdditionalCatalogSources) > 0
+	default:
+		return false
+	}
 }
 
 // Helper function to compute monitoring Namespace name from addon object

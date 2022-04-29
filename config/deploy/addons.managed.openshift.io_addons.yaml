@@ -60,6 +60,24 @@ spec:
                     description: OLMAllNamespaces config parameters. Present only
                       if Type = OLMAllNamespaces.
                     properties:
+                      additionalCatalogSources:
+                        description: Additional catalog source objects to be created
+                          in the cluster
+                        items:
+                          properties:
+                            image:
+                              description: Image url of the additional catalog source
+                              minLength: 1
+                              type: string
+                            name:
+                              description: Name of the additional catalog source
+                              minLength: 1
+                              type: string
+                          required:
+                          - image
+                          - name
+                          type: object
+                        type: array
                       catalogSourceImage:
                         description: Defines the CatalogSource image.
                         minLength: 1
@@ -119,6 +137,24 @@ spec:
                     description: OLMOwnNamespace config parameters. Present only if
                       Type = OLMOwnNamespace.
                     properties:
+                      additionalCatalogSources:
+                        description: Additional catalog source objects to be created
+                          in the cluster
+                        items:
+                          properties:
+                            image:
+                              description: Image url of the additional catalog source
+                              minLength: 1
+                              type: string
+                            name:
+                              description: Name of the additional catalog source
+                              minLength: 1
+                              type: string
+                          required:
+                          - image
+                          - name
+                          type: object
+                        type: array
                       catalogSourceImage:
                         description: Defines the CatalogSource image.
                         minLength: 1

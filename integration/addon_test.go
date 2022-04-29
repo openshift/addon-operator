@@ -173,3 +173,46 @@ func (s *integrationTestSuite) TestAddon() {
 		}
 	})
 }
+
+func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
+	ctx := context.Background()
+
+	addon := addonWithAdditionalCatalogSource()
+
+	err := integration.Client.Create(ctx, addon)
+	s.Require().NoError(err)
+	// wait until Addon is available
+	err = integration.WaitForObject(
+		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
+		func(obj client.Object) (done bool, err error) {
+			a := obj.(*addonsv1alpha1.Addon)
+			return meta.IsStatusConditionTrue(
+				a.Status.Conditions, addonsv1alpha1.Available), nil
+		})
+	s.Require().NoError(err)
+
+	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+	s.Require().NoError(err)
+	s.Assert().Equal(addon.Spec.Version, addon.Status.ObservedVersion, "addon version should be reported")
+
+	s.Run("test_additional_catalogsource", func() {
+		catalogSourceList := &operatorsv1alpha1.CatalogSourceList{}
+		err := integration.Client.List(ctx, catalogSourceList,
+			client.InNamespace(addon.Spec.Install.OLMOwnNamespace.Namespace),
+		)
+		s.Assert().NoError(err, "could not get CatalogSource %s", addon.Name)
+		s.Assert().Equal(3, len(catalogSourceList.Items))
+		expectedImages := map[string]string{
+			"test-1":   referenceAddonCatalogSourceImageWorking,
+			"test-2":   referenceAddonCatalogSourceImageWorking,
+			addon.Name: referenceAddonCatalogSourceImageWorking,
+		}
+		for _, ctlgSrc := range catalogSourceList.Items {
+			s.Assert().Equal(expectedImages[ctlgSrc.Name], ctlgSrc.Spec.Image)
+		}
+	})
+
+	s.T().Cleanup(func() {
+		s.addonCleanup(addon, ctx)
+	})
+}
