@@ -51,6 +51,39 @@ type AddonReconciler struct {
 
 	ocmClient    ocmClient
 	ocmClientMux sync.RWMutex
+
+	secretPropagationReconciler addonReconciler
+}
+
+type addonReconciler interface {
+	Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error)
+}
+
+func NewAddonReconciler(
+	client client.Client,
+	uncachedClient client.Client,
+	log logr.Logger,
+	scheme *runtime.Scheme,
+	recorder *metrics.Recorder,
+	clusterExternalID string,
+	addonOperatorNamespace string,
+) *AddonReconciler {
+	return &AddonReconciler{
+		Client:                 client,
+		UncachedClient:         uncachedClient,
+		Log:                    log,
+		Scheme:                 scheme,
+		Recorder:               recorder,
+		ClusterExternalID:      clusterExternalID,
+		AddonOperatorNamespace: addonOperatorNamespace,
+
+		secretPropagationReconciler: &addonSecretPropagationReconciler{
+			cachedClient:           client,
+			uncachedClient:         uncachedClient,
+			scheme:                 scheme,
+			addonOperatorNamespace: addonOperatorNamespace,
+		},
+	}
 }
 
 type ocmClient interface {
@@ -135,7 +168,7 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			Type: &corev1.Secret{},
 		}, &handler.EnqueueRequestForOwner{
 			OwnerType:    &addonsv1alpha1.Addon{},
-			IsController: false, // this is why we can't just use Owns()
+			IsController: false, // We don't "control" the source secret, so we are only adding ourselves as owner/watcher
 		}).
 		Watches(&source.Kind{
 			Type: &operatorsv1alpha1.ClusterServiceVersion{},
@@ -226,10 +259,10 @@ func (r *AddonReconciler) Reconcile(
 
 	// Phase 3.
 	// Ensure the addon-pullsecret secrets are in all namespaces
-	if requeueResult, err := r.ensureSecretPropagation(ctx, log, addon); err != nil {
+	if result, err := r.secretPropagationReconciler.Reconcile(ctx, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure pull secret: %w", err)
-	} else if requeueResult != resultNil {
-		return r.handleExit(requeueResult), nil
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// Phase 4.

@@ -14,7 +14,9 @@ import (
 const (
 	CommonManagedByLabel = "app.kubernetes.io/managed-by"
 	CommonManagedByValue = "addon-operator"
-	commonInstanceLabel  = "app.kubernetes.io/instance"
+	CommonCacheLabel     = "addons.managed.openshift.io/cached"
+	CommonCacheValue     = "addon-operator"
+	CommonInstanceLabel  = "app.kubernetes.io/instance"
 )
 
 func AddCommonLabels(obj metav1.Object, addon *addonsv1alpha1.Addon) {
@@ -24,14 +26,16 @@ func AddCommonLabels(obj metav1.Object, addon *addonsv1alpha1.Addon) {
 	}
 
 	labels[CommonManagedByLabel] = CommonManagedByValue
-	labels[commonInstanceLabel] = addon.Name
+	labels[CommonCacheLabel] = CommonCacheValue
+	labels[CommonInstanceLabel] = addon.Name
 	obj.SetLabels(labels)
 }
 
 func CommonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) labels.Selector {
 	labelSet := make(labels.Set)
 	labelSet[CommonManagedByLabel] = CommonManagedByValue
-	labelSet[commonInstanceLabel] = addon.Name
+	labelSet[CommonCacheLabel] = CommonCacheValue
+	labelSet[CommonInstanceLabel] = addon.Name
 	return labelSet.AsSelector()
 }
 
