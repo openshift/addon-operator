@@ -47,6 +47,7 @@ func (s *integrationTestSuite) TestMonitoringFederation_MonitoringInPlaceAtCreat
 			Monitoring: &addonsv1alpha1.MonitoringSpec{
 				Federation: &addonsv1alpha1.MonitoringFederationSpec{
 					Namespace:  "namespace-a9953682ff70d594",
+					PortName:   "https",
 					MatchNames: []string{"some_timeseries"},
 					MatchLabels: map[string]string{
 						"foo": "bar",
@@ -168,6 +169,7 @@ func (s *integrationTestSuite) TestMonitoringFederation_MonitoringNotInPlaceAtCr
 	addon.Spec.Monitoring = &addonsv1alpha1.MonitoringSpec{
 		Federation: &addonsv1alpha1.MonitoringFederationSpec{
 			Namespace:  "namespace-xoh2pa0l",
+			PortName:   "https",
 			MatchNames: []string{"some_timeseries"},
 			MatchLabels: map[string]string{
 				"foo": "bar",
@@ -208,10 +210,11 @@ func validateMonitoringFederationServiceMonitor(t *testing.T, ctx context.Contex
 	assert.Equal(t, monitoringv1.ServiceMonitorSpec{
 		Endpoints: []monitoringv1.Endpoint{
 			{
-				HonorLabels: true,
-				Port:        "9090",
-				Path:        "/federate",
-				Scheme:      "https",
+				HonorLabels:     true,
+				BearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token",
+				Port:            "https",
+				Path:            "/federate",
+				Scheme:          "https",
 				Params: map[string][]string{
 					"match[]": {
 						`ALERTS{alertstate="firing"}`,
