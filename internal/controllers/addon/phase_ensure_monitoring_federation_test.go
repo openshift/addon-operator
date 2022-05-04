@@ -56,6 +56,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(
 		Spec: addonsv1alpha1.AddonSpec{
 			Monitoring: &addonsv1alpha1.MonitoringSpec{
 				Federation: &addonsv1alpha1.MonitoringFederationSpec{
+					PortName:   "https",
 					Namespace:  "addon-foo-monitoring",
 					MatchNames: []string{"foo"},
 					MatchLabels: map[string]string{
@@ -81,6 +82,8 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(
 	c.On("Create", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			serviceMonitor := args.Get(1).(*monitoringv1.ServiceMonitor)
+			assert.Equal(t, "https", serviceMonitor.Spec.Endpoints[0].Port)
+			assert.Equal(t, "/var/run/secrets/kubernetes.io/serviceaccount/token", serviceMonitor.Spec.Endpoints[0].BearerTokenFile)
 			assert.Equal(t, GetMonitoringFederationServiceMonitorName(addon), serviceMonitor.Name)
 			assert.Equal(t, GetMonitoringNamespaceName(addon), serviceMonitor.Namespace)
 		}).
@@ -110,6 +113,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 		Spec: addonsv1alpha1.AddonSpec{
 			Monitoring: &addonsv1alpha1.MonitoringSpec{
 				Federation: &addonsv1alpha1.MonitoringFederationSpec{
+					PortName:   "portName",
 					Namespace:  "addon-foo-monitoring",
 					MatchNames: []string{"foo"},
 					MatchLabels: map[string]string{
@@ -150,10 +154,11 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 			serviceMonitor.Spec = monitoringv1.ServiceMonitorSpec{
 				Endpoints: []monitoringv1.Endpoint{
 					{
-						HonorLabels: true,
-						Port:        "9090",
-						Path:        "/federate",
-						Scheme:      "https",
+						BearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token",
+						HonorLabels:     true,
+						Port:            "portName",
+						Path:            "/federate",
+						Scheme:          "https",
 						Params: map[string][]string{
 							"match[]": {
 								`ALERTS{alertstate="firing"}`,

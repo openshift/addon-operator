@@ -93,6 +93,10 @@ type MonitoringFederationSpec struct {
 	// +kubebuilder:validation:MinLength=1
 	Namespace string `json:"namespace"`
 
+	// The name of the service port fronting the prometheus server.
+	// +kubebuilder:validation:MinLength=1
+	PortName string `json:"portName"`
+
 	// List of series names to federate from the prometheus server.
 	// +listType:set
 	MatchNames []string `json:"matchNames"`

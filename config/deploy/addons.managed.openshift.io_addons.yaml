@@ -246,10 +246,16 @@ spec:
                         description: Namespace where the prometheus server is running.
                         minLength: 1
                         type: string
+                      portName:
+                        description: The name of the service port fronting the prometheus
+                          server.
+                        minLength: 1
+                        type: string
                     required:
                     - matchLabels
                     - matchNames
                     - namespace
+                    - portName
                     type: object
                 type: object
               namespaces:
