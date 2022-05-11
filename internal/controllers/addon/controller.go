@@ -53,6 +53,7 @@ type AddonReconciler struct {
 	ocmClientMux sync.RWMutex
 
 	secretPropagationReconciler addonReconciler
+	namespaceReconciler         addonReconciler
 }
 
 type addonReconciler interface {
@@ -82,6 +83,11 @@ func NewAddonReconciler(
 			uncachedClient:         uncachedClient,
 			scheme:                 scheme,
 			addonOperatorNamespace: addonOperatorNamespace,
+		},
+
+		namespaceReconciler: &namespaceReconciler{
+			client: client,
+			scheme: scheme,
 		},
 	}
 }
@@ -243,27 +249,21 @@ func (r *AddonReconciler) Reconcile(
 		}
 	}
 
-	// Phase 1.
-	// Ensure wanted namespaces
-	if requeueResult, err := r.ensureWantedNamespaces(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure wanted Namespaces: %w", err)
-	} else if requeueResult != resultNil {
-		return r.handleExit(requeueResult), nil
+	// Reconcile Namespace
+	if result, err := r.namespaceReconciler.Reconcile(ctx, addon); err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to reconcile namespace: %w", err)
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
-	// Phase 2.
-	// Ensure unwanted namespaces are removed
-	if err := r.ensureDeletionOfUnwantedNamespaces(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted Namespaces: %w", err)
-	}
-
-	// Phase 3.
-	// Ensure the addon-pullsecret secrets are in all namespaces
+	// Reconcile addon pullsecrets
 	if result, err := r.secretPropagationReconciler.Reconcile(ctx, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure pull secret: %w", err)
 	} else if !result.IsZero() {
 		return result, nil
 	}
+
+	// TODO: encapsulate OLM phases into a new `OLMReconciler`
 
 	// Phase 4.
 	// Ensure the creation of the corresponding AddonInstance in .spec.install.olmOwnNamespace/.spec.install.olmAllNamespaces namespace
@@ -276,7 +276,7 @@ func (r *AddonReconciler) Reconcile(
 	if requeueResult, err := r.ensureOperatorGroup(ctx, log, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure OperatorGroup: %w", err)
 	} else if requeueResult != resultNil {
-		return r.handleExit(requeueResult), nil
+		return handleExit(requeueResult), nil
 	}
 
 	// Phase 6.
@@ -287,14 +287,14 @@ func (r *AddonReconciler) Reconcile(
 	if requeueResult, catalogSource, err = r.ensureCatalogSource(ctx, log, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure CatalogSource: %w", err)
 	} else if requeueResult != resultNil {
-		return r.handleExit(requeueResult), nil
+		return handleExit(requeueResult), nil
 	}
 
 	// Phase 7.
 	if requeueResult, err = r.ensureAdditionalCatalogSources(ctx, log, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure additional CatalogSource: %w", err)
 	} else if requeueResult != resultNil {
-		return r.handleExit(requeueResult), nil
+		return handleExit(requeueResult), nil
 	}
 
 	// Phase 8.
@@ -305,7 +305,7 @@ func (r *AddonReconciler) Reconcile(
 	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure Subscription: %w", err)
 	} else if requeueResult != resultNil {
-		return r.handleExit(requeueResult), nil
+		return handleExit(requeueResult), nil
 	}
 
 	// Phase 9.
@@ -313,8 +313,10 @@ func (r *AddonReconciler) Reconcile(
 	if requeueResult, err := r.observeCurrentCSV(ctx, addon, currentCSVKey); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to observe current CSV: %w", err)
 	} else if requeueResult != resultNil {
-		return r.handleExit(requeueResult), nil
+		return handleExit(requeueResult), nil
 	}
+
+	// TODO: encapsulate monitoring operations into a new `monitoringReconciler`
 
 	// Phase 10.
 	// Possibly ensure monitoring federation

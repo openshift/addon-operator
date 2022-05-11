@@ -32,7 +32,7 @@ const (
 
 // This method should be called ONLY if result is NOT `resultNil`, or it could
 // lead to unpredictable behaviour.
-func (r *AddonReconciler) handleExit(result requeueResult) ctrl.Result {
+func handleExit(result requeueResult) ctrl.Result {
 	switch result {
 	case resultRetry:
 		return ctrl.Result{
