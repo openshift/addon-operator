@@ -10,13 +10,13 @@ import (
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
 
-func (r *AddonReconciler) observeCurrentCSV(
+func (r *olmReconciler) observeCurrentCSV(
 	ctx context.Context,
 	addon *addonsv1alpha1.Addon,
 	csvKey client.ObjectKey,
 ) (requeueResult, error) {
 	csv := &operatorsv1alpha1.ClusterServiceVersion{}
-	if err := r.Get(ctx, csvKey, csv); err != nil {
+	if err := r.client.Get(ctx, csvKey, csv); err != nil {
 		return resultNil, fmt.Errorf("getting installed CSV: %w", err)
 	}
 

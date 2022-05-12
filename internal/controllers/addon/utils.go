@@ -176,7 +176,7 @@ func reportPendingStatus(addon *addonsv1alpha1.Addon, reason, msg string) {
 
 // Validate addon.Spec.Install then extract
 // targetNamespace and catalogSourceImage from it
-func (r *AddonReconciler) parseAddonInstallConfig(
+func parseAddonInstallConfig(
 	log logr.Logger, addon *addonsv1alpha1.Addon) (
 	common *addonsv1alpha1.AddonInstallOLMCommon, stop bool,
 ) {
@@ -229,7 +229,7 @@ func (r *AddonReconciler) parseAddonInstallConfig(
 	}
 }
 
-func (r *AddonReconciler) parseAddonInstallConfigForAdditionalCatalogSources(
+func parseAddonInstallConfigForAdditionalCatalogSources(
 	log logr.Logger, addon *addonsv1alpha1.Addon) (
 	additionalCatalogSrcs []addonsv1alpha1.AdditionalCatalogSource,
 	targetNamespace string,

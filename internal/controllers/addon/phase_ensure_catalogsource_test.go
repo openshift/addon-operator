@@ -195,10 +195,9 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 		createdCatalogSource = arg
 	}).Return(nil)
 
-	r := &AddonReconciler{
-		Client: c,
-		Log:    testutil.NewLogger(t),
-		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	r := &olmReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 
 	log := testutil.NewLogger(t)
@@ -230,10 +229,9 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 			LastObservedState: "READY",
 		}
 	}).Return(nil)
-	r := &AddonReconciler{
-		Client: c,
-		Log:    testutil.NewLogger(t),
-		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	r := &olmReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 
 	log := testutil.NewLogger(t)
@@ -265,10 +263,9 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Return(nil)
-	r := &AddonReconciler{
-		Client: c,
-		Log:    testutil.NewLogger(t),
-		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	r := &olmReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 	log := testutil.NewLogger(t)
 	ctx := context.Background()
@@ -300,10 +297,9 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 		mock.Anything,
 	).Return(nil)
 
-	r := &AddonReconciler{
-		Client: c,
-		Log:    testutil.NewLogger(t),
-		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	r := &olmReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 
 	log := testutil.NewLogger(t)

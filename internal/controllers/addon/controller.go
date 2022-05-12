@@ -28,10 +28,16 @@ import (
 	"github.com/openshift/addon-operator/internal/ocm"
 )
 
-// Default timeout when we do a manual RequeueAfter
 const (
+	// Default timeout when we do a manual RequeueAfter
 	defaultRetryAfterTime = 10 * time.Second
 	cacheFinalizer        = "addons.managed.openshift.io/cache"
+)
+
+type addonContextKey int
+
+const (
+	addonNamespaceNameKey addonContextKey = iota
 )
 
 type AddonReconciler struct {
@@ -54,6 +60,7 @@ type AddonReconciler struct {
 
 	secretPropagationReconciler addonReconciler
 	namespaceReconciler         addonReconciler
+	olmReconciler               addonReconciler
 }
 
 type addonReconciler interface {
@@ -69,6 +76,7 @@ func NewAddonReconciler(
 	clusterExternalID string,
 	addonOperatorNamespace string,
 ) *AddonReconciler {
+	csvEventHandler := internalhandler.NewCSVEventHandler()
 	return &AddonReconciler{
 		Client:                 client,
 		UncachedClient:         uncachedClient,
@@ -77,6 +85,7 @@ func NewAddonReconciler(
 		Recorder:               recorder,
 		ClusterExternalID:      clusterExternalID,
 		AddonOperatorNamespace: addonOperatorNamespace,
+		csvEventHandler:        csvEventHandler,
 
 		secretPropagationReconciler: &addonSecretPropagationReconciler{
 			cachedClient:           client,
@@ -88,6 +97,13 @@ func NewAddonReconciler(
 		namespaceReconciler: &namespaceReconciler{
 			client: client,
 			scheme: scheme,
+		},
+
+		olmReconciler: &olmReconciler{
+			client:          client,
+			scheme:          scheme,
+			csvEventHandler: csvEventHandler,
+			log:             log,
 		},
 	}
 }
@@ -160,7 +176,10 @@ type csvEventHandler interface {
 }
 
 func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	r.csvEventHandler = internalhandler.NewCSVEventHandler()
+	if r.csvEventHandler == nil {
+		return fmt.Errorf("csvEventHandler cannot be nil")
+	}
+
 	r.addonRequeueCh = make(chan event.GenericEvent)
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&addonsv1alpha1.Addon{}).
@@ -188,6 +207,10 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
 // AddonReconciler/Controller entrypoint
 func (r *AddonReconciler) Reconcile(
 	ctx context.Context, req ctrl.Request) (res ctrl.Result, err error) {
+
+	// inject namespace and name into context for the loggers within the sub-reconcilers
+	// to pick it up.
+	ctx = context.WithValue(ctx, addonNamespaceNameKey, req.NamespacedName.String())
 	log := r.Log.WithValues("addon", req.NamespacedName.String())
 
 	addon := &addonsv1alpha1.Addon{}
@@ -263,62 +286,20 @@ func (r *AddonReconciler) Reconcile(
 		return result, nil
 	}
 
-	// TODO: encapsulate OLM phases into a new `OLMReconciler`
-
-	// Phase 4.
 	// Ensure the creation of the corresponding AddonInstance in .spec.install.olmOwnNamespace/.spec.install.olmAllNamespaces namespace
 	if err := r.ensureAddonInstance(ctx, log, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure the creation of addoninstance: %w", err)
 	}
 
-	// Phase 5.
-	// Ensure OperatorGroup
-	if requeueResult, err := r.ensureOperatorGroup(ctx, log, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure OperatorGroup: %w", err)
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
-	}
-
-	// Phase 6.
-	var (
-		catalogSource *operatorsv1alpha1.CatalogSource
-		requeueResult requeueResult
-	)
-	if requeueResult, catalogSource, err = r.ensureCatalogSource(ctx, log, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure CatalogSource: %w", err)
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
-	}
-
-	// Phase 7.
-	if requeueResult, err = r.ensureAdditionalCatalogSources(ctx, log, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure additional CatalogSource: %w", err)
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
-	}
-
-	// Phase 8.
-	// Ensure Subscription for this Addon.
-	requeueResult, currentCSVKey, err := r.ensureSubscription(
-		ctx, log.WithName("phase-ensure-subscription"),
-		addon, catalogSource)
-	if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure Subscription: %w", err)
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
-	}
-
-	// Phase 9.
-	// Observe current csv
-	if requeueResult, err := r.observeCurrentCSV(ctx, addon, currentCSVKey); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to observe current CSV: %w", err)
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
+	// Reconciler OLM objects
+	if result, err := r.olmReconciler.Reconcile(ctx, addon); err != nil {
+		return ctrl.Result{}, err
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// TODO: encapsulate monitoring operations into a new `monitoringReconciler`
 
-	// Phase 10.
 	// Possibly ensure monitoring federation
 	// Normally this would be configured before the addon workload is installed
 	// but currently the addon workload creates the monitoring stack by itself

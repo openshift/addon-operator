@@ -80,9 +80,9 @@ func TestEnsureSubscription_Adoption(t *testing.T) {
 				).Return(nil)
 			}
 
-			rec := AddonReconciler{
-				Client: c,
-				Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+			rec := olmReconciler{
+				client: c,
+				scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 			}
 
 			ctx := context.Background()

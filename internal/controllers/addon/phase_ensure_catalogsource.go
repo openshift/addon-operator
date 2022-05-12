@@ -22,10 +22,10 @@ const catalogSourcePublisher = "OSD Red Hat Addons"
 // Ensure existence of the CatalogSource specified in the given Addon resource
 // returns an ensureCatalogSourceResult that signals the caller if they have to
 // stop or retry reconciliation of the surrounding Addon resource
-func (r *AddonReconciler) ensureCatalogSource(
+func (r *olmReconciler) ensureCatalogSource(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
 ) (requeueResult, *operatorsv1alpha1.CatalogSource, error) {
-	commonConfig, stop := r.parseAddonInstallConfig(log, addon)
+	commonConfig, stop := parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil, nil
 	}
@@ -50,14 +50,14 @@ func (r *AddonReconciler) ensureCatalogSource(
 
 	controllers.AddCommonLabels(catalogSource, addon)
 
-	if err := controllerutil.SetControllerReference(addon, catalogSource, r.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(addon, catalogSource, r.scheme); err != nil {
 		return resultNil, nil, err
 	}
 
 	var observedCatalogSource *operatorsv1alpha1.CatalogSource
 	{
 		var err error
-		observedCatalogSource, err = reconcileCatalogSource(ctx, r.Client, catalogSource, addon.Spec.ResourceAdoptionStrategy)
+		observedCatalogSource, err = reconcileCatalogSource(ctx, r.client, catalogSource, addon.Spec.ResourceAdoptionStrategy)
 		if err != nil {
 			return resultNil, nil, err
 		}
@@ -81,13 +81,13 @@ func (r *AddonReconciler) ensureCatalogSource(
 	return resultNil, observedCatalogSource, nil
 }
 
-func (r *AddonReconciler) ensureAdditionalCatalogSources(
+func (r *olmReconciler) ensureAdditionalCatalogSources(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
 ) (requeueResult, error) {
 	if !HasAdditionalCatalogSources(addon) {
 		return resultNil, nil
 	}
-	additionalCatalogSrcs, targetNamespace, pullSecret, stop := r.parseAddonInstallConfigForAdditionalCatalogSources(
+	additionalCatalogSrcs, targetNamespace, pullSecret, stop := parseAddonInstallConfigForAdditionalCatalogSources(
 		log,
 		addon,
 	)
@@ -115,12 +115,12 @@ func (r *AddonReconciler) ensureAdditionalCatalogSources(
 		}
 
 		controllers.AddCommonLabels(currentCatalogSrc, addon)
-		if err := controllerutil.SetControllerReference(addon, currentCatalogSrc, r.Scheme); err != nil {
+		if err := controllerutil.SetControllerReference(addon, currentCatalogSrc, r.scheme); err != nil {
 			return resultNil, err
 		}
 		var observedCatalogSource *operatorsv1alpha1.CatalogSource
 		var err error
-		observedCatalogSource, err = reconcileCatalogSource(ctx, r.Client, currentCatalogSrc, addon.Spec.ResourceAdoptionStrategy)
+		observedCatalogSource, err = reconcileCatalogSource(ctx, r.client, currentCatalogSrc, addon.Spec.ResourceAdoptionStrategy)
 		if err != nil {
 			return resultNil, err
 		}
