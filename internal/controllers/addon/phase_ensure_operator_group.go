@@ -18,9 +18,9 @@ import (
 )
 
 // Ensures the presense or absense of an OperatorGroup depending on the Addon install type.
-func (r *AddonReconciler) ensureOperatorGroup(
+func (r *olmReconciler) ensureOperatorGroup(
 	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (requeueResult, error) {
-	commonConfig, stop := r.parseAddonInstallConfig(log, addon)
+	commonConfig, stop := parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil
 	}
@@ -37,7 +37,7 @@ func (r *AddonReconciler) ensureOperatorGroup(
 	}
 
 	controllers.AddCommonLabels(desiredOperatorGroup, addon)
-	if err := controllerutil.SetControllerReference(addon, desiredOperatorGroup, r.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(addon, desiredOperatorGroup, r.scheme); err != nil {
 		return resultNil, fmt.Errorf("setting controller reference: %w", err)
 	}
 	return resultNil, r.reconcileOperatorGroup(ctx, desiredOperatorGroup, addon.Spec.ResourceAdoptionStrategy)
@@ -45,13 +45,13 @@ func (r *AddonReconciler) ensureOperatorGroup(
 
 // Reconciles the Spec of the given OperatorGroup if needed by updating or creating the OperatorGroup.
 // The given OperatorGroup is updated to reflect the latest state from the kube-apiserver.
-func (r *AddonReconciler) reconcileOperatorGroup(
+func (r *olmReconciler) reconcileOperatorGroup(
 	ctx context.Context, operatorGroup *operatorsv1.OperatorGroup, strategy addonsv1alpha1.ResourceAdoptionStrategyType) error {
 	currentOperatorGroup := &operatorsv1.OperatorGroup{}
 
-	err := r.Get(ctx, client.ObjectKeyFromObject(operatorGroup), currentOperatorGroup)
+	err := r.client.Get(ctx, client.ObjectKeyFromObject(operatorGroup), currentOperatorGroup)
 	if errors.IsNotFound(err) {
-		return r.Create(ctx, operatorGroup)
+		return r.client.Create(ctx, operatorGroup)
 	}
 	if err != nil {
 		return fmt.Errorf("getting OperatorGroup: %w", err)
@@ -69,7 +69,7 @@ func (r *AddonReconciler) reconcileOperatorGroup(
 		currentOperatorGroup.Spec = operatorGroup.Spec
 		currentOperatorGroup.OwnerReferences = operatorGroup.OwnerReferences
 		currentOperatorGroup.Labels = newLabels
-		return r.Update(ctx, currentOperatorGroup)
+		return r.client.Update(ctx, currentOperatorGroup)
 	}
 	return nil
 }

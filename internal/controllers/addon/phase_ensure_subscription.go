@@ -19,7 +19,7 @@ import (
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
-func (r *AddonReconciler) ensureSubscription(
+func (r *olmReconciler) ensureSubscription(
 	ctx context.Context,
 	log logr.Logger,
 	addon *addonsv1alpha1.Addon,
@@ -62,7 +62,7 @@ func (r *AddonReconciler) ensureSubscription(
 		},
 	}
 	controllers.AddCommonLabels(desiredSubscription, addon)
-	if err := controllerutil.SetControllerReference(addon, desiredSubscription, r.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(addon, desiredSubscription, r.scheme); err != nil {
 		return resultNil, client.ObjectKey{}, fmt.Errorf("setting controller reference: %w", err)
 	}
 
@@ -98,19 +98,19 @@ func (r *AddonReconciler) ensureSubscription(
 	return resultNil, currentCSVKey, nil
 }
 
-func (r *AddonReconciler) reconcileSubscription(
+func (r *olmReconciler) reconcileSubscription(
 	ctx context.Context,
 	subscription *operatorsv1alpha1.Subscription,
 	strategy addonsv1alpha1.ResourceAdoptionStrategyType,
 ) (currentSubscription *operatorsv1alpha1.Subscription, err error) {
 	currentSubscription = &operatorsv1alpha1.Subscription{}
-	err = r.Get(ctx, client.ObjectKey{
+	err = r.client.Get(ctx, client.ObjectKey{
 		Name:      subscription.Name,
 		Namespace: subscription.Namespace,
 	}, currentSubscription)
 	if err != nil {
 		if apierrors.IsNotFound(err) {
-			return subscription, r.Create(ctx, subscription)
+			return subscription, r.client.Create(ctx, subscription)
 		}
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (r *AddonReconciler) reconcileSubscription(
 		currentSubscription.Spec = subscription.Spec
 		currentSubscription.OwnerReferences = subscription.OwnerReferences
 		currentSubscription.Labels = newLabels
-		return currentSubscription, r.Update(ctx, currentSubscription)
+		return currentSubscription, r.client.Update(ctx, currentSubscription)
 	}
 	return currentSubscription, nil
 }

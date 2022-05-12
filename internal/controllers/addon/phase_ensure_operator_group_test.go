@@ -78,9 +78,9 @@ func TestEnsureOperatorGroup(t *testing.T) {
 			t.Run(test.name, func(t *testing.T) {
 				log := testutil.NewLogger(t)
 				c := testutil.NewClient()
-				r := AddonReconciler{
-					Client: c,
-					Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+				r := &olmReconciler{
+					client: c,
+					scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 				}
 				addon := test.addon
 
@@ -195,9 +195,9 @@ func TestEnsureOperatorGroup(t *testing.T) {
 			t.Run(test.name, func(t *testing.T) {
 				log := testutil.NewLogger(t)
 				c := testutil.NewClient()
-				r := AddonReconciler{
-					Client: c,
-					Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+				r := &olmReconciler{
+					client: c,
+					scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 				}
 
 				// Test
@@ -229,9 +229,9 @@ func TestEnsureOperatorGroup(t *testing.T) {
 
 		log := testutil.NewLogger(t)
 		c := testutil.NewClient()
-		r := AddonReconciler{
-			Client: c,
-			Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		r := &olmReconciler{
+			client: c,
+			scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 		}
 
 		// Test
@@ -312,9 +312,9 @@ func TestReconcileOperatorGroup_Adoption(t *testing.T) {
 				).Return(nil)
 			}
 
-			rec := AddonReconciler{
-				Client: c,
-				Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+			rec := &olmReconciler{
+				client: c,
+				scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 			}
 
 			ctx := context.Background()
