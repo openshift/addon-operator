@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -19,7 +18,8 @@ import (
 
 // Ensures the presense or absense of an OperatorGroup depending on the Addon install type.
 func (r *olmReconciler) ensureOperatorGroup(
-	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (requeueResult, error) {
+	ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
+	log := controllers.LoggerFromContext(ctx)
 	commonConfig, stop := parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil

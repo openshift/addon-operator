@@ -202,8 +202,8 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 
 	log := testutil.NewLogger(t)
 
-	ctx := context.Background()
-	requeueResult, _, err := r.ensureCatalogSource(ctx, log, addon)
+	ctx := controllers.ContextWithLogger(context.Background(), log)
+	requeueResult, _, err := r.ensureCatalogSource(ctx, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	if c.AssertExpectations(t) {
@@ -235,9 +235,8 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 	}
 
 	log := testutil.NewLogger(t)
-
-	ctx := context.Background()
-	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, log, addon)
+	ctx := controllers.ContextWithLogger(context.Background(), log)
+	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)
@@ -268,8 +267,8 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 	log := testutil.NewLogger(t)
-	ctx := context.Background()
-	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, log, addon)
+	ctx := controllers.ContextWithLogger(context.Background(), log)
+	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)
@@ -303,9 +302,8 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 	}
 
 	log := testutil.NewLogger(t)
-
-	ctx := context.Background()
-	requeueResult, _, err := r.ensureCatalogSource(ctx, log, addon)
+	ctx := controllers.ContextWithLogger(context.Background(), log)
+	requeueResult, _, err := r.ensureCatalogSource(ctx, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)

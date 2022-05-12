@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
@@ -23,8 +22,10 @@ const catalogSourcePublisher = "OSD Red Hat Addons"
 // returns an ensureCatalogSourceResult that signals the caller if they have to
 // stop or retry reconciliation of the surrounding Addon resource
 func (r *olmReconciler) ensureCatalogSource(
-	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
+	ctx context.Context, addon *addonsv1alpha1.Addon,
 ) (requeueResult, *operatorsv1alpha1.CatalogSource, error) {
+	log := controllers.LoggerFromContext(ctx)
+
 	commonConfig, stop := parseAddonInstallConfig(log, addon)
 	if stop {
 		return resultStop, nil, nil
@@ -82,13 +83,13 @@ func (r *olmReconciler) ensureCatalogSource(
 }
 
 func (r *olmReconciler) ensureAdditionalCatalogSources(
-	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon,
+	ctx context.Context, addon *addonsv1alpha1.Addon,
 ) (requeueResult, error) {
 	if !HasAdditionalCatalogSources(addon) {
 		return resultNil, nil
 	}
 	additionalCatalogSrcs, targetNamespace, pullSecret, stop := parseAddonInstallConfigForAdditionalCatalogSources(
-		log,
+		controllers.LoggerFromContext(ctx),
 		addon,
 	)
 	if stop {

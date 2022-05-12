@@ -360,7 +360,7 @@ func TestEnsureSecretPropagation(t *testing.T) {
 		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
-	ctx := context.Background()
+	ctx := controllers.ContextWithLogger(context.Background(), testutil.NewLogger(t))
 	result, err := r.Reconcile(ctx, addon)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
@@ -428,7 +428,7 @@ func TestEnsureSecretPropagation_cleanup_when_nil(t *testing.T) {
 		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
 		addonOperatorNamespace: "xxx-addon-operator",
 	}
-	ctx := context.Background()
+	ctx := controllers.ContextWithLogger(context.Background(), testutil.NewLogger(t))
 	result, err := r.Reconcile(ctx, addon)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
