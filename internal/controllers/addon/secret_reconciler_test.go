@@ -32,7 +32,7 @@ func TestReconcileSecret_CreateWithClientError(t *testing.T) {
 	timeoutErr := k8sApiErrors.NewTimeoutError("for testing", 1)
 
 	c := testutil.NewClient()
-	c.On("Get", testutil.IsContext,
+	c.On("Get", mock.Anything,
 		testutil.IsObjectKey,
 		mock.IsType(&corev1.Secret{})).
 		Return(timeoutErr)
@@ -42,7 +42,7 @@ func TestReconcileSecret_CreateWithClientError(t *testing.T) {
 	require.Error(t, err)
 	require.ErrorIs(t, err, timeoutErr)
 	c.AssertExpectations(t)
-	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
+	c.AssertCalled(t, "Get", mock.Anything, client.ObjectKey{
 		Name:      secret.Name,
 		Namespace: secret.Namespace,
 	}, mock.IsType(&corev1.Secret{}))
@@ -73,20 +73,20 @@ func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
 	uncachedC := testutil.NewClient()
 	c.
 		On("Get", // get referenced Secret
-			testutil.IsContext,
+			mock.Anything,
 			addonPullSecretKey,
 			mock.IsType(&corev1.Secret{}),
 		).
 		Return(testutil.NewTestErrNotFound())
 	uncachedC.
 		On("Get", // get referenced Secret via uncached read
-			testutil.IsContext,
+			mock.Anything,
 			addonPullSecretKey,
 			mock.IsType(&corev1.Secret{}),
 		).
 		Return(nil)
 	c.On("Patch", // patch referenced Secret to add it to cache
-		testutil.IsContext,
+		mock.Anything,
 		mock.IsType(&corev1.Secret{}),
 		mock.Anything,
 		mock.Anything,
@@ -132,14 +132,14 @@ func Test_getReferencedPullSecret_retry(t *testing.T) {
 	uncachedC := testutil.NewClient()
 	c.
 		On("Get", // get referenced Secret
-			testutil.IsContext,
+			mock.Anything,
 			addonPullSecretKey,
 			mock.IsType(&corev1.Secret{}),
 		).
 		Return(testutil.NewTestErrNotFound())
 	uncachedC.
 		On("Get", // get referenced Secret via uncached read
-			testutil.IsContext,
+			mock.Anything,
 			addonPullSecretKey,
 			mock.IsType(&corev1.Secret{}),
 		).
@@ -182,7 +182,7 @@ func Test_reconcileSecret_CreateWithClientError(t *testing.T) {
 	}
 
 	c := testutil.NewClient()
-	c.On("Get", testutil.IsContext, key, mock.IsType(&corev1.Secret{})).
+	c.On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{})).
 		Return(timeoutErr)
 
 	ctx := context.Background()
@@ -206,10 +206,10 @@ func Test_reconcileSecret_Create(t *testing.T) {
 
 	c := testutil.NewClient()
 	c.
-		On("Get", testutil.IsContext, key, mock.IsType(&corev1.Secret{})).
+		On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{})).
 		Return(k8sApiErrors.NewNotFound(schema.GroupResource{}, ""))
 	c.
-		On("Create", testutil.IsContext, secret, mock.Anything).
+		On("Create", mock.Anything, secret, mock.Anything).
 		Return(nil)
 
 	ctx := context.Background()
@@ -236,11 +236,11 @@ func Test_reconcileSecret_Update(t *testing.T) {
 
 	c := testutil.NewClient()
 	c.
-		On("Get", testutil.IsContext, key, mock.IsType(&corev1.Secret{})).
+		On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{})).
 		Return(nil)
 	var updatedSecret *corev1.Secret
 	c.
-		On("Update", testutil.IsContext, mock.IsType(&corev1.Secret{}), mock.Anything).
+		On("Update", mock.Anything, mock.IsType(&corev1.Secret{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			updatedSecret = args.Get(1).(*corev1.Secret)
 		}).
@@ -302,7 +302,7 @@ func TestEnsureSecretPropagation(t *testing.T) {
 	}
 	srcSecret1Key := client.ObjectKeyFromObject(srcSecret1)
 	c.
-		On("Get", testutil.IsContext, srcSecret1Key, mock.IsType(&corev1.Secret{})).
+		On("Get", mock.Anything, srcSecret1Key, mock.IsType(&corev1.Secret{})).
 		Run(func(args mock.Arguments) {
 			out := args.Get(2).(*corev1.Secret)
 			*out = *srcSecret1
@@ -314,11 +314,11 @@ func TestEnsureSecretPropagation(t *testing.T) {
 		Namespace: "test",
 	}
 	c.
-		On("Get", testutil.IsContext, destSecret1Key, mock.IsType(&corev1.Secret{})).
+		On("Get", mock.Anything, destSecret1Key, mock.IsType(&corev1.Secret{})).
 		Return(k8sApiErrors.NewNotFound(schema.GroupResource{}, ""))
 	var createdDestSecret *corev1.Secret
 	c.
-		On("Create", testutil.IsContext, mock.IsType(&corev1.Secret{}), mock.Anything).
+		On("Create", mock.Anything, mock.IsType(&corev1.Secret{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			createdDestSecret = args.Get(1).(*corev1.Secret)
 		}).
@@ -331,7 +331,7 @@ func TestEnsureSecretPropagation(t *testing.T) {
 		},
 	}
 	c.
-		On("List", testutil.IsContext, mock.IsType(&corev1.SecretList{}), mock.Anything).
+		On("List", mock.Anything, mock.IsType(&corev1.SecretList{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			out := args.Get(1).(*corev1.SecretList)
 			*out = corev1.SecretList{
@@ -351,7 +351,7 @@ func TestEnsureSecretPropagation(t *testing.T) {
 		}).
 		Return(nil)
 	c.
-		On("Delete", testutil.IsContext, secretToDelete, mock.Anything).
+		On("Delete", mock.Anything, secretToDelete, mock.Anything).
 		Return(nil)
 
 	r := &addonSecretPropagationReconciler{
@@ -407,7 +407,7 @@ func TestEnsureSecretPropagation_cleanup_when_nil(t *testing.T) {
 		},
 	}
 	c.
-		On("List", testutil.IsContext, mock.IsType(&corev1.SecretList{}), mock.Anything).
+		On("List", mock.Anything, mock.IsType(&corev1.SecretList{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			out := args.Get(1).(*corev1.SecretList)
 			*out = corev1.SecretList{
@@ -420,7 +420,7 @@ func TestEnsureSecretPropagation_cleanup_when_nil(t *testing.T) {
 		}).
 		Return(nil)
 	c.
-		On("Delete", testutil.IsContext, secretToDelete, mock.Anything).
+		On("Delete", mock.Anything, secretToDelete, mock.Anything).
 		Return(nil)
 
 	r := &addonSecretPropagationReconciler{
