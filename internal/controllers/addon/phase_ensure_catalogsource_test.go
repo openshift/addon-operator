@@ -19,12 +19,12 @@ import (
 func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Return(testutil.NewTestErrNotFound())
 	c.On("Create",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Return(nil)
@@ -35,11 +35,11 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, reconciledCatalogSource)
 	c.AssertExpectations(t)
-	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
+	c.AssertCalled(t, "Get", mock.Anything, client.ObjectKey{
 		Name:      catalogSource.Name,
 		Namespace: catalogSource.Namespace,
 	}, testutil.IsOperatorsV1Alpha1CatalogSourcePtr)
-	c.AssertCalled(t, "Create", testutil.IsContext,
+	c.AssertCalled(t, "Create", mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr, mock.Anything)
 }
 
@@ -48,7 +48,7 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorGet(t *testing.T) 
 
 	c := testutil.NewClient()
 	c.On("Get",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Return(timeoutErr)
@@ -65,12 +65,12 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorCreate(t *testing.
 
 	c := testutil.NewClient()
 	c.On("Get",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Return(testutil.NewTestErrNotFound())
 	c.On("Create",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Return(timeoutErr)
@@ -124,7 +124,7 @@ func TestReconcileCatalogSource_Adoption(t *testing.T) {
 
 			c := testutil.NewClient()
 			c.On("Get",
-				testutil.IsContext,
+				mock.Anything,
 				testutil.IsObjectKey,
 				testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 			).Run(func(args mock.Arguments) {
@@ -143,7 +143,7 @@ func TestReconcileCatalogSource_Adoption(t *testing.T) {
 
 			if !tc.MustAdopt || (tc.MustAdopt && tc.Strategy == addonsv1alpha1.ResourceAdoptionAdoptAll) {
 				c.On("Update",
-					testutil.IsContext,
+					mock.Anything,
 					testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 					mock.Anything,
 				).Return(nil)
@@ -178,13 +178,13 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 
 	c := testutil.NewClient()
 	c.On("Get",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Return(testutil.NewTestErrNotFound())
 	var createdCatalogSource *operatorsv1alpha1.CatalogSource
 	c.On("Create",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Run(func(args mock.Arguments) {
@@ -202,8 +202,8 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 
 	log := testutil.NewLogger(t)
 
-	ctx := context.Background()
-	requeueResult, _, err := r.ensureCatalogSource(ctx, log, addon)
+	ctx := controllers.ContextWithLogger(context.Background(), log)
+	requeueResult, _, err := r.ensureCatalogSource(ctx, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	if c.AssertExpectations(t) {
@@ -215,12 +215,12 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 	addon := testutil.NewTestAddonWithAdditionalCatalogSource()
 	c := testutil.NewClient()
 	c.On("Get",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Return(testutil.NewTestErrNotFound())
 	c.On("Create",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Run(func(args mock.Arguments) {
@@ -235,9 +235,8 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 	}
 
 	log := testutil.NewLogger(t)
-
-	ctx := context.Background()
-	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, log, addon)
+	ctx := controllers.ContextWithLogger(context.Background(), log)
+	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)
@@ -249,7 +248,7 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 	addon := testutil.NewTestAddonWithAdditionalCatalogSourceAndResourceAdoptionStrategy(addonsv1alpha1.ResourceAdoptionAdoptAll)
 	c := testutil.NewClient()
 	c.On("Get",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
@@ -259,7 +258,7 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 		}
 	}).Return(nil)
 	c.On("Update",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Return(nil)
@@ -268,8 +267,8 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 	log := testutil.NewLogger(t)
-	ctx := context.Background()
-	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, log, addon)
+	ctx := controllers.ContextWithLogger(context.Background(), log)
+	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)
@@ -282,7 +281,7 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 
 	c := testutil.NewClient()
 	c.On("Get",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
@@ -292,7 +291,7 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 		}
 	}).Return(nil)
 	c.On("Update",
-		testutil.IsContext,
+		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Return(nil)
@@ -303,9 +302,8 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 	}
 
 	log := testutil.NewLogger(t)
-
-	ctx := context.Background()
-	requeueResult, _, err := r.ensureCatalogSource(ctx, log, addon)
+	ctx := controllers.ContextWithLogger(context.Background(), log)
+	requeueResult, _, err := r.ensureCatalogSource(ctx, addon)
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)

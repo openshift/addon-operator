@@ -110,8 +110,8 @@ func TestEnsureOperatorGroup(t *testing.T) {
 					Return(nil)
 
 				// Test
-				ctx := context.Background()
-				requeueResult, err := r.ensureOperatorGroup(ctx, log, addon)
+				ctx := controllers.ContextWithLogger(context.Background(), log)
+				requeueResult, err := r.ensureOperatorGroup(ctx, addon)
 				require.NoError(t, err)
 				assert.Equal(t, resultNil, requeueResult)
 
@@ -201,8 +201,8 @@ func TestEnsureOperatorGroup(t *testing.T) {
 				}
 
 				// Test
-				ctx := context.Background()
-				requeueResult, err := r.ensureOperatorGroup(ctx, log, test.addon)
+				ctx := controllers.ContextWithLogger(context.Background(), log)
+				requeueResult, err := r.ensureOperatorGroup(ctx, test.addon)
 				require.NoError(t, err)
 				assert.Equal(t, resultStop, requeueResult)
 
@@ -235,8 +235,8 @@ func TestEnsureOperatorGroup(t *testing.T) {
 		}
 
 		// Test
-		ctx := context.Background()
-		requeueResult, err := r.ensureOperatorGroup(ctx, log, addonUnsupported.DeepCopy())
+		ctx := controllers.ContextWithLogger(context.Background(), log)
+		requeueResult, err := r.ensureOperatorGroup(ctx, addonUnsupported.DeepCopy())
 		require.NoError(t, err)
 		assert.Equal(t, resultStop, requeueResult)
 

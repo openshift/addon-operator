@@ -34,12 +34,6 @@ const (
 	cacheFinalizer        = "addons.managed.openshift.io/cache"
 )
 
-type addonContextKey int
-
-const (
-	addonNamespaceNameKey addonContextKey = iota
-)
-
 type AddonReconciler struct {
 	client.Client
 	Log               logr.Logger
@@ -103,7 +97,6 @@ func NewAddonReconciler(
 			client:          client,
 			scheme:          scheme,
 			csvEventHandler: csvEventHandler,
-			log:             log,
 		},
 	}
 }
@@ -208,10 +201,8 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
 func (r *AddonReconciler) Reconcile(
 	ctx context.Context, req ctrl.Request) (res ctrl.Result, err error) {
 
-	// inject namespace and name into context for the loggers within the sub-reconcilers
-	// to pick it up.
-	ctx = context.WithValue(ctx, addonNamespaceNameKey, req.NamespacedName.String())
 	log := r.Log.WithValues("addon", req.NamespacedName.String())
+	ctx = controllers.ContextWithLogger(ctx, log)
 
 	addon := &addonsv1alpha1.Addon{}
 	if err := r.Get(ctx, req.NamespacedName, addon); err != nil {
