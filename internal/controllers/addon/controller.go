@@ -205,7 +205,7 @@ func (r *AddonReconciler) Reconcile(
 	ctx = controllers.ContextWithLogger(ctx, log)
 
 	addon := &addonsv1alpha1.Addon{}
-	if err := r.Get(controllers.ContextWithLogger(ctx, log), req.NamespacedName, addon); err != nil {
+	if err := r.Get(ctx, req.NamespacedName, addon); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
