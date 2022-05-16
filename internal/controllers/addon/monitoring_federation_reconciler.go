@@ -2,6 +2,7 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
@@ -10,17 +11,49 @@ import (
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
+type monitoringFederationReconciler struct {
+	client client.Client
+	scheme *runtime.Scheme
+}
+
+func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
+	addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	log := controllers.LoggerFromContext(ctx)
+
+	// Possibly ensure monitoring federation
+	// Normally this would be configured before the addon workload is installed
+	// but currently the addon workload creates the monitoring stack by itself
+	// thus we want to create the service monitor as late as possible to ensure that
+	// cluster-monitoring prom does not try to scrape a non-existent addon prometheus.
+	if err := r.ensureMonitoringFederation(ctx, addon); errors.Is(err, controllers.ErrNotOwnedByUs) {
+		log.Info("stopping", "reason", "monitoring federation namespace or serviceMonitor owned by something else")
+
+		return ctrl.Result{}, nil
+	} else if err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to ensure ServiceMonitor: %w", err)
+	}
+
+	// Remove possibly unwanted monitoring federation
+	if err := r.ensureDeletionOfUnwantedMonitoringFederation(ctx, addon); err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted ServiceMonitors: %w", err)
+	}
+	return reconcile.Result{}, nil
+}
+
 // ensureMonitoringFederation inspects an addon's MonitoringFederation specification
 // and if it exists ensures that a ServiceMonitor is present in the desired monitoring
 // namespace.
-func (r *AddonReconciler) ensureMonitoringFederation(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+func (r *monitoringFederationReconciler) ensureMonitoringFederation(ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	if !HasMonitoringFederation(addon) {
 		return nil
 	}
@@ -36,7 +69,7 @@ func (r *AddonReconciler) ensureMonitoringFederation(ctx context.Context, addon 
 	return nil
 }
 
-func (r *AddonReconciler) ensureMonitoringNamespace(
+func (r *monitoringFederationReconciler) ensureMonitoringNamespace(
 	ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	desired, err := r.desiredMonitoringNamespace(addon)
 	if err != nil {
@@ -45,7 +78,7 @@ func (r *AddonReconciler) ensureMonitoringNamespace(
 
 	actual, err := r.actualMonitoringNamespace(ctx, addon)
 	if k8sApiErrors.IsNotFound(err) {
-		return r.Create(ctx, desired)
+		return r.client.Create(ctx, desired)
 	} else if err != nil {
 		return fmt.Errorf("getting monitoring namespace: %w", err)
 	}
@@ -66,7 +99,7 @@ func (r *AddonReconciler) ensureMonitoringNamespace(
 
 	actual.OwnerReferences, actual.Labels = desired.OwnerReferences, desired.Labels
 
-	if err := r.Update(ctx, actual); err != nil {
+	if err := r.client.Update(ctx, actual); err != nil {
 		return fmt.Errorf("updating monitoring namespace: %w", err)
 	}
 
@@ -82,7 +115,7 @@ func (r *AddonReconciler) ensureMonitoringNamespace(
 	return fmt.Errorf("monitoring namespace is not active")
 }
 
-func (r *AddonReconciler) desiredMonitoringNamespace(addon *addonsv1alpha1.Addon) (*corev1.Namespace, error) {
+func (r *monitoringFederationReconciler) desiredMonitoringNamespace(addon *addonsv1alpha1.Addon) (*corev1.Namespace, error) {
 	namespace := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: GetMonitoringNamespaceName(addon),
@@ -94,28 +127,28 @@ func (r *AddonReconciler) desiredMonitoringNamespace(addon *addonsv1alpha1.Addon
 
 	controllers.AddCommonLabels(namespace, addon)
 
-	if err := controllerutil.SetControllerReference(addon, namespace, r.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(addon, namespace, r.scheme); err != nil {
 		return nil, err
 	}
 
 	return namespace, nil
 }
 
-func (r *AddonReconciler) actualMonitoringNamespace(
+func (r *monitoringFederationReconciler) actualMonitoringNamespace(
 	ctx context.Context, addon *addonsv1alpha1.Addon) (*corev1.Namespace, error) {
 	key := client.ObjectKey{
 		Name: GetMonitoringNamespaceName(addon),
 	}
 
 	namespace := &corev1.Namespace{}
-	if err := r.Get(ctx, key, namespace); err != nil {
+	if err := r.client.Get(ctx, key, namespace); err != nil {
 		return nil, err
 	}
 
 	return namespace, nil
 }
 
-func (r *AddonReconciler) ensureServiceMonitor(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+func (r *monitoringFederationReconciler) ensureServiceMonitor(ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	desired, err := r.desiredServiceMonitor(addon)
 	if err != nil {
 		return err
@@ -123,7 +156,7 @@ func (r *AddonReconciler) ensureServiceMonitor(ctx context.Context, addon *addon
 
 	actual, err := r.actualServiceMonitor(ctx, addon)
 	if k8sApiErrors.IsNotFound(err) {
-		return r.Create(ctx, desired)
+		return r.client.Create(ctx, desired)
 	} else if err != nil {
 		return fmt.Errorf("getting ServiceMonitor: %w", err)
 	}
@@ -149,10 +182,10 @@ func (r *AddonReconciler) ensureServiceMonitor(ctx context.Context, addon *addon
 	actual.Labels = newLabels
 	actual.OwnerReferences = desired.OwnerReferences
 
-	return r.Update(ctx, actual)
+	return r.client.Update(ctx, actual)
 }
 
-func (r *AddonReconciler) desiredServiceMonitor(addon *addonsv1alpha1.Addon) (*monitoringv1.ServiceMonitor, error) {
+func (r *monitoringFederationReconciler) desiredServiceMonitor(addon *addonsv1alpha1.Addon) (*monitoringv1.ServiceMonitor, error) {
 	serviceMonitor := &monitoringv1.ServiceMonitor{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      GetMonitoringFederationServiceMonitorName(addon),
@@ -171,14 +204,14 @@ func (r *AddonReconciler) desiredServiceMonitor(addon *addonsv1alpha1.Addon) (*m
 
 	controllers.AddCommonLabels(serviceMonitor, addon)
 
-	if err := controllerutil.SetControllerReference(addon, serviceMonitor, r.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(addon, serviceMonitor, r.scheme); err != nil {
 		return nil, fmt.Errorf("setting controller reference on ServiceMonitor: %w", err)
 	}
 
 	return serviceMonitor, nil
 }
 
-func (r *AddonReconciler) actualServiceMonitor(
+func (r *monitoringFederationReconciler) actualServiceMonitor(
 	ctx context.Context, addon *addonsv1alpha1.Addon) (*monitoringv1.ServiceMonitor, error) {
 	key := client.ObjectKey{
 		Name:      GetMonitoringFederationServiceMonitorName(addon),
@@ -186,9 +219,65 @@ func (r *AddonReconciler) actualServiceMonitor(
 	}
 
 	serviceMonitor := &monitoringv1.ServiceMonitor{}
-	if err := r.Get(ctx, key, serviceMonitor); err != nil {
+	if err := r.client.Get(ctx, key, serviceMonitor); err != nil {
 		return nil, err
 	}
 
 	return serviceMonitor, nil
+}
+
+// Ensure cleanup of ServiceMonitors that are not needed anymore for the given Addon resource
+func (r *monitoringFederationReconciler) ensureDeletionOfUnwantedMonitoringFederation(
+	ctx context.Context,
+	addon *addonsv1alpha1.Addon,
+) error {
+	currentServiceMonitors, err := r.getOwnedServiceMonitorsViaCommonLabels(ctx, r.client, addon)
+	if err != nil {
+		return err
+	}
+
+	// A ServiceMonitor is wanted only if .spec.monitoring.federation is set
+	wantedServiceMonitorName := ""
+	if addon.Spec.Monitoring != nil && addon.Spec.Monitoring.Federation != nil {
+		wantedServiceMonitorName = GetMonitoringFederationServiceMonitorName(addon)
+	}
+
+	for _, serviceMonitor := range currentServiceMonitors {
+		if serviceMonitor.Name == wantedServiceMonitorName {
+			// don't delete
+			continue
+		}
+
+		if err := client.IgnoreNotFound(r.client.Delete(ctx, serviceMonitor)); err != nil {
+			return fmt.Errorf("could not remove monitoring federation ServiceMonitor: %w", err)
+		}
+	}
+
+	if wantedServiceMonitorName == "" {
+		err := ensureNamespaceDeletion(ctx, r.client, GetMonitoringNamespaceName(addon))
+		if err != nil {
+			return fmt.Errorf("could not remove monitoring federation Namespace: %w", err)
+		}
+	}
+
+	return nil
+}
+
+// Get all ServiceMonitors that have common labels matching the given Addon resource
+func (r *monitoringFederationReconciler) getOwnedServiceMonitorsViaCommonLabels(
+	ctx context.Context,
+	c client.Client,
+	addon *addonsv1alpha1.Addon) ([]*monitoringv1.ServiceMonitor, error) {
+	selector := controllers.CommonLabelsAsLabelSelector(addon)
+
+	list := &monitoringv1.ServiceMonitorList{}
+	if err := c.List(ctx, list, &client.ListOptions{
+		LabelSelector: client.MatchingLabelsSelector{
+			Selector: selector,
+		},
+	}); err != nil {
+		return nil, fmt.Errorf("could not list owned ServiceMonitors")
+	}
+
+	return list.Items, nil
 }
