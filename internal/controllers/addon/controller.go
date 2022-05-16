@@ -2,7 +2,6 @@ package addon
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -52,9 +51,10 @@ type AddonReconciler struct {
 	ocmClient    ocmClient
 	ocmClientMux sync.RWMutex
 
-	secretPropagationReconciler addonReconciler
-	namespaceReconciler         addonReconciler
-	olmReconciler               addonReconciler
+	secretPropagationReconciler    addonReconciler
+	namespaceReconciler            addonReconciler
+	olmReconciler                  addonReconciler
+	monitoringFederationReconciler addonReconciler
 }
 
 type addonReconciler interface {
@@ -97,6 +97,11 @@ func NewAddonReconciler(
 			client:          client,
 			scheme:          scheme,
 			csvEventHandler: csvEventHandler,
+		},
+
+		monitoringFederationReconciler: &monitoringFederationReconciler{
+			client: client,
+			scheme: scheme,
 		},
 	}
 }
@@ -289,25 +294,11 @@ func (r *AddonReconciler) Reconcile(
 		return result, nil
 	}
 
-	// TODO: encapsulate monitoring operations into a new `monitoringReconciler`
-
-	// Possibly ensure monitoring federation
-	// Normally this would be configured before the addon workload is installed
-	// but currently the addon workload creates the monitoring stack by itself
-	// thus we want to create the service monitor as late as possible to ensure that
-	// cluster-monitoring prom does not try to scrape a non-existent addon prometheus.
-	if err := r.ensureMonitoringFederation(ctx, addon); errors.Is(err, controllers.ErrNotOwnedByUs) {
-		log.Info("stopping", "reason", "monitoring federation namespace or serviceMonitor owned by something else")
-
-		return ctrl.Result{}, nil
-	} else if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure ServiceMonitor: %w", err)
-	}
-
-	// Phase 11.
-	// Remove possibly unwanted monitoring federation
-	if err := r.ensureDeletionOfUnwantedMonitoringFederation(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted ServiceMonitors: %w", err)
+	// Reconcile monitoring objects
+	if result, err := r.monitoringFederationReconciler.Reconcile(ctx, addon); err != nil {
+		return ctrl.Result{}, err
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// After last phase and if everything is healthy

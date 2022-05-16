@@ -12,6 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -28,10 +29,9 @@ func TestEnsureMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInClu
 		},
 	}
 
-	r := &AddonReconciler{
-		Client: c,
-		Log:    testutil.NewLogger(t),
-		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	r := &monitoringFederationReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 
 	ctx := context.Background()
@@ -43,10 +43,9 @@ func TestEnsureMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInClu
 func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 
-	r := &AddonReconciler{
-		Client: c,
-		Log:    testutil.NewLogger(t),
-		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	r := &monitoringFederationReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 
 	addon := &addonsv1alpha1.Addon{
@@ -97,10 +96,9 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(
 func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 
-	r := &AddonReconciler{
-		Client: c,
-		Log:    testutil.NewLogger(t),
-		Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	r := &monitoringFederationReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 
 	addon := &addonsv1alpha1.Addon{
@@ -128,7 +126,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 			namespace := args.Get(2).(*corev1.Namespace)
 			namespace.Status.Phase = corev1.NamespaceActive
 			// mocked Namespace is owned by Addon
-			err := controllerutil.SetControllerReference(addon, namespace, r.Scheme)
+			err := controllerutil.SetControllerReference(addon, namespace, r.scheme)
 			// mocked Namespace has desired labels
 			namespace.Labels = map[string]string{"openshift.io/cluster-monitoring": "true"}
 			controllers.AddCommonLabels(namespace, addon)
@@ -144,7 +142,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 			// mocked ServiceMonitor is owned by Addon
 			serviceMonitor := args.Get(2).(*monitoringv1.ServiceMonitor)
 			controllers.AddCommonLabels(serviceMonitor, addon)
-			err := controllerutil.SetControllerReference(addon, serviceMonitor, r.Scheme)
+			err := controllerutil.SetControllerReference(addon, serviceMonitor, r.scheme)
 			assert.NoError(t, err)
 			// inject expected ServiceMonitor spec into response
 			serviceMonitor.Spec = monitoringv1.ServiceMonitorSpec{
@@ -354,10 +352,9 @@ func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
 				Return(nil).
 				Maybe()
 
-			rec := &AddonReconciler{
-				Client: client,
-				Log:    testutil.NewLogger(t),
-				Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+			rec := &monitoringFederationReconciler{
+				client: client,
+				scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 			}
 
 			addon := addon.DeepCopy()
@@ -446,4 +443,157 @@ func testServiceMonitor(addon *addonsv1alpha1.Addon) *monitoringv1.ServiceMonito
 			},
 		},
 	}
+}
+
+func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInCluster(t *testing.T) {
+	c := testutil.NewClient()
+
+	addon := &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-foo",
+		},
+	}
+
+	c.On("List", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitorList{}), mock.Anything).
+		Return(nil)
+	c.On("Delete", testutil.IsContext, mock.IsType(&corev1.Namespace{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			ns := args.Get(1).(*corev1.Namespace)
+			assert.Equal(t, GetMonitoringNamespaceName(addon), ns.Name)
+		}).
+		Return(testutil.NewTestErrNotFound())
+
+	r := &monitoringFederationReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	}
+
+	ctx := context.Background()
+	err := r.ensureDeletionOfUnwantedMonitoringFederation(ctx, addon)
+
+	require.NoError(t, err)
+	c.AssertExpectations(t)
+}
+
+func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_PresentInCluster(t *testing.T) {
+	c := testutil.NewClient()
+
+	addon := &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-foo",
+		},
+	}
+
+	serviceMonitorsInCluster := &monitoringv1.ServiceMonitorList{
+		Items: []*monitoringv1.ServiceMonitor{
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "foo",
+					Namespace: "bar",
+				},
+			},
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "qux",
+					Namespace: "bar",
+				},
+			},
+		},
+	}
+	deletedServiceMons := []client.ObjectKey{}
+
+	c.On("List", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitorList{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			list := args.Get(1).(*monitoringv1.ServiceMonitorList)
+			serviceMonitorsInCluster.DeepCopyInto(list)
+		}).
+		Return(nil)
+	c.On("Delete", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			sm := args.Get(1).(*monitoringv1.ServiceMonitor)
+			assert.Condition(t, func() (success bool) {
+				for _, serviceMonitorInCluster := range serviceMonitorsInCluster.Items {
+					if serviceMonitorInCluster.Name == sm.Name {
+						return true
+					}
+				}
+				return false
+			})
+			deletedServiceMons = append(deletedServiceMons, client.ObjectKeyFromObject(sm))
+		}).
+		Return(nil)
+	c.On("Delete", testutil.IsContext, mock.IsType(&corev1.Namespace{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			ns := args.Get(1).(*corev1.Namespace)
+			assert.Equal(t, GetMonitoringNamespaceName(addon), ns.Name)
+		}).
+		Return(nil)
+
+	r := &monitoringFederationReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	}
+
+	ctx := context.Background()
+	err := r.ensureDeletionOfUnwantedMonitoringFederation(ctx, addon)
+
+	require.NoError(t, err)
+	c.AssertExpectations(t)
+	c.AssertCalled(t, "Delete", testutil.IsContext, mock.IsType(&corev1.Namespace{}), mock.Anything)
+	assert.Equal(t, []client.ObjectKey{
+		{Name: "foo", Namespace: "bar"},
+		{Name: "qux", Namespace: "bar"},
+	}, deletedServiceMons)
+}
+
+func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_PresentInCluster(t *testing.T) {
+	c := testutil.NewClient()
+
+	addon := &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-foo",
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			Monitoring: &addonsv1alpha1.MonitoringSpec{
+				Federation: &addonsv1alpha1.MonitoringFederationSpec{
+					Namespace:  "addon-foo-test-ns",
+					MatchNames: []string{"foo"},
+					MatchLabels: map[string]string{
+						"foo": "bar",
+					},
+				},
+			},
+		},
+	}
+
+	serviceMonitorsInCluster := &monitoringv1.ServiceMonitorList{
+		Items: []*monitoringv1.ServiceMonitor{
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      GetMonitoringFederationServiceMonitorName(addon),
+					Namespace: GetMonitoringNamespaceName(addon),
+					Labels:    map[string]string{},
+				},
+			},
+		},
+	}
+	controllers.AddCommonLabels(serviceMonitorsInCluster.Items[0], addon)
+
+	c.On("List", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitorList{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			list := args.Get(1).(*monitoringv1.ServiceMonitorList)
+			serviceMonitorsInCluster.DeepCopyInto(list)
+		}).
+		Return(nil)
+
+	r := &monitoringFederationReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	}
+
+	ctx := context.Background()
+	err := r.ensureDeletionOfUnwantedMonitoringFederation(ctx, addon)
+
+	require.NoError(t, err)
+	c.AssertExpectations(t)
 }
