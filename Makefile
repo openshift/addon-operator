@@ -43,7 +43,8 @@ export SKIP_TEARDOWN?=
 KIND_CLUSTER_NAME:="addon-operator" # name of the kind cluster for local development.
 ENABLE_API_MOCK?="false"
 ENABLE_WEBHOOK?="false"
-ENABLE_MONITORING?="true"
+ENABLE_MONITORING?="false"
+ENABLE_REMOTE_STORAGE_MOCK="true"
 WEBHOOK_PORT?=8080
 
 # Container
@@ -216,16 +217,6 @@ test-setup: | \
 delete-kind-cluster:
 	./mage dev:teardown
 .PHONY: delete-kind-cluster
-
-## Setup Prometheus Kubernetes stack
-setup-monitoring: helm
-	@(kubectl create ns monitoring)
-	@(helm repo add prometheus-community https://prometheus-community.github.io/helm-charts)
-	@(helm repo update)
-	@(helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring \
-     --set grafana.enabled=false \
-     --set kubeStateMetrics.enabled=false \
-     --set nodeExporter.enabled=false)
 
 ## Loads and installs the Addon Operator into the currently selected cluster.
 setup-addon-operator:

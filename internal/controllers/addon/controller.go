@@ -100,13 +100,18 @@ func NewAddonReconciler(
 				client: client,
 				scheme: scheme,
 			},
-			// Step 4: Reconcile OLM objects
+			// Step 4: Reconcile MonitoringStack objects
+			&monitoringStackReconciler{
+				client: client,
+				scheme: scheme,
+			},
+			// Step 5: Reconcile OLM objects
 			&olmReconciler{
 				client:          client,
 				scheme:          scheme,
 				csvEventHandler: csvEventHandler,
 			},
-			// Step 5: Reconcile Monitoring Federation
+			// Step 6: Reconcile Monitoring Federation
 			&monitoringFederationReconciler{
 				client: client,
 				scheme: scheme,

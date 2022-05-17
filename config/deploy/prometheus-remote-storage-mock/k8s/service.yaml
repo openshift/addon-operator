@@ -1,0 +1,15 @@
+# To be used for local development and testing only
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-remote-storage-mock
+  namespace: prometheus-remote-storage-mock
+  labels:
+    app.kubernetes.io/name: prometheus-remote-storage-mock
+spec:
+  ports:
+    - port: 1234
+      name: http
+      targetPort: 1234
+  selector:
+    app.kubernetes.io/name: prometheus-remote-storage-mock
