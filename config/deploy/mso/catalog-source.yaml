@@ -1,0 +1,18 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+  name: monitoring-operators
+  namespace: monitoring-stack-operator
+spec:
+  displayName: Monitoring Test Operator
+  icon:
+    base64data: ""
+    mediatype: ""
+  image: quay.io/rhobs/monitoring-stack-operator-catalog:latest
+  publisher: Sunil Thaha
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 1m0s

@@ -51,9 +51,11 @@ type AddonReconciler struct {
 	ocmClient    ocmClient
 	ocmClientMux sync.RWMutex
 
-	secretPropagationReconciler    addonReconciler
-	namespaceReconciler            addonReconciler
-	olmReconciler                  addonReconciler
+	// Addon Sub-reconcilers
+	secretPropagationReconciler,
+	namespaceReconciler,
+	olmReconciler,
+	monitoringStackReconciler,
 	monitoringFederationReconciler addonReconciler
 }
 
@@ -100,6 +102,11 @@ func NewAddonReconciler(
 		},
 
 		monitoringFederationReconciler: &monitoringFederationReconciler{
+			client: client,
+			scheme: scheme,
+		},
+
+		monitoringStackReconciler: &monitoringStackReconciler{
 			client: client,
 			scheme: scheme,
 		},
@@ -285,6 +292,13 @@ func (r *AddonReconciler) Reconcile(
 	// Ensure the creation of the corresponding AddonInstance in .spec.install.olmOwnNamespace/.spec.install.olmAllNamespaces namespace
 	if err := r.ensureAddonInstance(ctx, log, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure the creation of addoninstance: %w", err)
+	}
+
+	// Reconciler monitoring stack
+	if result, err := r.monitoringStackReconciler.Reconcile(ctx, addon); err != nil {
+		return ctrl.Result{}, err
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// Reconciler OLM objects

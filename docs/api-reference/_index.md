@@ -34,6 +34,9 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [EnvObject](#envobjectaddonsmanagedopenshiftiov1alpha1)
 	* [MonitoringFederationSpec](#monitoringfederationspecaddonsmanagedopenshiftiov1alpha1)
 	* [MonitoringSpec](#monitoringspecaddonsmanagedopenshiftiov1alpha1)
+	* [MonitoringStackSpec](#monitoringstackspecaddonsmanagedopenshiftiov1alpha1)
+	* [RHOBSRemoteWriteConfigSpec](#rhobsremotewriteconfigspecaddonsmanagedopenshiftiov1alpha1)
+	* [ServiceMonitorConfig](#servicemonitorconfigaddonsmanagedopenshiftiov1alpha1)
 	* [SubscriptionConfig](#subscriptionconfigaddonsmanagedopenshiftiov1alpha1)
 	* [ClusterSecretReference](#clustersecretreferenceaddonsmanagedopenshiftiov1alpha1)
 
@@ -337,6 +340,42 @@ Tracks the last state last reported to the Upgrade Policy endpoint.
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
 | federation | Configuration parameters to be injected in the ServiceMonitor used for federation. The target prometheus server found by matchLabels needs to serve service-ca signed TLS traffic (https://docs.openshift.com/container-platform/4.6/security/certificate_types_descriptions/service-ca-certificates.html), and it needs to be runing inside the namespace specified by `.monitoring.federation.namespace` with the service name 'prometheus'. | *[MonitoringFederationSpec.addons.managed.openshift.io/v1alpha1](#monitoringfederationspecaddonsmanagedopenshiftiov1alpha1) | false |
+| monitoringStack | Settings For Monitoring Stack | *[MonitoringStackSpec.addons.managed.openshift.io/v1alpha1](#monitoringstackspecaddonsmanagedopenshiftiov1alpha1) | false |
+
+[Back to Group]()
+
+### MonitoringStackSpec.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| rhobsRemoteWriteConfig | Settings for RHOBS Remote Write | *[RHOBSRemoteWriteConfigSpec.addons.managed.openshift.io/v1alpha1](#rhobsremotewriteconfigspecaddonsmanagedopenshiftiov1alpha1) | false |
+| serviceMonitorConfig | Settings for the ServiceMonitor | *[ServiceMonitorConfig.addons.managed.openshift.io/v1alpha1](#servicemonitorconfigaddonsmanagedopenshiftiov1alpha1) | false |
+
+[Back to Group]()
+
+### RHOBSRemoteWriteConfigSpec.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| url | RHOBS endpoints where your data is sent to It varies by environment: - Staging: https://observatorium-mst.stage.api.openshift.com/api/metrics/v1/<tenant id>/api/v1/receive - Production: https://observatorium-mst.api.openshift.com/api/metrics/v1/<tenant id>/api/v1/receive | string | true |
+| oauth2 | OAuth2 config for the remote write URL | *monv1.OAuth2 | false |
+| allowlist | List of metrics to push to RHOBS. Any metric not listed here is dropped. | []string | false |
+
+[Back to Group]()
+
+### ServiceMonitorConfig.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| namespaceSelector | Selector to select which namespaces the Kubernetes Endpoints objects are discovered from. | monv1.NamespaceSelector | true |
+| selector | Selector to select Endpoints objects. | [metav1.LabelSelector](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#labelselector-v1-meta) | true |
+| endpoints | A list of endpoints allowed as part of this ServiceMonitor. | []monv1.Endpoint | true |
 
 [Back to Group]()
 

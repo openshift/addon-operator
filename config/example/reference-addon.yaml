@@ -12,13 +12,27 @@ spec:
       namespace: reference-addon
       packageName: reference-addon
       channel: alpha
-      catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+      catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:0e61590e15f7e9c71b9a43a60392b2e8a396fd36a86100939c1bb9358fe42d7a
       additionalCatalogSources:
       - name: test-1
         image: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
   upgradePolicy:
     id: 123-456-789
   monitoring:
+    monitoringStack:
+      rhobsRemoteWriteConfig:
+        url: prometheus-remote-storage-mock.prometheus-remote-storage-mock:1234
+      serviceMonitorConfig:
+        namespaceSelector:
+          matchNames:
+          - reference-addon
+        selector:
+          matchLabels:
+            app.kubernetes.io/name: reference-addon
+        endpoints:
+        - port: http
+          interval: 10s
+          path: /metrics
     federation:
       namespace: "reference-addon"
       matchNames:
