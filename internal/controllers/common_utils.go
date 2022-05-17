@@ -19,6 +19,10 @@ const (
 	CommonInstanceLabel  = "app.kubernetes.io/instance"
 )
 
+const (
+	MSOLabel = "addons.managed.openshift.io/mso"
+)
+
 func AddCommonLabels(obj metav1.Object, addon *addonsv1alpha1.Addon) {
 	labels := obj.GetLabels()
 	if labels == nil {

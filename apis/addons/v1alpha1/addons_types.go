@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -86,6 +87,35 @@ type MonitoringSpec struct {
 	// and it needs to be runing inside the namespace specified by `.monitoring.federation.namespace`
 	// with the service name 'prometheus'.
 	Federation *MonitoringFederationSpec `json:"federation,omitempty"`
+
+	// Settings For Monitoring Stack
+	// +optional
+	MonitoringStack *MonitoringStackSpec `json:"monitoringStack,omitempty"`
+}
+
+type MonitoringStackSpec struct {
+
+	// Enabled when set to true, deploys a MonitoringStack object
+	Enabled bool `json:"enabled,omitempty"`
+
+	// Settings for RHOBS Remote Write
+	// +optional
+	RHOBSRemoteWriteConfig *RHOBSRemoteWriteConfigSpec `json:"rhobsRemoteWriteConfig,omitempty"`
+
+	// Settings for the ServiceMonitor
+	// +optional
+	ServiceMonitorSpec *monv1.ServiceMonitorSpec `json:"serviceMonitorSpec,omitempty"`
+}
+
+type RHOBSRemoteWriteConfigSpec struct {
+	// RHOBS endpoints where your data is sent to
+	// It varies by environment:
+	// - Staging: https://observatorium-mst.stage.api.openshift.com/api/metrics/v1/<tenant id>/api/v1/receive
+	// - Production: https://observatorium-mst.api.openshift.com/api/metrics/v1/<tenant id>/api/v1/receive
+	URL string `json:"url"`
+
+	// OAuth2 config for the remote write URL
+	OAuth2 *monv1.OAuth2 `json:"oauth2,omitempty"`
 }
 
 type MonitoringFederationSpec struct {
