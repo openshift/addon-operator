@@ -104,6 +104,14 @@ func init() {
 
 	logger = stdr.New(nil)
 	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
+	if len(containerRuntime) == 0 || containerRuntime == "auto" {
+		cr, err := dev.DetectContainerRuntime()
+		if err != nil {
+			panic(err)
+		}
+		containerRuntime = string(cr)
+		logger.Info("detected container-runtime", "container-runtime", containerRuntime)
+	}
 }
 
 // Building
