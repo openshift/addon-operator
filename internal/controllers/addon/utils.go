@@ -245,9 +245,9 @@ func parseAddonInstallConfigForAdditionalCatalogSources(
 				return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
 			}
 			additionalCatalogSrcs = append(additionalCatalogSrcs, additionalCatalogSrc)
-			targetNamespace = addon.Spec.Install.OLMOwnNamespace.Namespace
-			pullSecretName = addon.Spec.Install.OLMOwnNamespace.PullSecretName
 		}
+		targetNamespace = addon.Spec.Install.OLMOwnNamespace.Namespace
+		pullSecretName = addon.Spec.Install.OLMOwnNamespace.PullSecretName
 	case addonsv1alpha1.OLMAllNamespaces:
 		for _, additionalCatalogSrc := range addon.Spec.Install.OLMAllNamespaces.AdditionalCatalogSources {
 			if len(additionalCatalogSrc.Image) == 0 || len(additionalCatalogSrc.Name) == 0 {
@@ -256,10 +256,10 @@ func parseAddonInstallConfigForAdditionalCatalogSources(
 						"requires both image and name")
 				return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
 			}
-			targetNamespace = addon.Spec.Install.OLMAllNamespaces.Namespace
-			pullSecretName = addon.Spec.Install.OLMAllNamespaces.PullSecretName
 			additionalCatalogSrcs = append(additionalCatalogSrcs, additionalCatalogSrc)
 		}
+		targetNamespace = addon.Spec.Install.OLMAllNamespaces.Namespace
+		pullSecretName = addon.Spec.Install.OLMAllNamespaces.PullSecretName
 	default:
 		// Unsupported Install Type
 		// This should never happen, unless the schema validation is wrong.
