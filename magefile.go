@@ -45,6 +45,33 @@ var (
 	containerRuntime string
 )
 
+func init() {
+	var err error
+	// Directories
+	workDir, err = os.Getwd()
+	if err != nil {
+		panic(fmt.Errorf("getting work dir: %w", err))
+	}
+	cacheDir = path.Join(workDir + "/" + ".cache")
+	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
+	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
+
+	logger = stdr.New(nil)
+}
+
+// dependency for all targets requiring a container runtime
+func setupContainerRuntime() {
+	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
+	if len(containerRuntime) == 0 || containerRuntime == "auto" {
+		cr, err := dev.DetectContainerRuntime()
+		if err != nil {
+			panic(err)
+		}
+		containerRuntime = string(cr)
+		logger.Info("detected container-runtime", "container-runtime", containerRuntime)
+	}
+}
+
 // Prepare a new release of the Addon Operator.
 func Prepare_Release() error {
 	versionBytes, err := ioutil.ReadFile(path.Join(workDir, "VERSION"))
@@ -89,29 +116,6 @@ func Prepare_Release() error {
 		return fmt.Errorf("rebuilding config/openshift/: %w", err)
 	}
 	return nil
-}
-
-func init() {
-	var err error
-	// Directories
-	workDir, err = os.Getwd()
-	if err != nil {
-		panic(fmt.Errorf("getting work dir: %w", err))
-	}
-	cacheDir = path.Join(workDir + "/" + ".cache")
-	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
-	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
-
-	logger = stdr.New(nil)
-	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
-	if len(containerRuntime) == 0 || containerRuntime == "auto" {
-		cr, err := dev.DetectContainerRuntime()
-		if err != nil {
-			panic(err)
-		}
-		containerRuntime = string(cr)
-		logger.Info("detected container-runtime", "container-runtime", containerRuntime)
-	}
 }
 
 // Building
@@ -231,6 +235,8 @@ func (Build) Docgen() {
 }
 
 func (b Build) ImageBuild(cmd string) error {
+	mg.SerialDeps(setupContainerRuntime)
+
 	// clean/prepare cache directory
 	imageCacheDir := path.Join(cacheDir, "image", cmd)
 	if err := os.RemoveAll(imageCacheDir); err != nil && !os.IsNotExist(err) {
@@ -404,7 +410,7 @@ func (b Build) TemplateAddonOperatorCSV() error {
 }
 
 func (Build) imagePush(imageName string) error {
-	mg.Deps(
+	mg.SerialDeps(
 		mg.F(Build.ImageBuild, imageName),
 	)
 
@@ -890,7 +896,10 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 }
 
 func (d Dev) init() error {
-	mg.Deps(Dependency.Kind)
+	mg.SerialDeps(
+		setupContainerRuntime,
+		Dependency.Kind,
+	)
 
 	devEnvironment = dev.NewEnvironment(
 		"addon-operator-dev",
