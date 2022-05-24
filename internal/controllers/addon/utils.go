@@ -160,6 +160,11 @@ func reportUnreadyMonitoring(addon *addonsv1alpha1.Addon, message string) {
 		fmt.Sprintf("Monitoring Federation is not ready: %s", message))
 }
 
+func reportUnreadyMonitoringStack(addon *addonsv1alpha1.Addon, message string) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyMonitoring,
+		fmt.Sprintf("Monitoring Stack is not ready: %s", message))
+}
+
 func reportPendingStatus(addon *addonsv1alpha1.Addon, reason, msg string) {
 	meta.SetStatusCondition(&addon.Status.Conditions,
 		metav1.Condition{

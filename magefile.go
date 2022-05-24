@@ -877,6 +877,57 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 func (d Dev) init() error {
 	mg.Deps(Dependency.Kind)
 
+	clusterInitializers := dev.WithClusterInitializers{
+		dev.ClusterLoadObjectsFromFiles{
+			// OCP APIs required by the AddonOperator.
+			"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
+			"config/ocp/config-operator_01_proxy.crd.yaml",
+			"config/ocp/cluster-version.yaml",
+			"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
+
+			// OpenShift console to interact with OLM.
+			"hack/openshift-console.yaml",
+		},
+		dev.ClusterLoadObjectsFromHttp{
+			// Install OLM.
+			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
+			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
+		},
+		dev.ClusterLoadObjectsFromHttp{
+			// Install Monitoring CRDs for MSO.
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/main/deploy/crds/kubernetes/alertmanagerconfigs.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/main/deploy/crds/kubernetes/alertmanagers.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/main/deploy/crds/kubernetes/podmonitors.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/main/deploy/crds/kubernetes/probes.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/main/deploy/crds/kubernetes/prometheuses.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/main/deploy/crds/kubernetes/prometheusrules.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/main/deploy/crds/kubernetes/servicemonitors.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/main/deploy/crds/kubernetes/thanosrulers.yaml",
+		},
+		dev.ClusterLoadObjectsFromFiles{
+			// Install MSO using OLM.
+			"config/deploy/mso/namespace.yaml",
+			"config/deploy/mso/operator-group.yaml",
+			"config/deploy/mso/catalog-source.yaml",
+			"config/deploy/mso/subscription.yaml",
+		},
+	}
+
+	if os.Getenv("ENABLE_MONITORING") == "true" {
+		clusterInitializers = append(clusterInitializers, dev.ClusterHelmInstall{
+			RepoName:    "prometheus-community",
+			RepoURL:     "https://prometheus-community.github.io/helm-charts",
+			PackageName: "kube-prometheus-stack",
+			ReleaseName: "prometheus",
+			Namespace:   "monitoring",
+			SetVars: []string{
+				"grafana.enabled=false",
+				"kubeStateMetrics.enabled=false",
+				"nodeExporter.enabled=false",
+			},
+		})
+	}
+
 	devEnvironment = dev.NewEnvironment(
 		"addon-operator-dev",
 		path.Join(cacheDir, "dev-env"),
@@ -887,34 +938,7 @@ func (d Dev) init() error {
 			}),
 		}),
 		dev.WithContainerRuntime(containerRuntime),
-		dev.WithClusterInitializers{
-			dev.ClusterLoadObjectsFromFiles{
-				// OCP APIs required by the AddonOperator.
-				"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
-				"config/ocp/config-operator_01_proxy.crd.yaml",
-				"config/ocp/cluster-version.yaml",
-				"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
-
-				// OpenShift console to interact with OLM.
-				"hack/openshift-console.yaml",
-			},
-			dev.ClusterLoadObjectsFromHttp{
-				// Install OLM.
-				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
-				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
-			},
-			dev.ClusterHelmInstall{
-				RepoName:    "prometheus-community",
-				RepoURL:     "https://prometheus-community.github.io/helm-charts",
-				PackageName: "kube-prometheus-stack",
-				ReleaseName: "prometheus",
-				Namespace:   "monitoring",
-				SetVars: []string{
-					"grafana.enabled=false",
-					"kubeStateMetrics.enabled=false",
-					"nodeExporter.enabled=false",
-				},
-			},
-		})
+		clusterInitializers,
+	)
 	return nil
 }

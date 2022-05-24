@@ -19,6 +19,8 @@ spec:
   upgradePolicy:
     id: 123-456-789
   monitoring:
+    monitoringStack:
+      enabled: true
     federation:
       namespace: "reference-addon"
       matchNames:

@@ -57,6 +57,10 @@ func (r *namespaceReconciler) ensureDeletionOfUnwantedNamespaces(
 	// separately by `phase_delete_unwanted_monitoring_federation`
 	wantedNamespaceNames[GetMonitoringNamespaceName(addon)] = struct{}{}
 
+	// Don't remote MonitoringStack namespace as it will be handled by
+	// monitoringStackReconciler
+	wantedNamespaceNames[getMonitoringStackNamespace(addon.Name)] = struct{}{}
+
 	for _, namespace := range currentNamespaces {
 		_, isWanted := wantedNamespaceNames[namespace.Name]
 		if isWanted {
