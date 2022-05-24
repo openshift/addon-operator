@@ -14,6 +14,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/event"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
 )
 
@@ -127,4 +128,311 @@ func (m *csvEventHandlerMock) ReplaceMap(
 ) (changed bool) {
 	args := m.Called(addon, csvKeys)
 	return args.Bool(0)
+}
+
+func TestParseAddonInstallConfigurationForAdditionalCatalogSources(t *testing.T) {
+	// expected outcome struct for every function call
+	type Expected struct {
+		additionalCatalogSource []addonsv1alpha1.AdditionalCatalogSource
+		targetNamespace         string
+		pullSecretName          string
+		stop                    bool
+	}
+
+	// all types of synthetic testcases
+	testCases := []struct {
+		addon    *addonsv1alpha1.Addon
+		expected Expected
+	}{
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:      "test-namespace-OLMOwnNamespace",
+								PullSecretName: "test-pullSecretName",
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "image-1",
+									},
+									{
+										Name:  "test-2",
+										Image: "image-2",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{
+					{
+						Name:  "test-1",
+						Image: "image-1",
+					},
+					{
+						Name:  "test-2",
+						Image: "image-2",
+					},
+				},
+				targetNamespace: "test-namespace-OLMOwnNamespace",
+				pullSecretName:  "test-pullSecretName",
+				stop:            false,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:      "test-namespace-OLMOwnNamespace",
+								PullSecretName: "test-pullSecretName",
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "image-1",
+									},
+									{
+										Name:  "",
+										Image: "image-2",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{},
+				targetNamespace:         "",
+				pullSecretName:          "",
+				stop:                    true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:      "test-namespace-OLMOwnNamespace",
+								PullSecretName: "test-pullSecretName",
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "image-1",
+									},
+									{
+										Name:  "test-2",
+										Image: "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{},
+				targetNamespace:         "",
+				pullSecretName:          "",
+				stop:                    true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:      "test-namespace-OLMOwnNamespace",
+								PullSecretName: "test-pullSecretName",
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "image-1",
+									},
+									{
+										Name:  "",
+										Image: "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{},
+				targetNamespace:         "",
+				pullSecretName:          "",
+				stop:                    true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:      "test-namespace-OLMAllNamespaces",
+								PullSecretName: "test-pullSecretName",
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "image-1",
+									},
+									{
+										Name:  "test-2",
+										Image: "image-2",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{
+					{
+						Name:  "test-1",
+						Image: "image-1",
+					},
+					{
+						Name:  "test-2",
+						Image: "image-2",
+					},
+				},
+				targetNamespace: "test-namespace-OLMAllNamespaces",
+				pullSecretName:  "test-pullSecretName",
+				stop:            false,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:      "test-namespace-OLMAllNamespaces",
+								PullSecretName: "test-pullSecretName",
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "image-1",
+									},
+									{
+										Name:  "",
+										Image: "image-2",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{},
+				targetNamespace:         "",
+				pullSecretName:          "",
+				stop:                    true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:      "test-namespace-OLMAllNamespaces",
+								PullSecretName: "test-pullSecretName",
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "image-1",
+									},
+									{
+										Name:  "test-2",
+										Image: "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{},
+				targetNamespace:         "",
+				pullSecretName:          "",
+				stop:                    true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:      "test-namespace-OLMAllNamespaces",
+								PullSecretName: "test-pullSecretName",
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "image-1",
+									},
+									{
+										Name:  "",
+										Image: "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{},
+				targetNamespace:         "",
+				pullSecretName:          "",
+				stop:                    true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{},
+			expected: Expected{
+				additionalCatalogSource: []addonsv1alpha1.AdditionalCatalogSource{},
+				targetNamespace:         "",
+				pullSecretName:          "",
+				stop:                    true,
+			},
+		},
+	}
+	log := controllers.LoggerFromContext(context.TODO())
+	for _, tc := range testCases {
+		t.Run("parse addon install configuration for additional catalogsource test", func(t *testing.T) {
+			addon := tc.addon.DeepCopy()
+			additionalCatalogSource, targetNamespace, pullSecretName, stop := parseAddonInstallConfigForAdditionalCatalogSources(log, addon)
+			// additionalCatalogSource check
+			assert.Equal(t, tc.expected.additionalCatalogSource, additionalCatalogSource)
+			// targetNamespace check
+			assert.Equal(t, tc.expected.targetNamespace, targetNamespace)
+			// pullSecretName check
+			assert.Equal(t, tc.expected.pullSecretName, pullSecretName)
+			// stop check
+			assert.Equal(t, tc.expected.stop, stop)
+		})
+	}
 }
