@@ -45,6 +45,33 @@ var (
 	containerRuntime string
 )
 
+func init() {
+	var err error
+	// Directories
+	workDir, err = os.Getwd()
+	if err != nil {
+		panic(fmt.Errorf("getting work dir: %w", err))
+	}
+	cacheDir = path.Join(workDir + "/" + ".cache")
+	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
+	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
+
+	logger = stdr.New(nil)
+}
+
+// dependency for all targets requiring a container runtime
+func setupContainerRuntime() {
+	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
+	if len(containerRuntime) == 0 || containerRuntime == "auto" {
+		cr, err := dev.DetectContainerRuntime()
+		if err != nil {
+			panic(err)
+		}
+		containerRuntime = string(cr)
+		logger.Info("detected container-runtime", "container-runtime", containerRuntime)
+	}
+}
+
 // Prepare a new release of the Addon Operator.
 func Prepare_Release() error {
 	versionBytes, err := ioutil.ReadFile(path.Join(workDir, "VERSION"))
@@ -89,21 +116,6 @@ func Prepare_Release() error {
 		return fmt.Errorf("rebuilding config/openshift/: %w", err)
 	}
 	return nil
-}
-
-func init() {
-	var err error
-	// Directories
-	workDir, err = os.Getwd()
-	if err != nil {
-		panic(fmt.Errorf("getting work dir: %w", err))
-	}
-	cacheDir = path.Join(workDir + "/" + ".cache")
-	depsDir = magedeps.DependencyDirectory(path.Join(workDir, ".deps"))
-	os.Setenv("PATH", depsDir.Bin()+":"+os.Getenv("PATH"))
-
-	logger = stdr.New(nil)
-	containerRuntime = os.Getenv("CONTAINER_RUNTIME")
 }
 
 // Building
@@ -223,6 +235,8 @@ func (Build) Docgen() {
 }
 
 func (b Build) ImageBuild(cmd string) error {
+	mg.SerialDeps(setupContainerRuntime)
+
 	// clean/prepare cache directory
 	imageCacheDir := path.Join(cacheDir, "image", cmd)
 	if err := os.RemoveAll(imageCacheDir); err != nil && !os.IsNotExist(err) {
@@ -396,7 +410,7 @@ func (b Build) TemplateAddonOperatorCSV() error {
 }
 
 func (Build) imagePush(imageName string) error {
-	mg.Deps(
+	mg.SerialDeps(
 		mg.F(Build.ImageBuild, imageName),
 	)
 
@@ -521,11 +535,12 @@ func (Test) Integration() error {
 // This target will additionally deploy the API Mock before starting the integration test suite.
 func (t Test) IntegrationCI(ctx context.Context) error {
 	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
-		dev.WithLogger(logger),
 		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
+
+	ctx = dev.ContextWithLogger(ctx, logger)
 
 	var dev Dev
 	if err := dev.deployAPIMock(ctx, cluster); err != nil {
@@ -773,15 +788,17 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 		}
 	}
 
+	ctx = dev.ContextWithLogger(ctx, logger)
+
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
 		"config/deploy/api-mock/00-namespace.yaml",
 		"config/deploy/api-mock/api-mock.yaml",
-	}, dev.WithLogger(logger)); err != nil {
+	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(ctx, apiMockDeployment, dev.WithLogger(logger)); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, apiMockDeployment); err != nil {
 		return fmt.Errorf("deploy api-mock: %w", err)
 	}
 	return nil
@@ -814,6 +831,8 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 		}
 	}
 
+	ctx = dev.ContextWithLogger(ctx, logger)
+
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
@@ -823,10 +842,10 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 		"config/deploy/addons.managed.openshift.io_addonoperators.yaml",
 		"config/deploy/addons.managed.openshift.io_addons.yaml",
 		"config/deploy/rbac.yaml",
-	}, dev.WithLogger(logger)); err != nil {
+	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorDeployment, dev.WithLogger(logger)); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorDeployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager: %w", err)
 	}
 	return nil
@@ -859,28 +878,32 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 		}
 	}
 
+	dev.ContextWithLogger(ctx, logger)
+
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
 		"config/deploy/webhook/00-tls-secret.yaml",
 		"config/deploy/webhook/service.yaml",
 		"config/deploy/webhook/validatingwebhookconfig.yaml",
-	}, dev.WithLogger(logger)); err != nil {
+	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment, dev.WithLogger(logger)); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhook: %w", err)
 	}
 	return nil
 }
 
 func (d Dev) init() error {
-	mg.Deps(Dependency.Kind)
+	mg.SerialDeps(
+		setupContainerRuntime,
+		Dependency.Kind,
+	)
 
 	devEnvironment = dev.NewEnvironment(
 		"addon-operator-dev",
 		path.Join(cacheDir, "dev-env"),
-		dev.WithLogger(logger),
 		dev.WithClusterOptions([]dev.ClusterOption{
 			dev.WithWaitOptions([]dev.WaitOption{
 				dev.WithTimeout(2 * time.Minute),
