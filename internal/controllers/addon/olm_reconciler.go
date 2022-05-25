@@ -35,6 +35,17 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 	}
 
 	// Phase 2.
+	// Ensure NetworkPolicy for CatalogSources
+	// Note: This Phase must preempt CatalogSource reconciliation
+	// as the CatalogSources will never report 'ready' if OLM
+	// cannot verify the status of the GRPC connection.
+	if requeueResult, err := r.ensureCatalogSourcesNetworkPolicy(ctx, addon); err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to ensure NetworkPolicy for CatalogSources: %w", err)
+	} else if requeueResult != resultNil {
+		return handleExit(requeueResult), nil
+	}
+
+	// Phase 3.
 	// Ensure CatalogSource
 	var (
 		catalogSource *operatorsv1alpha1.CatalogSource
@@ -46,7 +57,7 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 		return handleExit(requeueResult), nil
 	}
 
-	// Phase 3.
+	// Phase 4.
 	// Ensure Additional CatalogSources
 	if requeueResult, err = r.ensureAdditionalCatalogSources(ctx, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure additional CatalogSource: %w", err)
@@ -54,7 +65,7 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 		return handleExit(requeueResult), nil
 	}
 
-	// Phase 4.
+	// Phase 5.
 	// Ensure Subscription for this Addon.
 	requeueResult, currentCSVKey, err := r.ensureSubscription(
 		ctx, log.WithName("phase-ensure-subscription"),
@@ -65,7 +76,7 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 		return handleExit(requeueResult), nil
 	}
 
-	// Phase 5.
+	// Phase 6.
 	// Observe current csv
 	if requeueResult, err := r.observeCurrentCSV(ctx, addon, currentCSVKey); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to observe current CSV: %w", err)

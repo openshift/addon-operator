@@ -7,8 +7,10 @@ import (
 
 	"github.com/go-logr/logr"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -333,3 +335,14 @@ func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon)
 func HasAdoptAllStrategy(addon *addonsv1alpha1.Addon) bool {
 	return addon.Spec.ResourceAdoptionStrategy == addonsv1alpha1.ResourceAdoptionAdoptAll
 }
+
+func getPrimaryCatalogSourceName(addon *addonsv1alpha1.Addon) string {
+	return fmt.Sprintf("addon-%s-catalog", addon.Name)
+}
+
+func getCatalogSourceNetworkPolicyName(addon *addonsv1alpha1.Addon) string {
+	return fmt.Sprintf("addon-%s-catalogs", addon.Name)
+}
+
+func corev1ProtocolPtr(proto corev1.Protocol) *corev1.Protocol   { return &proto }
+func intOrStringPtr(iors intstr.IntOrString) *intstr.IntOrString { return &iors }

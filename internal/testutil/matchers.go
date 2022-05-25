@@ -8,6 +8,7 @@ import (
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"github.com/stretchr/testify/mock"
 	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -18,6 +19,9 @@ var (
 	// core
 	IsCoreV1NamespacePtr     = mock.IsType(&corev1.Namespace{})
 	IsCoreV1NamespaceListPtr = mock.IsType(&corev1.NamespaceList{})
+
+	// networking
+	IsNetworkingV1NetworkPolicyPtr = mock.IsType(&networkingv1.NetworkPolicy{})
 
 	// olm
 	IsOperatorsV1OperatorGroupPtr       = mock.IsType(&operatorsv1.OperatorGroup{})
