@@ -436,3 +436,220 @@ func TestParseAddonInstallConfigurationForAdditionalCatalogSources(t *testing.T)
 		})
 	}
 }
+
+func TestParseAdoonInstallConfig(t *testing.T) {
+	// expected outcome struct for every function call
+	type Expected struct {
+		common *addonsv1alpha1.AddonInstallOLMCommon
+		stop   bool
+	}
+
+	// all types of synthetic testcases
+	testCases := []struct {
+		addon    *addonsv1alpha1.Addon
+		expected Expected
+	}{
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:          "test",
+								CatalogSourceImage: "test",
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				common: &addonsv1alpha1.AddonInstallOLMCommon{
+					Namespace:          "test",
+					CatalogSourceImage: "test",
+				},
+				stop: false,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+					},
+				},
+			},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:          "",
+								CatalogSourceImage: "test",
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:          "test",
+								CatalogSourceImage: "",
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:          "",
+								CatalogSourceImage: "",
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:          "test",
+								CatalogSourceImage: "test",
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				common: &addonsv1alpha1.AddonInstallOLMCommon{
+					Namespace:          "test",
+					CatalogSourceImage: "test",
+				},
+				stop: false,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+					},
+				},
+			},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:          "test",
+								CatalogSourceImage: "",
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:          "",
+								CatalogSourceImage: "test",
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:          "",
+								CatalogSourceImage: "",
+							},
+						},
+					},
+				},
+			},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+		{
+			addon: &addonsv1alpha1.Addon{},
+			expected: Expected{
+				common: nil,
+				stop:   true,
+			},
+		},
+	}
+	log := controllers.LoggerFromContext(context.TODO())
+	for _, tc := range testCases {
+		t.Run("parse addon install configuration test", func(t *testing.T) {
+			addon := tc.addon.DeepCopy()
+			common, stop := parseAddonInstallConfig(log, addon)
+			// addon install OLMCommon check
+			assert.Equal(t, tc.expected.common, common)
+			// stop check
+			assert.Equal(t, tc.expected.stop, stop)
+		})
+	}
+}
