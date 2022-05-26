@@ -653,3 +653,155 @@ func TestParseAdoonInstallConfig(t *testing.T) {
 		})
 	}
 }
+
+func TestHasAdditionalCatalogSources(t *testing.T) {
+	testCases := []struct {
+		addon    *addonsv1alpha1.Addon
+		expected bool
+	}{
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "test-1",
+									},
+									{
+										Name:  "test-2",
+										Image: "test-2",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{},
+							},
+						},
+					},
+				},
+			},
+			expected: false,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name:  "test-1",
+										Image: "test-1",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{},
+							},
+						},
+					},
+				},
+			},
+			expected: false,
+		},
+		{
+			addon:    &addonsv1alpha1.Addon{},
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("additional catalogsources test", func(t *testing.T) {
+			addon := tc.addon.DeepCopy()
+			result := HasAdditionalCatalogSources(addon)
+			// additional catalog source check
+			assert.Equal(t, tc.expected, result)
+		})
+	}
+}
+
+func TestHasMonitoringFederation(t *testing.T) {
+	testCases := []struct {
+		addon    *addonsv1alpha1.Addon
+		expected bool
+	}{
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Monitoring: &addonsv1alpha1.MonitoringSpec{
+						Federation: &addonsv1alpha1.MonitoringFederationSpec{
+							Namespace: "test",
+							MatchNames: []string{
+								"test",
+							},
+							MatchLabels: map[string]string{
+								"test": "test",
+							},
+						},
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Monitoring: nil,
+				},
+			},
+			expected: false,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Monitoring: &addonsv1alpha1.MonitoringSpec{
+						Federation: nil,
+					},
+				},
+			},
+			expected: false,
+		},
+		{
+			addon:    &addonsv1alpha1.Addon{},
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("monitoring federation test", func(t *testing.T) {
+			addon := tc.addon.DeepCopy()
+			result := HasMonitoringFederation(addon)
+			// monitoring federation check
+			assert.Equal(t, tc.expected, result)
+		})
+	}
+}
