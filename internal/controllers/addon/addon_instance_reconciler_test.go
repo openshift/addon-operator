@@ -88,9 +88,9 @@ func TestEnsureAddonInstance(t *testing.T) {
 			t.Run(test.name, func(t *testing.T) {
 				log := testutil.NewLogger(t)
 				c := testutil.NewClient()
-				r := AddonReconciler{
-					Client: c,
-					Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+				r := addonInstanceReconciler{
+					client: c,
+					scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 				}
 				addon := test.addon
 
@@ -142,7 +142,8 @@ func TestEnsureAddonInstance(t *testing.T) {
 
 				// Test
 				ctx := context.Background()
-				err := r.ensureAddonInstance(ctx, log, addon)
+				controllers.ContextWithLogger(ctx, log)
+				err := r.ensureAddonInstance(ctx, addon)
 				require.NoError(t, err)
 
 				assert.Equal(t, addonsv1alpha1.DefaultAddonInstanceName, createdAddonInstance.Name)
@@ -230,14 +231,15 @@ func TestEnsureAddonInstance(t *testing.T) {
 			t.Run(test.name, func(t *testing.T) {
 				log := testutil.NewLogger(t)
 				c := testutil.NewClient()
-				r := AddonReconciler{
-					Client: c,
-					Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+				r := addonInstanceReconciler{
+					client: c,
+					scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 				}
 
 				// Test
 				ctx := context.Background()
-				err := r.ensureAddonInstance(ctx, log, test.addon)
+				controllers.ContextWithLogger(ctx, log)
+				err := r.ensureAddonInstance(ctx, test.addon)
 				require.EqualError(t, err, "failed to create addonInstance due to misconfigured install.spec.type")
 
 				// check Addon Status
@@ -268,9 +270,9 @@ func TestReconcileAddonInstance(t *testing.T) {
 
 	t.Run("no addoninstance", func(t *testing.T) {
 		c := testutil.NewClient()
-		r := AddonReconciler{
-			Client: c,
-			Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		r := addonInstanceReconciler{
+			client: c,
+			scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 		}
 
 		c.
@@ -293,9 +295,9 @@ func TestReconcileAddonInstance(t *testing.T) {
 
 	t.Run("update", func(t *testing.T) {
 		c := testutil.NewClient()
-		r := AddonReconciler{
-			Client: c,
-			Scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		r := addonInstanceReconciler{
+			client: c,
+			scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 		}
 
 		c.

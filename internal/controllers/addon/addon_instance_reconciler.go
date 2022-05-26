@@ -4,20 +4,37 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
+type addonInstanceReconciler struct {
+	client client.Client
+	scheme *runtime.Scheme
+}
+
+func (r *addonInstanceReconciler) Reconcile(ctx context.Context,
+	addon *addonsv1alpha1.Addon) (reconcile.Result, error) {
+	// Ensure the creation of the corresponding AddonInstance in .spec.install.olmOwnNamespace/.spec.install.olmAllNamespaces namespace
+	if err := r.ensureAddonInstance(ctx, addon); err != nil {
+		return ctrl.Result{}, fmt.Errorf("failed to ensure the creation of addoninstance: %w", err)
+	}
+	return reconcile.Result{}, nil
+}
+
 // Ensures the presence of an AddonInstance well-compliant with the provided Addon object
-func (r *AddonReconciler) ensureAddonInstance(
-	ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (err error) {
+func (r *addonInstanceReconciler) ensureAddonInstance(
+	ctx context.Context, addon *addonsv1alpha1.Addon) (err error) {
+	log := controllers.LoggerFromContext(ctx)
 	// not capturing "stop" because it won't ever be reached due to the guard rails of CRD Enum-Validation Markers
 	commonConfig, stop := parseAddonInstallConfig(log, addon)
 	if stop {
@@ -35,7 +52,7 @@ func (r *AddonReconciler) ensureAddonInstance(
 		},
 	}
 
-	if err := controllerutil.SetControllerReference(addon, desiredAddonInstance, r.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(addon, desiredAddonInstance, r.scheme); err != nil {
 		return fmt.Errorf("setting controller reference: %w", err)
 	}
 
@@ -44,18 +61,18 @@ func (r *AddonReconciler) ensureAddonInstance(
 
 // Reconciles the reality to have the desired AddonInstance resource by creating it if it does not exist,
 // or updating if it exists with a different spec.
-func (r *AddonReconciler) reconcileAddonInstance(
+func (r *addonInstanceReconciler) reconcileAddonInstance(
 	ctx context.Context, addonInstance *addonsv1alpha1.AddonInstance) error {
 	currentAddonInstance := &addonsv1alpha1.AddonInstance{}
-	err := r.Get(ctx, client.ObjectKeyFromObject(addonInstance), currentAddonInstance)
+	err := r.client.Get(ctx, client.ObjectKeyFromObject(addonInstance), currentAddonInstance)
 	if errors.IsNotFound(err) {
-		return r.Create(ctx, addonInstance)
+		return r.client.Create(ctx, addonInstance)
 	}
 	if err != nil {
 		return fmt.Errorf("getting AddonInstance: %w", err)
 	}
 	if !equality.Semantic.DeepEqual(currentAddonInstance.Spec, addonInstance.Spec) {
-		return r.Update(ctx, addonInstance)
+		return r.client.Update(ctx, addonInstance)
 	}
 	return nil
 }
