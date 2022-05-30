@@ -17,6 +17,8 @@ import (
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
+const ADDON_INSTANCE_RECONCILER_NAME = "addonInstanceReconciler"
+
 type addonInstanceReconciler struct {
 	client client.Client
 	scheme *runtime.Scheme
@@ -29,6 +31,10 @@ func (r *addonInstanceReconciler) Reconcile(ctx context.Context,
 		return ctrl.Result{}, fmt.Errorf("failed to ensure the creation of addoninstance: %w", err)
 	}
 	return reconcile.Result{}, nil
+}
+
+func (r *addonInstanceReconciler) Name() string {
+	return ADDON_INSTANCE_RECONCILER_NAME
 }
 
 // Ensures the presence of an AddonInstance well-compliant with the provided Addon object

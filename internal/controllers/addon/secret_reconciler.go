@@ -16,6 +16,8 @@ import (
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
+const SECRET_RECONCILER_NAME = "secretPropogationReconciler"
+
 // Sub-Reconciler taking care of secret propagation.
 type addonSecretPropagationReconciler struct {
 	cachedClient, uncachedClient client.Client
@@ -48,6 +50,10 @@ func (r *addonSecretPropagationReconciler) Reconcile(ctx context.Context, addon 
 	}
 
 	return ctrl.Result{}, nil
+}
+
+func (r *addonSecretPropagationReconciler) Name() string {
+	return SECRET_RECONCILER_NAME
 }
 
 // Lookup all secret sources for secret propagation

@@ -3,7 +3,6 @@ package addon
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"sync"
 	"time"
 
@@ -53,13 +52,14 @@ type AddonReconciler struct {
 	ocmClientMux sync.RWMutex
 
 	// List of Addon sub-reconcilers.
-	// Reconcilers will run in the order in which
-	// they appear in this slice.
+	// Reconcilers will run  serially
+	// in the order in which they appear in this slice.
 	subReconcilers []addonReconciler
 }
 
 type addonReconciler interface {
 	Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error)
+	Name() string
 }
 
 func NewAddonReconciler(
@@ -278,9 +278,8 @@ func (r *AddonReconciler) Reconcile(
 
 	// Run each sub reconciler serially
 	for _, reconciler := range r.subReconcilers {
-		reconcilerType := reflect.TypeOf(reconciler).Elem()
 		if result, err := reconciler.Reconcile(ctx, addon); err != nil {
-			return ctrl.Result{}, fmt.Errorf("%s - failed to reconcile: %w", reconcilerType, err)
+			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", reconciler.Name(), err)
 		} else if !result.IsZero() {
 			return result, nil
 		}

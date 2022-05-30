@@ -14,6 +14,8 @@ import (
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
+const OLM_RECONCILER_NAME = "olmReconciler"
+
 type olmReconciler struct {
 	scheme          *runtime.Scheme
 	client          client.Client
@@ -73,4 +75,8 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 		return handleExit(requeueResult), nil
 	}
 	return reconcile.Result{}, nil
+}
+
+func (r *olmReconciler) Name() string {
+	return OLM_RECONCILER_NAME
 }
