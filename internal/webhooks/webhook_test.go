@@ -1,12 +1,14 @@
 package webhooks
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/testutil"
+	corev1 "k8s.io/api/core/v1"
 )
 
 func Test_validateInstallSpec(t *testing.T) {
@@ -222,6 +224,200 @@ func TestValidateAddonInstallImmutability(t *testing.T) {
 		t.Run("addon install immutability test", func(t *testing.T) {
 			err := validateAddonImmutability(tc.updatedAddon, tc.baseAddon)
 			assert.EqualValues(t, tc.expectedErr, err)
+		})
+	}
+}
+
+func TestValidateSecretPropagation(t *testing.T) {
+	testCases := []struct {
+		addon    *addonsv1alpha1.Addon
+		expected error
+	}{
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "",
+							},
+						},
+					},
+				},
+			},
+			expected: nil,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "",
+							},
+						},
+					},
+				},
+			},
+			expected: nil,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: nil,
+				},
+			},
+			expected: nil,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: nil,
+				},
+			},
+			expected: nil,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+						Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test",
+								},
+							},
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "foo",
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: nil,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+						Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "foo",
+								},
+							},
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test",
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: nil,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+						Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test-1",
+								},
+							},
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test-2",
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+						Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test-1",
+								},
+							},
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test-2",
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("validate secret propagation test", func(t *testing.T) {
+			addon := tc.addon.DeepCopy()
+			err := validateSecretPropagation(addon)
+			assert.Equal(t, tc.expected, err)
 		})
 	}
 }
