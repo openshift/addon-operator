@@ -5,10 +5,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/testutil"
-	corev1 "k8s.io/api/core/v1"
 )
 
 func Test_validateInstallSpec(t *testing.T) {
@@ -417,6 +418,209 @@ func TestValidateSecretPropagation(t *testing.T) {
 		t.Run("validate secret propagation test", func(t *testing.T) {
 			addon := tc.addon.DeepCopy()
 			err := validateSecretPropagation(addon)
+			assert.Equal(t, tc.expected, err)
+		})
+	}
+}
+
+func TestValidateAddon(t *testing.T) {
+	testCases := []struct {
+		addon    *addonsv1alpha1.Addon
+		expected error
+	}{
+		{
+			addon: &addonsv1alpha1.Addon{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{},
+				},
+			},
+			expected: errSpecInstallTypeInvalid,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type:            addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: nil,
+					},
+				},
+			},
+			expected: errSpecInstallOwnNamespaceRequired,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name: "test",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: errAdditionalCatalogSourceNameCollision,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type:             addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: nil,
+					},
+				},
+			},
+			expected: errSpecInstallAllNamespacesRequired,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+									{
+										Name: "test",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: errAdditionalCatalogSourceNameCollision,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type:             addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{},
+						OLMOwnNamespace:  &addonsv1alpha1.AddonInstallOLMOwnNamespace{},
+					},
+				},
+			},
+			expected: errSpecInstallConfigMutuallyExclusive,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMOwnNamespace,
+						OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "",
+							},
+						},
+					},
+				},
+			},
+			expected: nil,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+						Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test-1",
+								},
+							},
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test-2",
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+						Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "foo",
+								},
+							},
+							{
+								DestinationSecret: corev1.LocalObjectReference{
+									Name: "test",
+								},
+							},
+						},
+					},
+				},
+			},
+			expected: nil,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								PullSecretName: "test",
+							},
+						},
+					},
+					SecretPropagation: nil,
+				},
+			},
+			expected: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("validate addon tests", func(t *testing.T) {
+			addon := tc.addon.DeepCopy()
+			err := validateAddon(addon)
 			assert.Equal(t, tc.expected, err)
 		})
 	}
