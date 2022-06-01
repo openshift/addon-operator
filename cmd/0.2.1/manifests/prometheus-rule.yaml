@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: reference-addon-pr
+  labels:
+    app.kubernetes.io/name: reference-addon
+    prometheus: reference-addon
+    role: alert-rules
+spec:
+  groups:
+  - name: reference-addon
+    rules:
+    - alert: reference-addon-sample-availability
+      expr: reference_addon_sample_availability == 0
+      for: 0m
+      labels:
+        severity: warning
+      annotations:
+        summary: reference-addon external service on {{ $labels.pod }} is not available
+        description: "reference-addon external service not available"
+    - alert: reference-addon-sample-response-time
+      expr: reference_addon_sample_response_time >= 200
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: reference-addon external service on {{ $labels.pod }} is taking longer to respond"
+        description: "reference-addon external service taking more than 200ms"

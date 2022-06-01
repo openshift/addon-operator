@@ -1,0 +1,126 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+    kubernetes.io/description: |
+      This daemon set launches the Multus networking component on each node.
+    release.openshift.io/version: 4.10.13
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  generation: 1
+  name: multus
+  namespace: openshift-multus
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "78515"
+  uid: 63f3418a-977c-44c1-8bb6-b3b7bd9cb7ef
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: multus
+  template:
+    metadata:
+      annotations:
+        target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+      creationTimestamp: null
+      labels:
+        app: multus
+        component: network
+        openshift.io/component: network
+        type: infra
+    spec:
+      containers:
+      - args:
+        - |
+          /entrypoint/cnibincopy.sh; exec /entrypoint.sh --multus-conf-file=auto --multus-autoconfig-dir=/host/var/run/multus/cni/net.d --multus-kubeconfig-file-host=/etc/kubernetes/cni/net.d/multus.d/multus.kubeconfig --readiness-indicator-file=/var/run/multus/cni/net.d/80-openshift-network.conf --cleanup-config-on-exit=true --namespace-isolation=true --multus-log-level=verbose --cni-version=0.3.1 --additional-bin-dir=/opt/multus/bin --skip-multus-binary-copy=true - "--global-namespaces=default,openshift-multus,openshift-sriov-network-operator"
+        command:
+        - /bin/bash
+        - -ec
+        - --
+        env:
+        - name: RHEL7_SOURCE_DIRECTORY
+          value: /usr/src/multus-cni/rhel7/bin/
+        - name: RHEL8_SOURCE_DIRECTORY
+          value: /usr/src/multus-cni/rhel8/bin/
+        - name: DEFAULT_SOURCE_DIRECTORY
+          value: /usr/src/multus-cni/bin/
+        - name: KUBERNETES_SERVICE_PORT
+          value: "6443"
+        - name: KUBERNETES_SERVICE_HOST
+          value: api-int.odf-service.dif5.p1.openshiftapps.com
+        image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e720cb9b6b36b1e750b65c78ed7331f9e02ec10c1bcbe36823ff9199e0eaea5
+        imagePullPolicy: IfNotPresent
+        name: kube-multus
+        resources:
+          requests:
+            cpu: 10m
+            memory: 65Mi
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /entrypoint
+          name: cni-binary-copy
+        - mountPath: /host/etc/os-release
+          name: os-release
+        - mountPath: /host/etc/cni/net.d
+          name: system-cni-dir
+        - mountPath: /host/var/run/multus/cni/net.d
+          name: multus-cni-dir
+        - mountPath: /host/opt/cni/bin
+          name: cnibin
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      priorityClassName: system-node-critical
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: multus
+      serviceAccountName: multus
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /etc/kubernetes/cni/net.d
+          type: ""
+        name: system-cni-dir
+      - hostPath:
+          path: /var/run/multus/cni/net.d
+          type: ""
+        name: multus-cni-dir
+      - hostPath:
+          path: /var/lib/cni/bin
+          type: ""
+        name: cnibin
+      - hostPath:
+          path: /etc/os-release
+          type: File
+        name: os-release
+      - configMap:
+          defaultMode: 484
+          name: cni-binary-copy-script
+        name: cni-binary-copy
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 10%
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 9
+  desiredNumberScheduled: 9
+  numberAvailable: 9
+  numberMisscheduled: 0
+  numberReady: 9
+  observedGeneration: 1
+  updatedNumberScheduled: 9

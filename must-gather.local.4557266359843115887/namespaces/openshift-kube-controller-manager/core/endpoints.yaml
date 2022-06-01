@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:10Z"
+    creationTimestamp: "2022-05-24T18:07:48Z"
+    labels:
+      prometheus: kube-controller-manager
+    name: kube-controller-manager
+    namespace: openshift-kube-controller-manager
+    resourceVersion: "78372"
+    uid: b7d4c815-e5ce-4cb7-8d20-11703dc30336
+  subsets:
+  - addresses:
+    - ip: 10.0.138.197
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: kube-controller-manager-ip-10-0-138-197.ec2.internal
+        namespace: openshift-kube-controller-manager
+        resourceVersion: "76654"
+        uid: a55f5b70-9bd7-4565-87b8-3f84e14cdbca
+    - ip: 10.0.149.121
+      nodeName: ip-10-0-149-121.ec2.internal
+      targetRef:
+        kind: Pod
+        name: kube-controller-manager-ip-10-0-149-121.ec2.internal
+        namespace: openshift-kube-controller-manager
+        resourceVersion: "74208"
+        uid: a2153a01-a99b-470a-8760-5b68232b0112
+    - ip: 10.0.169.205
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: kube-controller-manager-ip-10-0-169-205.ec2.internal
+        namespace: openshift-kube-controller-manager
+        resourceVersion: "78370"
+        uid: bf512a4d-c603-47cd-b810-e9a6eb4eb0b6
+    ports:
+    - name: https
+      port: 10257
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "315365"

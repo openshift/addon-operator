@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+imagePullSecrets:
+- name: multus-dockercfg-lnjz8
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  name: multus
+  namespace: openshift-multus
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "16766"
+  uid: 14cb1e82-7fe7-4a9f-8429-dcef27fd10f3
+secrets:
+- name: multus-token-gdk4p
+- name: multus-dockercfg-lnjz8

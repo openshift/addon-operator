@@ -1,0 +1,77 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      include.release.openshift.io/ibm-cloud-managed: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      service.alpha.openshift.io/serving-cert-secret-name: cloud-credential-operator-serving-cert
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:05:51Z"
+    name: cco-metrics
+    namespace: openshift-cloud-credential-operator
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "6290"
+    uid: ea109007-fb56-453f-9b41-a39c3275b4b7
+  spec:
+    clusterIP: 172.30.54.200
+    clusterIPs:
+    - 172.30.54.200
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: metrics
+      port: 8443
+      protocol: TCP
+      targetPort: metrics
+    selector:
+      app: cloud-credential-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      prometheus.io/port: "443"
+      prometheus.io/scheme: https
+      prometheus.io/scrape: "true"
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-secret-name: pod-identity-webhook
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:09:09Z"
+    name: pod-identity-webhook
+    namespace: openshift-cloud-credential-operator
+    resourceVersion: "9387"
+    uid: 16733240-e6bf-4ba8-b89f-452d65eb5fcb
+  spec:
+    clusterIP: 172.30.144.246
+    clusterIPs:
+    - 172.30.144.246
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 6443
+    selector:
+      app: pod-identity-webhook
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "300273"

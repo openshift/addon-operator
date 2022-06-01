@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      prometheus.io/scheme: https
+      prometheus.io/scrape: "true"
+      service.alpha.openshift.io/serving-cert-secret-name: serving-cert
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:05:33Z"
+    labels:
+      k8s-app: etcd
+    name: etcd
+    namespace: openshift-etcd
+    resourceVersion: "5498"
+    uid: 0bae29a9-e38a-489f-9dc9-fef9e2b9ab0f
+  spec:
+    clusterIP: 172.30.42.34
+    clusterIPs:
+    - 172.30.42.34
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: etcd
+      port: 2379
+      protocol: TCP
+      targetPort: 2379
+    - name: etcd-metrics
+      port: 9979
+      protocol: TCP
+      targetPort: 9979
+    selector:
+      etcd: "true"
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "310913"

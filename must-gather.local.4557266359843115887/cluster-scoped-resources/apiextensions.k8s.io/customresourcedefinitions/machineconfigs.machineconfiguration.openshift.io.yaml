@@ -1,0 +1,366 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:51Z"
+  generation: 1
+  labels:
+    openshift.io/operator-managed: ""
+  name: machineconfigs.machineconfiguration.openshift.io
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "1558"
+  uid: 6c81bf57-a92b-4bac-9950-c84c7d42ff1c
+spec:
+  conversion:
+    strategy: None
+  group: machineconfiguration.openshift.io
+  names:
+    kind: MachineConfig
+    listKind: MachineConfigList
+    plural: machineconfigs
+    shortNames:
+    - mc
+    singular: machineconfig
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - description: Version of the controller that generated the machineconfig. This
+        will be empty if the machineconfig is not managed by a controller.
+      jsonPath: .metadata.annotations.machineconfiguration\.openshift\.io/generated-by-controller-version
+      name: GeneratedByController
+      type: string
+    - description: Version of the Ignition Config defined in the machineconfig.
+      jsonPath: .spec.config.ignition.version
+      name: IgnitionVersion
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: MachineConfig defines the configuration for a machine
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: MachineConfigSpec is the spec for MachineConfig
+            properties:
+              config:
+                description: Config is a Ignition Config object.
+                properties:
+                  ignition:
+                    description: Ignition section contains metadata about the configuration
+                      itself. We only permit a subsection of ignition fields for MachineConfigs.
+                    properties:
+                      config:
+                        properties:
+                          append:
+                            items:
+                              properties:
+                                source:
+                                  type: string
+                                verification:
+                                  properties:
+                                    hash:
+                                      type: string
+                                  type: object
+                              type: object
+                            type: array
+                          replace:
+                            properties:
+                              source:
+                                type: string
+                              verification:
+                                properties:
+                                  hash:
+                                    type: string
+                                type: object
+                            type: object
+                        type: object
+                      security:
+                        properties:
+                          tls:
+                            properties:
+                              certificateAuthorities:
+                                items:
+                                  properties:
+                                    source:
+                                      type: string
+                                    verification:
+                                      properties:
+                                        hash:
+                                          type: string
+                                      type: object
+                                  type: object
+                                type: array
+                            type: object
+                        type: object
+                      timeouts:
+                        properties:
+                          httpResponseHeaders:
+                            type: integer
+                          httpTotal:
+                            type: integer
+                        type: object
+                      version:
+                        description: Version string is the semantic version number
+                          of the spec
+                        type: string
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  passwd:
+                    properties:
+                      users:
+                        items:
+                          properties:
+                            name:
+                              description: Name of user. Must be \"core\" user.
+                              type: string
+                            sshAuthorizedKeys:
+                              description: Public keys to be assigned to user core.
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        type: array
+                    type: object
+                  storage:
+                    description: Storage describes the desired state of the system's
+                      storage devices.
+                    properties:
+                      directories:
+                        description: Directories is the list of directories to be
+                          created
+                        items:
+                          description: Items is list of directories to be written
+                          properties:
+                            filesystem:
+                              description: Filesystem is the internal identifier of
+                                the filesystem in which to write the file. This matches
+                                the last filesystem with the given identifier.
+                              type: string
+                            group:
+                              description: Group object specifies group of the owner
+                              properties:
+                                id:
+                                  description: ID is the user ID of the owner
+                                  type: integer
+                                name:
+                                  description: Name is the user name of the owner
+                                  type: string
+                              type: object
+                            mode:
+                              description: Mode is the file's permission mode. Note
+                                that the mode must be properly specified as a decimal
+                                value (i.e. 0644 -> 420)
+                              type: integer
+                            overwrite:
+                              description: Overwrite specifies whether to delete preexisting
+                                nodes at the path
+                              type: boolean
+                            path:
+                              description: Path is the absolute path to the file
+                              type: string
+                            user:
+                              description: User object specifies the file's owner
+                              properties:
+                                id:
+                                  description: ID is the user ID of the owner
+                                  type: integer
+                                name:
+                                  description: Name is the user name of the owner
+                                  type: string
+                              type: object
+                          type: object
+                        type: array
+                      files:
+                        description: Files is the list of files to be created/modified
+                        items:
+                          description: Items is list of files to be written
+                          properties:
+                            contents:
+                              description: Contents specifies options related to the
+                                contents of the file
+                              properties:
+                                compression:
+                                  description: The type of compression used on the
+                                    contents (null or gzip). Compression cannot be
+                                    used with S3.
+                                  type: string
+                                source:
+                                  description: Source is the URL of the file contents.
+                                    Supported schemes are http, https, tftp, s3, and
+                                    data. When using http, it is advisable to use
+                                    the verification option to ensure the contents
+                                    haven't been modified.
+                                  type: string
+                                verification:
+                                  description: Verification specifies options related
+                                    to the verification of the file contents
+                                  properties:
+                                    hash:
+                                      description: Hash is the hash of the config,
+                                        in the form <type>-<value> where type is sha512
+                                      type: string
+                                  type: object
+                              type: object
+                            filesystem:
+                              description: Filesystem is the internal identifier of
+                                the filesystem in which to write the file. This matches
+                                the last filesystem with the given identifier
+                              type: string
+                            group:
+                              description: Group object specifies group of the owner
+                              properties:
+                                id:
+                                  description: ID specifies group ID of the owner
+                                  type: integer
+                                name:
+                                  description: Name is the group name of the owner
+                                  type: string
+                              type: object
+                            mode:
+                              description: Mode specifies the file's permission mode.
+                                Note that the mode must be properly specified as a
+                                decimal value (i.e. 0644 -> 420)
+                              type: integer
+                            overwrite:
+                              description: Overwrite specifies whether to delete preexisting
+                                nodes at the path
+                              type: boolean
+                            path:
+                              description: Path is the absolute path to the file
+                              type: string
+                            user:
+                              description: User object specifies the file's owner
+                              properties:
+                                id:
+                                  description: ID is the user ID of the owner
+                                  type: integer
+                                name:
+                                  description: Name is the user name of the owner
+                                  type: string
+                              type: object
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+                        type: array
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  systemd:
+                    description: systemd describes the desired state of the systemd
+                      units
+                    properties:
+                      units:
+                        description: Units is a list of units to be configured
+                        items:
+                          description: Items describes unit configuration
+                          properties:
+                            contents:
+                              description: Contents is the contents of the unit
+                              type: string
+                            dropins:
+                              description: Dropins is the list of drop-ins for the
+                                unit
+                              items:
+                                description: Items describes unit dropin
+                                properties:
+                                  contents:
+                                    description: Contents is the contents of the drop-in
+                                    type: string
+                                  name:
+                                    description: Name is the name of the drop-in.
+                                      This must be suffixed with '.conf'
+                                    type: string
+                                type: object
+                              type: array
+                            enabled:
+                              description: Enabled describes whether or not the service
+                                shall be enabled. When true, the service is enabled.
+                                When false, the service is disabled. When omitted,
+                                the service is unmodified. In order for this to have
+                                any effect, the unit must have an install section
+                              type: boolean
+                            mask:
+                              description: Mask describes whether or not the service
+                                shall be masked. When true, the service is masked
+                                by symlinking it to /dev/null"
+                              type: boolean
+                            name:
+                              description: Name is the name of the unit. This must
+                                be suffixed with a valid unit type (e.g. 'thing.service')
+                              type: string
+                          type: object
+                        type: array
+                    type: object
+                required:
+                - ignition
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              extensions:
+                description: List of additional features that can be enabled on host
+                items:
+                  type: string
+                nullable: true
+                type: array
+              fips:
+                description: FIPS controls FIPS mode
+                type: boolean
+              kernelArguments:
+                description: KernelArguments contains a list of kernel arguments to
+                  be added
+                items:
+                  type: string
+                nullable: true
+                type: array
+              kernelType:
+                description: Contains which kernel we want to be running like default
+                  (traditional), realtime
+                type: string
+              osImageURL:
+                description: OSImageURL specifies the remote location that will be
+                  used to fetch the OS to fetch the OS.
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: MachineConfig
+    listKind: MachineConfigList
+    plural: machineconfigs
+    shortNames:
+    - mc
+    singular: machineconfig
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:05:51Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2022-05-24T18:05:51Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1

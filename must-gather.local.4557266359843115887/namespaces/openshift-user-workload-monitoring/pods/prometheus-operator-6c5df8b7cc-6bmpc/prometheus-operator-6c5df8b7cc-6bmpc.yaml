@@ -1,0 +1,237 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.37"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.37"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/default-container: prometheus-operator
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:31:55Z"
+  generateName: prometheus-operator-6c5df8b7cc-
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/managed-by: cluster-monitoring-operator
+    app.kubernetes.io/name: prometheus-operator
+    app.kubernetes.io/part-of: openshift-monitoring
+    app.kubernetes.io/version: 0.53.1
+    pod-template-hash: 6c5df8b7cc
+  name: prometheus-operator-6c5df8b7cc-6bmpc
+  namespace: openshift-user-workload-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: prometheus-operator-6c5df8b7cc
+    uid: 709f8fc8-f4aa-44e8-9baf-5bcc462d0fcd
+  resourceVersion: "54517"
+  uid: 35373b4f-02b5-4cb0-82e6-550872ed5301
+spec:
+  containers:
+  - args:
+    - --prometheus-config-reloader=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+    - --prometheus-instance-namespaces=openshift-user-workload-monitoring
+    - --alertmanager-instance-namespaces=openshift-user-workload-monitoring
+    - --thanos-ruler-instance-namespaces=openshift-user-workload-monitoring
+    - --config-reloader-cpu-limit=0
+    - --config-reloader-memory-limit=0
+    - --web.tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - --web.tls-min-version=VersionTLS12
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+    imagePullPolicy: IfNotPresent
+    name: prometheus-operator
+    ports:
+    - containerPort: 8080
+      name: http
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 17Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000430000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-2jcs9
+      readOnly: true
+  - args:
+    - --logtostderr
+    - --secure-listen-address=:8443
+    - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - --upstream=http://127.0.0.1:8080/
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --config-file=/etc/kube-rbac-policy/config.yaml
+    - --tls-min-version=VersionTLS12
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 10Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000430000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/tls/private
+      name: prometheus-operator-user-workload-tls
+    - mountPath: /etc/kube-rbac-policy
+      name: prometheus-operator-uwm-kube-rbac-proxy-config
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-2jcs9
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: prometheus-operator-dockercfg-crf9t
+  nodeName: ip-10-0-169-205.ec2.internal
+  nodeSelector:
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 1000000000
+  priorityClassName: openshift-user-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000430000
+    seLinuxOptions:
+      level: s0:c21,c5
+  serviceAccount: prometheus-operator
+  serviceAccountName: prometheus-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: prometheus-operator-user-workload-tls
+    secret:
+      defaultMode: 420
+      secretName: prometheus-operator-user-workload-tls
+  - name: prometheus-operator-uwm-kube-rbac-proxy-config
+    secret:
+      defaultMode: 420
+      secretName: prometheus-operator-uwm-kube-rbac-proxy-config
+  - name: kube-api-access-2jcs9
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:56Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:00Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:00Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:56Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://e9f0c982298707bcc7b9b6d4cd9813d683a0fd338020da9f7ef944f11c15b284
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:00Z"
+  - containerID: cri-o://8359e2ef2fccc67b879e4bc900ec7fb517c35442c4da4e752ebf70a93e667e25
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+    lastState: {}
+    name: prometheus-operator
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:00Z"
+  hostIP: 10.0.169.205
+  phase: Running
+  podIP: 10.128.0.37
+  podIPs:
+  - ip: 10.128.0.37
+  qosClass: Burstable
+  startTime: "2022-05-24T18:31:56Z"

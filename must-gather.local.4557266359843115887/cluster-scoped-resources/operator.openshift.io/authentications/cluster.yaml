@@ -1,0 +1,279 @@
+---
+apiVersion: operator.openshift.io/v1
+kind: Authentication
+metadata:
+  annotations:
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2022-05-24T18:05:38Z"
+  generation: 9
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "77937"
+  uid: 77d8e074-8c2f-4a8d-9b69-372b7f36254d
+spec:
+  logLevel: Normal
+  managementState: Managed
+  observedConfig:
+    oauthAPIServer:
+      apiServerArguments:
+        api-audiences:
+        - https://rh-oidc.s3.us-east-1.amazonaws.com/1sdcrj3pmooemv6apkbt2v41v18s45kb
+        cors-allowed-origins:
+        - //127\.0\.0\.1(:|$)
+        - //localhost(:|$)
+        etcd-servers:
+        - https://10.0.138.197:2379
+        - https://10.0.149.121:2379
+        - https://10.0.169.205:2379
+        tls-cipher-suites:
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        tls-min-version: VersionTLS12
+    oauthServer:
+      corsAllowedOrigins:
+      - //127\.0\.0\.1(:|$)
+      - //localhost(:|$)
+      oauthConfig:
+        assetPublicURL: https://console-openshift-console.apps.odf-service.dif5.p1.openshiftapps.com
+        loginURL: https://api.odf-service.dif5.p1.openshiftapps.com:6443
+        templates:
+          error: /var/config/user/template/secret/v4-0-config-user-template-error/errors.html
+          login: /var/config/user/template/secret/v4-0-config-user-template-login/login.html
+          providerSelection: /var/config/user/template/secret/v4-0-config-user-template-provider-selection/providers.html
+        tokenConfig:
+          accessTokenMaxAgeSeconds: 86400
+          authorizeTokenMaxAgeSeconds: 300
+      servingInfo:
+        cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        minTLSVersion: VersionTLS12
+        namedCertificates:
+        - certFile: /var/config/system/secrets/v4-0-config-system-router-certs/apps.odf-service.dif5.p1.openshiftapps.com
+          keyFile: /var/config/system/secrets/v4-0-config-system-router-certs/apps.odf-service.dif5.p1.openshiftapps.com
+          names:
+          - '*.apps.odf-service.dif5.p1.openshiftapps.com'
+      volumesToMount:
+        identityProviders: '{}'
+  operatorLogLevel: Normal
+  unsupportedConfigOverrides: null
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:13:29Z"
+    reason: AsExpected
+    status: "True"
+    type: OAuthServerServiceEndpointsEndpointAccessibleControllerAvailable
+  - lastTransitionTime: "2022-05-24T18:13:29Z"
+    reason: AsExpected
+    status: "False"
+    type: OAuthServerServiceEndpointsEndpointAccessibleControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:41Z"
+    status: "False"
+    type: ManagementStateDegraded
+  - lastTransitionTime: "2022-05-24T18:13:30Z"
+    reason: AsExpected
+    status: "True"
+    type: OAuthServerServiceEndpointAccessibleControllerAvailable
+  - lastTransitionTime: "2022-05-24T18:13:30Z"
+    reason: AsExpected
+    status: "False"
+    type: OAuthServerServiceEndpointAccessibleControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:08:11Z"
+    status: "False"
+    type: OAuthServiceDegraded
+  - lastTransitionTime: "2022-05-24T18:08:14Z"
+    status: "False"
+    type: SystemServiceCAConfigDegraded
+  - lastTransitionTime: "2022-05-24T18:07:41Z"
+    reason: NoUnsupportedConfigOverrides
+    status: "True"
+    type: UnsupportedConfigOverridesUpgradeable
+  - lastTransitionTime: "2022-05-24T18:12:36Z"
+    status: "True"
+    type: ReadyIngressNodesAvailable
+  - lastTransitionTime: "2022-05-24T18:09:41Z"
+    status: "False"
+    type: OAuthAPIServerConfigObservationDegraded
+  - lastTransitionTime: "2022-05-24T18:10:13Z"
+    reason: AsExpected
+    status: "True"
+    type: APIServerDeploymentAvailable
+  - lastTransitionTime: "2022-05-24T18:41:03Z"
+    reason: AsExpected
+    status: "False"
+    type: APIServerDeploymentDegraded
+  - lastTransitionTime: "2022-05-24T18:36:24Z"
+    reason: AsExpected
+    status: "False"
+    type: APIServerDeploymentProgressing
+  - lastTransitionTime: "2022-05-24T18:07:44Z"
+    status: "False"
+    type: APIServerWorkloadDegraded
+  - lastTransitionTime: "2022-05-24T18:08:53Z"
+    reason: AsExpected
+    status: "False"
+    type: WebhookAuthenticatorControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:15:31Z"
+    status: "True"
+    type: APIServicesAvailable
+  - lastTransitionTime: "2022-05-24T18:07:45Z"
+    status: "False"
+    type: EncryptionStateControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:46Z"
+    status: "False"
+    type: EncryptionKeyControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:47Z"
+    status: "False"
+    type: Encrypted
+  - lastTransitionTime: "2022-05-24T18:07:49Z"
+    reason: AsExpected
+    status: "False"
+    type: WebhookAuthenticatorCertApprover_OpenShiftAuthenticatorDegraded
+  - lastTransitionTime: "2022-05-24T18:17:19Z"
+    reason: AsExpected
+    status: "False"
+    type: APIServerStaticResourcesDegraded
+  - lastTransitionTime: "2022-05-24T18:13:05Z"
+    status: "False"
+    type: ResourceSyncControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:13:34Z"
+    status: "False"
+    type: IngressStateEndpointsDegraded
+  - lastTransitionTime: "2022-05-24T18:08:01Z"
+    status: "False"
+    type: IngressStatePodsDegraded
+  - lastTransitionTime: "2022-05-24T18:08:07Z"
+    message: All is well
+    reason: AsExpected
+    status: "False"
+    type: AuthenticatorCertKeyProgressing
+  - lastTransitionTime: "2022-05-24T18:08:58Z"
+    status: "False"
+    type: OAuthServerConfigObservationDegraded
+  - lastTransitionTime: "2022-05-24T18:08:57Z"
+    reason: AsExpected
+    status: "False"
+    type: RouterCertsDegraded
+  - lastTransitionTime: "2022-05-24T18:08:20Z"
+    status: "False"
+    type: EncryptionPruneControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:15:28Z"
+    status: "False"
+    type: AuditPolicyDegraded
+  - lastTransitionTime: "2022-05-24T18:15:45Z"
+    reason: AsExpected
+    status: "False"
+    type: OpenshiftAuthenticationStaticResourcesDegraded
+  - lastTransitionTime: "2022-05-24T18:08:36Z"
+    status: "False"
+    type: RevisionControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:08:31Z"
+    status: "False"
+    type: EncryptionMigrationControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:08:31Z"
+    status: "False"
+    type: EncryptionMigrationControllerProgressing
+  - lastTransitionTime: "2022-05-24T18:08:33Z"
+    reason: AsExpected
+    status: "False"
+    type: RouterCertsDomainValidationControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:13:03Z"
+    reason: AsExpected
+    status: "False"
+    type: CustomRouteControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:13:07Z"
+    reason: AsExpected
+    status: "False"
+    type: ProxyConfigControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:43:48Z"
+    reason: AsExpected
+    status: "False"
+    type: OAuthServerRouteEndpointAccessibleControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:25:06Z"
+    reason: AsExpected
+    status: "True"
+    type: WellKnownAvailable
+  - lastTransitionTime: "2022-05-24T18:13:32Z"
+    reason: AsExpected
+    status: "True"
+    type: OAuthServerDeploymentAvailable
+  - lastTransitionTime: "2022-05-24T18:41:03Z"
+    reason: AsExpected
+    status: "False"
+    type: OAuthServerDeploymentDegraded
+  - lastTransitionTime: "2022-05-24T18:36:21Z"
+    reason: AsExpected
+    status: "False"
+    type: OAuthServerDeploymentProgressing
+  - lastTransitionTime: "2022-05-24T18:13:16Z"
+    status: "False"
+    type: OAuthServerWorkloadDegraded
+  - lastTransitionTime: "2022-05-24T18:13:19Z"
+    reason: AsExpected
+    status: "False"
+    type: OAuthClientsControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:25:06Z"
+    reason: AsExpected
+    status: "False"
+    type: WellKnownReadyControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:13:22Z"
+    status: "False"
+    type: OAuthConfigDegraded
+  - lastTransitionTime: "2022-05-24T18:13:22Z"
+    status: "False"
+    type: OAuthConfigIngressDegraded
+  - lastTransitionTime: "2022-05-24T18:13:22Z"
+    status: "False"
+    type: OAuthConfigRouteDegraded
+  - lastTransitionTime: "2022-05-24T18:13:22Z"
+    status: "False"
+    type: OAuthConfigServiceDegraded
+  - lastTransitionTime: "2022-05-24T18:13:22Z"
+    status: "False"
+    type: OAuthSessionSecretDegraded
+  - lastTransitionTime: "2022-05-24T18:43:48Z"
+    reason: AsExpected
+    status: "True"
+    type: OAuthServerRouteEndpointAccessibleControllerAvailable
+  - lastTransitionTime: "2022-05-24T18:13:25Z"
+    status: "False"
+    type: AuthConfigDegraded
+  - lastTransitionTime: "2022-05-24T18:13:25Z"
+    status: "False"
+    type: IngressConfigDegraded
+  - lastTransitionTime: "2022-05-24T18:13:25Z"
+    status: "False"
+    type: OAuthSystemMetadataDegraded
+  - lastTransitionTime: "2022-05-24T18:25:06Z"
+    status: "False"
+    type: WellKnownReadyControllerProgressing
+  generations:
+  - group: apps
+    hash: ""
+    lastGeneration: 5
+    name: apiserver
+    namespace: openshift-oauth-apiserver
+    resource: deployments
+  - group: apps
+    hash: ""
+    lastGeneration: 8
+    name: oauth-openshift
+    namespace: openshift-authentication
+    resource: deployments
+  oauthAPIServer:
+    latestAvailableRevision: 3
+  readyReplicas: 0

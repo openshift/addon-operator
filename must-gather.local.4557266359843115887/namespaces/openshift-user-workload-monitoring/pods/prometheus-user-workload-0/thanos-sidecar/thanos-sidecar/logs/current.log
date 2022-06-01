@@ -1,0 +1,13 @@
+2022-05-24T18:28:21.323187182Z level=info ts=2022-05-24T18:28:21.323131267Z caller=sidecar.go:106 msg="no supported bucket was configured, uploads will be disabled"
+2022-05-24T18:28:21.323259510Z level=info ts=2022-05-24T18:28:21.323215015Z caller=options.go:31 protocol=gRPC msg="enabling server side TLS"
+2022-05-24T18:28:21.323316862Z level=info ts=2022-05-24T18:28:21.323299987Z caller=options.go:61 protocol=gRPC msg="server TLS client verification enabled"
+2022-05-24T18:28:21.323693122Z level=info ts=2022-05-24T18:28:21.323670476Z caller=sidecar.go:326 msg="starting sidecar"
+2022-05-24T18:28:21.323954284Z level=info ts=2022-05-24T18:28:21.323832973Z caller=intrumentation.go:48 msg="changing probe status" status=ready
+2022-05-24T18:28:21.324021281Z level=info ts=2022-05-24T18:28:21.323887224Z caller=reloader.go:197 component=reloader msg="nothing to be watched"
+2022-05-24T18:28:21.324125958Z level=info ts=2022-05-24T18:28:21.324090674Z caller=intrumentation.go:60 msg="changing probe status" status=healthy
+2022-05-24T18:28:21.324145574Z level=info ts=2022-05-24T18:28:21.324125078Z caller=http.go:63 service=http/server component=sidecar msg="listening for requests and metrics" address=127.0.0.1:10902
+2022-05-24T18:28:21.324269920Z level=info ts=2022-05-24T18:28:21.324233902Z caller=grpc.go:127 service=gRPC/server component=sidecar msg="listening for serving gRPC" address=0.0.0.0:10901
+2022-05-24T18:28:21.324364401Z ts=2022-05-24T18:28:21.324337353Z caller=log.go:168 service=http/server component=sidecar level=info msg="TLS is disabled." http2=false
+2022-05-24T18:28:21.325425473Z level=info ts=2022-05-24T18:28:21.325394353Z caller=sidecar.go:166 msg="successfully loaded prometheus version"
+2022-05-24T18:28:21.326968369Z level=info ts=2022-05-24T18:28:21.326931286Z caller=sidecar.go:188 msg="successfully loaded prometheus external labels" external_labels="{prometheus=\"openshift-user-workload-monitoring/user-workload\", prometheus_replica=\"prometheus-user-workload-0\"}"
+2022-05-24T18:28:21.326968369Z level=info ts=2022-05-24T18:28:21.326955015Z caller=intrumentation.go:48 msg="changing probe status" status=ready

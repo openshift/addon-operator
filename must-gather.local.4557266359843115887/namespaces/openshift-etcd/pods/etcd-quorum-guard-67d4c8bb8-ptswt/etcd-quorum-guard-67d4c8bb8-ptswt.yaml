@@ -1,0 +1,190 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-05-24T18:31:59Z"
+  generateName: etcd-quorum-guard-67d4c8bb8-
+  labels:
+    k8s-app: etcd-quorum-guard
+    name: etcd-quorum-guard
+    pod-template-hash: 67d4c8bb8
+  name: etcd-quorum-guard-67d4c8bb8-ptswt
+  namespace: openshift-etcd
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: etcd-quorum-guard-67d4c8bb8
+    uid: 2481c30d-a945-45d9-b887-d848e80482ad
+  resourceVersion: "62452"
+  uid: 44b9daf8-3b02-4064-89bd-42ac54a104bb
+spec:
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: k8s-app
+            operator: In
+            values:
+            - etcd
+        topologyKey: kubernetes.io/hostname
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: k8s-app
+            operator: In
+            values:
+            - etcd-quorum-guard
+        topologyKey: kubernetes.io/hostname
+  containers:
+  - args:
+    - -c
+    - |
+      # properly handle TERM and exit as soon as it is signaled
+      set -euo pipefail
+      trap 'jobs -p | xargs -r kill; exit 0' TERM
+      sleep infinity & wait
+    command:
+    - /bin/bash
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+    imagePullPolicy: IfNotPresent
+    name: guard
+    readinessProbe:
+      exec:
+        command:
+        - /bin/sh
+        - -c
+        - |
+          declare -r health_endpoint="https://localhost:2379/health"
+          declare -r cert="/var/run/secrets/etcd-client/tls.crt"
+          declare -r key="/var/run/secrets/etcd-client/tls.key"
+          declare -r cacert="/var/run/configmaps/etcd-ca/ca-bundle.crt"
+          export NSS_SDB_USE_CACHE=no
+          [[ -z $cert || -z $key ]] && exit 1
+          curl --max-time 2 --silent --cert "${cert//:/\:}" --key "$key" --cacert "$cacert" "$health_endpoint" |grep '"health":"true"'
+      failureThreshold: 3
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
+    resources:
+      requests:
+        cpu: 10m
+        memory: 5Mi
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /var/run/secrets/etcd-client
+      name: etcd-client
+    - mountPath: /var/run/configmaps/etcd-ca
+      name: etcd-ca
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-sf9gc
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  imagePullSecrets:
+  - name: default-dockercfg-66m5m
+  nodeName: ip-10-0-138-197.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 3
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/etcd
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: etcd-client
+    secret:
+      defaultMode: 420
+      secretName: etcd-client
+  - configMap:
+      defaultMode: 420
+      name: etcd-ca-bundle
+    name: etcd-ca
+  - name: kube-api-access-sf9gc
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:14Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:24Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:24Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:14Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://a679837e69b292fb9f34368cc6e679f496cd4d169aa1757e6dac9462a53c6240
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+    lastState: {}
+    name: guard
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:36:15Z"
+  hostIP: 10.0.138.197
+  phase: Running
+  podIP: 10.0.138.197
+  podIPs:
+  - ip: 10.0.138.197
+  qosClass: Burstable
+  startTime: "2022-05-24T18:36:14Z"

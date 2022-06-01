@@ -1,0 +1,176 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  generateName: multus-
+  labels:
+    app: multus
+    component: network
+    controller-revision-hash: 797b56c494
+    openshift.io/component: network
+    pod-template-generation: "1"
+    type: infra
+  name: multus-lcbl6
+  namespace: openshift-multus
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: multus
+    uid: 63f3418a-977c-44c1-8bb6-b3b7bd9cb7ef
+  resourceVersion: "52737"
+  uid: a281c5a4-c4c6-475e-a2bd-d26ba0622f44
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ip-10-0-169-205.ec2.internal
+  containers:
+  - args:
+    - |
+      /entrypoint/cnibincopy.sh; exec /entrypoint.sh --multus-conf-file=auto --multus-autoconfig-dir=/host/var/run/multus/cni/net.d --multus-kubeconfig-file-host=/etc/kubernetes/cni/net.d/multus.d/multus.kubeconfig --readiness-indicator-file=/var/run/multus/cni/net.d/80-openshift-network.conf --cleanup-config-on-exit=true --namespace-isolation=true --multus-log-level=verbose --cni-version=0.3.1 --additional-bin-dir=/opt/multus/bin --skip-multus-binary-copy=true - "--global-namespaces=default,openshift-multus,openshift-sriov-network-operator"
+    command:
+    - /bin/bash
+    - -ec
+    - --
+    env:
+    - name: RHEL7_SOURCE_DIRECTORY
+      value: /usr/src/multus-cni/rhel7/bin/
+    - name: RHEL8_SOURCE_DIRECTORY
+      value: /usr/src/multus-cni/rhel8/bin/
+    - name: DEFAULT_SOURCE_DIRECTORY
+      value: /usr/src/multus-cni/bin/
+    - name: KUBERNETES_SERVICE_PORT
+      value: "6443"
+    - name: KUBERNETES_SERVICE_HOST
+      value: api-int.odf-service.dif5.p1.openshiftapps.com
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e720cb9b6b36b1e750b65c78ed7331f9e02ec10c1bcbe36823ff9199e0eaea5
+    imagePullPolicy: IfNotPresent
+    name: kube-multus
+    resources:
+      requests:
+        cpu: 10m
+        memory: 65Mi
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /entrypoint
+      name: cni-binary-copy
+    - mountPath: /host/etc/os-release
+      name: os-release
+    - mountPath: /host/etc/cni/net.d
+      name: system-cni-dir
+    - mountPath: /host/var/run/multus/cni/net.d
+      name: multus-cni-dir
+    - mountPath: /host/opt/cni/bin
+      name: cnibin
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-f5kxq
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  nodeName: ip-10-0-169-205.ec2.internal
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: multus
+  serviceAccountName: multus
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/cni/net.d
+      type: ""
+    name: system-cni-dir
+  - hostPath:
+      path: /var/run/multus/cni/net.d
+      type: ""
+    name: multus-cni-dir
+  - hostPath:
+      path: /var/lib/cni/bin
+      type: ""
+    name: cnibin
+  - hostPath:
+      path: /etc/os-release
+      type: File
+    name: os-release
+  - configMap:
+      defaultMode: 484
+      name: cni-binary-copy-script
+    name: cni-binary-copy
+  - name: kube-api-access-f5kxq
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:06:57Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:20Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:20Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:06:57Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://8295ef48b25455839c44664254b378c0bb624e1cda69642f3285ba987134e722
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e720cb9b6b36b1e750b65c78ed7331f9e02ec10c1bcbe36823ff9199e0eaea5
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e720cb9b6b36b1e750b65c78ed7331f9e02ec10c1bcbe36823ff9199e0eaea5
+    lastState: {}
+    name: kube-multus
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:31:19Z"
+  hostIP: 10.0.169.205
+  phase: Running
+  podIP: 10.0.169.205
+  podIPs:
+  - ip: 10.0.169.205
+  qosClass: Burstable
+  startTime: "2022-05-24T18:06:57Z"

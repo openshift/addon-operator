@@ -1,0 +1,140 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+    creationTimestamp: "2022-05-24T18:06:03Z"
+    generation: 1
+    labels:
+      app: openshift-config-operator
+    name: openshift-config-operator
+    namespace: openshift-config-operator
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "63326"
+    uid: 5eb4ec6d-9393-4d7b-8ebe-e578eb4bc9fe
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: openshift-config-operator
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: openshift-config-operator
+        name: openshift-config-operator
+      spec:
+        containers:
+        - command:
+          - cluster-config-operator
+          - operator
+          env:
+          - name: IMAGE
+            value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c898c6a3f49b8d5f0e8578eac5ddde18e4b129aba076766da63b38e5a62186a
+          - name: OPERATOR_IMAGE_VERSION
+            value: 4.10.13
+          - name: OPERAND_IMAGE_VERSION
+            value: 4.10.13
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c898c6a3f49b8d5f0e8578eac5ddde18e4b129aba076766da63b38e5a62186a
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 3
+            periodSeconds: 3
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: openshift-config-operator
+          ports:
+          - containerPort: 8443
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 3
+            periodSeconds: 3
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/run/secrets/serving-cert
+            name: serving-cert
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: openshift-config-operator
+        serviceAccountName: openshift-config-operator
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: serving-cert
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: config-operator-serving-cert
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:06:03Z"
+      lastUpdateTime: "2022-05-24T18:07:41Z"
+      message: ReplicaSet "openshift-config-operator-59cdb77697" has successfully
+        progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2022-05-24T18:36:36Z"
+      lastUpdateTime: "2022-05-24T18:36:36Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+kind: DeploymentList
+metadata:
+  resourceVersion: "308134"

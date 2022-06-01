@@ -1,0 +1,138 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2022-05-24T18:28:13Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/managed-by: cluster-monitoring-operator
+      app.kubernetes.io/name: prometheus-operator
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 0.53.1
+      pod-template-hash: 6c5df8b7cc
+    name: prometheus-operator-6c5df8b7cc
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: prometheus-operator
+      uid: 0390aeaa-7495-46c7-8fba-a382043ccfdb
+    resourceVersion: "54532"
+    uid: 709f8fc8-f4aa-44e8-9baf-5bcc462d0fcd
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/name: prometheus-operator
+        app.kubernetes.io/part-of: openshift-monitoring
+        pod-template-hash: 6c5df8b7cc
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/default-container: prometheus-operator
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: controller
+          app.kubernetes.io/managed-by: cluster-monitoring-operator
+          app.kubernetes.io/name: prometheus-operator
+          app.kubernetes.io/part-of: openshift-monitoring
+          app.kubernetes.io/version: 0.53.1
+          pod-template-hash: 6c5df8b7cc
+      spec:
+        containers:
+        - args:
+          - --prometheus-config-reloader=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+          - --prometheus-instance-namespaces=openshift-user-workload-monitoring
+          - --alertmanager-instance-namespaces=openshift-user-workload-monitoring
+          - --thanos-ruler-instance-namespaces=openshift-user-workload-monitoring
+          - --config-reloader-cpu-limit=0
+          - --config-reloader-memory-limit=0
+          - --web.tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+          - --web.tls-min-version=VersionTLS12
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+          imagePullPolicy: IfNotPresent
+          name: prometheus-operator
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 1m
+              memory: 17Mi
+          securityContext: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --logtostderr
+          - --secure-listen-address=:8443
+          - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+          - --upstream=http://127.0.0.1:8080/
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --config-file=/etc/kube-rbac-policy/config.yaml
+          - --tls-min-version=VersionTLS12
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy
+          ports:
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 1m
+              memory: 10Mi
+          securityContext: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: prometheus-operator-user-workload-tls
+          - mountPath: /etc/kube-rbac-policy
+            name: prometheus-operator-uwm-kube-rbac-proxy-config
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+          node-role.kubernetes.io/master: ""
+        priorityClassName: openshift-user-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: prometheus-operator
+        serviceAccountName: prometheus-operator
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        volumes:
+        - name: prometheus-operator-user-workload-tls
+          secret:
+            defaultMode: 420
+            secretName: prometheus-operator-user-workload-tls
+        - name: prometheus-operator-uwm-kube-rbac-proxy-config
+          secret:
+            defaultMode: 420
+            secretName: prometheus-operator-uwm-kube-rbac-proxy-config
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+kind: ReplicaSetList
+metadata:
+  resourceVersion: "322664"

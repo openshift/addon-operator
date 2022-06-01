@@ -1,0 +1,203 @@
+2022-05-24T18:32:10.605172649Z I0524 18:32:10.605115       1 start.go:50] Version: v4.10.0-202204301617.p0.g7f47027.assembly.stream-dirty (7f47027996164e00c6e7916f0047c9fab855f818)
+2022-05-24T18:32:11.640507604Z I0524 18:32:11.640473       1 leaderelection.go:248] attempting to acquire leader lease openshift-machine-config-operator/machine-config-controller...
+2022-05-24T18:34:40.173664818Z I0524 18:34:40.173630       1 leaderelection.go:258] successfully acquired lease openshift-machine-config-operator/machine-config-controller
+2022-05-24T18:34:40.187463522Z E0524 18:34:40.187423       1 template_controller.go:189] couldn't get ControllerConfig on dependency callback &errors.StatusError{ErrStatus:v1.Status{TypeMeta:v1.TypeMeta{Kind:"", APIVersion:""}, ListMeta:v1.ListMeta{SelfLink:"", ResourceVersion:"", Continue:"", RemainingItemCount:(*int64)(nil)}, Status:"Failure", Message:"controllerconfig.machineconfiguration.openshift.io \"machine-config-controller\" not found", Reason:"NotFound", Details:(*v1.StatusDetails)(0xc000376540), Code:404}}
+2022-05-24T18:34:40.225239161Z I0524 18:34:40.225204       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T18:34:40.275763847Z I0524 18:34:40.275718       1 node_controller.go:152] Starting MachineConfigController-NodeController
+2022-05-24T18:34:40.275763847Z I0524 18:34:40.275752       1 template_controller.go:238] Starting MachineConfigController-TemplateController
+2022-05-24T18:34:40.275798793Z I0524 18:34:40.275718       1 kubelet_config_controller.go:169] Starting MachineConfigController-KubeletConfigController
+2022-05-24T18:34:40.275892637Z I0524 18:34:40.275852       1 render_controller.go:124] Starting MachineConfigController-RenderController
+2022-05-24T18:34:40.275892637Z I0524 18:34:40.275863       1 container_runtime_config_controller.go:192] Starting MachineConfigController-ContainerRuntimeConfigController
+2022-05-24T18:34:40.375224660Z I0524 18:34:40.375171       1 kubelet_config_controller.go:627] Applied KubeletConfig custom-kubelet on MachineConfigPool master
+2022-05-24T18:34:40.388402593Z I0524 18:34:40.388371       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T18:34:40.484878417Z I0524 18:34:40.484846       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T18:34:41.482710422Z I0524 18:34:41.482672       1 kubelet_config_controller.go:627] Applied KubeletConfig custom-kubelet on MachineConfigPool worker
+2022-05-24T18:34:45.183725661Z I0524 18:34:45.183690       1 node_controller.go:414] Pool worker: 4 candidate nodes for update, capacity: 1
+2022-05-24T18:34:45.183790864Z I0524 18:34:45.183771       1 node_controller.go:414] Pool worker: Setting node ip-10-0-140-240.ec2.internal target to rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:34:45.202656258Z I0524 18:34:45.202613       1 event.go:285] Event(v1.ObjectReference{Kind:"MachineConfigPool", Namespace:"", Name:"worker", UID:"ce03ce87-4e21-4a75-967a-72e3a798655a", APIVersion:"machineconfiguration.openshift.io/v1", ResourceVersion:"43379", FieldPath:""}): type: 'Normal' reason: 'SetDesiredConfig' Targeted node ip-10-0-140-240.ec2.internal to config rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:34:45.203792735Z I0524 18:34:45.203765       1 node_controller.go:419] Pool worker: node ip-10-0-140-240.ec2.internal: changed annotation machineconfiguration.openshift.io/desiredConfig = rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:34:45.263352799Z E0524 18:34:45.263322       1 render_controller.go:460] Error updating MachineConfigPool worker: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "worker": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:34:45.263352799Z I0524 18:34:45.263338       1 render_controller.go:377] Error syncing machineconfigpool worker: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "worker": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:34:46.234386578Z I0524 18:34:46.234333       1 node_controller.go:419] Pool worker: node ip-10-0-140-240.ec2.internal: changed annotation machineconfiguration.openshift.io/state = Working
+2022-05-24T18:34:46.304216911Z I0524 18:34:46.304143       1 node_controller.go:419] Pool worker: node ip-10-0-140-240.ec2.internal: Reporting unready: node ip-10-0-140-240.ec2.internal is reporting Unschedulable
+2022-05-24T18:34:46.329033831Z I0524 18:34:46.328996       1 node_controller.go:419] Pool worker: node ip-10-0-140-240.ec2.internal: changed taints
+2022-05-24T18:34:50.229076141Z I0524 18:34:50.229033       1 node_controller.go:419] Pool worker: node ip-10-0-140-240.ec2.internal: changed taints
+2022-05-24T18:35:15.058014696Z I0524 18:35:15.057984       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T18:35:15.125909869Z I0524 18:35:15.125878       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T18:35:15.334305492Z I0524 18:35:15.334268       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T18:35:15.410619432Z I0524 18:35:15.410584       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T18:35:15.999676226Z I0524 18:35:15.999644       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T18:35:16.600087499Z I0524 18:35:16.600055       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T18:35:50.617322128Z I0524 18:35:50.617276       1 node_controller.go:419] Pool master: node ip-10-0-138-197.ec2.internal: Reporting unready: node ip-10-0-138-197.ec2.internal is reporting Unschedulable
+2022-05-24T18:35:50.643730369Z I0524 18:35:50.643692       1 node_controller.go:419] Pool master: node ip-10-0-138-197.ec2.internal: changed taints
+2022-05-24T18:35:55.043730879Z I0524 18:35:55.043699       1 node_controller.go:419] Pool master: node ip-10-0-138-197.ec2.internal: changed taints
+2022-05-24T18:36:11.118304347Z I0524 18:36:11.118272       1 node_controller.go:419] Pool master: node ip-10-0-138-197.ec2.internal: Completed update to rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:11.142813972Z I0524 18:36:11.142717       1 node_controller.go:419] Pool master: node ip-10-0-138-197.ec2.internal: Reporting ready
+2022-05-24T18:36:11.162982816Z I0524 18:36:11.162951       1 node_controller.go:419] Pool master: node ip-10-0-138-197.ec2.internal: changed taints
+2022-05-24T18:36:16.119409986Z I0524 18:36:16.119376       1 node_controller.go:414] Pool master: 1 candidate nodes for update, capacity: 1
+2022-05-24T18:36:16.119409986Z I0524 18:36:16.119393       1 node_controller.go:414] Pool master: filtered to 1 candidate nodes for update, capacity: 1
+2022-05-24T18:36:16.119409986Z I0524 18:36:16.119397       1 node_controller.go:414] Pool master: Setting node ip-10-0-149-121.ec2.internal target to rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:16.137400206Z I0524 18:36:16.137354       1 event.go:285] Event(v1.ObjectReference{Kind:"MachineConfigPool", Namespace:"", Name:"master", UID:"be50f025-12fb-4f80-82df-4b58404568f8", APIVersion:"machineconfiguration.openshift.io/v1", ResourceVersion:"53640", FieldPath:""}): type: 'Normal' reason: 'SetDesiredConfig' Targeted node ip-10-0-149-121.ec2.internal to config rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:16.150219050Z I0524 18:36:16.150169       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed annotation machineconfiguration.openshift.io/desiredConfig = rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:16.150417026Z I0524 18:36:16.150378       1 event.go:285] Event(v1.ObjectReference{Kind:"MachineConfigPool", Namespace:"", Name:"master", UID:"be50f025-12fb-4f80-82df-4b58404568f8", APIVersion:"machineconfiguration.openshift.io/v1", ResourceVersion:"62137", FieldPath:""}): type: 'Normal' reason: 'AnnotationChange' Node ip-10-0-149-121.ec2.internal now has machineconfiguration.openshift.io/desiredConfig=rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:17.187208457Z I0524 18:36:17.187147       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed annotation machineconfiguration.openshift.io/state = Working
+2022-05-24T18:36:17.187329562Z I0524 18:36:17.187293       1 event.go:285] Event(v1.ObjectReference{Kind:"MachineConfigPool", Namespace:"", Name:"master", UID:"be50f025-12fb-4f80-82df-4b58404568f8", APIVersion:"machineconfiguration.openshift.io/v1", ResourceVersion:"62137", FieldPath:""}): type: 'Normal' reason: 'AnnotationChange' Node ip-10-0-149-121.ec2.internal now has machineconfiguration.openshift.io/state=Working
+2022-05-24T18:36:17.259021689Z I0524 18:36:17.258977       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: Reporting unready: node ip-10-0-149-121.ec2.internal is reporting Unschedulable
+2022-05-24T18:36:17.279497049Z I0524 18:36:17.279459       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed taints
+2022-05-24T18:36:21.195461424Z I0524 18:36:21.195419       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed taints
+2022-05-24T18:36:21.234831900Z E0524 18:36:21.234792       1 render_controller.go:460] Error updating MachineConfigPool master: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "master": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:36:21.234831900Z I0524 18:36:21.234813       1 render_controller.go:377] Error syncing machineconfigpool master: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "master": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:38:36.461010061Z I0524 18:38:36.460932       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: Reporting unready: node ip-10-0-149-121.ec2.internal is reporting OutOfDisk=Unknown
+2022-05-24T18:38:36.486526389Z I0524 18:38:36.486480       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed taints
+2022-05-24T18:38:38.331976186Z I0524 18:38:38.331937       1 node_controller.go:419] Pool worker: node ip-10-0-140-240.ec2.internal: Completed update to rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:38:38.353773969Z I0524 18:38:38.353741       1 node_controller.go:419] Pool worker: node ip-10-0-140-240.ec2.internal: Reporting ready
+2022-05-24T18:38:38.368074944Z I0524 18:38:38.366975       1 node_controller.go:419] Pool worker: node ip-10-0-140-240.ec2.internal: changed taints
+2022-05-24T18:38:41.878645444Z I0524 18:38:41.878601       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed taints
+2022-05-24T18:38:43.332394133Z I0524 18:38:43.332354       1 node_controller.go:414] Pool worker: 3 candidate nodes for update, capacity: 1
+2022-05-24T18:38:43.332394133Z I0524 18:38:43.332377       1 node_controller.go:414] Pool worker: Setting node ip-10-0-164-190.ec2.internal target to rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:38:43.355629454Z I0524 18:38:43.355521       1 event.go:285] Event(v1.ObjectReference{Kind:"MachineConfigPool", Namespace:"", Name:"worker", UID:"ce03ce87-4e21-4a75-967a-72e3a798655a", APIVersion:"machineconfiguration.openshift.io/v1", ResourceVersion:"59998", FieldPath:""}): type: 'Normal' reason: 'SetDesiredConfig' Targeted node ip-10-0-164-190.ec2.internal to config rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:38:43.355834168Z I0524 18:38:43.355790       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed annotation machineconfiguration.openshift.io/desiredConfig = rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:38:44.384777709Z I0524 18:38:44.384741       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed annotation machineconfiguration.openshift.io/state = Working
+2022-05-24T18:38:44.447051116Z I0524 18:38:44.447017       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: Reporting unready: node ip-10-0-164-190.ec2.internal is reporting Unschedulable
+2022-05-24T18:38:44.467396389Z I0524 18:38:44.467359       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed taints
+2022-05-24T18:38:48.388196299Z I0524 18:38:48.387158       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed taints
+2022-05-24T18:38:48.458227963Z E0524 18:38:48.458192       1 render_controller.go:460] Error updating MachineConfigPool worker: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "worker": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:38:48.458227963Z I0524 18:38:48.458214       1 render_controller.go:377] Error syncing machineconfigpool worker: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "worker": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:39:46.814161837Z I0524 18:39:46.814004       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: Reporting unready: node ip-10-0-164-190.ec2.internal is reporting OutOfDisk=Unknown
+2022-05-24T18:39:46.858112574Z I0524 18:39:46.858067       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed taints
+2022-05-24T18:39:46.966099220Z I0524 18:39:46.966067       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed taints
+2022-05-24T18:40:00.267042541Z I0524 18:40:00.267010       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: Reporting unready: node ip-10-0-164-190.ec2.internal is reporting Unschedulable
+2022-05-24T18:40:00.284400180Z I0524 18:40:00.284365       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed taints
+2022-05-24T18:40:01.876515767Z I0524 18:40:01.876474       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed taints
+2022-05-24T18:40:08.616731478Z I0524 18:40:08.616366       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: Completed update to rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:40:08.637541113Z I0524 18:40:08.637503       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: Reporting ready
+2022-05-24T18:40:08.663713538Z I0524 18:40:08.663547       1 node_controller.go:419] Pool worker: node ip-10-0-164-190.ec2.internal: changed taints
+2022-05-24T18:40:13.617049693Z I0524 18:40:13.617012       1 node_controller.go:414] Pool worker: 2 candidate nodes for update, capacity: 1
+2022-05-24T18:40:13.617049693Z I0524 18:40:13.617030       1 node_controller.go:414] Pool worker: Setting node ip-10-0-148-123.ec2.internal target to rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:40:13.635008967Z I0524 18:40:13.634959       1 event.go:285] Event(v1.ObjectReference{Kind:"MachineConfigPool", Namespace:"", Name:"worker", UID:"ce03ce87-4e21-4a75-967a-72e3a798655a", APIVersion:"machineconfiguration.openshift.io/v1", ResourceVersion:"67616", FieldPath:""}): type: 'Normal' reason: 'SetDesiredConfig' Targeted node ip-10-0-148-123.ec2.internal to config rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:40:13.642879557Z I0524 18:40:13.642824       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed annotation machineconfiguration.openshift.io/desiredConfig = rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:40:14.672694217Z I0524 18:40:14.672657       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed annotation machineconfiguration.openshift.io/state = Working
+2022-05-24T18:40:14.734848127Z I0524 18:40:14.734812       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: Reporting unready: node ip-10-0-148-123.ec2.internal is reporting Unschedulable
+2022-05-24T18:40:14.766406535Z I0524 18:40:14.766370       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:40:18.663173770Z I0524 18:40:18.663136       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:40:18.751465606Z E0524 18:40:18.751428       1 render_controller.go:460] Error updating MachineConfigPool worker: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "worker": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:40:18.751465606Z I0524 18:40:18.751448       1 render_controller.go:377] Error syncing machineconfigpool worker: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "worker": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:40:25.885531170Z I0524 18:40:25.885415       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: Reporting unready: node ip-10-0-149-121.ec2.internal is reporting Unschedulable
+2022-05-24T18:40:25.939021744Z I0524 18:40:25.938984       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed taints
+2022-05-24T18:40:26.927725644Z I0524 18:40:26.927669       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed taints
+2022-05-24T18:40:35.790779687Z I0524 18:40:35.790727       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:40:35.817371446Z I0524 18:40:35.817305       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:40:35.912944770Z I0524 18:40:35.912909       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:40:40.820704763Z I0524 18:40:40.820329       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:40:48.930447613Z I0524 18:40:48.930405       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: Completed update to rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:40:48.971808267Z I0524 18:40:48.971775       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: Reporting ready
+2022-05-24T18:40:48.982980480Z I0524 18:40:48.982946       1 node_controller.go:419] Pool master: node ip-10-0-149-121.ec2.internal: changed taints
+2022-05-24T18:40:53.933093890Z I0524 18:40:53.933045       1 status.go:90] Pool master: All nodes are updated with rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:41:36.936935224Z I0524 18:41:36.936872       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: Reporting unready: node ip-10-0-148-123.ec2.internal is reporting OutOfDisk=Unknown
+2022-05-24T18:41:36.990216796Z I0524 18:41:36.986620       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:41:37.037733208Z I0524 18:41:37.037700       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:41:37.076808198Z I0524 18:41:37.076763       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:41:42.272887873Z I0524 18:41:42.270630       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:42:03.787698253Z I0524 18:42:03.786651       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: Reporting unready: node ip-10-0-148-123.ec2.internal is reporting Unschedulable
+2022-05-24T18:42:03.822243358Z I0524 18:42:03.821843       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:42:03.875357177Z I0524 18:42:03.875319       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:42:03.895259357Z I0524 18:42:03.893985       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:42:12.102129586Z I0524 18:42:12.102081       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: Completed update to rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:42:12.120469356Z I0524 18:42:12.120432       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: Reporting ready
+2022-05-24T18:42:12.145471661Z I0524 18:42:12.145437       1 node_controller.go:419] Pool worker: node ip-10-0-148-123.ec2.internal: changed taints
+2022-05-24T18:42:17.103589970Z I0524 18:42:17.103551       1 node_controller.go:414] Pool worker: 1 candidate nodes for update, capacity: 1
+2022-05-24T18:42:17.103589970Z I0524 18:42:17.103568       1 node_controller.go:414] Pool worker: Setting node ip-10-0-145-179.ec2.internal target to rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:42:17.141258781Z I0524 18:42:17.141224       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed annotation machineconfiguration.openshift.io/desiredConfig = rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:42:17.141368054Z I0524 18:42:17.141344       1 event.go:285] Event(v1.ObjectReference{Kind:"MachineConfigPool", Namespace:"", Name:"worker", UID:"ce03ce87-4e21-4a75-967a-72e3a798655a", APIVersion:"machineconfiguration.openshift.io/v1", ResourceVersion:"70348", FieldPath:""}): type: 'Normal' reason: 'SetDesiredConfig' Targeted node ip-10-0-145-179.ec2.internal to config rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:42:18.177741677Z I0524 18:42:18.177695       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed annotation machineconfiguration.openshift.io/state = Working
+2022-05-24T18:42:18.233436757Z I0524 18:42:18.230953       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: Reporting unready: node ip-10-0-145-179.ec2.internal is reporting Unschedulable
+2022-05-24T18:42:18.274749198Z I0524 18:42:18.274712       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:42:22.163969646Z I0524 18:42:22.163933       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:42:22.277210456Z E0524 18:42:22.277155       1 render_controller.go:460] Error updating MachineConfigPool worker: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "worker": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:42:22.277210456Z I0524 18:42:22.277188       1 render_controller.go:377] Error syncing machineconfigpool worker: Operation cannot be fulfilled on machineconfigpools.machineconfiguration.openshift.io "worker": the object has been modified; please apply your changes to the latest version and try again
+2022-05-24T18:43:44.229927412Z I0524 18:43:44.229117       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: Reporting unready: node ip-10-0-145-179.ec2.internal is reporting OutOfDisk=Unknown
+2022-05-24T18:43:44.256528805Z I0524 18:43:44.256483       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:43:44.414598388Z I0524 18:43:44.414554       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:43:44.447363876Z I0524 18:43:44.447310       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:43:49.563700958Z I0524 18:43:49.563664       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:44:13.413453264Z I0524 18:44:13.413411       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: Reporting unready: node ip-10-0-145-179.ec2.internal is reporting Unschedulable
+2022-05-24T18:44:13.442130133Z I0524 18:44:13.442047       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:44:13.523384296Z I0524 18:44:13.523334       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:44:13.548446554Z I0524 18:44:13.548412       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:44:21.736958077Z I0524 18:44:21.736297       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: Completed update to rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:44:21.747972512Z I0524 18:44:21.747266       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: Reporting ready
+2022-05-24T18:44:21.770439314Z I0524 18:44:21.770103       1 node_controller.go:419] Pool worker: node ip-10-0-145-179.ec2.internal: changed taints
+2022-05-24T18:44:26.737457223Z I0524 18:44:26.737417       1 status.go:90] Pool worker: All nodes are updated with rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:45:10.091499457Z I0524 18:45:10.091465       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T18:45:10.161113461Z I0524 18:45:10.161063       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T18:45:12.316733888Z I0524 18:45:12.316698       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T18:45:12.385774452Z I0524 18:45:12.385741       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T18:45:12.470405540Z I0524 18:45:12.470371       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T18:45:12.653874847Z I0524 18:45:12.653840       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T18:55:02.272218035Z I0524 18:55:02.272143       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T19:15:24.321748075Z I0524 19:15:24.321708       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T19:16:24.940502438Z I0524 19:16:24.940418       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T19:16:25.021393010Z I0524 19:16:25.021347       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T19:16:25.087328574Z I0524 19:16:25.087292       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T19:16:25.279795294Z I0524 19:16:25.279756       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T19:21:34.896296898Z I0524 19:21:34.896261       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T19:21:34.961475461Z I0524 19:21:34.961439       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T19:35:46.368848283Z I0524 19:35:46.368808       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T19:47:37.553692412Z I0524 19:47:37.553649       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T19:47:37.621284480Z I0524 19:47:37.621249       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T19:47:37.687942143Z I0524 19:47:37.687907       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T19:47:37.897946340Z I0524 19:47:37.897910       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T19:56:08.415383758Z I0524 19:56:08.415349       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T19:57:59.735290136Z I0524 19:57:59.735255       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T19:57:59.803270881Z I0524 19:57:59.803231       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T20:16:30.463243646Z I0524 20:16:30.463194       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T20:18:50.175442603Z I0524 20:18:50.175404       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T20:18:50.240869242Z I0524 20:18:50.240832       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T20:18:50.305104801Z I0524 20:18:50.305066       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T20:18:50.518096546Z I0524 20:18:50.518050       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T20:34:24.514561502Z I0524 20:34:24.514523       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T20:34:24.582145973Z I0524 20:34:24.582114       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T20:36:52.509554562Z I0524 20:36:52.509515       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T20:50:02.795935515Z I0524 20:50:02.795900       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T20:50:02.861234253Z I0524 20:50:02.861196       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T20:50:02.922327718Z I0524 20:50:02.922293       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T20:50:03.137588042Z I0524 20:50:03.137552       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T20:57:14.556450487Z I0524 20:57:14.556411       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T21:10:49.325693994Z I0524 21:10:49.325658       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T21:10:49.390927366Z I0524 21:10:49.390891       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T21:17:36.603452038Z I0524 21:17:36.603411       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T21:21:15.418590918Z I0524 21:21:15.418555       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T21:21:15.489746934Z I0524 21:21:15.489712       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T21:21:15.556287961Z I0524 21:21:15.556251       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T21:21:15.760935486Z I0524 21:21:15.760899       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T21:37:58.650432241Z I0524 21:37:58.650385       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T21:47:14.135482987Z I0524 21:47:14.135452       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T21:47:14.199472454Z I0524 21:47:14.199438       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T21:52:28.038752829Z I0524 21:52:28.038713       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T21:52:28.108131237Z I0524 21:52:28.108094       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T21:52:28.174215069Z I0524 21:52:28.174167       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T21:52:28.382074856Z I0524 21:52:28.382042       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T21:58:20.697565306Z I0524 21:58:20.697493       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T22:18:42.744379542Z I0524 22:18:42.744334       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T22:23:38.939515351Z I0524 22:23:38.939481       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T22:23:39.001757154Z I0524 22:23:39.001726       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T22:23:40.656134707Z I0524 22:23:40.656096       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T22:23:40.724520616Z I0524 22:23:40.724476       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T22:23:40.789804410Z I0524 22:23:40.789769       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T22:23:41.003928352Z I0524 22:23:41.003889       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T22:39:04.793382484Z I0524 22:39:04.793346       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T22:54:53.280078722Z I0524 22:54:53.280041       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T22:54:53.342560783Z I0524 22:54:53.342524       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T22:54:53.406374818Z I0524 22:54:53.406340       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T22:54:53.622598848Z I0524 22:54:53.622560       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T22:59:26.840381845Z I0524 22:59:26.840344       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T23:00:03.759559475Z I0524 23:00:03.759508       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T23:00:03.830835102Z I0524 23:00:03.830797       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T23:19:48.890110033Z I0524 23:19:48.890069       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change
+2022-05-24T23:26:05.898714175Z I0524 23:26:05.898680       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T23:26:05.962281259Z I0524 23:26:05.962245       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T23:26:06.028312732Z I0524 23:26:06.028275       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T23:26:06.242400049Z I0524 23:26:06.242362       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T23:36:28.559834276Z I0524 23:36:28.559797       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool master
+2022-05-24T23:36:28.622114913Z I0524 23:36:28.622081       1 container_runtime_config_controller.go:814] Applied ImageConfig cluster on MachineConfigPool worker
+2022-05-24T23:40:10.937451742Z I0524 23:40:10.937410       1 template_controller.go:137] Re-syncing ControllerConfig due to secret pull-secret change

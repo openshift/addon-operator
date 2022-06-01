@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:44Z"
+    creationTimestamp: "2022-05-24T18:06:17Z"
+    labels:
+      app: insights-operator
+    name: metrics
+    namespace: openshift-insights
+    resourceVersion: "63890"
+    uid: 908b404b-1646-4c4e-8578-1012cdaee454
+  subsets:
+  - addresses:
+    - ip: 10.128.0.76
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: insights-operator-5d5b6d5998-5qslf
+        namespace: openshift-insights
+        resourceVersion: "63888"
+        uid: 93b7d518-69c9-4762-bcfd-4f4bb01c789e
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "313144"

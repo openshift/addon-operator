@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      prometheus.io/scheme: https
+      prometheus.io/scrape: "true"
+      service.alpha.openshift.io/serving-cert-secret-name: serving-cert
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:07:49Z"
+    name: api
+    namespace: openshift-oauth-apiserver
+    resourceVersion: "6257"
+    uid: f30fae28-1454-4418-8ced-ed61277280f2
+  spec:
+    clusterIP: 172.30.61.206
+    clusterIPs:
+    - 172.30.61.206
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    selector:
+      apiserver: "true"
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "297306"

@@ -1,0 +1,175 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.25"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.25"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:36:34Z"
+  generateName: csi-snapshot-controller-575c4d5867-
+  labels:
+    app: csi-snapshot-controller
+    pod-template-hash: 575c4d5867
+  name: csi-snapshot-controller-575c4d5867-m2wxp
+  namespace: openshift-cluster-storage-operator
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: csi-snapshot-controller-575c4d5867
+    uid: 05e8d9c0-7e57-47b2-b0ff-249cd1a2ac23
+  resourceVersion: "63503"
+  uid: f5f7ec6d-06c2-4893-892a-cdbef6f2e02f
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: csi-snapshot-controller
+          topologyKey: kubernetes.io/hostname
+        weight: 100
+  containers:
+  - args:
+    - --v=2
+    - --leader-election=true
+    - --leader-election-lease-duration=137s
+    - --leader-election-renew-deadline=107s
+    - --leader-election-retry-period=26s
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cfecfae9863d07b24afe606caf62db29e27174d9c2697af14f86b89053193a2c
+    imagePullPolicy: IfNotPresent
+    name: snapshot-controller
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000150000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-pxwmq
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: csi-snapshot-controller-dockercfg-px2n8
+  nodeName: ip-10-0-138-197.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000150000
+    seLinuxOptions:
+      level: s0:c12,c9
+  serviceAccount: csi-snapshot-controller
+  serviceAccountName: csi-snapshot-controller
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: kube-api-access-pxwmq
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:34Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:38Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:38Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:34Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://ebb617882d0a51a8b88884b74b917eb3bdafe82887881590a96028f3fabca486
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cfecfae9863d07b24afe606caf62db29e27174d9c2697af14f86b89053193a2c
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cfecfae9863d07b24afe606caf62db29e27174d9c2697af14f86b89053193a2c
+    lastState: {}
+    name: snapshot-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:36:37Z"
+  hostIP: 10.0.138.197
+  phase: Running
+  podIP: 10.130.0.25
+  podIPs:
+  - ip: 10.130.0.25
+  qosClass: Burstable
+  startTime: "2022-05-24T18:36:34Z"

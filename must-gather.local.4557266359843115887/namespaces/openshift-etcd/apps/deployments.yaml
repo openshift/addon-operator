@@ -1,0 +1,149 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2022-05-24T18:07:52Z"
+    generation: 1
+    name: etcd-quorum-guard
+    namespace: openshift-etcd
+    resourceVersion: "72926"
+    uid: 37fc9f39-275c-461b-ac1e-b5902c9725b9
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 3
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        k8s-app: etcd-quorum-guard
+    strategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          k8s-app: etcd-quorum-guard
+          name: etcd-quorum-guard
+      spec:
+        affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: k8s-app
+                  operator: In
+                  values:
+                  - etcd
+              topologyKey: kubernetes.io/hostname
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: k8s-app
+                  operator: In
+                  values:
+                  - etcd-quorum-guard
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - -c
+          - |
+            # properly handle TERM and exit as soon as it is signaled
+            set -euo pipefail
+            trap 'jobs -p | xargs -r kill; exit 0' TERM
+            sleep infinity & wait
+          command:
+          - /bin/bash
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+          imagePullPolicy: IfNotPresent
+          name: guard
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - |
+                declare -r health_endpoint="https://localhost:2379/health"
+                declare -r cert="/var/run/secrets/etcd-client/tls.crt"
+                declare -r key="/var/run/secrets/etcd-client/tls.key"
+                declare -r cacert="/var/run/configmaps/etcd-ca/ca-bundle.crt"
+                export NSS_SDB_USE_CACHE=no
+                [[ -z $cert || -z $key ]] && exit 1
+                curl --max-time 2 --silent --cert "${cert//:/\:}" --key "$key" --cacert "$cacert" "$health_endpoint" |grep '"health":"true"'
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 10m
+              memory: 5Mi
+          securityContext:
+            privileged: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/run/secrets/etcd-client
+            name: etcd-client
+          - mountPath: /var/run/configmaps/etcd-ca
+            name: etcd-ca
+        dnsPolicy: ClusterFirst
+        hostNetwork: true
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 3
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/etcd
+          operator: Exists
+        volumes:
+        - name: etcd-client
+          secret:
+            defaultMode: 420
+            secretName: etcd-client
+        - configMap:
+            defaultMode: 420
+            name: etcd-ca-bundle
+          name: etcd-ca
+  status:
+    availableReplicas: 3
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:11:16Z"
+      lastUpdateTime: "2022-05-24T18:11:16Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2022-05-24T18:07:52Z"
+      lastUpdateTime: "2022-05-24T18:13:01Z"
+      message: ReplicaSet "etcd-quorum-guard-67d4c8bb8" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 3
+    replicas: 3
+    updatedReplicas: 3
+kind: DeploymentList
+metadata:
+  resourceVersion: "310914"

@@ -1,0 +1,46 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  creationTimestamp: "2022-05-24T18:27:36Z"
+  generateName: vaddons.managed.openshift.io-
+  generation: 1
+  labels:
+    olm.owner: addon-operator.v1.1.0
+    olm.owner.kind: ClusterServiceVersion
+    olm.owner.namespace: openshift-addon-operator
+    olm.webhook-description-generate-name: vaddons.managed.openshift.io
+    olm.webhook-description-hash: 6fdc6cf596
+  name: vaddons.managed.openshift.io-znqr2
+  resourceVersion: "37801"
+  uid: 3f40b46e-7cd5-4df0-b52c-ea77ba385ba2
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJoekNDQVMyZ0F3SUJBZ0lJSHJMODcrZDhJMDB3Q2dZSUtvWkl6ajBFQXdJd0dERVdNQlFHQTFVRUNoTU4KVW1Wa0lFaGhkQ3dnU1c1akxqQWVGdzB5TWpBMU1qUXhPREkzTXpaYUZ3MHlOREExTWpNeE9ESTNNelphTUJneApGakFVQmdOVkJBb1REVkpsWkNCSVlYUXNJRWx1WXk0d1dUQVRCZ2NxaGtqT1BRSUJCZ2dxaGtqT1BRTUJCd05DCkFBUitqTmtnTGFaY0ZvV2hXS0tBOFpOZ3RsVXlQc08xZE9JUnhHbU11ZkhDbHdUUzgvVzM4YU9UaWpXSEFlcTEKR0s5VXo3VStEUmsvbEF4a3hNSUZGVzFkbzJFd1h6QU9CZ05WSFE4QkFmOEVCQU1DQW9Rd0hRWURWUjBsQkJZdwpGQVlJS3dZQkJRVUhBd0lHQ0NzR0FRVUZCd01CTUE4R0ExVWRFd0VCL3dRRk1BTUJBZjh3SFFZRFZSME9CQllFCkZPNk1aYktXU1dpenE0MFpIR24yL3dIcTJ5dEVNQW9HQ0NxR1NNNDlCQU1DQTBnQU1FVUNJRDJBajd1Z0g3aDMKZXlyTDA4ZFZnWEZtSmwyL1BRMjVQUWJsZDhZcnVoU0RBaUVBNzYxVkVmNURUNllhOTk0OUVib2pmRVNwNFpWLwpvYjNaR1RKNXI5STJQSnM9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    service:
+      name: addon-operator-webhook-service
+      namespace: openshift-addon-operator
+      path: /validate-addon
+      port: 443
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: vaddons.managed.openshift.io
+  namespaceSelector:
+    matchLabels:
+      olm.operatorgroup.uid/e93e1c68-e9a4-4056-b2f1-f79b50af18af: ""
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - addons.managed.openshift.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - addons
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10

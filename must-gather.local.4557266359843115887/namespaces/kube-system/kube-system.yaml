@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/sa.scc.mcs: s0:c3,c2
+    openshift.io/sa.scc.supplemental-groups: 1000010000/10000
+    openshift.io/sa.scc.uid-range: 1000010000/10000
+  creationTimestamp: "2022-05-24T18:04:45Z"
+  labels:
+    kubernetes.io/metadata.name: kube-system
+  name: kube-system
+  resourceVersion: "354"
+  uid: 130bb377-1959-41e4-a2cd-1eef790863bb
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active

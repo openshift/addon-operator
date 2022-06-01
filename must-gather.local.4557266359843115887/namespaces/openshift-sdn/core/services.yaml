@@ -1,0 +1,88 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-secret-name: sdn-metrics-certs
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    labels:
+      app: sdn
+    name: sdn
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: operator.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Network
+      name: cluster
+      uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+    resourceVersion: "6145"
+    uid: 37847fd7-50b6-40cc-b25d-e87f26e7b183
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: metrics
+      port: 9101
+      protocol: TCP
+      targetPort: 9101
+    publishNotReadyAddresses: true
+    selector:
+      app: sdn
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-secret-name: sdn-controller-metrics-certs
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    labels:
+      app: sdn-controller
+    name: sdn-controller
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: operator.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Network
+      name: cluster
+      uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+    resourceVersion: "5469"
+    uid: bf9485af-0989-4b26-8c8e-8b71e490233f
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: controller-metrics
+      port: 9106
+      protocol: TCP
+      targetPort: 9106
+    publishNotReadyAddresses: true
+    selector:
+      app: sdn-controller
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "328187"

@@ -1,0 +1,251 @@
+2022-05-24T18:31:58.770608317Z I0524 18:31:58.770471       1 start.go:63] Version: 4.10.0-202204211158.p0.g668c5b5.assembly.stream-dirty
+2022-05-24T18:31:59.810611269Z I0524 18:31:59.810513       1 leaderelection.go:248] attempting to acquire leader lease openshift-machine-api/machine-api-operator...
+2022-05-24T18:34:21.305325112Z I0524 18:34:21.305288       1 leaderelection.go:258] successfully acquired lease openshift-machine-api/machine-api-operator
+2022-05-24T18:34:21.306738949Z I0524 18:34:21.306708       1 reflector.go:219] Starting reflector *v1.ValidatingWebhookConfiguration (19m37.061846151s) from k8s.io/client-go/informers/factory.go:134
+2022-05-24T18:34:21.306808333Z I0524 18:34:21.306775       1 reflector.go:255] Listing and watching *v1.ValidatingWebhookConfiguration from k8s.io/client-go/informers/factory.go:134
+2022-05-24T18:34:21.306858088Z I0524 18:34:21.306776       1 reflector.go:219] Starting reflector *v1.Proxy (10m35.639518052s) from github.com/openshift/client-go/config/informers/externalversions/factory.go:101
+2022-05-24T18:34:21.306870036Z I0524 18:34:21.306857       1 reflector.go:255] Listing and watching *v1.Proxy from github.com/openshift/client-go/config/informers/externalversions/factory.go:101
+2022-05-24T18:34:21.306968398Z I0524 18:34:21.306948       1 operator.go:160] Starting Machine API Operator
+2022-05-24T18:34:21.306968398Z I0524 18:34:21.306954       1 reflector.go:219] Starting reflector *v1.FeatureGate (10m35.639518052s) from github.com/openshift/client-go/config/informers/externalversions/factory.go:101
+2022-05-24T18:34:21.306980238Z I0524 18:34:21.306968       1 reflector.go:255] Listing and watching *v1.FeatureGate from github.com/openshift/client-go/config/informers/externalversions/factory.go:101
+2022-05-24T18:34:21.307051424Z I0524 18:34:21.307016       1 reflector.go:219] Starting reflector *v1.DaemonSet (19m37.061846151s) from k8s.io/client-go/informers/factory.go:134
+2022-05-24T18:34:21.307062284Z I0524 18:34:21.307052       1 reflector.go:255] Listing and watching *v1.DaemonSet from k8s.io/client-go/informers/factory.go:134
+2022-05-24T18:34:21.309197371Z I0524 18:34:21.307224       1 reflector.go:219] Starting reflector *v1.Deployment (19m37.061846151s) from k8s.io/client-go/informers/factory.go:134
+2022-05-24T18:34:21.309197371Z I0524 18:34:21.307276       1 reflector.go:255] Listing and watching *v1.Deployment from k8s.io/client-go/informers/factory.go:134
+2022-05-24T18:34:21.309197371Z I0524 18:34:21.307341       1 reflector.go:219] Starting reflector *v1beta1.MachineSet (13m2.388478071s) from github.com/openshift/client-go/machine/informers/externalversions/factory.go:101
+2022-05-24T18:34:21.309197371Z I0524 18:34:21.307350       1 reflector.go:255] Listing and watching *v1beta1.MachineSet from github.com/openshift/client-go/machine/informers/externalversions/factory.go:101
+2022-05-24T18:34:21.309197371Z I0524 18:34:21.307807       1 reflector.go:219] Starting reflector *v1beta1.Machine (13m2.388478071s) from github.com/openshift/client-go/machine/informers/externalversions/factory.go:101
+2022-05-24T18:34:21.309197371Z I0524 18:34:21.307829       1 reflector.go:255] Listing and watching *v1beta1.Machine from github.com/openshift/client-go/machine/informers/externalversions/factory.go:101
+2022-05-24T18:34:21.309197371Z I0524 18:34:21.307949       1 reflector.go:219] Starting reflector *v1.MutatingWebhookConfiguration (19m37.061846151s) from k8s.io/client-go/informers/factory.go:134
+2022-05-24T18:34:21.309197371Z I0524 18:34:21.307966       1 reflector.go:255] Listing and watching *v1.MutatingWebhookConfiguration from k8s.io/client-go/informers/factory.go:134
+2022-05-24T18:34:21.406643470Z I0524 18:34:21.406601       1 start.go:111] Synced up machine api informer caches
+2022-05-24T18:34:21.407152904Z I0524 18:34:21.407130       1 operator.go:173] Synced up caches
+2022-05-24T18:34:21.418623812Z I0524 18:34:21.418596       1 status.go:69] Syncing status: re-syncing
+2022-05-24T18:34:21.435485173Z I0524 18:34:21.435449       1 recorder_logging.go:44] &Event{ObjectMeta:{dummy.16f21e3d355add65  dummy    0 0001-01-01 00:00:00 +0000 UTC <nil> <nil> map[] map[] [] []  []},InvolvedObject:ObjectReference{Kind:Pod,Namespace:dummy,Name:dummy,UID:,APIVersion:v1,ResourceVersion:,FieldPath:,},Reason:ValidatingWebhookConfigurationUpdated,Message:Updated ValidatingWebhookConfiguration.admissionregistration.k8s.io/machine-api because it changed,Source:EventSource{Component:,Host:,},FirstTimestamp:2022-05-24 18:34:21.435379045 +0000 UTC m=+142.774283111,LastTimestamp:2022-05-24 18:34:21.435379045 +0000 UTC m=+142.774283111,Count:1,Type:Normal,EventTime:0001-01-01 00:00:00 +0000 UTC,Series:nil,Action:,Related:nil,ReportingController:,ReportingInstance:,}
+2022-05-24T18:34:21.444444602Z I0524 18:34:21.444411       1 recorder_logging.go:44] &Event{ObjectMeta:{dummy.16f21e3d35e3dd56  dummy    0 0001-01-01 00:00:00 +0000 UTC <nil> <nil> map[] map[] [] []  []},InvolvedObject:ObjectReference{Kind:Pod,Namespace:dummy,Name:dummy,UID:,APIVersion:v1,ResourceVersion:,FieldPath:,},Reason:MutatingWebhookConfigurationUpdated,Message:Updated MutatingWebhookConfiguration.admissionregistration.k8s.io/machine-api because it changed,Source:EventSource{Component:,Host:,},FirstTimestamp:2022-05-24 18:34:21.444357462 +0000 UTC m=+142.783261526,LastTimestamp:2022-05-24 18:34:21.444357462 +0000 UTC m=+142.783261526,Count:1,Type:Normal,EventTime:0001-01-01 00:00:00 +0000 UTC,Series:nil,Action:,Related:nil,ReportingController:,ReportingInstance:,}
+2022-05-24T18:34:21.477885082Z I0524 18:34:21.477850       1 recorder_logging.go:44] &Event{ObjectMeta:{dummy.16f21e3d37e21204  dummy    0 0001-01-01 00:00:00 +0000 UTC <nil> <nil> map[] map[] [] []  []},InvolvedObject:ObjectReference{Kind:Pod,Namespace:dummy,Name:dummy,UID:,APIVersion:v1,ResourceVersion:,FieldPath:,},Reason:DeploymentUpdated,Message:Updated Deployment.apps/machine-api-controllers -n openshift-machine-api because it changed,Source:EventSource{Component:,Host:,},FirstTimestamp:2022-05-24 18:34:21.477794308 +0000 UTC m=+142.816698384,LastTimestamp:2022-05-24 18:34:21.477794308 +0000 UTC m=+142.816698384,Count:1,Type:Normal,EventTime:0001-01-01 00:00:00 +0000 UTC,Series:nil,Action:,Related:nil,ReportingController:,ReportingInstance:,}
+2022-05-24T18:34:21.487229002Z I0524 18:34:21.487202       1 recorder_logging.go:44] &Event{ObjectMeta:{dummy.16f21e3d387087a7  dummy    0 0001-01-01 00:00:00 +0000 UTC <nil> <nil> map[] map[] [] []  []},InvolvedObject:ObjectReference{Kind:Pod,Namespace:dummy,Name:dummy,UID:,APIVersion:v1,ResourceVersion:,FieldPath:,},Reason:DaemonSetUpdated,Message:Updated DaemonSet.apps/machine-api-termination-handler -n openshift-machine-api because it changed,Source:EventSource{Component:,Host:,},FirstTimestamp:2022-05-24 18:34:21.487130535 +0000 UTC m=+142.826034588,LastTimestamp:2022-05-24 18:34:21.487130535 +0000 UTC m=+142.826034588,Count:1,Type:Normal,EventTime:0001-01-01 00:00:00 +0000 UTC,Series:nil,Action:,Related:nil,ReportingController:,ReportingInstance:,}
+2022-05-24T18:34:21.490444829Z I0524 18:34:21.490419       1 sync.go:257] deployment machine-api-controllers has been available for less than 3m0s
+2022-05-24T18:35:42.013863253Z I0524 18:35:42.013827       1 status.go:69] Syncing status: re-syncing
+2022-05-24T18:35:42.052242100Z I0524 18:35:42.052211       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T18:35:42.055054654Z I0524 18:35:42.055025       1 status.go:99] Syncing status: available
+2022-05-24T18:44:56.963226232Z I0524 18:44:56.963162       1 status.go:69] Syncing status: re-syncing
+2022-05-24T18:44:56.998500834Z I0524 18:44:56.998466       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T18:44:57.002359349Z I0524 18:44:57.002330       1 status.go:99] Syncing status: available
+2022-05-24T18:45:10.046951028Z I0524 18:45:10.046906       1 reflector.go:255] Listing and watching *v1.Proxy from github.com/openshift/client-go/config/informers/externalversions/factory.go:101
+2022-05-24T18:45:10.102798213Z I0524 18:45:10.102755       1 reflector.go:255] Listing and watching *v1beta1.MachineSet from github.com/openshift/client-go/machine/informers/externalversions/factory.go:101
+2022-05-24T18:53:58.394993223Z I0524 18:53:58.394949       1 status.go:69] Syncing status: re-syncing
+2022-05-24T18:53:58.444444461Z I0524 18:53:58.444406       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T18:53:58.448599859Z I0524 18:53:58.448568       1 status.go:99] Syncing status: available
+2022-05-24T18:53:58.578098227Z I0524 18:53:58.578044       1 request.go:597] Waited for 110.23464ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T18:53:58.584313705Z I0524 18:53:58.584284       1 status.go:69] Syncing status: re-syncing
+2022-05-24T18:53:58.777435260Z I0524 18:53:58.777399       1 request.go:597] Waited for 192.992841ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T18:53:58.823969135Z I0524 18:53:58.823921       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T18:53:58.978274247Z I0524 18:53:58.978233       1 request.go:597] Waited for 154.255595ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T18:53:58.983257864Z I0524 18:53:58.983226       1 status.go:99] Syncing status: available
+2022-05-24T18:53:59.177694511Z I0524 18:53:59.177652       1 request.go:597] Waited for 194.30707ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T18:55:32.608290593Z I0524 18:55:32.608256       1 status.go:69] Syncing status: re-syncing
+2022-05-24T18:55:32.654483439Z I0524 18:55:32.654446       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T18:55:32.658628378Z I0524 18:55:32.658598       1 status.go:99] Syncing status: available
+2022-05-24T19:06:08.248314854Z I0524 19:06:08.248273       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:06:08.295801189Z I0524 19:06:08.295764       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:06:08.299994962Z I0524 19:06:08.299961       1 status.go:99] Syncing status: available
+2022-05-24T19:13:35.456956462Z I0524 19:13:35.456922       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:13:35.504015697Z I0524 19:13:35.503936       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:13:35.508230721Z I0524 19:13:35.508199       1 status.go:99] Syncing status: available
+2022-05-24T19:13:35.640090587Z I0524 19:13:35.640053       1 request.go:597] Waited for 113.226651ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T19:13:35.644414423Z I0524 19:13:35.644385       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:13:35.840489994Z I0524 19:13:35.840453       1 request.go:597] Waited for 195.938537ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T19:13:35.887374729Z I0524 19:13:35.887342       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:13:36.040707943Z I0524 19:13:36.040668       1 request.go:597] Waited for 153.259752ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T19:13:36.045034307Z I0524 19:13:36.045007       1 status.go:99] Syncing status: available
+2022-05-24T19:13:36.240431917Z I0524 19:13:36.240391       1 request.go:597] Waited for 195.26419ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T19:16:43.887691005Z I0524 19:16:43.887644       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:16:43.934210618Z I0524 19:16:43.934164       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:16:43.938490229Z I0524 19:16:43.938465       1 status.go:99] Syncing status: available
+2022-05-24T19:27:19.529842172Z I0524 19:27:19.529805       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:27:19.576595784Z I0524 19:27:19.576551       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:27:19.580627580Z I0524 19:27:19.580601       1 status.go:99] Syncing status: available
+2022-05-24T19:33:12.518529974Z I0524 19:33:12.518495       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:33:12.566102051Z I0524 19:33:12.566067       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:33:12.570324458Z I0524 19:33:12.570294       1 status.go:99] Syncing status: available
+2022-05-24T19:33:12.702280539Z I0524 19:33:12.702238       1 request.go:597] Waited for 113.187754ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T19:33:12.706740024Z I0524 19:33:12.706712       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:33:12.903008313Z I0524 19:33:12.902964       1 request.go:597] Waited for 196.147659ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T19:33:12.959555960Z I0524 19:33:12.959520       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:33:13.102859241Z I0524 19:33:13.102823       1 request.go:597] Waited for 143.179529ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T19:33:13.107594018Z I0524 19:33:13.107565       1 status.go:99] Syncing status: available
+2022-05-24T19:33:13.303020867Z I0524 19:33:13.302976       1 request.go:597] Waited for 195.314209ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T19:37:55.170110304Z I0524 19:37:55.170063       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:37:55.220022346Z I0524 19:37:55.219985       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:37:55.224025966Z I0524 19:37:55.224002       1 status.go:99] Syncing status: available
+2022-05-24T19:48:30.808108718Z I0524 19:48:30.808066       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:48:30.853811334Z I0524 19:48:30.853776       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:48:30.857858415Z I0524 19:48:30.857828       1 status.go:99] Syncing status: available
+2022-05-24T19:52:49.579986964Z I0524 19:52:49.579955       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:52:49.627315938Z I0524 19:52:49.627283       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:52:49.631231560Z I0524 19:52:49.631200       1 status.go:99] Syncing status: available
+2022-05-24T19:52:49.764958608Z I0524 19:52:49.764921       1 request.go:597] Waited for 116.220003ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T19:52:49.769313469Z I0524 19:52:49.769282       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:52:49.964606675Z I0524 19:52:49.964568       1 request.go:597] Waited for 195.155174ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T19:52:50.012111376Z I0524 19:52:50.012067       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:52:50.164357859Z I0524 19:52:50.164319       1 request.go:597] Waited for 152.193114ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T19:52:50.168650484Z I0524 19:52:50.168615       1 status.go:99] Syncing status: available
+2022-05-24T19:52:50.364915992Z I0524 19:52:50.364876       1 request.go:597] Waited for 196.1575ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T19:59:06.448646160Z I0524 19:59:06.448605       1 status.go:69] Syncing status: re-syncing
+2022-05-24T19:59:06.494769960Z I0524 19:59:06.494734       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T19:59:06.498953768Z I0524 19:59:06.498927       1 status.go:99] Syncing status: available
+2022-05-24T20:09:42.090205475Z I0524 20:09:42.090143       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:09:42.136425536Z I0524 20:09:42.136389       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:09:42.140364415Z I0524 20:09:42.140337       1 status.go:99] Syncing status: available
+2022-05-24T20:12:26.641702514Z I0524 20:12:26.641670       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:12:26.688418318Z I0524 20:12:26.688385       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:12:26.692482438Z I0524 20:12:26.692456       1 status.go:99] Syncing status: available
+2022-05-24T20:12:26.826643866Z I0524 20:12:26.826605       1 request.go:597] Waited for 116.01953ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T20:12:26.831035279Z I0524 20:12:26.831007       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:12:27.026366591Z I0524 20:12:27.026328       1 request.go:597] Waited for 195.179754ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T20:12:27.074918943Z I0524 20:12:27.074883       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:12:27.227165406Z I0524 20:12:27.227122       1 request.go:597] Waited for 152.120922ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T20:12:27.231225728Z I0524 20:12:27.231174       1 status.go:99] Syncing status: available
+2022-05-24T20:12:27.426286108Z I0524 20:12:27.426252       1 request.go:597] Waited for 194.935019ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T20:20:17.729431378Z I0524 20:20:17.729392       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:20:17.777315461Z I0524 20:20:17.777281       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:20:17.781424921Z I0524 20:20:17.781393       1 status.go:99] Syncing status: available
+2022-05-24T20:30:53.370589788Z I0524 20:30:53.370556       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:30:53.418016291Z I0524 20:30:53.417981       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:30:53.422098728Z I0524 20:30:53.422074       1 status.go:99] Syncing status: available
+2022-05-24T20:32:03.705850488Z I0524 20:32:03.705809       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:32:03.758409954Z I0524 20:32:03.758374       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:32:03.762727897Z I0524 20:32:03.762697       1 status.go:99] Syncing status: available
+2022-05-24T20:32:03.889340560Z I0524 20:32:03.889298       1 request.go:597] Waited for 107.630587ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T20:32:03.893817279Z I0524 20:32:03.893785       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:32:04.089385682Z I0524 20:32:04.089342       1 request.go:597] Waited for 195.44179ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T20:32:04.141096807Z I0524 20:32:04.141061       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:32:04.289348906Z I0524 20:32:04.289306       1 request.go:597] Waited for 148.17863ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T20:32:04.293951376Z I0524 20:32:04.293909       1 status.go:99] Syncing status: available
+2022-05-24T20:32:04.489063898Z I0524 20:32:04.489021       1 request.go:597] Waited for 194.994863ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T20:41:29.009952143Z I0524 20:41:29.009915       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:41:29.056892552Z I0524 20:41:29.056848       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:41:29.061771696Z I0524 20:41:29.061742       1 status.go:99] Syncing status: available
+2022-05-24T20:51:40.777236451Z I0524 20:51:40.777202       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:51:40.824838632Z I0524 20:51:40.824797       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:51:40.829138660Z I0524 20:51:40.829085       1 status.go:99] Syncing status: available
+2022-05-24T20:51:40.958355466Z I0524 20:51:40.958310       1 request.go:597] Waited for 110.197386ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T20:51:40.962869346Z I0524 20:51:40.962841       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:51:41.158271723Z I0524 20:51:41.158235       1 request.go:597] Waited for 195.292467ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T20:51:41.209224624Z I0524 20:51:41.209169       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:51:41.358342128Z I0524 20:51:41.358307       1 request.go:597] Waited for 149.060913ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T20:51:41.363010833Z I0524 20:51:41.362980       1 status.go:99] Syncing status: available
+2022-05-24T20:51:41.557963281Z I0524 20:51:41.557930       1 request.go:597] Waited for 194.836574ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T20:52:04.648750471Z I0524 20:52:04.648700       1 status.go:69] Syncing status: re-syncing
+2022-05-24T20:52:04.694116317Z I0524 20:52:04.694083       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T20:52:04.698075682Z I0524 20:52:04.698039       1 status.go:99] Syncing status: available
+2022-05-24T21:02:40.288927039Z I0524 21:02:40.288890       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:02:40.335077958Z I0524 21:02:40.335046       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:02:40.339471021Z I0524 21:02:40.339444       1 status.go:99] Syncing status: available
+2022-05-24T21:11:17.835504367Z I0524 21:11:17.835473       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:11:17.885015278Z I0524 21:11:17.884983       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:11:17.888911517Z I0524 21:11:17.888881       1 status.go:99] Syncing status: available
+2022-05-24T21:11:18.019435432Z I0524 21:11:18.019397       1 request.go:597] Waited for 112.154519ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T21:11:18.023944450Z I0524 21:11:18.023914       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:11:18.220361755Z I0524 21:11:18.220321       1 request.go:597] Waited for 196.305945ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T21:11:18.271921431Z I0524 21:11:18.271885       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:11:18.420092103Z I0524 21:11:18.420055       1 request.go:597] Waited for 148.106742ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T21:11:18.424527803Z I0524 21:11:18.424486       1 status.go:99] Syncing status: available
+2022-05-24T21:11:18.620022962Z I0524 21:11:18.619984       1 request.go:597] Waited for 195.35694ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T21:13:15.928871974Z I0524 21:13:15.928834       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:13:15.974959693Z I0524 21:13:15.974926       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:13:15.979114099Z I0524 21:13:15.979086       1 status.go:99] Syncing status: available
+2022-05-24T21:23:51.569021436Z I0524 21:23:51.568986       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:23:51.618302857Z I0524 21:23:51.618264       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:23:51.622339802Z I0524 21:23:51.622306       1 status.go:99] Syncing status: available
+2022-05-24T21:30:54.898933293Z I0524 21:30:54.898895       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:30:54.945605064Z I0524 21:30:54.945569       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:30:54.949609315Z I0524 21:30:54.949581       1 status.go:99] Syncing status: available
+2022-05-24T21:30:55.082772441Z I0524 21:30:55.082732       1 request.go:597] Waited for 115.16607ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T21:30:55.088014477Z I0524 21:30:55.087985       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:30:55.282403238Z I0524 21:30:55.282365       1 request.go:597] Waited for 194.257603ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T21:30:55.369268750Z I0524 21:30:55.369228       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:30:55.482559895Z I0524 21:30:55.482521       1 request.go:597] Waited for 113.226003ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T21:30:55.487991463Z I0524 21:30:55.487954       1 status.go:99] Syncing status: available
+2022-05-24T21:30:55.682285071Z I0524 21:30:55.682245       1 request.go:597] Waited for 194.144252ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T21:34:27.210412478Z I0524 21:34:27.210373       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:34:27.255952508Z I0524 21:34:27.255918       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:34:27.259964731Z I0524 21:34:27.259934       1 status.go:99] Syncing status: available
+2022-05-24T21:45:02.849596139Z I0524 21:45:02.849560       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:45:02.895520225Z I0524 21:45:02.895482       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:45:02.899800656Z I0524 21:45:02.899773       1 status.go:99] Syncing status: available
+2022-05-24T21:50:31.962669784Z I0524 21:50:31.962633       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:50:32.012792825Z I0524 21:50:32.012757       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:50:32.017024151Z I0524 21:50:32.016993       1 status.go:99] Syncing status: available
+2022-05-24T21:50:32.145697246Z I0524 21:50:32.145653       1 request.go:597] Waited for 110.214814ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T21:50:32.150219548Z I0524 21:50:32.150160       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:50:32.345432786Z I0524 21:50:32.345386       1 request.go:597] Waited for 195.087617ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T21:50:32.395895415Z I0524 21:50:32.395861       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:50:32.545234573Z I0524 21:50:32.545192       1 request.go:597] Waited for 149.259519ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T21:50:32.549864697Z I0524 21:50:32.549835       1 status.go:99] Syncing status: available
+2022-05-24T21:50:32.745279132Z I0524 21:50:32.745239       1 request.go:597] Waited for 195.280118ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T21:55:38.490289641Z I0524 21:55:38.490253       1 status.go:69] Syncing status: re-syncing
+2022-05-24T21:55:38.538558355Z I0524 21:55:38.538525       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T21:55:38.542799418Z I0524 21:55:38.542769       1 status.go:99] Syncing status: available
+2022-05-24T22:06:14.132323443Z I0524 22:06:14.132287       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:06:14.181455211Z I0524 22:06:14.181418       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:06:14.185414418Z I0524 22:06:14.185386       1 status.go:99] Syncing status: available
+2022-05-24T22:10:09.024285458Z I0524 22:10:09.024250       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:10:09.071967690Z I0524 22:10:09.071931       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:10:09.076089290Z I0524 22:10:09.076060       1 status.go:99] Syncing status: available
+2022-05-24T22:10:09.207746724Z I0524 22:10:09.207709       1 request.go:597] Waited for 113.162048ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T22:10:09.211800703Z I0524 22:10:09.211770       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:10:09.407945937Z I0524 22:10:09.407913       1 request.go:597] Waited for 195.982483ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T22:10:09.456009561Z I0524 22:10:09.455975       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:10:09.608357721Z I0524 22:10:09.608322       1 request.go:597] Waited for 152.286756ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T22:10:09.612529081Z I0524 22:10:09.612496       1 status.go:99] Syncing status: available
+2022-05-24T22:10:09.808648070Z I0524 22:10:09.808611       1 request.go:597] Waited for 195.98452ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T22:16:49.768048979Z I0524 22:16:49.768013       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:16:49.814935906Z I0524 22:16:49.814903       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:16:49.819091115Z I0524 22:16:49.819063       1 status.go:99] Syncing status: available
+2022-05-24T22:27:25.409755896Z I0524 22:27:25.409722       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:27:25.460337564Z I0524 22:27:25.460307       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:27:25.464316970Z I0524 22:27:25.464291       1 status.go:99] Syncing status: available
+2022-05-24T22:29:46.086607282Z I0524 22:29:46.086567       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:29:46.136298670Z I0524 22:29:46.136263       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:29:46.140809554Z I0524 22:29:46.140780       1 status.go:99] Syncing status: available
+2022-05-24T22:29:46.269811160Z I0524 22:29:46.269772       1 request.go:597] Waited for 110.152912ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T22:29:46.274668111Z I0524 22:29:46.274640       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:29:46.469817940Z I0524 22:29:46.469774       1 request.go:597] Waited for 195.029836ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T22:29:46.522036283Z I0524 22:29:46.521998       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:29:46.670349082Z I0524 22:29:46.670311       1 request.go:597] Waited for 148.250934ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T22:29:46.674764742Z I0524 22:29:46.674733       1 status.go:99] Syncing status: available
+2022-05-24T22:29:46.869971702Z I0524 22:29:46.869934       1 request.go:597] Waited for 195.080433ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T22:38:01.050254287Z I0524 22:38:01.050215       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:38:01.097507236Z I0524 22:38:01.097472       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:38:01.101419356Z I0524 22:38:01.101396       1 status.go:99] Syncing status: available
+2022-05-24T22:48:36.687659983Z I0524 22:48:36.687621       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:48:36.733876677Z I0524 22:48:36.733835       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:48:36.737744008Z I0524 22:48:36.737716       1 status.go:99] Syncing status: available
+2022-05-24T22:49:23.147697403Z I0524 22:49:23.147637       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:49:23.194920252Z I0524 22:49:23.194884       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:49:23.198741268Z I0524 22:49:23.198716       1 status.go:99] Syncing status: available
+2022-05-24T22:49:23.331836978Z I0524 22:49:23.331799       1 request.go:597] Waited for 115.093162ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T22:49:23.336358881Z I0524 22:49:23.336305       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:49:23.532075227Z I0524 22:49:23.532042       1 request.go:597] Waited for 195.554054ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T22:49:23.586030740Z I0524 22:49:23.585996       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:49:23.732157709Z I0524 22:49:23.732121       1 request.go:597] Waited for 146.050134ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T22:49:23.736739097Z I0524 22:49:23.736705       1 status.go:99] Syncing status: available
+2022-05-24T22:49:23.931891171Z I0524 22:49:23.931854       1 request.go:597] Waited for 195.028376ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T22:59:12.328318049Z I0524 22:59:12.328280       1 status.go:69] Syncing status: re-syncing
+2022-05-24T22:59:12.397461640Z I0524 22:59:12.397431       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T22:59:12.409475202Z I0524 22:59:12.409428       1 status.go:99] Syncing status: available
+2022-05-24T23:09:00.210058408Z I0524 23:09:00.210020       1 status.go:69] Syncing status: re-syncing
+2022-05-24T23:09:00.258584619Z I0524 23:09:00.258550       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T23:09:00.262626564Z I0524 23:09:00.262591       1 status.go:99] Syncing status: available
+2022-05-24T23:09:00.394482625Z I0524 23:09:00.394446       1 request.go:597] Waited for 113.161999ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T23:09:00.399105321Z I0524 23:09:00.399070       1 status.go:69] Syncing status: re-syncing
+2022-05-24T23:09:00.594353881Z I0524 23:09:00.594314       1 request.go:597] Waited for 195.136029ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T23:09:00.640755556Z I0524 23:09:00.640720       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T23:09:00.794073294Z I0524 23:09:00.794036       1 request.go:597] Waited for 153.257422ms due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api
+2022-05-24T23:09:00.798429101Z I0524 23:09:00.798398       1 status.go:99] Syncing status: available
+2022-05-24T23:09:00.994603538Z I0524 23:09:00.994566       1 request.go:597] Waited for 196.034814ms due to client-side throttling, not priority and fairness, request: PUT:https://172.30.0.1:443/apis/config.openshift.io/v1/clusteroperators/machine-api/status
+2022-05-24T23:09:47.968066633Z I0524 23:09:47.968028       1 status.go:69] Syncing status: re-syncing
+2022-05-24T23:09:48.015345537Z I0524 23:09:48.015307       1 sync.go:114] Synced up all machine API configurations
+2022-05-24T23:09:48.019549246Z I0524 23:09:48.019519       1 status.go:99] Syncing status: available

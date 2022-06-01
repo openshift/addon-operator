@@ -1,0 +1,76 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    exclude.release.openshift.io/internal-openshift-hosted: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: machine-config
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "79045"
+  uid: cb1abc12-b428-4d0e-b808-7a9eb3faa96f
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:08:32Z"
+    message: Cluster version is 4.10.13
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:44:31Z"
+    reason: AsExpected
+    status: "True"
+    type: Upgradeable
+  - lastTransitionTime: "2022-05-24T18:13:07Z"
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:13:09Z"
+    message: Cluster has deployed [{operator 4.10.13}]
+    status: "True"
+    type: Available
+  extension:
+    master: all 3 nodes are at latest configuration rendered-master-271b97bce1b2740bd1d9af836320d507
+    worker: all 6 nodes are at latest configuration rendered-worker-f2695d8c37d7c59e70624d6798894d93
+  relatedObjects:
+  - group: ""
+    name: openshift-machine-config-operator
+    resource: namespaces
+  - group: machineconfiguration.openshift.io
+    name: ""
+    resource: machineconfigpools
+  - group: machineconfiguration.openshift.io
+    name: ""
+    resource: controllerconfigs
+  - group: machineconfiguration.openshift.io
+    name: ""
+    resource: kubeletconfigs
+  - group: machineconfiguration.openshift.io
+    name: ""
+    resource: containerruntimeconfigs
+  - group: machineconfiguration.openshift.io
+    name: ""
+    resource: machineconfigs
+  - group: ""
+    name: ""
+    resource: nodes
+  - group: ""
+    name: openshift-kni-infra
+    resource: namespaces
+  - group: ""
+    name: openshift-openstack-infra
+    resource: namespaces
+  - group: ""
+    name: openshift-ovirt-infra
+    resource: namespaces
+  - group: ""
+    name: openshift-vsphere-infra
+    resource: namespaces
+  versions:
+  - name: operator
+    version: 4.10.13

@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+imagePullSecrets:
+- name: pod-identity-webhook-dockercfg-rsw5s
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2022-05-24T18:09:09Z"
+  name: pod-identity-webhook
+  namespace: openshift-cloud-credential-operator
+  resourceVersion: "17080"
+  uid: 45e6eddc-fa8b-4637-a2d3-38710c7c3bf2
+secrets:
+- name: pod-identity-webhook-token-lszl7
+- name: pod-identity-webhook-dockercfg-rsw5s

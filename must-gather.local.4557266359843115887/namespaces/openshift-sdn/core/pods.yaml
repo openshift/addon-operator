@@ -1,0 +1,4430 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-26p6q
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "71415"
+    uid: ecc8735c-94c4-48c5-897d-8105e1d597e0
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-149-121.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-xgqpg
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-xgqpg
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    nodeName: ip-10-0-149-121.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-xgqpg
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:39Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:39Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://2485a826dc4a0f5bb5d7f1683ef0911ede6e5f7a2a37fed4546e42d14e28e2e4
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:33Z"
+    - containerID: cri-o://9d37f2b969ff1fabf3cc42e1dd5f93b324a0bcd25f6d943247a08cb97822204f
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:29Z"
+    hostIP: 10.0.149.121
+    phase: Running
+    podIP: 10.0.149.121
+    podIPs:
+    - ip: 10.0.149.121
+    qosClass: Burstable
+    startTime: "2022-05-24T18:07:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:19Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-2f447
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "61601"
+    uid: c086781c-9350-4b02-863a-3b592e247f34
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-138-197.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-bvrx6
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-bvrx6
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    nodeName: ip-10-0-138-197.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-bvrx6
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:19Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:01Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:01Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:19Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://4604dd7be1b2a0a3280a5960edec8babf9b7a6902305daa97a8c7e5683950fe9
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:35:56Z"
+    - containerID: cri-o://fe1e1d949e8f5dbeabe3ad4f343fd4f76fa85d89159c1c1ace9b5f23dd2d277a
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:35:52Z"
+    hostIP: 10.0.138.197
+    phase: Running
+    podIP: 10.0.138.197
+    podIPs:
+    - ip: 10.0.138.197
+    qosClass: Burstable
+    startTime: "2022-05-24T18:07:19Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:12:26Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-5m8hv
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "37716"
+    uid: c848a092-e673-4648-9936-44f44cc8c000
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-128-34.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-bzwwc
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-bzwwc
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    nodeName: ip-10-0-128-34.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-bzwwc
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:12:26Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:35Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:35Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:12:26Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://e4ff50ad1269675cca34e84d1a9327fbfbadc7c0ffa624fec694a2fcab9c5fa9
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:27:30Z"
+    - containerID: cri-o://fcf1f9b3e806e038710a2c4b0d946f86d3cc1bd3f5968ec37d14752877dd0e6c
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:27:30Z"
+    hostIP: 10.0.128.34
+    phase: Running
+    podIP: 10.0.128.34
+    podIPs:
+    - ip: 10.0.128.34
+    qosClass: Burstable
+    startTime: "2022-05-24T18:12:26Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:15:39Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-7s5qn
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "78696"
+    uid: 504a7c69-363f-4aa4-bbfa-44cd7da37a7b
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-145-179.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-t7bxg
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-t7bxg
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    imagePullSecrets:
+    - name: sdn-dockercfg-5zfq2
+    nodeName: ip-10-0-145-179.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-t7bxg
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:15:42Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:44:21Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:44:21Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:15:39Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://811cfb4173af0581ee5ab91d7c55678a63fdb7eaf69fb8814c08f8c9af71e8bc
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:44:15Z"
+    - containerID: cri-o://75149e775a700a3f69c74793cf457c52036cd6a747c5d0c83c6c981a9b0b60b2
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:44:14Z"
+    hostIP: 10.0.145.179
+    phase: Running
+    podIP: 10.0.145.179
+    podIPs:
+    - ip: 10.0.145.179
+    qosClass: Burstable
+    startTime: "2022-05-24T18:15:42Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    generateName: sdn-controller-
+    labels:
+      app: sdn-controller
+      controller-revision-hash: 7f46c496fc
+      pod-template-generation: "1"
+    name: sdn-controller-7qjhd
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn-controller
+      uid: effbfd46-29e1-44e0-860e-193547573db0
+    resourceVersion: "70977"
+    uid: c4dec300-5aaa-47f1-9f5d-997036df19cd
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-149-121.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        if [[ -f /env/_master ]]; then
+          set -o allexport
+          source /env/_master
+          set +o allexport
+        fi
+
+        exec openshift-sdn-controller \
+         --platform-type AWS \
+         --v=${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      name: sdn-controller
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-kvg5l
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in controller.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "${WARN_TS}"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-controller-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-controller-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-controller-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9106 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29100/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9106
+        hostPort: 9106
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-controller-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-kvg5l
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    nodeName: ip-10-0-149-121.ec2.internal
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: sdn-controller
+    serviceAccountName: sdn-controller
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - name: sdn-controller-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-controller-metrics-certs
+    - name: kube-api-access-kvg5l
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:31Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:31Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://ad4b009ee31909ac00166fe718cb0da9cc914442201d268fe61a63de474ef8b6
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:31Z"
+    - containerID: cri-o://08af26ebe8d2969362054ed33f0a70d727fd5392438821a16847155792b00938
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn-controller
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:28Z"
+    hostIP: 10.0.149.121
+    phase: Running
+    podIP: 10.0.149.121
+    podIPs:
+    - ip: 10.0.149.121
+    qosClass: Burstable
+    startTime: "2022-05-24T18:07:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:19Z"
+    generateName: sdn-controller-
+    labels:
+      app: sdn-controller
+      controller-revision-hash: 7f46c496fc
+      pod-template-generation: "1"
+    name: sdn-controller-l8dcw
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn-controller
+      uid: effbfd46-29e1-44e0-860e-193547573db0
+    resourceVersion: "61432"
+    uid: b458aeab-0927-4735-8224-145ed3a7ecb1
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-138-197.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        if [[ -f /env/_master ]]; then
+          set -o allexport
+          source /env/_master
+          set +o allexport
+        fi
+
+        exec openshift-sdn-controller \
+         --platform-type AWS \
+         --v=${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      name: sdn-controller
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-8x55c
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in controller.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "${WARN_TS}"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-controller-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-controller-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-controller-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9106 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29100/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9106
+        hostPort: 9106
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-controller-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-8x55c
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    nodeName: ip-10-0-138-197.ec2.internal
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: sdn-controller
+    serviceAccountName: sdn-controller
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - name: sdn-controller-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-controller-metrics-certs
+    - name: kube-api-access-8x55c
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:19Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:35:55Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:35:55Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:19Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://fb82549f46d1e050065700aa1e6022b932f9da0ab9886eefaad3bf49d25381e6
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:35:54Z"
+    - containerID: cri-o://44bf24d92af5fccc1b7fef0bbcda58852776538937bbbecd21bfa1df3d39b9b5
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn-controller
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:35:51Z"
+    hostIP: 10.0.138.197
+    phase: Running
+    podIP: 10.0.138.197
+    podIPs:
+    - ip: 10.0.138.197
+    qosClass: Burstable
+    startTime: "2022-05-24T18:07:19Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    generateName: sdn-controller-
+    labels:
+      app: sdn-controller
+      controller-revision-hash: 7f46c496fc
+      pod-template-generation: "1"
+    name: sdn-controller-pqwj6
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn-controller
+      uid: effbfd46-29e1-44e0-860e-193547573db0
+    resourceVersion: "52842"
+    uid: 0aafd61c-ad82-4214-af63-ef065a558860
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-169-205.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        if [[ -f /env/_master ]]; then
+          set -o allexport
+          source /env/_master
+          set +o allexport
+        fi
+
+        exec openshift-sdn-controller \
+         --platform-type AWS \
+         --v=${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      name: sdn-controller
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2xdm7
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in controller.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "${WARN_TS}"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-controller-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-controller-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-controller-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9106 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29100/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9106
+        hostPort: 9106
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-controller-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2xdm7
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    nodeName: ip-10-0-169-205.ec2.internal
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+    serviceAccount: sdn-controller
+    serviceAccountName: sdn-controller
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/network-unavailable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - name: sdn-controller-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-controller-metrics-certs
+    - name: kube-api-access-2xdm7
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:24Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:24Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://bc8b12b66dc4f1dc759c296be449d8fa96dc530948df2a825c6ad6145a2282ae
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:31:23Z"
+    - containerID: cri-o://e12c8f8ff28f1791e3e5be623d5374c67eb40afd59e0eba90fc57c25abcf024e
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn-controller
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:31:21Z"
+    hostIP: 10.0.169.205
+    phase: Running
+    podIP: 10.0.169.205
+    podIPs:
+    - ip: 10.0.169.205
+    qosClass: Burstable
+    startTime: "2022-05-24T18:07:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:38Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-ctt2v
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "67427"
+    uid: 9c0c7136-f2cf-43f3-aeb3-82b9ba9fa5d0
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-140-240.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-qpx9k
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-qpx9k
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    imagePullSecrets:
+    - name: sdn-dockercfg-5zfq2
+    nodeName: ip-10-0-140-240.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-qpx9k
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:39Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:38:40Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:38:40Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:39Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://ddf72ff925d6e8e93c7179c344da8eab0667f9967339f0b7fdbb6fa446918267
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:38:31Z"
+    - containerID: cri-o://5278b82e40491c5a7cdb40e9ca99c4978e408b7edca5d0395e7376f9b3921425
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:38:31Z"
+    hostIP: 10.0.140.240
+    phase: Running
+    podIP: 10.0.140.240
+    podIPs:
+    - ip: 10.0.140.240
+    qosClass: Burstable
+    startTime: "2022-05-24T18:27:39Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-fwmj8
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "53168"
+    uid: 23ce3f39-cbcd-4288-beea-8b78fb0a7304
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-169-205.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-vv6rs
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-vv6rs
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    nodeName: ip-10-0-169-205.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-vv6rs
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:33Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:33Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:07:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://feee01e1a1aa3916518c20dacc591a15ea8d14e8a7110085efe5bc0abcbc2d61
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:31:23Z"
+    - containerID: cri-o://3344e4b352fea0665347bfc7f08603c2178af8b5517be874538c9115cef7ccc7
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:31:21Z"
+    hostIP: 10.0.169.205
+    phase: Running
+    podIP: 10.0.169.205
+    podIPs:
+    - ip: 10.0.169.205
+    qosClass: Burstable
+    startTime: "2022-05-24T18:07:09Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:57Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-k6cjf
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "56632"
+    uid: 3856c578-2463-4037-9914-704a28d4f084
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-166-35.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-w685n
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-w685n
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    imagePullSecrets:
+    - name: sdn-dockercfg-5zfq2
+    nodeName: ip-10-0-166-35.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-w685n
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:58Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:31Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:31Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:57Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://9ed4b280a912a2ee64f72190e7441f46448163f1518657a2256230022ce5f86c
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:32:23Z"
+    - containerID: cri-o://2b2495de4d3868177d9ccd38a145689920fbaaf9a8c53cb0f11df497df4313f8
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:32:22Z"
+    hostIP: 10.0.166.35
+    phase: Running
+    podIP: 10.0.166.35
+    podIPs:
+    - ip: 10.0.166.35
+    qosClass: Burstable
+    startTime: "2022-05-24T18:27:58Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:28:12Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-t4jcw
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "74676"
+    uid: 927118e3-1692-41f4-9bd4-e7af5805a2b5
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-148-123.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-6t229
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-6t229
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    imagePullSecrets:
+    - name: sdn-dockercfg-5zfq2
+    nodeName: ip-10-0-148-123.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-6t229
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:12Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:10Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:10Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:12Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://0e95c057e845fe8b6287bd93dcea208bccb0b257836efcc8063f5f7e43eca016
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:05Z"
+    - containerID: cri-o://cabac472c77eecbd79236453ba8468aa2144a40b472e0745833369aac3249dfa
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:05Z"
+    hostIP: 10.0.148.123
+    phase: Running
+    podIP: 10.0.148.123
+    podIPs:
+    - ip: 10.0.148.123
+    qosClass: Burstable
+    startTime: "2022-05-24T18:28:12Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:12:26Z"
+    generateName: sdn-
+    labels:
+      app: sdn
+      component: network
+      controller-revision-hash: 578695cf48
+      openshift.io/component: network
+      pod-template-generation: "1"
+      type: infra
+    name: sdn-v8jp5
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: sdn
+      uid: ee5bac88-af87-47f7-a756-7ec63729d4aa
+    resourceVersion: "69854"
+    uid: 70506fed-13b0-4631-bd10-5fed12109745
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-164-190.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+
+        # if another process is listening on the cni-server socket, wait until it exits
+        trap 'kill $(jobs -p); rm -f /etc/cni/net.d/80-openshift-network.conf ; exit 0' TERM
+        retries=0
+        while true; do
+          if echo 'test' | socat - UNIX-CONNECT:/var/run/openshift-sdn/cniserver/socket &>/dev/null; then
+            echo "warning: Another process is currently listening on the CNI socket, waiting 15s ..." 2>&1
+            sleep 15 & wait
+            (( retries += 1 ))
+          else
+            break
+          fi
+          if [[ "${retries}" -gt 40 ]]; then
+            echo "error: Another process is currently listening on the CNI socket, exiting" 2>&1
+            exit 1
+          fi
+        done
+
+        # local environment overrides
+        if [[ -f /etc/sysconfig/openshift-sdn ]]; then
+          set -o allexport
+          source /etc/sysconfig/openshift-sdn
+          set +o allexport
+        fi
+        #BUG: cdc accidentally mounted /etc/sysconfig/openshift-sdn as DirectoryOrCreate; clean it up so we can ultimately mount /etc/sysconfig/openshift-sdn as FileOrCreate
+        # Once this is released, then we can mount it properly
+        if [[ -d /etc/sysconfig/openshift-sdn ]]; then
+          rmdir /etc/sysconfig/openshift-sdn || true
+        fi
+
+        # configmap-based overrides
+        if [[ -f /env/${K8S_NODE_NAME} ]]; then
+          set -o allexport
+          source /env/${K8S_NODE_NAME}
+          set +o allexport
+        fi
+
+        # Take over network functions on the node
+        rm -f /etc/cni/net.d/80-openshift-network.conf
+        cp -f /opt/cni/bin/openshift-sdn /host-cni-bin/
+
+        mtu_override_flag=
+        if [[ -f /config/mtu.yaml ]]; then
+          mtu_override_flag="--mtu-override /config/mtu.yaml"
+        fi
+
+        # Launch the network process
+        exec /usr/bin/openshift-sdn-node \
+          --node-name ${K8S_NODE_NAME} --node-ip ${K8S_NODE_IP} \
+          --platform-type AWS \
+          --proxy-config /config/kube-proxy-config.yaml \
+          ${mtu_override_flag} \
+          --v ${OPENSHIFT_SDN_LOG_LEVEL:-2}
+      env:
+      - name: KUBERNETES_SERVICE_PORT
+        value: "6443"
+      - name: KUBERNETES_SERVICE_HOST
+        value: api-int.odf-service.dif5.p1.openshiftapps.com
+      - name: OPENSHIFT_DNS_DOMAIN
+        value: cluster.local
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: K8S_NODE_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - rm
+            - -f
+            - /etc/cni/net.d/80-openshift-network.conf
+            - /host-cni-bin/openshift-sdn
+      name: sdn
+      ports:
+      - containerPort: 10256
+        hostPort: 10256
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - test
+          - -f
+          - /etc/cni/net.d/80-openshift-network.conf
+        failureThreshold: 3
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
+      - mountPath: /env
+        name: env-overrides
+      - mountPath: /var/run
+        name: host-var-run
+      - mountPath: /var/run/dbus/
+        name: host-var-run-dbus
+        readOnly: true
+      - mountPath: /var/run/openvswitch/
+        name: host-var-run-ovs
+        readOnly: true
+      - mountPath: /var/run/kubernetes/
+        name: host-var-run-kubernetes
+        readOnly: true
+      - mountPath: /run/netns
+        mountPropagation: HostToContainer
+        name: host-run-netns
+        readOnly: true
+      - mountPath: /host/var/run/netns
+        mountPropagation: HostToContainer
+        name: host-var-run-netns
+        readOnly: true
+      - mountPath: /var/run/openshift-sdn
+        name: host-var-run-openshift-sdn
+      - mountPath: /host
+        mountPropagation: HostToContainer
+        name: host-slash
+        readOnly: true
+      - mountPath: /host-cni-bin
+        name: host-cni-bin
+      - mountPath: /etc/cni/net.d
+        name: host-cni-conf
+      - mountPath: /var/lib/cni/networks/openshift-sdn
+        name: host-var-lib-cni-networks-openshift-sdn
+      - mountPath: /lib/modules
+        name: host-modules
+        readOnly: true
+      - mountPath: /etc/sysconfig
+        name: etc-sysconfig
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-725fw
+        readOnly: true
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -euo pipefail
+        TLS_PK=/etc/pki/tls/metrics-certs/tls.key
+        TLS_CERT=/etc/pki/tls/metrics-certs/tls.crt
+
+        # As the secret mount is optional we must wait for the files to be present.
+        # The service is created in monitor.yaml and this is created in sdn.yaml.
+        # If it isn't created there is probably an issue so we want to crashloop.
+        TS=$(date +%s)
+        WARN_TS=$(( ${TS} + $(( 20 * 60)) ))
+        HAS_LOGGED_INFO=0
+
+        log_missing_certs(){
+            CUR_TS=$(date +%s)
+            if [[ "${CUR_TS}" -gt "WARN_TS"  ]]; then
+              echo $(date -Iseconds) WARN: sdn-metrics-certs not mounted after 20 minutes.
+            elif [[ "${HAS_LOGGED_INFO}" -eq 0 ]] ; then
+              echo $(date -Iseconds) INFO: sdn-metrics-certs not mounted. Waiting 20 minutes.
+              HAS_LOGGED_INFO=1
+            fi
+        }
+
+        while [[ ! -f "${TLS_PK}" ||  ! -f "${TLS_CERT}" ]] ; do
+          log_missing_certs
+          sleep 5
+        done
+
+        echo $(date -Iseconds) INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+        exec /usr/bin/kube-rbac-proxy \
+          --logtostderr \
+          --secure-listen-address=:9101 \
+          --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 \
+          --upstream=http://127.0.0.1:29101/ \
+          --tls-private-key-file=${TLS_PK} \
+          --tls-cert-file=${TLS_CERT}
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9101
+        hostPort: 9101
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/pki/tls/metrics-certs
+        name: sdn-metrics-certs
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-725fw
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    hostPID: true
+    nodeName: ip-10-0-164-190.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: sdn
+    serviceAccountName: sdn
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: sdn-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: env-overrides
+        optional: true
+      name: env-overrides
+    - hostPath:
+        path: /etc/sysconfig
+        type: ""
+      name: etc-sysconfig
+    - hostPath:
+        path: /lib/modules
+        type: ""
+      name: host-modules
+    - hostPath:
+        path: /var/run
+        type: ""
+      name: host-var-run
+    - hostPath:
+        path: /run/netns
+        type: ""
+      name: host-run-netns
+    - hostPath:
+        path: /var/run/netns
+        type: ""
+      name: host-var-run-netns
+    - hostPath:
+        path: /var/run/dbus
+        type: ""
+      name: host-var-run-dbus
+    - hostPath:
+        path: /var/run/openvswitch
+        type: ""
+      name: host-var-run-ovs
+    - hostPath:
+        path: /var/run/kubernetes
+        type: ""
+      name: host-var-run-kubernetes
+    - hostPath:
+        path: /var/run/openshift-sdn
+        type: ""
+      name: host-var-run-openshift-sdn
+    - hostPath:
+        path: /
+        type: ""
+      name: host-slash
+    - hostPath:
+        path: /var/lib/cni/bin
+        type: ""
+      name: host-cni-bin
+    - hostPath:
+        path: /var/run/multus/cni/net.d
+        type: ""
+      name: host-cni-conf
+    - hostPath:
+        path: /var/lib/cni/networks/openshift-sdn
+        type: ""
+      name: host-var-lib-cni-networks-openshift-sdn
+    - name: sdn-metrics-certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: sdn-metrics-certs
+    - name: kube-api-access-725fw
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:12:26Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:08Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:08Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:12:26Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://c61947b7a42ffca65a9eda3b440f86a5cee18958c157c7a41339b8e56867b175
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:01Z"
+    - containerID: cri-o://9fd226cc62b4b16af005f645e58d6b25f0dd95fb644b74e6bb357a3ba2cb609c
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:54b88753839d2681496fe6ab703edf2d3b73820786e962b9457c2225590b1afb
+      lastState: {}
+      name: sdn
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:01Z"
+    hostIP: 10.0.164.190
+    phase: Running
+    podIP: 10.0.164.190
+    podIPs:
+    - ip: 10.0.164.190
+    qosClass: Burstable
+    startTime: "2022-05-24T18:12:26Z"
+kind: PodList
+metadata:
+  resourceVersion: "328182"

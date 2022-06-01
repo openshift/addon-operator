@@ -1,0 +1,44 @@
+2022-05-24T18:36:33.537986533Z I0524 18:36:33.537862       1 cmd.go:209] Using service-serving-cert provided certificates
+2022-05-24T18:36:33.539911983Z I0524 18:36:33.539883       1 observer_polling.go:159] Starting file observer
+2022-05-24T18:36:34.707738600Z I0524 18:36:34.707703       1 builder.go:262] config-operator version 4.10.0-202204262049.p0.g0840c6f.assembly.stream-0840c6f-0840c6f2f7f25ad9aba1a36597760f36ff0ab097
+2022-05-24T18:36:35.311746188Z W0524 18:36:35.311712       1 secure_serving.go:69] Use of insecure cipher 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256' detected.
+2022-05-24T18:36:35.311817538Z W0524 18:36:35.311807       1 secure_serving.go:69] Use of insecure cipher 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256' detected.
+2022-05-24T18:36:35.327298957Z I0524 18:36:35.327259       1 leaderelection.go:248] attempting to acquire leader lease openshift-config-operator/config-operator-lock...
+2022-05-24T18:36:35.335541726Z I0524 18:36:35.335510       1 requestheader_controller.go:169] Starting RequestHeaderAuthRequestController
+2022-05-24T18:36:35.335602117Z I0524 18:36:35.335588       1 shared_informer.go:240] Waiting for caches to sync for RequestHeaderAuthRequestController
+2022-05-24T18:36:35.335683324Z I0524 18:36:35.335663       1 configmap_cafile_content.go:201] "Starting controller" name="client-ca::kube-system::extension-apiserver-authentication::client-ca-file"
+2022-05-24T18:36:35.335729071Z I0524 18:36:35.335704       1 shared_informer.go:240] Waiting for caches to sync for client-ca::kube-system::extension-apiserver-authentication::client-ca-file
+2022-05-24T18:36:35.335787446Z I0524 18:36:35.335774       1 configmap_cafile_content.go:201] "Starting controller" name="client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file"
+2022-05-24T18:36:35.335824037Z I0524 18:36:35.335813       1 shared_informer.go:240] Waiting for caches to sync for client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file
+2022-05-24T18:36:35.336744188Z I0524 18:36:35.336718       1 dynamic_serving_content.go:131] "Starting controller" name="serving-cert::/var/run/secrets/serving-cert/tls.crt::/var/run/secrets/serving-cert/tls.key"
+2022-05-24T18:36:35.338156471Z I0524 18:36:35.338134       1 secure_serving.go:266] Serving securely on [::]:8443
+2022-05-24T18:36:35.338246754Z I0524 18:36:35.338231       1 tlsconfig.go:240] "Starting DynamicServingCertificateController"
+2022-05-24T18:36:35.370649338Z I0524 18:36:35.370618       1 leaderelection.go:258] successfully acquired lease openshift-config-operator/config-operator-lock
+2022-05-24T18:36:35.372960891Z I0524 18:36:35.372903       1 event.go:285] Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"openshift-config-operator", Name:"config-operator-lock", UID:"fdf0674a-da18-4923-82d5-546a712036d1", APIVersion:"v1", ResourceVersion:"63219", FieldPath:""}): type: 'Normal' reason: 'LeaderElection' openshift-config-operator-59cdb77697-sntqc_40d680ea-66da-421e-a68f-936a060bf850 became leader
+2022-05-24T18:36:35.442295333Z I0524 18:36:35.437399       1 shared_informer.go:247] Caches are synced for client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file 
+2022-05-24T18:36:35.442295333Z I0524 18:36:35.437828       1 shared_informer.go:247] Caches are synced for RequestHeaderAuthRequestController 
+2022-05-24T18:36:35.442295333Z I0524 18:36:35.437916       1 shared_informer.go:247] Caches are synced for client-ca::kube-system::extension-apiserver-authentication::client-ca-file 
+2022-05-24T18:36:35.458131796Z I0524 18:36:35.458088       1 base_controller.go:67] Waiting for caches to sync for RemoveStaleConditionsController
+2022-05-24T18:36:35.458933969Z I0524 18:36:35.458891       1 event.go:285] Event(v1.ObjectReference{Kind:"Deployment", Namespace:"openshift-config-operator", Name:"openshift-config-operator", UID:"5eb4ec6d-9393-4d7b-8ebe-e578eb4bc9fe", APIVersion:"apps/v1", ResourceVersion:"", FieldPath:""}): type: 'Warning' reason: 'FastControllerResync' Controller "ConfigOperatorController" resync interval is set to 10s which might lead to client request throttling
+2022-05-24T18:36:35.458979444Z I0524 18:36:35.458939       1 base_controller.go:67] Waiting for caches to sync for LoggingSyncer
+2022-05-24T18:36:35.459277444Z I0524 18:36:35.459235       1 base_controller.go:67] Waiting for caches to sync for MigrationPlatformStatusController
+2022-05-24T18:36:35.459927860Z I0524 18:36:35.459532       1 base_controller.go:67] Waiting for caches to sync for StatusSyncer_config-operator
+2022-05-24T18:36:35.460009897Z I0524 18:36:35.459746       1 base_controller.go:67] Waiting for caches to sync for ConfigOperatorController
+2022-05-24T18:36:35.460029742Z I0524 18:36:35.460006       1 base_controller.go:73] Caches are synced for ConfigOperatorController 
+2022-05-24T18:36:35.460029742Z I0524 18:36:35.460019       1 base_controller.go:110] Starting #1 worker of ConfigOperatorController controller ...
+2022-05-24T18:36:35.460215421Z I0524 18:36:35.459770       1 base_controller.go:67] Waiting for caches to sync for KubeCloudConfigController
+2022-05-24T18:36:35.460282949Z I0524 18:36:35.460109       1 base_controller.go:67] Waiting for caches to sync for AWSPlatformServiceLocationController
+2022-05-24T18:36:35.460341561Z E0524 18:36:35.460317       1 base_controller.go:272] ConfigOperatorController reconciliation failed: configs.operator.openshift.io "cluster" not found
+2022-05-24T18:36:35.460404591Z I0524 18:36:35.460327       1 event.go:285] Event(v1.ObjectReference{Kind:"Deployment", Namespace:"openshift-config-operator", Name:"openshift-config-operator", UID:"5eb4ec6d-9393-4d7b-8ebe-e578eb4bc9fe", APIVersion:"apps/v1", ResourceVersion:"", FieldPath:""}): type: 'Warning' reason: 'FastControllerResync' Controller "LoggingSyncer" resync interval is set to 0s which might lead to client request throttling
+2022-05-24T18:36:35.558911462Z I0524 18:36:35.558862       1 base_controller.go:73] Caches are synced for RemoveStaleConditionsController 
+2022-05-24T18:36:35.559000285Z I0524 18:36:35.558961       1 base_controller.go:110] Starting #1 worker of RemoveStaleConditionsController controller ...
+2022-05-24T18:36:35.559358794Z I0524 18:36:35.559336       1 base_controller.go:73] Caches are synced for LoggingSyncer 
+2022-05-24T18:36:35.559378672Z I0524 18:36:35.559363       1 base_controller.go:110] Starting #1 worker of LoggingSyncer controller ...
+2022-05-24T18:36:35.563561264Z I0524 18:36:35.563271       1 base_controller.go:73] Caches are synced for MigrationPlatformStatusController 
+2022-05-24T18:36:35.563561264Z I0524 18:36:35.563295       1 base_controller.go:110] Starting #1 worker of MigrationPlatformStatusController controller ...
+2022-05-24T18:36:35.564210460Z I0524 18:36:35.563590       1 base_controller.go:73] Caches are synced for AWSPlatformServiceLocationController 
+2022-05-24T18:36:35.564210460Z I0524 18:36:35.563604       1 base_controller.go:110] Starting #1 worker of AWSPlatformServiceLocationController controller ...
+2022-05-24T18:36:35.564210460Z I0524 18:36:35.563621       1 base_controller.go:73] Caches are synced for KubeCloudConfigController 
+2022-05-24T18:36:35.564210460Z I0524 18:36:35.563626       1 base_controller.go:110] Starting #1 worker of KubeCloudConfigController controller ...
+2022-05-24T18:36:35.564210460Z I0524 18:36:35.564040       1 base_controller.go:73] Caches are synced for StatusSyncer_config-operator 
+2022-05-24T18:36:35.564210460Z I0524 18:36:35.564049       1 base_controller.go:110] Starting #1 worker of StatusSyncer_config-operator controller ...

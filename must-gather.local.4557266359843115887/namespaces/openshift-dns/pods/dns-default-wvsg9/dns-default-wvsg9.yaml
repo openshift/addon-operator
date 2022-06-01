@@ -1,0 +1,246 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.8"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.8"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+  creationTimestamp: "2022-05-24T18:08:40Z"
+  generateName: dns-default-
+  labels:
+    controller-revision-hash: 7649df6488
+    dns.operator.openshift.io/daemonset-dns: default
+    pod-template-generation: "1"
+  name: dns-default-wvsg9
+  namespace: openshift-dns
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: dns-default
+    uid: 2506942e-8a5d-4746-b652-998f429f15b9
+  resourceVersion: "53519"
+  uid: 0d23a1ba-1024-429d-a074-7df84070b873
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ip-10-0-169-205.ec2.internal
+  containers:
+  - args:
+    - -conf
+    - /etc/coredns/Corefile
+    command:
+    - coredns
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 5
+      httpGet:
+        path: /health
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    name: dns
+    ports:
+    - containerPort: 5353
+      name: dns
+      protocol: UDP
+    - containerPort: 5353
+      name: dns-tcp
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /ready
+        port: 8181
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 3
+      successThreshold: 1
+      timeoutSeconds: 3
+    resources:
+      requests:
+        cpu: 50m
+        memory: 70Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/coredns
+      name: config-volume
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-ghdbc
+      readOnly: true
+  - args:
+    - --logtostderr
+    - --secure-listen-address=:9154
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+    - --upstream=http://127.0.0.1:9153/
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 9154
+      name: metrics
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 40Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/tls/private
+      name: metrics-tls
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-ghdbc
+      readOnly: true
+  dnsPolicy: Default
+  enableServiceLinks: true
+  nodeName: ip-10-0-169-205.ec2.internal
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: dns
+  serviceAccountName: dns
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/pid-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: Corefile
+        path: Corefile
+      name: dns-default
+    name: config-volume
+  - name: metrics-tls
+    secret:
+      defaultMode: 420
+      secretName: dns-default-metrics-tls
+  - name: kube-api-access-ghdbc
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:08:40Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:43Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:43Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:08:40Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://754d7f74b718721fb98b2a213b74f2fc9a38a0e481c8c8bdadbf41b19cb2e41e
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+    lastState: {}
+    name: dns
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:31:32Z"
+  - containerID: cri-o://a5fba066ca22c657ea7a2c85cfc3c06e1c187050980db5c3a41211f9fb7b49bf
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:31:32Z"
+  hostIP: 10.0.169.205
+  phase: Running
+  podIP: 10.128.0.8
+  podIPs:
+  - ip: 10.128.0.8
+  qosClass: Burstable
+  startTime: "2022-05-24T18:08:40Z"

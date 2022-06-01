@@ -1,0 +1,5 @@
+2022-05-24T18:31:58.489641992Z W0524 18:31:58.489506       1 main.go:212] Flag inactivity-timeout is set to less then 300 seconds and will be ignored!
+2022-05-24T18:31:58.489641992Z I0524 18:31:58.489613       1 main.go:342] cookies are secure!
+2022-05-24T18:32:03.560740780Z E0524 18:32:03.560677       1 auth.go:232] error contacting auth provider (retrying in 10s): Get "https://kubernetes.default.svc/.well-known/oauth-authorization-server": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+2022-05-24T18:32:13.605261844Z I0524 18:32:13.605230       1 main.go:766] Binding to [::]:8443...
+2022-05-24T18:32:13.605285728Z I0524 18:32:13.605258       1 main.go:768] using TLS

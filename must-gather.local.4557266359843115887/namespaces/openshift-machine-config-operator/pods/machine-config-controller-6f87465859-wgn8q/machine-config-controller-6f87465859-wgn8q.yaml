@@ -1,0 +1,166 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.51"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.51"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:32:02Z"
+  generateName: machine-config-controller-6f87465859-
+  labels:
+    k8s-app: machine-config-controller
+    pod-template-hash: 6f87465859
+  name: machine-config-controller-6f87465859-wgn8q
+  namespace: openshift-machine-config-operator
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: machine-config-controller-6f87465859
+    uid: 7fbd7bc3-f85f-43ce-8ff8-7cb68ac0197e
+  resourceVersion: "55541"
+  uid: 96e892b2-9f36-470a-a314-ac8d51249fed
+spec:
+  containers:
+  - args:
+    - start
+    - --resourcelock-namespace=openshift-machine-config-operator
+    - --v=2
+    command:
+    - /usr/bin/machine-config-controller
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4c5db15a4600d50b6cb1d28ea8b0741e9940116e45c4bb5c19754a601af47dcf
+    imagePullPolicy: IfNotPresent
+    name: machine-config-controller
+    resources:
+      requests:
+        cpu: 20m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000340000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-s89lf
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: machine-config-controller-dockercfg-vk7vp
+  nodeName: ip-10-0-169-205.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000340000
+    seLinuxOptions:
+      level: s0:c18,c17
+  serviceAccount: machine-config-controller
+  serviceAccountName: machine-config-controller
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: kube-api-access-s89lf
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:02Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:11Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:11Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:02Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://d07282cbf129c59902bbc811ea5bf283d34553121eb6ec055b4942d344f77497
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4c5db15a4600d50b6cb1d28ea8b0741e9940116e45c4bb5c19754a601af47dcf
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4c5db15a4600d50b6cb1d28ea8b0741e9940116e45c4bb5c19754a601af47dcf
+    lastState: {}
+    name: machine-config-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:10Z"
+  hostIP: 10.0.169.205
+  phase: Running
+  podIP: 10.128.0.51
+  podIPs:
+  - ip: 10.128.0.51
+  qosClass: Burstable
+  startTime: "2022-05-24T18:32:02Z"

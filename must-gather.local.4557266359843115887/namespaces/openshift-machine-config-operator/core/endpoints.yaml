@@ -1,0 +1,96 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:15Z"
+    creationTimestamp: "2022-05-24T18:05:44Z"
+    labels:
+      k8s-app: machine-config-daemon
+    name: machine-config-daemon
+    namespace: openshift-machine-config-operator
+    resourceVersion: "78503"
+    uid: c26e6e1b-9f5f-4926-8e12-03a01379b3c7
+  subsets:
+  - addresses:
+    - ip: 10.0.128.34
+      nodeName: ip-10-0-128-34.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-dbckk
+        namespace: openshift-machine-config-operator
+        resourceVersion: "37257"
+        uid: 85eaec3c-9b24-42be-8b6a-0b6815d44d45
+    - ip: 10.0.138.197
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-kwrsz
+        namespace: openshift-machine-config-operator
+        resourceVersion: "61512"
+        uid: 1e520bd5-fd64-4842-a1dd-b0cc0f646e74
+    - ip: 10.0.140.240
+      nodeName: ip-10-0-140-240.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-srmkw
+        namespace: openshift-machine-config-operator
+        resourceVersion: "67109"
+        uid: db66daec-c4c3-471b-8b1a-9ce35fda3245
+    - ip: 10.0.145.179
+      nodeName: ip-10-0-145-179.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-9s7zm
+        namespace: openshift-machine-config-operator
+        resourceVersion: "78500"
+        uid: 918d187e-e014-4db0-94eb-f650c99bdcee
+    - ip: 10.0.148.123
+      nodeName: ip-10-0-148-123.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-52j8l
+        namespace: openshift-machine-config-operator
+        resourceVersion: "74513"
+        uid: d26fc329-0a7b-45ee-b3aa-1f1df248e97b
+    - ip: 10.0.149.121
+      nodeName: ip-10-0-149-121.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-vwfcw
+        namespace: openshift-machine-config-operator
+        resourceVersion: "71118"
+        uid: 7a56f422-7812-4859-b4f6-bab7177e7d9e
+    - ip: 10.0.164.190
+      nodeName: ip-10-0-164-190.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-kdmbt
+        namespace: openshift-machine-config-operator
+        resourceVersion: "69664"
+        uid: e33f6410-a2fc-47e0-a52e-c00dc3057a4a
+    - ip: 10.0.166.35
+      nodeName: ip-10-0-166-35.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-5s9jw
+        namespace: openshift-machine-config-operator
+        resourceVersion: "56167"
+        uid: 6dad4209-b384-44e8-a70f-db22c4af773a
+    - ip: 10.0.169.205
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-config-daemon-bvj5w
+        namespace: openshift-machine-config-operator
+        resourceVersion: "52775"
+        uid: a5890b24-5ea4-4c09-bf77-f9aa059a499a
+    ports:
+    - name: metrics
+      port: 9001
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "319652"

@@ -1,0 +1,44 @@
+2022-05-24T18:42:05.729991309Z I0524 18:42:05.729939    1796 start.go:108] Version: v4.10.0-202204301617.p0.g7f47027.assembly.stream-dirty (7f47027996164e00c6e7916f0047c9fab855f818)
+2022-05-24T18:42:05.733327274Z I0524 18:42:05.733293    1796 start.go:121] Calling chroot("/rootfs")
+2022-05-24T18:42:05.734409222Z I0524 18:42:05.734380    1796 update.go:1941] Running: systemctl start rpm-ostreed
+2022-05-24T18:42:06.150861308Z I0524 18:42:06.150827    1796 rpm-ostree.go:325] Running captured: rpm-ostree status --json
+2022-05-24T18:42:06.221055611Z I0524 18:42:06.221004    1796 rpm-ostree.go:325] Running captured: rpm-ostree status --json
+2022-05-24T18:42:06.282623782Z I0524 18:42:06.282585    1796 daemon.go:223] Booted osImageURL: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9d6149c1bc4f5629e1d18ecc0a15b7e8677519b0fbb8a13b2eead89d918460f1 (410.84.202204291735-0)
+2022-05-24T18:42:06.391607956Z I0524 18:42:06.391528    1796 start.go:97] Copied self to /run/bin/machine-config-daemon on host
+2022-05-24T18:42:06.392830653Z I0524 18:42:06.392801    1796 metrics.go:106] Registering Prometheus metrics
+2022-05-24T18:42:06.392966979Z I0524 18:42:06.392933    1796 metrics.go:111] Starting metrics listener on 127.0.0.1:8797
+2022-05-24T18:42:06.394528933Z I0524 18:42:06.394487    1796 update.go:1956] Starting to manage node: ip-10-0-148-123.ec2.internal
+2022-05-24T18:42:06.405947999Z I0524 18:42:06.405922    1796 rpm-ostree.go:325] Running captured: rpm-ostree status
+2022-05-24T18:42:06.453055022Z I0524 18:42:06.453012    1796 daemon.go:957] State: idle
+2022-05-24T18:42:06.453055022Z Deployments:
+2022-05-24T18:42:06.453055022Z * pivot://quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9d6149c1bc4f5629e1d18ecc0a15b7e8677519b0fbb8a13b2eead89d918460f1
+2022-05-24T18:42:06.453055022Z               CustomOrigin: Managed by machine-config-operator
+2022-05-24T18:42:06.453055022Z                    Version: 410.84.202204291735-0 (2022-04-29T17:38:06Z)
+2022-05-24T18:42:06.453055022Z 
+2022-05-24T18:42:06.453055022Z   ostree://b1529f891c792557fd28e040870ab4b8220e65c5416427032701d21147815293
+2022-05-24T18:42:06.453055022Z                    Version: 410.84.202201251210-0 (2022-01-25T12:13:24Z)
+2022-05-24T18:42:06.453055022Z I0524 18:42:06.453033    1796 rpm-ostree.go:325] Running captured: journalctl --list-boots
+2022-05-24T18:42:06.457929698Z I0524 18:42:06.457897    1796 daemon.go:964] journalctl --list-boots:
+2022-05-24T18:42:06.457929698Z -2 abffafb543cb4bbabf7c4597fce50850 Tue 2022-05-24 18:26:04 UTC—Tue 2022-05-24 18:27:35 UTC
+2022-05-24T18:42:06.457929698Z -1 aadddbcb37bf426e84a190ec4630b363 Tue 2022-05-24 18:27:47 UTC—Tue 2022-05-24 18:41:35 UTC
+2022-05-24T18:42:06.457929698Z  0 a16f02e73ae04f9386e3668e437b3fb8 Tue 2022-05-24 18:41:48 UTC—Tue 2022-05-24 18:42:06 UTC
+2022-05-24T18:42:06.457929698Z I0524 18:42:06.457915    1796 rpm-ostree.go:325] Running captured: systemctl list-units --state=failed --no-legend
+2022-05-24T18:42:06.465350708Z I0524 18:42:06.465324    1796 daemon.go:979] systemd service state: OK
+2022-05-24T18:42:06.465416812Z I0524 18:42:06.465406    1796 daemon.go:647] Starting MachineConfigDaemon
+2022-05-24T18:42:06.465519322Z I0524 18:42:06.465507    1796 daemon.go:654] Enabling Kubelet Healthz Monitor
+2022-05-24T18:42:09.774304768Z W0524 18:42:09.774228    1796 reflector.go:324] k8s.io/client-go/informers/factory.go:134: failed to list *v1.Node: Get "https://172.30.0.1:443/api/v1/nodes?limit=500&resourceVersion=0": dial tcp 172.30.0.1:443: connect: no route to host
+2022-05-24T18:42:09.774438893Z E0524 18:42:09.774422    1796 reflector.go:138] k8s.io/client-go/informers/factory.go:134: Failed to watch *v1.Node: failed to list *v1.Node: Get "https://172.30.0.1:443/api/v1/nodes?limit=500&resourceVersion=0": dial tcp 172.30.0.1:443: connect: no route to host
+2022-05-24T18:42:09.774513777Z W0524 18:42:09.774279    1796 reflector.go:324] github.com/openshift/machine-config-operator/pkg/generated/informers/externalversions/factory.go:101: failed to list *v1.MachineConfig: Get "https://172.30.0.1:443/apis/machineconfiguration.openshift.io/v1/machineconfigs?limit=500&resourceVersion=0": dial tcp 172.30.0.1:443: connect: no route to host
+2022-05-24T18:42:09.774573935Z E0524 18:42:09.774559    1796 reflector.go:138] github.com/openshift/machine-config-operator/pkg/generated/informers/externalversions/factory.go:101: Failed to watch *v1.MachineConfig: failed to list *v1.MachineConfig: Get "https://172.30.0.1:443/apis/machineconfiguration.openshift.io/v1/machineconfigs?limit=500&resourceVersion=0": dial tcp 172.30.0.1:443: connect: no route to host
+2022-05-24T18:42:12.036951429Z I0524 18:42:12.036913    1796 daemon.go:394] Node ip-10-0-148-123.ec2.internal is not labeled node-role.kubernetes.io/master
+2022-05-24T18:42:12.043707813Z I0524 18:42:12.043664    1796 daemon.go:910] Current config: rendered-worker-240fa41ac98051ce14abd0a183929825
+2022-05-24T18:42:12.043707813Z I0524 18:42:12.043687    1796 daemon.go:911] Desired config: rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:42:12.051608045Z I0524 18:42:12.051579    1796 update.go:1956] Disk currentConfig rendered-worker-f2695d8c37d7c59e70624d6798894d93 overrides node's currentConfig annotation rendered-worker-240fa41ac98051ce14abd0a183929825
+2022-05-24T18:42:12.055445059Z I0524 18:42:12.055418    1796 daemon.go:1193] Validating against pending config rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:42:12.075203836Z I0524 18:42:12.075168    1796 daemon.go:1211] Validated on-disk state
+2022-05-24T18:42:12.099281791Z I0524 18:42:12.099250    1796 daemon.go:1262] Completing pending config rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:42:12.099281791Z I0524 18:42:12.099268    1796 drain.go:44] Initiating uncordon on node (currently schedulable: false)
+2022-05-24T18:42:12.114207406Z I0524 18:42:12.114168    1796 drain.go:66] uncordon succeeded on node (currently schedulable: true)
+2022-05-24T18:42:12.114207406Z I0524 18:42:12.114194    1796 update.go:1956] Update completed for config rendered-worker-f2695d8c37d7c59e70624d6798894d93 and node has been successfully uncordoned
+2022-05-24T18:42:12.117739228Z I0524 18:42:12.117710    1796 daemon.go:1278] In desired config rendered-worker-f2695d8c37d7c59e70624d6798894d93
+2022-05-24T18:42:12.136521714Z I0524 18:42:12.136489    1796 config_drift_monitor.go:240] Config Drift Monitor started

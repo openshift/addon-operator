@@ -1,0 +1,75 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    creationTimestamp: "2022-05-24T18:08:49Z"
+    labels:
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: kubelet
+      k8s-app: kubelet
+    name: kubelet
+    namespace: kube-system
+    resourceVersion: "52411"
+    uid: f4c0970e-888c-4edb-88d2-71581f2de1ad
+  subsets:
+  - addresses:
+    - ip: 10.0.128.34
+      targetRef:
+        kind: Node
+        name: ip-10-0-128-34.ec2.internal
+        uid: 828ccb68-7492-4b94-a915-b76b71356960
+    - ip: 10.0.138.197
+      targetRef:
+        kind: Node
+        name: ip-10-0-138-197.ec2.internal
+        uid: 203607d6-50ff-411c-9b80-89525bed6ecc
+    - ip: 10.0.140.240
+      targetRef:
+        kind: Node
+        name: ip-10-0-140-240.ec2.internal
+        uid: bd8072ee-6c96-4aab-b5cb-9b23a32e67bd
+    - ip: 10.0.145.179
+      targetRef:
+        kind: Node
+        name: ip-10-0-145-179.ec2.internal
+        uid: 74576229-f966-426e-81e8-6f18d58c5454
+    - ip: 10.0.148.123
+      targetRef:
+        kind: Node
+        name: ip-10-0-148-123.ec2.internal
+        uid: 9b016961-a71d-425b-9593-cc76f3a0838a
+    - ip: 10.0.149.121
+      targetRef:
+        kind: Node
+        name: ip-10-0-149-121.ec2.internal
+        uid: bd9dd24d-9eec-4173-9220-2c5929cd9d27
+    - ip: 10.0.164.190
+      targetRef:
+        kind: Node
+        name: ip-10-0-164-190.ec2.internal
+        uid: 25ee7326-bb4e-4487-abfd-81905bfa19bc
+    - ip: 10.0.166.35
+      targetRef:
+        kind: Node
+        name: ip-10-0-166-35.ec2.internal
+        uid: 25491be4-30be-467a-862e-f0548556c078
+    - ip: 10.0.169.205
+      targetRef:
+        kind: Node
+        name: ip-10-0-169-205.ec2.internal
+        uid: dc5bb7c4-73cf-413e-95a3-154076964747
+    ports:
+    - name: https-metrics
+      port: 10250
+      protocol: TCP
+    - name: http-metrics
+      port: 10255
+      protocol: TCP
+    - name: cadvisor
+      port: 4194
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "315778"

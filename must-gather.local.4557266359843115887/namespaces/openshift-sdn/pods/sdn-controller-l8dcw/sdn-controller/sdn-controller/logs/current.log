@@ -1,0 +1,17 @@
+2022-05-24T18:35:54.493794198Z I0524 18:35:54.493673       1 server.go:27] Starting HTTP metrics server
+2022-05-24T18:35:54.501418307Z I0524 18:35:54.501399       1 leaderelection.go:248] attempting to acquire leader lease openshift-sdn/openshift-network-controller...
+2022-05-24T18:40:03.107661657Z I0524 18:40:03.107624       1 leaderelection.go:258] successfully acquired lease openshift-sdn/openshift-network-controller
+2022-05-24T18:40:03.107859490Z I0524 18:40:03.107767       1 event.go:285] Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"openshift-sdn", Name:"openshift-network-controller", UID:"0a291d8a-c4c7-4591-85f5-1e155da3105d", APIVersion:"v1", ResourceVersion:"69692", FieldPath:""}): type: 'Normal' reason: 'LeaderElection' ip-10-0-138-197 became leader
+2022-05-24T18:40:03.110510788Z I0524 18:40:03.110486       1 master.go:59] Initializing SDN master
+2022-05-24T18:40:03.138674540Z I0524 18:40:03.138647       1 network_controller.go:56] Started OpenShift Network Controller
+2022-05-24T18:47:51.375970157Z E0524 18:47:51.375922       1 leaderelection.go:367] Failed to update lock: Put "https://api-int.odf-service.dif5.p1.openshiftapps.com:6443/api/v1/namespaces/openshift-sdn/configmaps/openshift-network-controller": read tcp 10.0.138.197:57394->10.0.151.236:6443: read: connection reset by peer
+2022-05-24T19:11:03.813420309Z I0524 19:11:03.813374       1 vnids.go:105] Allocated netid 9382427 for namespace "openshift-build-test-27556991-qmtcb"
+2022-05-24T19:12:40.331275278Z I0524 19:12:40.331238       1 vnids.go:127] Released netid 9382427 for namespace "openshift-build-test-27556991-qmtcb"
+2022-05-24T20:11:04.010958689Z I0524 20:11:04.010921       1 vnids.go:105] Allocated netid 13434166 for namespace "openshift-build-test-27557051-95tsl"
+2022-05-24T20:12:20.203372439Z I0524 20:12:20.203328       1 vnids.go:127] Released netid 13434166 for namespace "openshift-build-test-27557051-95tsl"
+2022-05-24T21:11:03.373386751Z I0524 21:11:03.373340       1 vnids.go:105] Allocated netid 1659654 for namespace "openshift-build-test-27557111-gmnzb"
+2022-05-24T21:12:23.020130701Z I0524 21:12:23.020093       1 vnids.go:127] Released netid 1659654 for namespace "openshift-build-test-27557111-gmnzb"
+2022-05-24T22:11:03.500964116Z I0524 22:11:03.500883       1 vnids.go:105] Allocated netid 5982138 for namespace "openshift-build-test-27557171-8rq7d"
+2022-05-24T22:12:17.698529374Z I0524 22:12:17.698489       1 vnids.go:127] Released netid 5982138 for namespace "openshift-build-test-27557171-8rq7d"
+2022-05-24T23:11:03.239288280Z I0524 23:11:03.239238       1 vnids.go:105] Allocated netid 16196721 for namespace "openshift-build-test-27557231-k7kpt"
+2022-05-24T23:12:19.637852068Z I0524 23:12:19.637811       1 vnids.go:127] Released netid 16196721 for namespace "openshift-build-test-27557231-k7kpt"

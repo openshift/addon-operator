@@ -1,0 +1,243 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.2.12"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.2.12"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:34:57Z"
+  generateName: prometheus-adapter-58f5b7f7c-
+  labels:
+    app.kubernetes.io/component: metrics-adapter
+    app.kubernetes.io/managed-by: cluster-monitoring-operator
+    app.kubernetes.io/name: prometheus-adapter
+    app.kubernetes.io/part-of: openshift-monitoring
+    app.kubernetes.io/version: 0.9.1
+    pod-template-hash: 58f5b7f7c
+  name: prometheus-adapter-58f5b7f7c-f9k8f
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: prometheus-adapter-58f5b7f7c
+    uid: ce4afd94-9551-4818-b292-7da2676afaf4
+  resourceVersion: "60357"
+  uid: f92ebdfd-7bfa-4c18-bef1-7df0d4b91a2d
+spec:
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: metrics-adapter
+            app.kubernetes.io/name: prometheus-adapter
+            app.kubernetes.io/part-of: openshift-monitoring
+        namespaces:
+        - openshift-monitoring
+        topologyKey: kubernetes.io/hostname
+  containers:
+  - args:
+    - --prometheus-auth-config=/etc/prometheus-config/prometheus-config.yaml
+    - --config=/etc/adapter/config.yaml
+    - --logtostderr=true
+    - --metrics-relist-interval=1m
+    - --prometheus-url=https://thanos-querier.openshift-monitoring.svc:9091
+    - --secure-port=6443
+    - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - --client-ca-file=/etc/tls/private/client-ca-file
+    - --requestheader-client-ca-file=/etc/tls/private/requestheader-client-ca-file
+    - --requestheader-allowed-names=kube-apiserver-proxy,system:kube-apiserver-proxy,system:openshift-aggregator
+    - --requestheader-extra-headers-prefix=X-Remote-Extra-
+    - --requestheader-group-headers=X-Remote-Group
+    - --requestheader-username-headers=X-Remote-User
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --audit-policy-file=/etc/audit/metadata-profile.yaml
+    - --audit-log-path=/var/log/adapter/audit.log
+    - --audit-log-maxsize=100
+    - --audit-log-maxbackup=5
+    - --audit-log-compress=true
+    - --tls-min-version=VersionTLS12
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:750e142e941a9b9e1822c52bc671d01ebcb5bf479b42fab978b76c44b17685b5
+    imagePullPolicy: IfNotPresent
+    name: prometheus-adapter
+    ports:
+    - containerPort: 6443
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 40Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /tmp
+      name: tmpfs
+    - mountPath: /etc/adapter
+      name: config
+    - mountPath: /etc/prometheus-config
+      name: prometheus-adapter-prometheus-config
+    - mountPath: /etc/ssl/certs
+      name: serving-certs-ca-bundle
+    - mountPath: /etc/audit
+      name: prometheus-adapter-audit-profiles
+      readOnly: true
+    - mountPath: /var/log/adapter
+      name: audit-log
+    - mountPath: /etc/tls/private
+      name: tls
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-zrbxj
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: prometheus-adapter-dockercfg-cg8pf
+  nodeName: ip-10-0-166-35.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/infra: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: prometheus-adapter
+  serviceAccountName: prometheus-adapter
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir: {}
+    name: tmpfs
+  - configMap:
+      defaultMode: 420
+      name: adapter-config
+    name: config
+  - configMap:
+      defaultMode: 420
+      name: prometheus-adapter-prometheus-config
+    name: prometheus-adapter-prometheus-config
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: service-ca.crt
+        path: service-ca.crt
+      name: serving-certs-ca-bundle
+    name: serving-certs-ca-bundle
+  - emptyDir: {}
+    name: audit-log
+  - configMap:
+      defaultMode: 420
+      name: prometheus-adapter-audit-profiles
+    name: prometheus-adapter-audit-profiles
+  - name: tls
+    secret:
+      defaultMode: 420
+      secretName: prometheus-adapter-cggn4tgrdm7bp
+  - name: kube-api-access-zrbxj
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:57Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:59Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:59Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:57Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://613a5248a19b300f370f4b9a140fc85cbd56b3c228222a2fdc0e769f9c2eb222
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:750e142e941a9b9e1822c52bc671d01ebcb5bf479b42fab978b76c44b17685b5
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:750e142e941a9b9e1822c52bc671d01ebcb5bf479b42fab978b76c44b17685b5
+    lastState: {}
+    name: prometheus-adapter
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:34:59Z"
+  hostIP: 10.0.166.35
+  phase: Running
+  podIP: 10.131.2.12
+  podIPs:
+  - ip: 10.131.2.12
+  qosClass: Burstable
+  startTime: "2022-05-24T18:34:57Z"

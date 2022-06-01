@@ -1,0 +1,24 @@
+---
+apiVersion: config.openshift.io/v1
+items:
+- apiVersion: config.openshift.io/v1
+  kind: DNS
+  metadata:
+    creationTimestamp: "2022-05-24T18:05:20Z"
+    generation: 1
+    name: cluster
+    resourceVersion: "593"
+    uid: 1ab97900-8282-41d1-9f8b-7d48a00751ee
+  spec:
+    baseDomain: odf-service.dif5.p1.openshiftapps.com
+    privateZone:
+      tags:
+        Name: odf-service-c778b-int
+        kubernetes.io/cluster/odf-service-c778b: owned
+    publicZone:
+      id: Z017850510MGFL80PZLFV
+  status: {}
+kind: DNSList
+metadata:
+  continue: ""
+  resourceVersion: "295192"

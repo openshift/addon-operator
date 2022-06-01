@@ -1,0 +1,10 @@
+2022-05-24T18:41:36.114441764Z + timeout 3m /bin/bash -exuo pipefail -c 'while [ -n "$(ss -Htanop \( sport = 9443 \))" ]; do sleep 1; done'
+2022-05-24T18:41:36.117797835Z ++ ss -Htanop '(' sport = 9443 ')'
+2022-05-24T18:41:36.121293140Z + '[' -n '' ']'
+2022-05-24T18:41:36.121723292Z + exec cluster-kube-controller-manager-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-controller-cert-syncer-kubeconfig/kubeconfig --namespace=openshift-kube-controller-manager --listen=0.0.0.0:9443 -v=2
+2022-05-24T18:41:36.154009105Z W0524 18:41:36.153923       1 cmd.go:213] Using insecure, self-signed certificates
+2022-05-24T18:41:36.154131011Z I0524 18:41:36.154114       1 crypto.go:601] Generating new CA for cert-recovery-controller-signer@1653417696 cert, and key in /tmp/serving-cert-2963165364/serving-signer.crt, /tmp/serving-cert-2963165364/serving-signer.key
+2022-05-24T18:41:36.736087133Z I0524 18:41:36.736053       1 observer_polling.go:159] Starting file observer
+2022-05-24T18:41:36.758601920Z I0524 18:41:36.758570       1 builder.go:262] cert-recovery-controller version 4.10.0-202204211158.p0.gca3ff53.assembly.stream-ca3ff53-ca3ff5396f45632a4ae9997d9b71441b52b62efd
+2022-05-24T18:41:36.762368476Z I0524 18:41:36.762336       1 leaderelection.go:248] attempting to acquire leader lease openshift-kube-controller-manager/cert-recovery-controller-lock...
+2022-05-24T18:49:02.332342716Z E0524 18:49:02.332292       1 leaderelection.go:330] error retrieving resource lock openshift-kube-controller-manager/cert-recovery-controller-lock: Get "https://localhost:6443/api/v1/namespaces/openshift-kube-controller-manager/configmaps/cert-recovery-controller-lock?timeout=1m47s": dial tcp [::1]:6443: connect: connection refused

@@ -1,0 +1,362 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.131.0.17
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    hostname: prometheus-user-workload-0
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: prometheus-user-workload-0
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "42992"
+      uid: 4fafbb4b-1735-49ba-ade7-ed98020449e8
+    zone: us-east-1a
+  - addresses:
+    - 10.128.2.17
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    hostname: prometheus-user-workload-1
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: prometheus-user-workload-1
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "76229"
+      uid: 0cfc3a99-7e4e-4f7d-a5f9-7e1ef20db3a7
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:28:17Z"
+    creationTimestamp: "2022-05-24T18:28:17Z"
+    generateName: prometheus-operated-
+    generation: 10
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: prometheus-operated
+      operated-prometheus: "true"
+      service.kubernetes.io/headless: ""
+    name: prometheus-operated-8l74q
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: prometheus-operated
+      uid: 773dd885-1450-41c5-88d3-27f0320798a3
+    resourceVersion: "76433"
+    uid: 35ca9d7d-4e72-4fc3-b94f-74cbbaaac5f0
+  ports:
+  - name: grpc
+    port: 10901
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.37
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: prometheus-operator-6c5df8b7cc-6bmpc
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "54517"
+      uid: 35373b4f-02b5-4cb0-82e6-550872ed5301
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:28:13Z"
+    generateName: prometheus-operator-
+    generation: 7
+    labels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/name: prometheus-operator
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 0.53.1
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: prometheus-operator
+      service.kubernetes.io/headless: ""
+    name: prometheus-operator-2hwtv
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: prometheus-operator
+      uid: d598d412-be07-493d-8ec2-b1d073fae99f
+    resourceVersion: "54617"
+    uid: 2c8b4586-563a-428b-9404-d5917b9e66fa
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.131.0.17
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: prometheus-user-workload-0
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "42992"
+      uid: 4fafbb4b-1735-49ba-ade7-ed98020449e8
+    zone: us-east-1a
+  - addresses:
+    - 10.128.2.17
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: prometheus-user-workload-1
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "76229"
+      uid: 0cfc3a99-7e4e-4f7d-a5f9-7e1ef20db3a7
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:28:13Z"
+    creationTimestamp: "2022-05-24T18:28:13Z"
+    generateName: prometheus-user-workload-
+    generation: 10
+    labels:
+      app.kubernetes.io/component: prometheus
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 2.32.1
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: prometheus-user-workload
+    name: prometheus-user-workload-7vm2v
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: prometheus-user-workload
+      uid: 69e7768b-19e3-453d-88ea-7ba0116a8b65
+    resourceVersion: "76443"
+    uid: b7ca7b36-9790-40fa-972f-5e14a4e32a27
+  ports:
+  - name: thanos-proxy
+    port: 10902
+    protocol: TCP
+  - name: metrics
+    port: 9091
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.131.0.17
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: prometheus-user-workload-0
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "42992"
+      uid: 4fafbb4b-1735-49ba-ade7-ed98020449e8
+    zone: us-east-1a
+  - addresses:
+    - 10.128.2.17
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: prometheus-user-workload-1
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "76229"
+      uid: 0cfc3a99-7e4e-4f7d-a5f9-7e1ef20db3a7
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:28:13Z"
+    creationTimestamp: "2022-05-24T18:28:14Z"
+    generateName: prometheus-user-workload-thanos-sidecar-
+    generation: 10
+    labels:
+      app.kubernetes.io/component: thanos-sidecar
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 2.32.1
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: prometheus-user-workload-thanos-sidecar
+      service.kubernetes.io/headless: ""
+    name: prometheus-user-workload-thanos-sidecar-gfs2c
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: prometheus-user-workload-thanos-sidecar
+      uid: 708e810e-41e5-435d-8af3-e46c05c393d9
+    resourceVersion: "76454"
+    uid: 3c84dde9-248d-4ac5-8939-2e7e546c9a10
+  ports:
+  - name: thanos-proxy
+    port: 10902
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.131.0.19
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: thanos-ruler-user-workload-0
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "67531"
+      uid: b66c4bba-9287-49bc-833d-161808c1f2fa
+    zone: us-east-1a
+  - addresses:
+    - 10.128.2.15
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: thanos-ruler-user-workload-1
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "77995"
+      uid: 3210092f-04da-4b74-8bb6-aa12ce0cd96c
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:43:50Z"
+    creationTimestamp: "2022-05-24T18:28:13Z"
+    generateName: thanos-ruler-
+    generation: 20
+    labels:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: thanos-ruler
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 0.23.1
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: thanos-ruler
+    name: thanos-ruler-n7php
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: thanos-ruler
+      uid: d829dabe-9cdc-45f9-aec2-879f15debb68
+    resourceVersion: "77998"
+    uid: e92565fa-8c20-4c04-99ae-5fd9605ac4e9
+  ports:
+  - name: web
+    port: 9091
+    protocol: TCP
+  - name: grpc
+    port: 10901
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.131.0.19
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: thanos-ruler-user-workload-0
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "67531"
+      uid: b66c4bba-9287-49bc-833d-161808c1f2fa
+    zone: us-east-1a
+  - addresses:
+    - 10.128.2.15
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: thanos-ruler-user-workload-1
+      namespace: openshift-user-workload-monitoring
+      resourceVersion: "77995"
+      uid: 3210092f-04da-4b74-8bb6-aa12ce0cd96c
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:43:50Z"
+    creationTimestamp: "2022-05-24T18:28:20Z"
+    generateName: thanos-ruler-operated-
+    generation: 20
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: thanos-ruler-operated
+      operated-thanos-ruler: "true"
+      service.kubernetes.io/headless: ""
+    name: thanos-ruler-operated-7frfv
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: thanos-ruler-operated
+      uid: dcb34718-aeca-4eee-bef2-549b19772786
+    resourceVersion: "77996"
+    uid: db0d67a6-f951-4e81-84d4-5b8042030e77
+  ports:
+  - name: web
+    port: 9091
+    protocol: TCP
+  - name: grpc
+    port: 10901
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "322678"

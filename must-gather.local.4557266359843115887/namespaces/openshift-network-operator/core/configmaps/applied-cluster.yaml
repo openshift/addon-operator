@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+data:
+  applied: '{"managementState":"Managed","logLevel":"Normal","operatorLogLevel":"Normal","unsupportedConfigOverrides":null,"observedConfig":null,"clusterNetwork":[{"cidr":"10.128.0.0/14","hostPrefix":23}],"serviceNetwork":["172.30.0.0/16"],"defaultNetwork":{"type":"OpenShiftSDN","openshiftSDNConfig":{"mode":"NetworkPolicy","vxlanPort":4789,"mtu":8951,"enableUnidling":true}},"disableMultiNetwork":false,"useMultiNetworkPolicy":false,"deployKubeProxy":false,"disableNetworkDiagnostics":false,"kubeProxyConfig":{"bindAddress":"0.0.0.0"}}'
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  name: applied-cluster
+  namespace: openshift-network-operator
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "2642"
+  uid: 6fe0af73-c59a-464b-9b3c-890bf0b31b10

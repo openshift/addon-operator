@@ -1,0 +1,47 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.64
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: authentication-operator-5785d7c487-5z5nf
+      namespace: openshift-authentication-operator
+      resourceVersion: "62974"
+      uid: ae2a6596-190f-4d1f-b9bc-2327739ee5fc
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:05:41Z"
+    generateName: metrics-
+    generation: 14
+    labels:
+      app: authentication-operator
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: metrics
+    name: metrics-sk69b
+    namespace: openshift-authentication-operator
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: metrics
+      uid: 3bd8944f-460b-4bf7-a0f5-319b1219a1dc
+    resourceVersion: "63001"
+    uid: a469cf8b-5b1c-4b56-b57c-259f1805f85c
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "296896"

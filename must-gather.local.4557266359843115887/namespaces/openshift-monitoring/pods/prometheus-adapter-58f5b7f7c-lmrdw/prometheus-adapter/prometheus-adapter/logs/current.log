@@ -1,0 +1,6 @@
+2022-05-24T18:40:24.634835189Z I0524 18:40:24.634734       1 adapter.go:108] successfully using in-cluster auth
+2022-05-24T18:40:26.817516960Z I0524 18:40:26.817480       1 secure_serving.go:256] Serving securely on [::]:6443
+2022-05-24T18:40:26.817555752Z I0524 18:40:26.817530       1 dynamic_cafile_content.go:155] "Starting controller" name="request-header::/etc/tls/private/requestheader-client-ca-file"
+2022-05-24T18:40:26.817651733Z I0524 18:40:26.817580       1 dynamic_serving_content.go:129] "Starting controller" name="serving-cert::/etc/tls/private/tls.crt::/etc/tls/private/tls.key"
+2022-05-24T18:40:26.817651733Z I0524 18:40:26.817616       1 tlsconfig.go:240] "Starting DynamicServingCertificateController"
+2022-05-24T18:40:26.817735023Z I0524 18:40:26.817717       1 dynamic_cafile_content.go:155] "Starting controller" name="client-ca-bundle::/etc/tls/private/client-ca-file"

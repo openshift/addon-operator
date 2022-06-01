@@ -1,0 +1,74 @@
+---
+apiVersion: route.openshift.io/v1
+items:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      haproxy.router.openshift.io/hsts_header: max-age=31536000;preload
+      openshift.io/host.generated: "true"
+      router.openshift.io/cookie-same-site: Strict
+    creationTimestamp: "2022-05-24T18:19:48Z"
+    labels:
+      app: console
+    name: console
+    namespace: openshift-console
+    resourceVersion: "30244"
+    uid: 4bb6720a-2caa-4149-9008-4d1cb6210e53
+  spec:
+    host: console-openshift-console.apps.odf-service.dif5.p1.openshiftapps.com
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: console
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:19:48Z"
+        status: "True"
+        type: Admitted
+      host: console-openshift-console.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: "2022-05-24T18:19:47Z"
+    name: downloads
+    namespace: openshift-console
+    resourceVersion: "25444"
+    uid: efad7117-7056-4b6a-a63f-1b1ab38b146f
+  spec:
+    host: downloads-openshift-console.apps.odf-service.dif5.p1.openshiftapps.com
+    port:
+      targetPort: http
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: downloads
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:19:47Z"
+        status: "True"
+        type: Admitted
+      host: downloads-openshift-console.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+kind: RouteList
+metadata:
+  resourceVersion: "309288"

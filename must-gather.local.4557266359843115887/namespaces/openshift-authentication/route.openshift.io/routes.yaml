@@ -1,0 +1,38 @@
+---
+apiVersion: route.openshift.io/v1
+items:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:00Z"
+    labels:
+      app: oauth-openshift
+    name: oauth-openshift
+    namespace: openshift-authentication
+    resourceVersion: "18374"
+    uid: 77077acc-6c32-45af-9be6-3934710ae904
+  spec:
+    host: oauth-openshift.apps.odf-service.dif5.p1.openshiftapps.com
+    port:
+      targetPort: 6443
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: passthrough
+    to:
+      kind: Service
+      name: oauth-openshift
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:13:15Z"
+        status: "True"
+        type: Admitted
+      host: oauth-openshift.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+kind: RouteList
+metadata:
+  resourceVersion: "296676"

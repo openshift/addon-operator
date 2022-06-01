@@ -1,0 +1,103 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+      machine.openshift.io/owned: ""
+      operator.openshift.io/spec-hash: c814a68bbeff29a2f7d1d66e57aacb0ed0103e64381e2ff4cd1b120939635a8f
+    creationTimestamp: "2022-05-24T18:08:35Z"
+    generation: 1
+    labels:
+      api: clusterapi
+      k8s-app: termination-handler
+    name: machine-api-termination-handler
+    namespace: openshift-machine-api
+    resourceVersion: "7717"
+    uid: 2aca37fb-edd8-4bc8-850d-03fcd0b9acab
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        api: clusterapi
+        k8s-app: termination-handler
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/dep-openshift-machine-api.mao-trusted-ca.configmap: WAXdSw==
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          api: clusterapi
+          k8s-app: termination-handler
+      spec:
+        automountServiceAccountToken: false
+        containers:
+        - args:
+          - --logtostderr=true
+          - --v=3
+          - --node-name=$(NODE_NAME)
+          - --namespace=openshift-machine-api
+          - --poll-interval-seconds=5
+          command:
+          - /termination-handler
+          env:
+          - name: KUBECONFIG
+            value: /var/lib/kubelet/kubeconfig
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:72c985011200f103ad95899acd09b01af755bb976803bc8a16b7be78f19f7a40
+          imagePullPolicy: IfNotPresent
+          name: termination-handler
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/kubelet/kubeconfig
+            name: kubeconfig
+            readOnly: true
+          - mountPath: /var/lib/kubelet/pki
+            name: pki
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        hostNetwork: true
+        nodeSelector:
+          machine.openshift.io/interruptible-instance: ""
+        priorityClassName: system-node-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: machine-api-termination-handler
+        serviceAccountName: machine-api-termination-handler
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - hostPath:
+            path: /var/lib/kubelet/kubeconfig
+            type: ""
+          name: kubeconfig
+        - hostPath:
+            path: /var/lib/kubelet/pki
+            type: ""
+          name: pki
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 10%
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 0
+    desiredNumberScheduled: 0
+    numberMisscheduled: 0
+    numberReady: 0
+    observedGeneration: 1
+kind: DaemonSetList
+metadata:
+  resourceVersion: "297567"

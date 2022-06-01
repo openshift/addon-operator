@@ -1,0 +1,955 @@
+2022-05-24T18:32:23.351029835Z I0524 18:32:23.350900    1773 cmd.go:128] Reading proxy configuration from /config/kube-proxy-config.yaml
+2022-05-24T18:32:23.352100498Z I0524 18:32:23.352062    1773 feature_gate.go:245] feature gates: &{map[]}
+2022-05-24T18:32:23.352144586Z I0524 18:32:23.352114    1773 cmd.go:233] Watching config file /config/kube-proxy-config.yaml for changes
+2022-05-24T18:32:23.352177452Z I0524 18:32:23.352163    1773 cmd.go:233] Watching config file /config/..2022_05_24_18_27_58.1055824157/kube-proxy-config.yaml for changes
+2022-05-24T18:32:23.489862403Z I0524 18:32:23.489822    1773 node.go:159] Initializing SDN node "ip-10-0-166-35.ec2.internal" (10.0.166.35) of type "redhat/openshift-ovs-networkpolicy"
+2022-05-24T18:32:23.490736215Z I0524 18:32:23.490714    1773 cmd.go:174] Starting node networking (4.10.0-202204251437.p0.g23403eb.assembly.stream-23403eb)
+2022-05-24T18:32:23.490736215Z I0524 18:32:23.490726    1773 node.go:370] Starting openshift-sdn network plugin
+2022-05-24T18:32:23.812397860Z I0524 18:32:23.812358    1773 healthcheck_ovs.go:18] Starting OVS health check
+2022-05-24T18:32:23.812955287Z I0524 18:32:23.812910    1773 healthcheck_ovs.go:30] Starting SDN-OVS disconnection go-routine
+2022-05-24T18:32:23.877412724Z I0524 18:32:23.877372    1773 sdn_controller.go:140] [SDN setup] full SDN setup required (local subnet gateway CIDR not found)
+2022-05-24T18:32:24.210506248Z I0524 18:32:24.210462    1773 remote_runtime.go:115] "Using CRI v1 runtime API"
+2022-05-24T18:32:24.215811652Z I0524 18:32:24.215783    1773 node.go:419] Starting openshift-sdn pod manager
+2022-05-24T18:32:24.242982183Z I0524 18:32:24.242949    1773 node.go:264] Checking default interface MTU
+2022-05-24T18:32:24.259983340Z I0524 18:32:24.259937    1773 kube_proxy.go:86] Detected node IP 10.0.166.35
+2022-05-24T18:32:24.267523470Z I0524 18:32:24.267488    1773 kube_proxy.go:117] kube-proxy running in single-stack IPv4 mode
+2022-05-24T18:32:24.267580805Z I0524 18:32:24.267569    1773 kube_proxy.go:120] Using iptables Proxier.
+2022-05-24T18:32:24.267739252Z I0524 18:32:24.267722    1773 utils.go:400] "Changed sysctl" name="net/ipv4/conf/all/route_localnet" before=0 after=1
+2022-05-24T18:32:24.268723488Z I0524 18:32:24.268694    1773 networkpolicy.go:525] SyncVNIDRules: 0 unused VNIDs
+2022-05-24T18:32:24.271342560Z I0524 18:32:24.271303    1773 proxier.go:294] "Using iptables mark for masquerade" ipFamily=IPv4 mark="0x00000001"
+2022-05-24T18:32:24.271427998Z I0524 18:32:24.271415    1773 proxier.go:340] "Iptables sync params" ipFamily=IPv4 minSyncPeriod="1s" syncPeriod="30s" burstSyncs=2
+2022-05-24T18:32:24.271489524Z I0524 18:32:24.271478    1773 proxier.go:350] "Iptables supports --random-fully" ipFamily=IPv4
+2022-05-24T18:32:24.272218867Z I0524 18:32:24.272187    1773 proxier.go:247] "Setting proxy IP and initializing iptables" ip="10.0.166.35"
+2022-05-24T18:32:24.387664512Z I0524 18:32:24.387591    1773 proxy.go:110] Starting multitenant SDN proxy endpoint filter
+2022-05-24T18:32:24.469820317Z I0524 18:32:24.469781    1773 proxy.go:69] Started Kubernetes Proxy on 0.0.0.0
+2022-05-24T18:32:24.469820317Z I0524 18:32:24.469808    1773 cmd.go:185] openshift-sdn network plugin waiting for proxy startup to complete
+2022-05-24T18:32:24.469943189Z I0524 18:32:24.469924    1773 config.go:317] "Starting service config controller"
+2022-05-24T18:32:24.469958882Z I0524 18:32:24.469944    1773 shared_informer.go:240] Waiting for caches to sync for service config
+2022-05-24T18:32:24.469983533Z I0524 18:32:24.469971    1773 config.go:226] "Starting endpoint slice config controller"
+2022-05-24T18:32:24.469994353Z I0524 18:32:24.469981    1773 shared_informer.go:240] Waiting for caches to sync for endpoint slice config
+2022-05-24T18:32:24.498893362Z I0524 18:32:24.498859    1773 service.go:304] "Service updated ports" service="openshift-controller-manager/controller-manager" portCount=1
+2022-05-24T18:32:24.498939447Z I0524 18:32:24.498889    1773 service.go:304] "Service updated ports" service="openshift-monitoring/prometheus-adapter" portCount=1
+2022-05-24T18:32:24.498939447Z I0524 18:32:24.498907    1773 service.go:304] "Service updated ports" service="openshift-storage/addon-ocs-provider-catalog" portCount=1
+2022-05-24T18:32:24.498939447Z I0524 18:32:24.498924    1773 service.go:304] "Service updated ports" service="openshift-storage/odf-operator-controller-manager-metrics-service" portCount=1
+2022-05-24T18:32:24.498976542Z I0524 18:32:24.498963    1773 service.go:304] "Service updated ports" service="openshift-dns/dns-default" portCount=3
+2022-05-24T18:32:24.499001679Z I0524 18:32:24.498990    1773 service.go:304] "Service updated ports" service="openshift-machine-api/cluster-baremetal-operator-service" portCount=1
+2022-05-24T18:32:24.499035616Z I0524 18:32:24.499016    1773 service.go:304] "Service updated ports" service="openshift-managed-upgrade-operator/managed-upgrade-operator-catalog" portCount=1
+2022-05-24T18:32:24.499049174Z I0524 18:32:24.499040    1773 service.go:304] "Service updated ports" service="openshift-machine-api/cluster-baremetal-webhook-service" portCount=1
+2022-05-24T18:32:24.499080694Z I0524 18:32:24.499067    1773 service.go:304] "Service updated ports" service="openshift-managed-node-metadata-operator/managed-node-metadata-operator-registry" portCount=1
+2022-05-24T18:32:24.499104185Z I0524 18:32:24.499092    1773 service.go:304] "Service updated ports" service="openshift-marketplace/redhat-marketplace" portCount=1
+2022-05-24T18:32:24.499126949Z I0524 18:32:24.499115    1773 service.go:304] "Service updated ports" service="openshift-storage/noobaa-operator-service" portCount=1
+2022-05-24T18:32:24.499159574Z I0524 18:32:24.499145    1773 service.go:304] "Service updated ports" service="openshift-cluster-storage-operator/csi-snapshot-webhook" portCount=1
+2022-05-24T18:32:24.499184658Z I0524 18:32:24.499172    1773 service.go:304] "Service updated ports" service="openshift-operator-lifecycle-manager/olm-operator-metrics" portCount=1
+2022-05-24T18:32:24.499214614Z I0524 18:32:24.499203    1773 service.go:304] "Service updated ports" service="openshift-cluster-storage-operator/csi-snapshot-controller-operator-metrics" portCount=1
+2022-05-24T18:32:24.499254819Z I0524 18:32:24.499241    1773 service.go:304] "Service updated ports" service="openshift-user-workload-monitoring/thanos-ruler" portCount=2
+2022-05-24T18:32:24.499282446Z I0524 18:32:24.499271    1773 service.go:304] "Service updated ports" service="openshift-monitoring/prometheus-k8s" portCount=2
+2022-05-24T18:32:24.499316154Z I0524 18:32:24.499294    1773 service.go:304] "Service updated ports" service="openshift-monitoring/token-refresher" portCount=1
+2022-05-24T18:32:24.499329336Z I0524 18:32:24.499321    1773 service.go:304] "Service updated ports" service="openshift-oauth-apiserver/api" portCount=1
+2022-05-24T18:32:24.499375198Z I0524 18:32:24.499362    1773 service.go:304] "Service updated ports" service="openshift-kube-apiserver/apiserver" portCount=1
+2022-05-24T18:32:24.499396792Z I0524 18:32:24.499385    1773 service.go:304] "Service updated ports" service="openshift-kube-scheduler/scheduler" portCount=1
+2022-05-24T18:32:24.499442696Z I0524 18:32:24.499429    1773 service.go:304] "Service updated ports" service="openshift-machine-config-operator/machine-config-daemon" portCount=1
+2022-05-24T18:32:24.499469258Z I0524 18:32:24.499458    1773 service.go:304] "Service updated ports" service="openshift-managed-node-metadata-operator/openshift-managed-node-metadata-operator-metrics-service" portCount=1
+2022-05-24T18:32:24.499490766Z I0524 18:32:24.499484    1773 service.go:304] "Service updated ports" service="openshift-console/downloads" portCount=1
+2022-05-24T18:32:24.499525185Z I0524 18:32:24.499512    1773 service.go:304] "Service updated ports" service="openshift-etcd/etcd" portCount=2
+2022-05-24T18:32:24.499573586Z I0524 18:32:24.499558    1773 service.go:304] "Service updated ports" service="openshift-ingress-operator/metrics" portCount=1
+2022-05-24T18:32:24.499594067Z I0524 18:32:24.499585    1773 service.go:304] "Service updated ports" service="openshift-machine-api/machine-api-operator" portCount=1
+2022-05-24T18:32:24.499654053Z I0524 18:32:24.499619    1773 service.go:304] "Service updated ports" service="openshift-splunk-forwarder-operator/splunk-forwarder-operator-metrics" portCount=1
+2022-05-24T18:32:24.499689074Z I0524 18:32:24.499677    1773 service.go:304] "Service updated ports" service="openshift-monitoring/sre-stuck-ebs-vols" portCount=1
+2022-05-24T18:32:24.499710769Z I0524 18:32:24.499698    1773 service.go:304] "Service updated ports" service="openshift-network-diagnostics/network-check-target" portCount=1
+2022-05-24T18:32:24.499738999Z I0524 18:32:24.499725    1773 service.go:304] "Service updated ports" service="openshift-monitoring/configure-alertmanager-operator" portCount=1
+2022-05-24T18:32:24.499769248Z I0524 18:32:24.499758    1773 service.go:304] "Service updated ports" service="openshift-ocm-agent-operator/ocm-agent" portCount=1
+2022-05-24T18:32:24.499803244Z I0524 18:32:24.499783    1773 service.go:304] "Service updated ports" service="openshift-config-operator/metrics" portCount=1
+2022-05-24T18:32:24.499823868Z I0524 18:32:24.499812    1773 service.go:304] "Service updated ports" service="openshift-console/console" portCount=1
+2022-05-24T18:32:24.499859436Z I0524 18:32:24.499846    1773 service.go:304] "Service updated ports" service="openshift-monitoring/sre-dns-latency-exporter" portCount=1
+2022-05-24T18:32:24.499884978Z I0524 18:32:24.499874    1773 service.go:304] "Service updated ports" service="openshift-ocm-agent-operator/ocm-agent-metrics" portCount=1
+2022-05-24T18:32:24.499918807Z I0524 18:32:24.499902    1773 service.go:304] "Service updated ports" service="openshift-apiserver-operator/metrics" portCount=1
+2022-05-24T18:32:24.499929698Z I0524 18:32:24.499923    1773 service.go:304] "Service updated ports" service="openshift-console-operator/metrics" portCount=1
+2022-05-24T18:32:24.499958806Z I0524 18:32:24.499945    1773 service.go:304] "Service updated ports" service="openshift-kube-apiserver-operator/metrics" portCount=1
+2022-05-24T18:32:24.499982629Z I0524 18:32:24.499970    1773 service.go:304] "Service updated ports" service="openshift-managed-upgrade-operator/managed-upgrade-operator-custom-metrics" portCount=1
+2022-05-24T18:32:24.500047892Z I0524 18:32:24.500034    1773 service.go:304] "Service updated ports" service="openshift-machine-api/machine-api-controllers" portCount=3
+2022-05-24T18:32:24.500074806Z I0524 18:32:24.500063    1773 service.go:304] "Service updated ports" service="openshift-storage/odf-console-service" portCount=1
+2022-05-24T18:32:24.500102122Z I0524 18:32:24.500086    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=1
+2022-05-24T18:32:24.500115250Z I0524 18:32:24.500109    1773 service.go:304] "Service updated ports" service="openshift-authentication/oauth-openshift" portCount=1
+2022-05-24T18:32:24.500145086Z I0524 18:32:24.500132    1773 service.go:304] "Service updated ports" service="openshift-cloud-credential-operator/pod-identity-webhook" portCount=1
+2022-05-24T18:32:24.500162180Z I0524 18:32:24.500155    1773 service.go:304] "Service updated ports" service="openshift-image-registry/image-registry" portCount=1
+2022-05-24T18:32:24.500211858Z I0524 18:32:24.500196    1773 service.go:304] "Service updated ports" service="openshift-cluster-csi-drivers/aws-ebs-csi-driver-controller-metrics" portCount=5
+2022-05-24T18:32:24.500235444Z I0524 18:32:24.500222    1773 service.go:304] "Service updated ports" service="openshift-monitoring/configure-alertmanager-operator-registry" portCount=1
+2022-05-24T18:32:24.500267476Z I0524 18:32:24.500256    1773 service.go:304] "Service updated ports" service="openshift-user-workload-monitoring/prometheus-user-workload" portCount=2
+2022-05-24T18:32:24.500288678Z I0524 18:32:24.500277    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-catalog" portCount=1
+2022-05-24T18:32:24.500308479Z I0524 18:32:24.500300    1773 service.go:304] "Service updated ports" service="openshift-controller-manager-operator/metrics" portCount=1
+2022-05-24T18:32:24.500334379Z I0524 18:32:24.500319    1773 service.go:304] "Service updated ports" service="openshift-etcd-operator/metrics" portCount=1
+2022-05-24T18:32:24.500366579Z I0524 18:32:24.500354    1773 service.go:304] "Service updated ports" service="openshift-splunk-forwarder-operator/splunk-forwarder-operator-catalog" portCount=1
+2022-05-24T18:32:24.500404211Z I0524 18:32:24.500386    1773 service.go:304] "Service updated ports" service="openshift-ingress-canary/ingress-canary" portCount=2
+2022-05-24T18:32:24.500415261Z I0524 18:32:24.500408    1773 service.go:304] "Service updated ports" service="openshift-marketplace/community-operators" portCount=1
+2022-05-24T18:32:24.500446015Z I0524 18:32:24.500433    1773 service.go:304] "Service updated ports" service="openshift-storage/ocs-osd-controller-manager-metrics-service" portCount=1
+2022-05-24T18:32:24.500477024Z I0524 18:32:24.500465    1773 service.go:304] "Service updated ports" service="openshift-kube-controller-manager/kube-controller-manager" portCount=1
+2022-05-24T18:32:24.500510076Z I0524 18:32:24.500495    1773 service.go:304] "Service updated ports" service="openshift-storage/csi-addons-controller-manager-metrics-service" portCount=1
+2022-05-24T18:32:24.500523763Z I0524 18:32:24.500516    1773 service.go:304] "Service updated ports" service="openshift-osd-metrics/osd-metrics-exporter" portCount=1
+2022-05-24T18:32:24.500551465Z I0524 18:32:24.500538    1773 service.go:304] "Service updated ports" service="openshift-osd-metrics/osd-metrics-exporter-registry" portCount=1
+2022-05-24T18:32:24.500574478Z I0524 18:32:24.500562    1773 service.go:304] "Service updated ports" service="openshift-cluster-version/cluster-version-operator" portCount=1
+2022-05-24T18:32:24.500612707Z I0524 18:32:24.500593    1773 service.go:304] "Service updated ports" service="openshift-machine-api/cluster-autoscaler-operator" portCount=2
+2022-05-24T18:32:24.500645087Z I0524 18:32:24.500612    1773 service.go:304] "Service updated ports" service="openshift-monitoring/sre-ebs-iops-reporter" portCount=1
+2022-05-24T18:32:24.500682322Z I0524 18:32:24.500668    1773 service.go:304] "Service updated ports" service="openshift-monitoring/alertmanager-main" portCount=3
+2022-05-24T18:32:24.500710253Z I0524 18:32:24.500699    1773 service.go:304] "Service updated ports" service="openshift-operator-lifecycle-manager/catalog-operator-metrics" portCount=1
+2022-05-24T18:32:24.500744887Z I0524 18:32:24.500726    1773 service.go:304] "Service updated ports" service="openshift-apiserver/api" portCount=1
+2022-05-24T18:32:24.500765699Z I0524 18:32:24.500754    1773 service.go:304] "Service updated ports" service="openshift-cluster-storage-operator/cluster-storage-operator-metrics" portCount=1
+2022-05-24T18:32:24.500798539Z I0524 18:32:24.500784    1773 service.go:304] "Service updated ports" service="openshift-kube-controller-manager-operator/metrics" portCount=1
+2022-05-24T18:32:24.500825312Z I0524 18:32:24.500814    1773 service.go:304] "Service updated ports" service="openshift-managed-upgrade-operator/managed-upgrade-operator-metrics" portCount=1
+2022-05-24T18:32:24.500865236Z I0524 18:32:24.500845    1773 service.go:304] "Service updated ports" service="openshift-apiserver/check-endpoints" portCount=1
+2022-05-24T18:32:24.500890645Z I0524 18:32:24.500875    1773 service.go:304] "Service updated ports" service="openshift-machine-api/machine-api-operator-webhook" portCount=1
+2022-05-24T18:32:24.500914103Z I0524 18:32:24.500902    1773 service.go:304] "Service updated ports" service="openshift-custom-domains-operator/custom-domains-operator" portCount=1
+2022-05-24T18:32:24.500936259Z I0524 18:32:24.500925    1773 service.go:304] "Service updated ports" service="openshift-dns-operator/metrics" portCount=1
+2022-05-24T18:32:24.500963071Z I0524 18:32:24.500954    1773 service.go:304] "Service updated ports" service="openshift-must-gather-operator/must-gather-operator" portCount=1
+2022-05-24T18:32:24.500988040Z I0524 18:32:24.500975    1773 service.go:304] "Service updated ports" service="openshift-ocm-agent-operator/ocm-agent-operator-registry" portCount=1
+2022-05-24T18:32:24.501011963Z I0524 18:32:24.501000    1773 service.go:304] "Service updated ports" service="openshift-rbac-permissions/rbac-permissions-operator-registry" portCount=1
+2022-05-24T18:32:24.501035105Z I0524 18:32:24.501024    1773 service.go:304] "Service updated ports" service="openshift-validation-webhook/validation-webhook" portCount=1
+2022-05-24T18:32:24.501056187Z I0524 18:32:24.501048    1773 service.go:304] "Service updated ports" service="openshift-velero/managed-velero-operator-registry" portCount=1
+2022-05-24T18:32:24.501086346Z I0524 18:32:24.501073    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-metrics" portCount=2
+2022-05-24T18:32:24.501117356Z I0524 18:32:24.501106    1773 service.go:304] "Service updated ports" service="openshift-ingress/router-internal-default" portCount=3
+2022-05-24T18:32:24.501148784Z I0524 18:32:24.501128    1773 service.go:304] "Service updated ports" service="openshift-operator-lifecycle-manager/packageserver-service" portCount=1
+2022-05-24T18:32:24.501162242Z I0524 18:32:24.501155    1773 service.go:304] "Service updated ports" service="openshift-rbac-permissions/localmetrics-rbac-permissions-operator" portCount=1
+2022-05-24T18:32:24.501191698Z I0524 18:32:24.501178    1773 service.go:304] "Service updated ports" service="openshift-must-gather-operator/must-gather-operator-registry" portCount=1
+2022-05-24T18:32:24.501219851Z I0524 18:32:24.501208    1773 service.go:304] "Service updated ports" service="openshift-cloud-credential-operator/cco-metrics" portCount=1
+2022-05-24T18:32:24.501257845Z I0524 18:32:24.501238    1773 service.go:304] "Service updated ports" service="openshift-marketplace/certified-operators" portCount=1
+2022-05-24T18:32:24.501271492Z I0524 18:32:24.501264    1773 service.go:304] "Service updated ports" service="default/kubernetes" portCount=1
+2022-05-24T18:32:24.501305761Z I0524 18:32:24.501292    1773 service.go:304] "Service updated ports" service="openshift-insights/metrics" portCount=1
+2022-05-24T18:32:24.501336998Z I0524 18:32:24.501324    1773 service.go:304] "Service updated ports" service="openshift-route-monitor-operator/route-monitor-operator-registry" portCount=1
+2022-05-24T18:32:24.501367281Z I0524 18:32:24.501354    1773 service.go:304] "Service updated ports" service="openshift-ingress/router-default" portCount=2
+2022-05-24T18:32:24.501417659Z I0524 18:32:24.501391    1773 service.go:304] "Service updated ports" service="openshift-kube-storage-version-migrator-operator/metrics" portCount=1
+2022-05-24T18:32:24.501429271Z I0524 18:32:24.501414    1773 service.go:304] "Service updated ports" service="openshift-ocm-agent-operator/ocm-agent-operator" portCount=1
+2022-05-24T18:32:24.501453231Z I0524 18:32:24.501437    1773 service.go:304] "Service updated ports" service="openshift-monitoring/grafana" portCount=2
+2022-05-24T18:32:24.501528319Z I0524 18:32:24.501512    1773 service.go:304] "Service updated ports" service="openshift-service-ca-operator/metrics" portCount=1
+2022-05-24T18:32:24.501542377Z I0524 18:32:24.501536    1773 service.go:304] "Service updated ports" service="openshift-authentication-operator/metrics" portCount=1
+2022-05-24T18:32:24.501577253Z I0524 18:32:24.501564    1773 service.go:304] "Service updated ports" service="openshift-kube-scheduler-operator/metrics" portCount=1
+2022-05-24T18:32:24.501613709Z I0524 18:32:24.501602    1773 service.go:304] "Service updated ports" service="openshift-monitoring/thanos-querier" portCount=4
+2022-05-24T18:32:24.501680722Z I0524 18:32:24.501665    1773 service.go:304] "Service updated ports" service="openshift-velero/managed-velero-operator-metrics" portCount=2
+2022-05-24T18:32:24.501711389Z I0524 18:32:24.501700    1773 service.go:304] "Service updated ports" service="openshift-multus/multus-admission-controller" portCount=2
+2022-05-24T18:32:24.501762841Z I0524 18:32:24.501749    1773 service.go:304] "Service updated ports" service="openshift-route-monitor-operator/blackbox-exporter" portCount=1
+2022-05-24T18:32:24.501789394Z I0524 18:32:24.501778    1773 service.go:304] "Service updated ports" service="openshift-custom-domains-operator/custom-domains-operator-registry" portCount=1
+2022-05-24T18:32:24.501872044Z I0524 18:32:24.501858    1773 service.go:304] "Service updated ports" service="openshift-marketplace/marketplace-operator-metrics" portCount=2
+2022-05-24T18:32:24.501895151Z I0524 18:32:24.501882    1773 service.go:304] "Service updated ports" service="openshift-marketplace/redhat-operators" portCount=1
+2022-05-24T18:32:24.572731906Z I0524 18:32:24.572695    1773 shared_informer.go:247] Caches are synced for endpoint slice config 
+2022-05-24T18:32:24.572771195Z I0524 18:32:24.572724    1773 proxier.go:702] "Userspace OnEndpointsSynced"
+2022-05-24T18:32:24.572805211Z I0524 18:32:24.572785    1773 shared_informer.go:247] Caches are synced for service config 
+2022-05-24T18:32:24.572840515Z I0524 18:32:24.572829    1773 proxier.go:666] "Userspace OnServiceSynced"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573576    1773 proxier.go:798] "Not syncing iptables until Services and Endpoints have been received from master"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573676    1773 service.go:419] "Adding new service port" portName="default/kubernetes:https" servicePort="172.30.0.1:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573694    1773 service.go:419] "Adding new service port" portName="openshift-ocm-agent-operator/ocm-agent-operator:metrics" servicePort="172.30.241.84:8686/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573708    1773 service.go:419] "Adding new service port" portName="openshift-velero/managed-velero-operator-metrics:http-metrics" servicePort="172.30.42.109:8383/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573720    1773 service.go:419] "Adding new service port" portName="openshift-velero/managed-velero-operator-metrics:cr-metrics" servicePort="172.30.42.109:8686/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573733    1773 service.go:419] "Adding new service port" portName="openshift-storage/ocs-osd-controller-manager-metrics-service:https" servicePort="172.30.134.226:8443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573746    1773 service.go:419] "Adding new service port" portName="openshift-kube-controller-manager/kube-controller-manager:https" servicePort="172.30.153.101:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573760    1773 service.go:419] "Adding new service port" portName="openshift-kube-apiserver/apiserver:https" servicePort="172.30.138.117:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573773    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/grafana:https" servicePort="172.30.87.73:3000/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573785    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/grafana:metrics" servicePort="172.30.87.73:3002/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573803    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/sre-ebs-iops-reporter:http-main" servicePort="172.30.150.211:80/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573818    1773 service.go:419] "Adding new service port" portName="openshift-operator-lifecycle-manager/catalog-operator-metrics:https-metrics" servicePort="172.30.33.232:8443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573832    1773 service.go:419] "Adding new service port" portName="openshift-dns/dns-default:dns" servicePort="172.30.0.10:53/UDP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573845    1773 service.go:419] "Adding new service port" portName="openshift-dns/dns-default:dns-tcp" servicePort="172.30.0.10:53/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573856    1773 service.go:419] "Adding new service port" portName="openshift-dns/dns-default:metrics" servicePort="172.30.0.10:9154/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573876    1773 service.go:419] "Adding new service port" portName="openshift-operator-lifecycle-manager/olm-operator-metrics:https-metrics" servicePort="172.30.27.146:8443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573890    1773 service.go:419] "Adding new service port" portName="openshift-ocm-agent-operator/ocm-agent-operator-registry:grpc" servicePort="172.30.226.175:50051/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573903    1773 service.go:419] "Adding new service port" portName="openshift-ingress/router-default:http" servicePort="172.30.136.147:80/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573914    1773 service.go:419] "Adding new service port" portName="openshift-ingress/router-default:https" servicePort="172.30.136.147:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573926    1773 service.go:419] "Adding new service port" portName="openshift-marketplace/redhat-operators:grpc" servicePort="172.30.60.123:50051/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573939    1773 service.go:419] "Adding new service port" portName="openshift-controller-manager/controller-manager:https" servicePort="172.30.109.120:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573952    1773 service.go:419] "Adding new service port" portName="openshift-controller-manager-operator/metrics:https" servicePort="172.30.123.40:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573972    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/cluster-baremetal-webhook-service" servicePort="172.30.37.163:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573985    1773 service.go:419] "Adding new service port" portName="openshift-etcd/etcd:etcd" servicePort="172.30.42.34:2379/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.573997    1773 service.go:419] "Adding new service port" portName="openshift-etcd/etcd:etcd-metrics" servicePort="172.30.42.34:9979/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574010    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/sre-stuck-ebs-vols:http-main" servicePort="172.30.33.30:80/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574023    1773 service.go:419] "Adding new service port" portName="openshift-ocm-agent-operator/ocm-agent:ocm-agent" servicePort="172.30.66.65:8081/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574036    1773 service.go:419] "Adding new service port" portName="openshift-cloud-credential-operator/pod-identity-webhook" servicePort="172.30.144.246:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574058    1773 service.go:419] "Adding new service port" portName="openshift-splunk-forwarder-operator/splunk-forwarder-operator-catalog:grpc" servicePort="172.30.200.117:50051/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574078    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/prometheus-adapter:https" servicePort="172.30.65.25:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574092    1773 service.go:419] "Adding new service port" portName="openshift-storage/addon-ocs-provider-catalog:grpc" servicePort="172.30.113.218:50051/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574105    1773 service.go:419] "Adding new service port" portName="openshift-kube-scheduler-operator/metrics:https" servicePort="172.30.100.129:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574117    1773 service.go:419] "Adding new service port" portName="openshift-network-diagnostics/network-check-target" servicePort="172.30.222.70:80/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574130    1773 service.go:419] "Adding new service port" portName="openshift-apiserver-operator/metrics:https" servicePort="172.30.179.103:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574143    1773 service.go:419] "Adding new service port" portName="openshift-kube-controller-manager-operator/metrics:https" servicePort="172.30.249.122:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574157    1773 service.go:419] "Adding new service port" portName="openshift-route-monitor-operator/route-monitor-operator-registry:grpc" servicePort="172.30.133.238:50051/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574169    1773 service.go:419] "Adding new service port" portName="openshift-service-ca-operator/metrics:https" servicePort="172.30.164.246:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574182    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/thanos-querier:web" servicePort="172.30.140.246:9091/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574198    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/thanos-querier:tenancy" servicePort="172.30.140.246:9092/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574209    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/thanos-querier:tenancy-rules" servicePort="172.30.140.246:9093/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574221    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/thanos-querier:metrics" servicePort="172.30.140.246:9094/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574234    1773 service.go:419] "Adding new service port" portName="openshift-cluster-storage-operator/csi-snapshot-controller-operator-metrics:https" servicePort="172.30.103.77:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574246    1773 service.go:419] "Adding new service port" portName="openshift-console/downloads:http" servicePort="172.30.29.235:80/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574260    1773 service.go:419] "Adding new service port" portName="openshift-multus/multus-admission-controller:webhook" servicePort="172.30.84.174:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574271    1773 service.go:419] "Adding new service port" portName="openshift-multus/multus-admission-controller:metrics" servicePort="172.30.84.174:8443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574284    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/configure-alertmanager-operator:metrics" servicePort="172.30.168.103:8080/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574296    1773 service.go:419] "Adding new service port" portName="openshift-velero/managed-velero-operator-registry:grpc" servicePort="172.30.173.230:50051/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574309    1773 service.go:419] "Adding new service port" portName="openshift-kube-storage-version-migrator-operator/metrics:https" servicePort="172.30.162.147:443/TCP"
+2022-05-24T18:32:24.574779970Z I0524 18:32:24.574323    1773 service.go:419] "Adding new service port" p2022-05-24T18:32:24.574839084Z ortName="openshift-managed-upgrade-operator/managed-upgrade-operator-catalog:grpc" servicePort="172.30.91.108:50051/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574336    1773 service.go:419] "Adding new service port" portName="openshift-cluster-storage-operator/csi-snapshot-webhook:webhook" servicePort="172.30.104.45:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574350    1773 service.go:419] "Adding new service port" portName="openshift-managed-node-metadata-operator/openshift-managed-node-metadata-operator-metrics-service:metrics" servicePort="172.30.104.231:8080/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574361    1773 service.go:419] "Adding new service port" portName="openshift-config-operator/metrics:https" servicePort="172.30.47.105:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574375    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/machine-api-operator:https" servicePort="172.30.108.6:8443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574389    1773 service.go:419] "Adding new service port" portName="openshift-managed-upgrade-operator/managed-upgrade-operator-custom-metrics:metrics" servicePort="172.30.49.4:8089/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574411    1773 service.go:419] "Adding new service port" portName="openshift-storage/csi-addons-controller-manager-metrics-service:https" servicePort="172.30.215.233:8443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574425    1773 service.go:419] "Adding new service port" portName="openshift-ingress/router-internal-default:http" servicePort="172.30.169.134:80/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574437    1773 service.go:419] "Adding new service port" portName="openshift-ingress/router-internal-default:https" servicePort="172.30.169.134:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574450    1773 service.go:419] "Adding new service port" portName="openshift-ingress/router-internal-default:metrics" servicePort="172.30.169.134:1936/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574462    1773 service.go:419] "Adding new service port" portName="openshift-marketplace/marketplace-operator-metrics:https-metrics" servicePort="172.30.87.157:8081/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574475    1773 service.go:419] "Adding new service port" portName="openshift-marketplace/marketplace-operator-metrics:metrics" servicePort="172.30.87.157:8383/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574487    1773 service.go:419] "Adding new service port" portName="openshift-marketplace/redhat-marketplace:grpc" servicePort="172.30.49.0:50051/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574498    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/token-refresher:http" servicePort="172.30.165.81:80/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574509    1773 service.go:419] "Adding new service port" portName="openshift-console/console:https" servicePort="172.30.138.202:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574521    1773 service.go:419] "Adding new service port" portName="openshift-kube-apiserver-operator/metrics:https" servicePort="172.30.205.237:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574532    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/alertmanager-main:web" servicePort="172.30.232.51:9094/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574544    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/alertmanager-main:tenancy" servicePort="172.30.232.51:9092/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574554    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/alertmanager-main:metrics" servicePort="172.30.232.51:9097/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574566    1773 service.go:419] "Adding new service port" portName="openshift-must-gather-operator/must-gather-operator:metrics" servicePort="172.30.69.202:8080/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574577    1773 service.go:419] "Adding new service port" portName="openshift-validation-webhook/validation-webhook:https" servicePort="172.30.231.175:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574589    1773 service.go:419] "Adding new service port" portName="openshift-operator-lifecycle-manager/packageserver-service:5443" servicePort="172.30.149.237:5443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574600    1773 service.go:419] "Adding new service port" portName="openshift-storage/noobaa-operator-service:443" servicePort="172.30.54.93:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574616    1773 service.go:419] "Adding new service port" portName="openshift-splunk-forwarder-operator/splunk-forwarder-operator-metrics:http-metrics" servicePort="172.30.178.221:8383/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574646    1773 service.go:419] "Adding new service port" portName="openshift-marketplace/certified-operators:grpc" servicePort="172.30.141.166:50051/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574659    1773 service.go:419] "Adding new service port" portName="openshift-machine-config-operator/machine-config-daemon:metrics" servicePort="172.30.177.17:9001/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574671    1773 service.go:419] "Adding new service port" portName="openshift-authentication/oauth-openshift:https" servicePort="172.30.54.173:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574683    1773 service.go:419] "Adding new service port" portName="openshift-etcd-operator/metrics:https" servicePort="172.30.218.77:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574694    1773 service.go:419] "Adding new service port" portName="openshift-osd-metrics/osd-metrics-exporter:metrics" servicePort="172.30.155.43:8383/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574708    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/machine-api-operator-webhook:https" servicePort="172.30.99.111:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574720    1773 service.go:419] "Adding new service port" portName="openshift-custom-domains-operator/custom-domains-operator:metrics" servicePort="172.30.148.7:8080/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574735    1773 service.go:419] "Adding new service port" portName="openshift-storage/odf-operator-controller-manager-metrics-service:https" servicePort="172.30.155.211:8443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574747    1773 service.go:419] "Adding new service port" portName="openshift-oauth-apiserver/api:https" servicePort="172.30.61.206:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574759    1773 service.go:419] "Adding new service port" portName="openshift-insights/metrics:https" servicePort="172.30.246.89:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574770    1773 service.go:419] "Adding new service port" portName="openshift-image-registry/image-registry:5000-tcp" servicePort="172.30.166.248:5000/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574784    1773 service.go:419] "Adding new service port" portName="openshift-cluster-csi-drivers/aws-ebs-csi-driver-controller-metrics:provisioner-m" servicePort="172.30.16.219:443/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574796    1773 service.go:419] "Adding new service port" portName="openshift-cluster-csi-drivers/aws-ebs-csi-driver-controller-metrics:attacher-m" servicePort="172.30.16.219:444/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574807    1773 service.go:419] "Adding new service port" portName="openshift-cluster-csi-drivers/aws-ebs-csi-driver-controller-metrics:resizer-m" servicePort="172.30.16.219:445/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574820    1773 service.go:419] "Adding new service port" portName="openshift-cluster-csi-drivers/aws-ebs-csi-driver-controller-metrics:snapshotter-m" servicePort="172.30.16.219:446/TCP"
+2022-05-24T18:32:24.574839084Z I0524 18:32:24.574834    1773 service.go:419] "Adding new service port" portName="openshift-cluster-csi-drivers/aws-ebs-csi-driver-controller-metrics:driver-m" servicePort="172.30.16.219:447/TCP"
+2022-05-24T18:32:24.574863090Z I0524 18:32:24.574849    1773 service.go:419] "Adding new service port" portName="openshift-user-workload-monitoring/prometheus-user-workload:thanos-proxy" servicePort="172.30.48.183:10902/TCP"
+2022-05-24T18:32:24.574873443Z I0524 18:32:24.574863    1773 service.go:419] "Adding new service port" portName="openshift-user-workload-monitoring/prometheus-user-workload:metrics" servicePort="172.30.48.183:9091/TCP"
+2022-05-24T18:32:24.574900537Z I0524 18:32:24.574881    1773 service.go:419] "Adding new service port" portName="openshift-marketplace/community-operators:grpc" servicePort="172.30.112.97:50051/TCP"
+2022-05-24T18:32:24.574913636Z I0524 18:32:24.574907    1773 service.go:419] "Adding new service port" portName="openshift-cluster-version/cluster-version-operator:metrics" servicePort="172.30.253.4:9099/TCP"
+2022-05-24T18:32:24.574935857Z I0524 18:32:24.574922    1773 service.go:419] "Adding new service port" portName="openshift-apiserver/api:https" servicePort="172.30.149.228:443/TCP"
+2022-05-24T18:32:24.574946363Z I0524 18:32:24.574939    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/sre-dns-latency-exporter:http-main" servicePort="172.30.90.4:80/TCP"
+2022-05-24T18:32:24.574972085Z I0524 18:32:24.574955    1773 service.go:419] "Adding new service port" portName="openshift-storage/odf-console-service:console-port" servicePort="172.30.59.224:9001/TCP"
+2022-05-24T18:32:24.574982677Z I0524 18:32:24.574973    1773 service.go:419] "Adding new service port" portName="openshift-custom-domains-operator/custom-domains-operator-registry:grpc" servicePort="172.30.15.43:50051/TCP"
+2022-05-24T18:32:24.574994354Z I0524 18:32:24.574988    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/cluster-autoscaler-operator:https" servicePort="172.30.243.124:443/TCP"
+2022-05-24T18:32:24.575017804Z I0524 18:32:24.575002    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/cluster-autoscaler-operator:metrics" servicePort="172.30.243.124:9192/TCP"
+2022-05-24T18:32:24.575030626Z I0524 18:32:24.575022    1773 service.go:419] "Adding new service port" portName="openshift-managed-node-metadata-operator/managed-node-metadata-operator-registry:grpc" servicePort="172.30.223.91:50051/TCP"
+2022-05-24T18:32:24.575044257Z I0524 18:32:24.575038    1773 service.go:419] "Adding new service port" portName="openshift-ocm-agent-operator/ocm-agent-metrics:ocm-agent-metrics" servicePort="172.30.20.21:8383/TCP"
+2022-05-24T18:32:24.575065026Z I0524 18:32:24.575053    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/configure-alertmanager-operator-registry:grpc" servicePort="172.30.208.208:50051/TCP"
+2022-05-24T18:32:24.575086446Z I0524 18:32:24.575070    1773 service.go:419] "Adding new service port" portName="openshift-addon-operator/addon-operator-catalog:grpc" servicePort="172.30.120.203:50051/TCP"
+2022-05-24T18:32:24.575097130Z I0524 18:32:24.575086    1773 service.go:419] "Adding new service port" portName="openshift-dns-operator/metrics:metrics" servicePort="172.30.64.178:9393/TCP"
+2022-05-24T18:32:24.575109166Z I0524 18:32:24.575101    1773 service.go:419] "Adding new service port" portName="openshift-addon-operator/addon-operator-metrics:https" servicePort="172.30.58.181:8443/TCP"
+2022-05-24T18:32:24.575121208Z I0524 18:32:24.575115    1773 service.go:419] "Adding new service port" portName="openshift-addon-operator/addon-operator-metrics:http" servicePort="172.30.58.181:8080/TCP"
+2022-05-24T18:32:24.575142350Z I0524 18:32:24.575130    1773 service.go:419] "Adding new service port" portName="openshift-route-monitor-operator/blackbox-exporter:blackbox" servicePort="172.30.6.199:9115/TCP"
+2022-05-24T18:32:24.575170686Z I0524 18:32:24.575157    1773 service.go:419] "Adding new service port" portName="openshift-ingress-operator/metrics:metrics" servicePort="172.30.175.12:9393/TCP"
+2022-05-24T18:32:24.575191924Z I0524 18:32:24.575180    1773 service.go:419] "Adding new service port" portName="openshift-console-operator/metrics:https" servicePort="172.30.222.209:443/TCP"
+2022-05-24T18:32:24.575212286Z I0524 18:32:24.575199    1773 service.go:419] "Adding new service port" portName="openshift-cluster-storage-operator/cluster-storage-operator-metrics:https" servicePort="172.30.12.179:443/TCP"
+2022-05-24T18:32:24.575234310Z I0524 18:32:24.575223    1773 service.go:419] "Adding new service port" portName="openshift-managed-upgrade-operator/managed-upgrade-operator-metrics:http-metrics" servicePort="172.30.97.176:8383/TCP"
+2022-05-24T18:32:24.575246658Z I0524 18:32:24.575239    1773 service.go:419] "Adding new service port" portName="openshift-must-gather-operator/must-gather-operator-registry:grpc" servicePort="172.30.74.168:50051/TCP"
+2022-05-24T18:32:24.575269219Z I0524 18:32:24.575256    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/prometheus-k8s:metrics" servicePort="172.30.124.57:9092/TCP"
+2022-05-24T18:32:24.575280133Z I0524 18:32:24.575273    1773 service.go:419] "Adding new service port" portName="openshift-monitoring/prometheus-k8s:web" servicePort="172.30.124.57:9091/TCP"
+2022-05-24T18:32:24.575302425Z I0524 18:32:24.575291    1773 service.go:419] "Adding new service port" portName="openshift-ingress-canary/ingress-canary:8080-tcp" servicePort="172.30.239.203:8080/TCP"
+2022-05-24T18:32:24.575315078Z I0524 18:32:24.575309    1773 service.go:419] "Adding new service port" portName="openshift-ingress-canary/ingress-canary:8888-tcp" servicePort="172.30.239.203:8888/TCP"
+2022-05-24T18:32:24.575341932Z I0524 18:32:24.575325    1773 service.go:419] "Adding new service port" portName="openshift-kube-scheduler/scheduler:https" servicePort="172.30.221.218:443/TCP"
+2022-05-24T18:32:24.575355199Z I0524 18:32:24.575347    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/machine-api-controllers:machineset-mtrc" servicePort="172.30.125.232:8442/TCP"
+2022-05-24T18:32:24.575367691Z I0524 18:32:24.575361    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/machine-api-controllers:mhc-mtrc" servicePort="172.30.125.232:8444/TCP"
+2022-05-24T18:32:24.575383244Z I0524 18:32:24.575377    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/machine-api-controllers:machine-mtrc" servicePort="172.30.125.232:8441/TCP"
+2022-05-24T18:32:24.575407745Z I0524 18:32:24.575392    1773 service.go:419] "Adding new service port" portName="openshift-addon-operator/addon-operator-webhook-service:443" servicePort="172.30.12.240:443/TCP"
+2022-05-24T18:32:24.575418510Z I0524 18:32:24.575408    1773 service.go:419] "Adding new service port" portName="openshift-osd-metrics/osd-metrics-exporter-registry:grpc" servicePort="172.30.124.61:50051/TCP"
+2022-05-24T18:32:24.575430270Z I0524 18:32:24.575423    1773 service.go:419] "Adding new service port" portName="openshift-apiserver/check-endpoints:check-endpoints" servicePort="172.30.73.193:17698/TCP"
+2022-05-24T18:32:24.575448258Z I0524 18:32:24.575437    1773 service.go:419] "Adding new service port" portName="openshift-rbac-permissions/rbac-permissions-operator-registry:grpc" servicePort="172.30.192.217:50051/TCP"
+2022-05-24T18:32:24.575460970Z I0524 18:32:24.575454    1773 service.go:419] "Adding new service port" portName="openshift-machine-api/cluster-baremetal-operator-service:https" servicePort="172.30.210.50:8443/TCP"
+2022-05-24T18:32:24.575480054Z I0524 18:32:24.575467    1773 service.go:419] "Adding new service port" portName="openshift-user-workload-monitoring/thanos-ruler:web" servicePort="172.30.57.161:9091/TCP"
+2022-05-24T18:32:24.575490382Z I0524 18:32:24.575480    1773 service.go:419] "Adding new service port" portName="openshift-user-workload-monitoring/thanos-ruler:grpc" servicePort="172.30.57.161:10901/TCP"
+2022-05-24T18:32:24.575502230Z I0524 18:32:24.575495    1773 service.go:419] "Adding new service port" portName="openshift-authentication-operator/metrics:https" servicePort="172.30.19.87:443/TCP"
+2022-05-24T18:32:24.575526967Z I0524 18:32:24.575514    1773 service.go:419] "Adding new service port" portName="openshift-rbac-permissions/localmetrics-rbac-permissions-operator:metrics" servicePort="172.30.206.117:8181/TCP"
+2022-05-24T18:32:24.575539942Z I0524 18:32:24.575532    1773 service.go:419] "Adding new service port" portName="openshift-cloud-credential-operator/cco-metrics:metrics" servicePort="172.30.54.200:8443/TCP"
+2022-05-24T18:32:24.577475860Z I0524 18:32:24.577447    1773 proxier.go:823] "Stale service" protocol="udp" servicePortName="openshift-dns/dns-default:dns" clusterIP="172.30.0.10"
+2022-05-24T18:32:24.577475860Z I0524 18:32:24.577466    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:24.819180166Z I0524 18:32:24.819133    1773 proxier.go:1644] "Opened local port" port={Description:nodePort for openshift-ingress/router-default:https IP: IPFamily:4 Port:31311 Protocol:TCP}
+2022-05-24T18:32:24.819210781Z E0524 18:32:24.819201    1773 proxier.go:1640] "can't open port, skipping it" err="listen tcp4 :31311: bind: address already in use" port={Description:nodePort for openshift-ingress/router-default:https IP: IPFamily:4 Port:31311 Protocol:TCP}
+2022-05-24T18:32:24.819695543Z I0524 18:32:24.819674    1773 proxier.go:1644] "Opened local port" port={Description:nodePort for openshift-ingress/router-default:http IP: IPFamily:4 Port:32384 Protocol:TCP}
+2022-05-24T18:32:24.819741899Z E0524 18:32:24.819720    1773 proxier.go:1640] "can't open port, skipping it" err="listen tcp4 :32384: bind: address already in use" port={Description:nodePort for openshift-ingress/router-default:http IP: IPFamily:4 Port:32384 Protocol:TCP}
+2022-05-24T18:32:24.868564816Z I0524 18:32:24.868524    1773 service_health.go:124] "Opening healthcheck" service="openshift-ingress/router-default" port=30063
+2022-05-24T18:32:24.884886637Z I0524 18:32:24.884848    1773 proxier.go:806] "SyncProxyRules complete" elapsed="311.217271ms"
+2022-05-24T18:32:24.884886637Z I0524 18:32:24.884870    1773 proxy.go:396] openshift-sdn proxy services and endpoints initialized
+2022-05-24T18:32:24.884921245Z I0524 18:32:24.884887    1773 cmd.go:187] openshift-sdn network plugin registering startup
+2022-05-24T18:32:24.884951002Z I0524 18:32:24.884937    1773 cmd.go:191] openshift-sdn network plugin ready
+2022-05-24T18:32:25.467250068Z I0524 18:32:25.467211    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:25.636040472Z I0524 18:32:25.635987    1773 pod.go:517] CNI_ADD openshift-monitoring/sre-dns-latency-exporter-rglbj got IP 10.131.2.2, ofport 3
+2022-05-24T18:32:25.672529398Z I0524 18:32:25.672493    1773 proxier.go:806] "SyncProxyRules complete" elapsed="205.424396ms"
+2022-05-24T18:32:25.672919093Z I0524 18:32:25.672882    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:25.842425959Z I0524 18:32:25.842391    1773 proxier.go:806] "SyncProxyRules complete" elapsed="169.600475ms"
+2022-05-24T18:32:25.843424587Z I0524 18:32:25.843394    1773 pod.go:517] CNI_ADD openshift-network-diagnostics/network-check-target-qxlmr got IP 10.131.2.3, ofport 4
+2022-05-24T18:32:26.167141086Z I0524 18:32:26.167090    1773 pod.go:517] CNI_ADD openshift-multus/network-metrics-daemon-hqqfl got IP 10.131.2.4, ofport 5
+2022-05-24T18:32:26.356200250Z I0524 18:32:26.356159    1773 pod.go:517] CNI_ADD openshift-security/splunkforwarder-ds-lbn6z got IP 10.131.2.5, ofport 6
+2022-05-24T18:32:26.393798405Z I0524 18:32:26.393759    1773 pod.go:553] CNI_DEL openshift-ingress-canary/ingress-canary-wgsvd
+2022-05-24T18:32:26.582115600Z I0524 18:32:26.582072    1773 pod.go:517] CNI_ADD openshift-ingress-canary/ingress-canary-wgsvd got IP 10.131.2.6, ofport 7
+2022-05-24T18:32:27.223228960Z I0524 18:32:27.223187    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:27.468343951Z I0524 18:32:27.468304    1773 proxier.go:806] "SyncProxyRules complete" elapsed="245.22963ms"
+2022-05-24T18:32:27.507518263Z I0524 18:32:27.507428    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=0
+2022-05-24T18:32:27.507518263Z I0524 18:32:27.507465    1773 service.go:444] "Removing service port" portName="openshift-addon-operator/addon-operator-webhook-service:443"
+2022-05-24T18:32:27.507593865Z I0524 18:32:27.507577    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:27.580061490Z I0524 18:32:27.580017    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=1
+2022-05-24T18:32:27.621237318Z I0524 18:32:27.621203    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=1
+2022-05-24T18:32:27.713357949Z I0524 18:32:27.713315    1773 proxier.go:806] "SyncProxyRules complete" elapsed="205.842503ms"
+2022-05-24T18:32:27.713741451Z I0524 18:32:27.713719    1773 service.go:419] "Adding new service port" portName="openshift-addon-operator/addon-operator-webhook-service:443" servicePort="172.30.73.174:443/TCP"
+2022-05-24T18:32:27.714019907Z I0524 18:32:27.713851    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:27.766937952Z I0524 18:32:27.766897    1773 pod.go:553] CNI_DEL openshift-security/splunkforwarder-ds-lbn6z
+2022-05-24T18:32:27.858787792Z I0524 18:32:27.858752    1773 pod.go:553] CNI_DEL openshift-multus/network-metrics-daemon-hqqfl
+2022-05-24T18:32:27.904198115Z I0524 18:32:27.903944    1773 proxier.go:806] "SyncProxyRules complete" elapsed="190.229378ms"
+2022-05-24T18:32:27.956539858Z I0524 18:32:27.956490    1773 pod.go:553] CNI_DEL openshift-network-diagnostics/network-check-target-qxlmr
+2022-05-24T18:32:28.033602045Z I0524 18:32:28.033526    1773 pod.go:553] CNI_DEL openshift-monitoring/sre-dns-latency-exporter-rglbj
+2022-05-24T18:32:28.282766121Z I0524 18:32:28.282716    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:28.475951639Z I0524 18:32:28.475913    1773 proxier.go:806] "SyncProxyRules complete" elapsed="193.336311ms"
+2022-05-24T18:32:29.331379049Z I0524 18:32:29.331209    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:29.600442291Z I0524 18:32:29.599775    1773 proxier.go:806] "SyncProxyRules complete" elapsed="268.696837ms"
+2022-05-24T18:32:30.271323109Z I0524 18:32:30.271284    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:30.455092697Z I0524 18:32:30.455057    1773 proxier.go:806] "SyncProxyRules complete" elapsed="183.868335ms"
+2022-05-24T18:32:30.472660163Z I0524 18:32:30.472609    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:30.674152693Z I0524 18:32:30.674114    1773 proxier.go:806] "SyncProxyRules complete" elapsed="201.593403ms"
+2022-05-24T18:32:31.521794810Z I0524 18:32:31.521753    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:31.663441518Z I0524 18:32:31.663402    1773 proxier.go:806] "SyncProxyRules complete" elapsed="141.793229ms"
+2022-05-24T18:32:33.016993595Z I0524 18:32:33.016958    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:33.161745410Z I0524 18:32:33.161710    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.825751ms"
+2022-05-24T18:32:34.160814588Z I0524 18:32:34.160763    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:34.279029967Z I0524 18:32:34.278989    1773 pod.go:517] CNI_ADD openshift-monitoring/alertmanager-main-1 got IP 10.131.2.7, ofport 8
+2022-05-24T18:32:34.320949865Z I0524 18:32:34.320910    1773 proxier.go:806] "SyncProxyRules complete" elapsed="160.223435ms"
+2022-05-24T18:32:36.387993314Z I0524 18:32:36.387949    1773 pod.go:517] CNI_ADD openshift-monitoring/prometheus-k8s-0 got IP 10.131.2.8, ofport 9
+2022-05-24T18:32:39.304531869Z I0524 18:32:39.304486    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:39.454247987Z I0524 18:32:39.454210    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.825338ms"
+2022-05-24T18:32:40.294115963Z I0524 18:32:40.294069    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:40.492293718Z I0524 18:32:40.492251    1773 proxier.go:806] "SyncProxyRules complete" elapsed="198.310157ms"
+2022-05-24T18:32:42.062561307Z I0524 18:32:42.062342    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:42.310223405Z I0524 18:32:42.310185    1773 proxier.go:806] "SyncProxyRules complete" elapsed="247.959227ms"
+2022-05-24T18:32:42.310777659Z I0524 18:32:42.310756    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:42.524200987Z I0524 18:32:42.522746    1773 proxier.go:806] "SyncProxyRules complete" elapsed="212.148218ms"
+2022-05-24T18:32:43.059084608Z I0524 18:32:43.059045    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:43.232316807Z I0524 18:32:43.232279    1773 proxier.go:806] "SyncProxyRules complete" elapsed="173.309966ms"
+2022-05-24T18:32:44.315230177Z I0524 18:32:44.315193    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:44.458578278Z I0524 18:32:44.458541    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.431003ms"
+2022-05-24T18:32:45.338459228Z I0524 18:32:45.338419    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:45.491420940Z I0524 18:32:45.491379    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.030643ms"
+2022-05-24T18:32:49.363199034Z I0524 18:32:49.363160    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:49.541584094Z I0524 18:32:49.541549    1773 proxier.go:806] "SyncProxyRules complete" elapsed="178.468334ms"
+2022-05-24T18:32:52.323284920Z I0524 18:32:52.323243    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:52.498876406Z I0524 18:32:52.498834    1773 proxier.go:806] "SyncProxyRules complete" elapsed="175.729962ms"
+2022-05-24T18:32:52.499450629Z I0524 18:32:52.499428    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:52.720662971Z I0524 18:32:52.720603    1773 proxier.go:806] "SyncProxyRules complete" elapsed="221.302957ms"
+2022-05-24T18:32:53.443020365Z I0524 18:32:53.442981    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:53.625862437Z I0524 18:32:53.625825    1773 proxier.go:806] "SyncProxyRules complete" elapsed="182.980395ms"
+2022-05-24T18:32:57.376906798Z I0524 18:32:57.376866    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:57.524072931Z I0524 18:32:57.524032    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.248347ms"
+2022-05-24T18:32:57.706529357Z I0524 18:32:57.706483    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:57.870783232Z I0524 18:32:57.870746    1773 proxier.go:806] "SyncProxyRules complete" elapsed="164.349108ms"
+2022-05-24T18:32:59.366088045Z I0524 18:32:59.366047    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:59.513904142Z I0524 18:32:59.513865    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.951627ms"
+2022-05-24T18:32:59.514290076Z I0524 18:32:59.514265    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:32:59.666897669Z I0524 18:32:59.666860    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.664553ms"
+2022-05-24T18:33:02.124828239Z I0524 18:33:02.124787    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:02.270296788Z I0524 18:33:02.270259    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.556025ms"
+2022-05-24T18:33:10.853677815Z I0524 18:33:10.853622    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:10.999353641Z I0524 18:33:10.999313    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.779396ms"
+2022-05-24T18:33:26.640469474Z I0524 18:33:26.640418    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:26.798845611Z I0524 18:33:26.798801    1773 proxier.go:806] "SyncProxyRules complete" elapsed="158.469563ms"
+2022-05-24T18:33:31.583734188Z I0524 18:33:31.583691    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:31.739256409Z I0524 18:33:31.739219    1773 proxier.go:806] "SyncProxyRules complete" elapsed="155.637109ms"
+2022-05-24T18:33:34.622569630Z I0524 18:33:34.622497    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:34.781900368Z I0524 18:33:34.781863    1773 proxier.go:806] "SyncProxyRules complete" elapsed="159.456387ms"
+2022-05-24T18:33:34.782330862Z I0524 18:33:34.782313    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:34.947678374Z I0524 18:33:34.947640    1773 proxier.go:806] "SyncProxyRules complete" elapsed="165.439934ms"
+2022-05-24T18:33:34.948243788Z I0524 18:33:34.948227    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:35.098768587Z I0524 18:33:35.098728    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.7268ms"
+2022-05-24T18:33:38.253708959Z I0524 18:33:38.253668    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:38.407498767Z I0524 18:33:38.407456    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.912791ms"
+2022-05-24T18:33:38.407877656Z I0524 18:33:38.407860    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:38.554515620Z I0524 18:33:38.554477    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.67526ms"
+2022-05-24T18:33:39.098839351Z I0524 18:33:39.098802    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:39.244835417Z I0524 18:33:39.244795    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.064965ms"
+2022-05-24T18:33:39.245214437Z I0524 18:33:39.245190    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:39.388931920Z I0524 18:33:39.388896    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.779344ms"
+2022-05-24T18:33:42.677171702Z I0524 18:33:42.677125    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:42.831477617Z I0524 18:33:42.831438    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.400262ms"
+2022-05-24T18:33:42.831906018Z I0524 18:33:42.831887    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:33:42.977901577Z I0524 18:33:42.977860    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.05656ms"
+2022-05-24T18:34:07.744291181Z I0524 18:34:07.744249    1773 service.go:304] "Service updated ports" service="openshift-storage/ocs-provider-server" portCount=1
+2022-05-24T18:34:07.744353985Z I0524 18:34:07.744299    1773 service.go:419] "Adding new service port" portName="openshift-storage/ocs-provider-server" servicePort="172.30.38.42:50051/TCP"
+2022-05-24T18:34:07.744430754Z I0524 18:34:07.744415    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:07.859208844Z I0524 18:34:07.859165    1773 proxier.go:1644] "Opened local port" port={Description:nodePort for openshift-storage/ocs-provider-server IP: IPFamily:4 Port:31659 Protocol:TCP}
+2022-05-24T18:34:07.859263992Z E0524 18:34:07.859239    1773 proxier.go:1640] "can't open port, skipping it" err="listen tcp4 :31659: bind: address already in use" port={Description:nodePort for openshift-storage/ocs-provider-server IP: IPFamily:4 Port:31659 Protocol:TCP}
+2022-05-24T18:34:07.898582858Z I0524 18:34:07.898540    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.233496ms"
+2022-05-24T18:34:07.898993333Z I0524 18:34:07.898969    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:08.053831820Z I0524 18:34:08.053795    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.896574ms"
+2022-05-24T18:34:08.402174049Z I0524 18:34:08.402131    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:08.549312563Z I0524 18:34:08.549270    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.220804ms"
+2022-05-24T18:34:09.880472186Z I0524 18:34:09.880425    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:10.028971943Z I0524 18:34:10.028931    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.578533ms"
+2022-05-24T18:34:10.888532897Z I0524 18:34:10.888493    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:11.034364976Z I0524 18:34:11.034327    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.910699ms"
+2022-05-24T18:34:11.034798006Z I0524 18:34:11.034780    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:11.183897255Z I0524 18:34:11.183853    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.149907ms"
+2022-05-24T18:34:57.193533722Z I0524 18:34:57.193484    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:57.395357937Z I0524 18:34:57.395314    1773 proxier.go:806] "SyncProxyRules complete" elapsed="201.919683ms"
+2022-05-24T18:34:57.395938841Z I0524 18:34:57.395908    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:57.581462975Z I0524 18:34:57.581419    1773 proxier.go:806] "SyncProxyRules complete" elapsed="185.748265ms"
+2022-05-24T18:34:57.884555931Z I0524 18:34:57.884506    1773 pod.go:517] CNI_ADD openshift-monitoring/prometheus-operator-599c4fbfc-ghjrc got IP 10.131.2.9, ofport 10
+2022-05-24T18:34:58.072683131Z I0524 18:34:58.072617    1773 pod.go:517] CNI_ADD openshift-monitoring/grafana-56c5499d4d-lkgqn got IP 10.131.2.10, ofport 11
+2022-05-24T18:34:58.173289824Z I0524 18:34:58.173247    1773 pod.go:517] CNI_ADD openshift-monitoring/telemeter-client-7589ddc4df-t55z2 got IP 10.131.2.11, ofport 12
+2022-05-24T18:34:58.275799319Z I0524 18:34:58.275759    1773 pod.go:517] CNI_ADD openshift-monitoring/prometheus-adapter-58f5b7f7c-f9k8f got IP 10.131.2.12, ofport 13
+2022-05-24T18:34:58.377613701Z I0524 18:34:58.377572    1773 pod.go:517] CNI_ADD openshift-monitoring/kube-state-metrics-597568c675-kx4sc got IP 10.131.2.13, ofport 14
+2022-05-24T18:34:58.481600011Z I0524 18:34:58.481560    1773 pod.go:517] CNI_ADD openshift-monitoring/openshift-state-metrics-559868fdcc-kh5bc got IP 10.131.2.14, ofport 15
+2022-05-24T18:34:58.583978071Z I0524 18:34:58.583935    1773 pod.go:517] CNI_ADD openshift-ingress/router-default-6f54df4f4-xtmw6 got IP 10.131.2.15, ofport 16
+2022-05-24T18:34:59.599125236Z I0524 18:34:59.599076    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:34:59.817821509Z I0524 18:34:59.817779    1773 proxier.go:806] "SyncProxyRules complete" elapsed="218.841358ms"
+2022-05-24T18:34:59.818401862Z I0524 18:34:59.818372    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:00.032722587Z I0524 18:35:00.032684    1773 proxier.go:806] "SyncProxyRules complete" elapsed="214.422269ms"
+2022-05-24T18:35:00.046983519Z I0524 18:35:00.046945    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:00.318768894Z I0524 18:35:00.318733    1773 proxier.go:806] "SyncProxyRules complete" elapsed="271.88757ms"
+2022-05-24T18:35:00.319530706Z I0524 18:35:00.319499    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:00.574741135Z I0524 18:35:00.574694    1773 proxier.go:806] "SyncProxyRules complete" elapsed="255.365564ms"
+2022-05-24T18:35:01.634733020Z I0524 18:35:01.634685    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:01.869519070Z I0524 18:35:01.869479    1773 proxier.go:806] "SyncProxyRules complete" elapsed="234.959689ms"
+2022-05-24T18:35:01.870301750Z I0524 18:35:01.870273    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:02.138892349Z I0524 18:35:02.138846    1773 proxier.go:806] "SyncProxyRules complete" elapsed="268.729401ms"
+2022-05-24T18:35:05.689418433Z I0524 18:35:05.689376    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:05.958637863Z I0524 18:35:05.958586    1773 proxier.go:806] "SyncProxyRules complete" elapsed="269.372744ms"
+2022-05-24T18:35:06.699546679Z I0524 18:35:06.699495    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:06.907686578Z I0524 18:35:06.907619    1773 proxier.go:806] "SyncProxyRules complete" elapsed="208.27703ms"
+2022-05-24T18:35:44.195149289Z I0524 18:35:44.195102    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:44.339317683Z I0524 18:35:44.339278    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.290451ms"
+2022-05-24T18:35:44.339894171Z I0524 18:35:44.339863    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:44.481811238Z I0524 18:35:44.481776    1773 proxier.go:806] "SyncProxyRules complete" elapsed="142.035389ms"
+2022-05-24T18:35:51.249778119Z I0524 18:35:51.249723    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:51.402720684Z I0524 18:35:51.402684    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.115621ms"
+2022-05-24T18:35:51.403247314Z I0524 18:35:51.403230    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:51.549310450Z I0524 18:35:51.549276    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.146255ms"
+2022-05-24T18:35:51.549851565Z I0524 18:35:51.549823    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:51.692598796Z I0524 18:35:51.692562    1773 proxier.go:806] "SyncProxyRules complete" elapsed="142.833983ms"
+2022-05-24T18:35:51.693163874Z I0524 18:35:51.693134    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:51.846761618Z I0524 18:35:51.846692    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.655108ms"
+2022-05-24T18:35:52.847916315Z I0524 18:35:52.847879    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:52.999120981Z I0524 18:35:52.999080    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.326656ms"
+2022-05-24T18:35:58.366854341Z I0524 18:35:58.366812    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:35:58.509064643Z I0524 18:35:58.509029    1773 proxier.go:806] "SyncProxyRules complete" elapsed="142.407448ms"
+2022-05-24T18:36:02.402886438Z I0524 18:36:02.402845    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:02.547418617Z I0524 18:36:02.547381    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.68492ms"
+2022-05-24T18:36:03.420394215Z I0524 18:36:03.420344    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:03.573800813Z I0524 18:36:03.573762    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.570333ms"
+2022-05-24T18:36:03.574280591Z I0524 18:36:03.574263    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:03.716209759Z I0524 18:36:03.716166    1773 proxier.go:806] "SyncProxyRules complete" elapsed="141.983308ms"
+2022-05-24T18:36:04.343046697Z I0524 18:36:04.343002    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:04.498317003Z I0524 18:36:04.498282    1773 proxier.go:806] "SyncProxyRules complete" elapsed="155.386811ms"
+2022-05-24T18:36:05.400617616Z I0524 18:36:05.400573    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:05.541012687Z I0524 18:36:05.540977    1773 proxier.go:806] "SyncProxyRules complete" elapsed="140.491245ms"
+2022-05-24T18:36:10.766162038Z I0524 18:36:10.766125    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:10.909827339Z I0524 18:36:10.909784    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.764433ms"
+2022-05-24T18:36:11.443574820Z I0524 18:36:11.443533    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:11.604274520Z I0524 18:36:11.604235    1773 proxier.go:806] "SyncProxyRules complete" elapsed="160.866667ms"
+2022-05-24T18:36:11.604829080Z I0524 18:36:11.604802    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:11.757475220Z I0524 18:36:11.757439    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.741428ms"
+2022-05-24T18:36:12.470093158Z I0524 18:36:12.470045    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:12.634491107Z I0524 18:36:12.634454    1773 proxier.go:806] "SyncProxyRules complete" elapsed="164.546395ms"
+2022-05-24T18:36:13.346230400Z I0524 18:36:13.346134    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:13.493247984Z I0524 18:36:13.493213    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.219654ms"
+2022-05-24T18:36:13.756747227Z I0524 18:36:13.756707    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:13.908694001Z I0524 18:36:13.908618    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.130551ms"
+2022-05-24T18:36:17.503397368Z I0524 18:36:17.503352    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:17.657273088Z I0524 18:36:17.657230    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.03451ms"
+2022-05-24T18:36:17.657840595Z I0524 18:36:17.657813    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:17.803603648Z I0524 18:36:17.803563    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.859312ms"
+2022-05-24T18:36:17.825117279Z I0524 18:36:17.825070    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:17.969367048Z I0524 18:36:17.969322    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.357709ms"
+2022-05-24T18:36:18.587506324Z I0524 18:36:18.587466    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:18.754679119Z I0524 18:36:18.754640    1773 proxier.go:806] "SyncProxyRules complete" elapsed="167.30437ms"
+2022-05-24T18:36:18.755397774Z I0524 18:36:18.755373    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:18.903410781Z I0524 18:36:18.903375    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.155741ms"
+2022-05-24T18:36:20.548832679Z I0524 18:36:20.548794    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:20.695346579Z I0524 18:36:20.695309    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.600004ms"
+2022-05-24T18:36:20.695898823Z I0524 18:36:20.695879    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:20.843033378Z I0524 18:36:20.842996    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.200211ms"
+2022-05-24T18:36:24.871863465Z I0524 18:36:24.871824    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:25.024003757Z I0524 18:36:25.023970    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.255374ms"
+2022-05-24T18:36:25.024502937Z I0524 18:36:25.024481    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:25.175668459Z I0524 18:36:25.175606    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.224739ms"
+2022-05-24T18:36:29.380145777Z I0524 18:36:29.380107    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:29.526211874Z I0524 18:36:29.526178    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.183542ms"
+2022-05-24T18:36:29.527638705Z I0524 18:36:29.527589    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:29.695604711Z I0524 18:36:29.695567    1773 proxier.go:806] "SyncProxyRules complete" elapsed="168.311493ms"
+2022-05-24T18:36:29.696204289Z I0524 18:36:29.696177    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:29.843976795Z I0524 18:36:29.843940    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.885837ms"
+2022-05-24T18:36:29.844469288Z I0524 18:36:29.844442    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:29.988306710Z I0524 18:36:29.988266    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.905696ms"
+2022-05-24T18:36:30.950297007Z I0524 18:36:30.950250    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:31.094091591Z I0524 18:36:31.094053    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.906395ms"
+2022-05-24T18:36:31.666155504Z I0524 18:36:31.666102    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:31.819542272Z I0524 18:36:31.819506    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.51749ms"
+2022-05-24T18:36:32.667565202Z I0524 18:36:32.667524    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:32.811002242Z I0524 18:36:32.810967    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.604465ms"
+2022-05-24T18:36:33.520395022Z I0524 18:36:33.520353    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:33.670752331Z I0524 18:36:33.670714    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.548252ms"
+2022-05-24T18:36:34.546074758Z I0524 18:36:34.546032    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:34.706181693Z I0524 18:36:34.706143    1773 proxier.go:806] "SyncProxyRules complete" elapsed="160.312312ms"
+2022-05-24T18:36:35.553994088Z I0524 18:36:35.553956    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:35.700023428Z I0524 18:36:35.699987    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.20654ms"
+2022-05-24T18:36:36.571914597Z I0524 18:36:36.571862    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:36.751329244Z I0524 18:36:36.751281    1773 proxier.go:806] "SyncProxyRules complete" elapsed="179.679494ms"
+2022-05-24T18:36:37.752361929Z I0524 18:36:37.752319    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:37.913301802Z I0524 18:36:37.913267    1773 proxier.go:806] "SyncProxyRules complete" elapsed="161.093687ms"
+2022-05-24T18:36:38.414281409Z I0524 18:36:38.414245    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:38.570170621Z I0524 18:36:38.570134    1773 proxier.go:806] "SyncProxyRules complete" elapsed="156.049725ms"
+2022-05-24T18:36:39.571019259Z I0524 18:36:39.570977    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:39.728982605Z I0524 18:36:39.728942    1773 proxier.go:806] "SyncProxyRules complete" elapsed="158.114031ms"
+2022-05-24T18:36:40.505037913Z I0524 18:36:40.505000    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:40.655418474Z I0524 18:36:40.655383    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.514799ms"
+2022-05-24T18:36:41.539286942Z I0524 18:36:41.539240    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:41.691028802Z I0524 18:36:41.690992    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.932236ms"
+2022-05-24T18:36:42.547478691Z I0524 18:36:42.547437    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:42.695664802Z I0524 18:36:42.695607    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.280323ms"
+2022-05-24T18:36:43.696461747Z I0524 18:36:43.696422    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:43.858790444Z I0524 18:36:43.858742    1773 proxier.go:806] "SyncProxyRules complete" elapsed="162.438154ms"
+2022-05-24T18:36:44.540089338Z I0524 18:36:44.540043    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:44.702729313Z I0524 18:36:44.702690    1773 proxier.go:806] "SyncProxyRules complete" elapsed="162.778754ms"
+2022-05-24T18:36:45.703970542Z I0524 18:36:45.703926    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:45.848980776Z I0524 18:36:45.848947    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.188653ms"
+2022-05-24T18:36:46.661456212Z I0524 18:36:46.661416    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:46.830077814Z I0524 18:36:46.830039    1773 proxier.go:806] "SyncProxyRules complete" elapsed="168.736375ms"
+2022-05-24T18:36:47.830901983Z I0524 18:36:47.830859    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:47.975193638Z I0524 18:36:47.975154    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.413859ms"
+2022-05-24T18:36:49.912955425Z I0524 18:36:49.912912    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:50.059444892Z I0524 18:36:50.059410    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.612907ms"
+2022-05-24T18:36:50.913290884Z I0524 18:36:50.913235    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:51.059076585Z I0524 18:36:51.059037    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.92844ms"
+2022-05-24T18:36:51.290166473Z I0524 18:36:51.290124    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:51.440717956Z I0524 18:36:51.440683    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.655071ms"
+2022-05-24T18:36:51.441196485Z I0524 18:36:51.441169    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:51.586423876Z I0524 18:36:51.586385    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.299467ms"
+2022-05-24T18:36:52.692317516Z I0524 18:36:52.692278    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:52.837829074Z I0524 18:36:52.837793    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.665705ms"
+2022-05-24T18:36:55.341087373Z I0524 18:36:55.341041    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:55.505295953Z I0524 18:36:55.504734    1773 proxier.go:806] "SyncProxyRules complete" elapsed="163.834892ms"
+2022-05-24T18:36:58.358022069Z I0524 18:36:58.357978    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:58.529980119Z I0524 18:36:58.529939    1773 proxier.go:806] "SyncProxyRules complete" elapsed="172.071597ms"
+2022-05-24T18:36:58.530492441Z I0524 18:36:58.530463    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:58.684659421Z I0524 18:36:58.684609    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.234769ms"
+2022-05-24T18:36:59.290172462Z I0524 18:36:59.290131    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:59.436282708Z I0524 18:36:59.436247    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.233744ms"
+2022-05-24T18:36:59.436829491Z I0524 18:36:59.436810    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:59.581075724Z I0524 18:36:59.581037    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.317677ms"
+2022-05-24T18:36:59.710488770Z I0524 18:36:59.710447    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:36:59.855935118Z I0524 18:36:59.855900    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.621071ms"
+2022-05-24T18:37:00.856655768Z I0524 18:37:00.856611    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:00.877776431Z I0524 18:37:00.877735    1773 pod.go:517] CNI_ADD openshift-logging/osd-delete-ownerrefs-bz1906584-27556957-55trt got IP 10.131.2.16, ofport 17
+2022-05-24T18:37:01.001177764Z I0524 18:37:01.001133    1773 pod.go:517] CNI_ADD openshift-backplane-srep/osd-delete-ownerrefs-serviceaccounts-27556957-s5d8x got IP 10.131.2.17, ofport 18
+2022-05-24T18:37:01.029761874Z I0524 18:37:01.029711    1773 proxier.go:806] "SyncProxyRules complete" elapsed="173.218837ms"
+2022-05-24T18:37:01.637938199Z I0524 18:37:01.637902    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:01.798225305Z I0524 18:37:01.798187    1773 proxier.go:806] "SyncProxyRules complete" elapsed="160.402982ms"
+2022-05-24T18:37:02.799026945Z I0524 18:37:02.798979    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:02.945327641Z I0524 18:37:02.945285    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.461714ms"
+2022-05-24T18:37:06.115469233Z I0524 18:37:06.115419    1773 pod.go:553] CNI_DEL openshift-logging/osd-delete-ownerrefs-bz1906584-27556957-55trt
+2022-05-24T18:37:07.212790425Z I0524 18:37:07.212743    1773 pod.go:553] CNI_DEL openshift-backplane-srep/osd-delete-ownerrefs-serviceaccounts-27556957-s5d8x
+2022-05-24T18:37:08.765861974Z I0524 18:37:08.765826    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:08.912458797Z I0524 18:37:08.912419    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.725921ms"
+2022-05-24T18:37:21.735745413Z I0524 18:37:21.735709    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:21.881268602Z I0524 18:37:21.881230    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.684344ms"
+2022-05-24T18:37:22.748375449Z I0524 18:37:22.748335    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:22.896763610Z I0524 18:37:22.896724    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.487767ms"
+2022-05-24T18:37:35.773077657Z I0524 18:37:35.773036    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:35.918903258Z I0524 18:37:35.918866    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.930502ms"
+2022-05-24T18:37:35.919393432Z I0524 18:37:35.919377    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:36.069958070Z I0524 18:37:36.069919    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.643391ms"
+2022-05-24T18:37:38.453319025Z I0524 18:37:38.453270    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:38.596727078Z I0524 18:37:38.596684    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.523128ms"
+2022-05-24T18:37:57.077291161Z I0524 18:37:57.077248    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:37:57.230887256Z I0524 18:37:57.230850    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.705617ms"
+2022-05-24T18:38:28.754057427Z I0524 18:38:28.754000    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:28.903968133Z I0524 18:38:28.903925    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.030555ms"
+2022-05-24T18:38:30.853013478Z I0524 18:38:30.852973    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:31.003454878Z I0524 18:38:31.003415    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.555269ms"
+2022-05-24T18:38:31.004061489Z I0524 18:38:31.004030    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:31.150112515Z I0524 18:38:31.150077    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.187395ms"
+2022-05-24T18:38:31.150682613Z I0524 18:38:31.150658    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:31.296027674Z I0524 18:38:31.295984    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.461063ms"
+2022-05-24T18:38:32.874948447Z I0524 18:38:32.874906    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:33.026526507Z I0524 18:38:33.026489    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.694022ms"
+2022-05-24T18:38:36.446324749Z I0524 18:38:36.446285    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:36.597951684Z I0524 18:38:36.597912    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.732476ms"
+2022-05-24T18:38:36.598451446Z I0524 18:38:36.598433    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:36.780193502Z I0524 18:38:36.780153    1773 proxier.go:806] "SyncProxyRules complete" elapsed="181.852691ms"
+2022-05-24T18:38:36.780920889Z I0524 18:38:36.780897    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:37.039083083Z I0524 18:38:37.039039    1773 proxier.go:806] "SyncProxyRules complete" elapsed="258.469327ms"
+2022-05-24T18:38:37.039862014Z I0524 18:38:37.039841    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:37.186092650Z I0524 18:38:37.186059    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.479187ms"
+2022-05-24T18:38:43.796847556Z I0524 18:38:43.796804    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:43.942147781Z I0524 18:38:43.942110    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.500672ms"
+2022-05-24T18:38:46.077108385Z I0524 18:38:46.077055    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:46.220054438Z I0524 18:38:46.220016    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.10118ms"
+2022-05-24T18:38:55.543556641Z I0524 18:38:55.543516    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:55.703798072Z I0524 18:38:55.703759    1773 proxier.go:806] "SyncProxyRules complete" elapsed="160.362721ms"
+2022-05-24T18:38:55.704357682Z I0524 18:38:55.704327    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:55.848904171Z I0524 18:38:55.848870    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.659844ms"
+2022-05-24T18:38:55.849450273Z I0524 18:38:55.849432    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:55.993745669Z I0524 18:38:55.993712    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.387841ms"
+2022-05-24T18:38:55.994207995Z I0524 18:38:55.994189    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:56.137424607Z I0524 18:38:56.137382    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.275135ms"
+2022-05-24T18:38:56.898137406Z I0524 18:38:56.898091    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:57.047492941Z I0524 18:38:57.047456    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.567355ms"
+2022-05-24T18:38:57.914482363Z I0524 18:38:57.914431    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:58.064729280Z I0524 18:38:58.064692    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.443794ms"
+2022-05-24T18:38:59.065476567Z I0524 18:38:59.065432    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:38:59.203197403Z I0524 18:38:59.203159    1773 proxier.go:806] "SyncProxyRules complete" elapsed="137.902796ms"
+2022-05-24T18:39:00.204608014Z I0524 18:39:00.204566    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:00.346741537Z I0524 18:39:00.346706    1773 proxier.go:806] "SyncProxyRules complete" elapsed="142.249522ms"
+2022-05-24T18:39:08.647518572Z I0524 18:39:08.647217    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=0
+2022-05-24T18:39:08.647518572Z I0524 18:39:08.647253    1773 service.go:444] "Removing service port" portName="openshift-addon-operator/addon-operator-webhook-service:443"
+2022-05-24T18:39:08.647518572Z I0524 18:39:08.647350    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:08.676227837Z I0524 18:39:08.676188    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=1
+2022-05-24T18:39:08.761281575Z I0524 18:39:08.761236    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=1
+2022-05-24T18:39:08.787136282Z I0524 18:39:08.787100    1773 proxier.go:806] "SyncProxyRules complete" elapsed="139.837958ms"
+2022-05-24T18:39:08.787558962Z I0524 18:39:08.787531    1773 service.go:419] "Adding new service port" portName="openshift-addon-operator/addon-operator-webhook-service:443" servicePort="172.30.194.2:443/TCP"
+2022-05-24T18:39:08.787681392Z I0524 18:39:08.787667    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:08.928055174Z I0524 18:39:08.928019    1773 proxier.go:806] "SyncProxyRules complete" elapsed="140.501687ms"
+2022-05-24T18:39:09.293526460Z I0524 18:39:09.293489    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:09.433864188Z I0524 18:39:09.433826    1773 proxier.go:806] "SyncProxyRules complete" elapsed="140.422727ms"
+2022-05-24T18:39:09.434344997Z I0524 18:39:09.434327    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:09.573712497Z I0524 18:39:09.573675    1773 proxier.go:806] "SyncProxyRules complete" elapsed="139.428803ms"
+2022-05-24T18:39:10.113838170Z I0524 18:39:10.113795    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:10.254537491Z I0524 18:39:10.254501    1773 proxier.go:806] "SyncProxyRules complete" elapsed="140.799298ms"
+2022-05-24T18:39:15.639509471Z I0524 18:39:15.639416    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:15.780390941Z I0524 18:39:15.780354    1773 proxier.go:806] "SyncProxyRules complete" elapsed="141.039798ms"
+2022-05-24T18:39:19.468456356Z I0524 18:39:19.468412    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:19.613938327Z I0524 18:39:19.613897    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.572764ms"
+2022-05-24T18:39:19.614482183Z I0524 18:39:19.614464    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:19.763171528Z I0524 18:39:19.763124    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.740307ms"
+2022-05-24T18:39:19.920201335Z I0524 18:39:19.920155    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:39:20.060248039Z I0524 18:39:20.060207    1773 proxier.go:806] "SyncProxyRules complete" elapsed="140.1458ms"
+2022-05-24T18:40:01.054950078Z I0524 18:40:01.054907    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:01.200453141Z I0524 18:40:01.200411    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.663643ms"
+2022-05-24T18:40:01.201246513Z I0524 18:40:01.201218    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:01.371763667Z I0524 18:40:01.371730    1773 proxier.go:806] "SyncProxyRules complete" elapsed="170.77976ms"
+2022-05-24T18:40:01.372284930Z I0524 18:40:01.372268    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:01.511221732Z I0524 18:40:01.511185    1773 proxier.go:806] "SyncProxyRules complete" elapsed="139.027977ms"
+2022-05-24T18:40:02.231142817Z I0524 18:40:02.231096    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:02.380135024Z I0524 18:40:02.380100    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.101362ms"
+2022-05-24T18:40:06.108404518Z I0524 18:40:06.108368    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:06.289581982Z I0524 18:40:06.289540    1773 proxier.go:806] "SyncProxyRules complete" elapsed="181.273995ms"
+2022-05-24T18:40:06.290213824Z I0524 18:40:06.290184    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:06.432389432Z I0524 18:40:06.432350    1773 proxier.go:806] "SyncProxyRules complete" elapsed="142.345889ms"
+2022-05-24T18:40:06.916599060Z I0524 18:40:06.916559    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:07.063206482Z I0524 18:40:07.063155    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.680286ms"
+2022-05-24T18:40:08.260920175Z I0524 18:40:08.260878    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:08.411129963Z I0524 18:40:08.411091    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.316461ms"
+2022-05-24T18:40:10.530993861Z I0524 18:40:10.530951    1773 pod.go:517] CNI_ADD openshift-velero/managed-velero-operator-dd6fdff7f-prtvg got IP 10.131.2.18, ofport 19
+2022-05-24T18:40:10.642427797Z I0524 18:40:10.642376    1773 pod.go:517] CNI_ADD openshift-monitoring/configure-alertmanager-operator-6bf57f7cbc-4sfxv got IP 10.131.2.19, ofport 20
+2022-05-24T18:40:10.755597616Z I0524 18:40:10.755558    1773 pod.go:517] CNI_ADD openshift-addon-operator/addon-operator-webhook-664d4795c-rdx9t got IP 10.131.2.20, ofport 21
+2022-05-24T18:40:10.864271521Z I0524 18:40:10.864229    1773 pod.go:517] CNI_ADD openshift-backplane/osd-delete-backplane-serviceaccounts-27556960-2kb4j got IP 10.131.2.21, ofport 22
+2022-05-24T18:40:13.130704206Z I0524 18:40:13.130667    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:13.346789250Z I0524 18:40:13.346746    1773 proxier.go:806] "SyncProxyRules complete" elapsed="216.22563ms"
+2022-05-24T18:40:13.347582572Z I0524 18:40:13.347547    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:13.600648999Z I0524 18:40:13.600594    1773 proxier.go:806] "SyncProxyRules complete" elapsed="253.207708ms"
+2022-05-24T18:40:14.170071421Z I0524 18:40:14.170007    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:14.451666900Z I0524 18:40:14.451096    1773 proxier.go:806] "SyncProxyRules complete" elapsed="281.410338ms"
+2022-05-24T18:40:15.636306294Z I0524 18:40:15.636265    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:15.859456728Z I0524 18:40:15.859410    1773 proxier.go:806] "SyncProxyRules complete" elapsed="223.294866ms"
+2022-05-24T18:40:15.860062887Z I0524 18:40:15.860030    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:16.027951965Z I0524 18:40:16.027913    1773 proxier.go:806] "SyncProxyRules complete" elapsed="167.970773ms"
+2022-05-24T18:40:16.403785187Z I0524 18:40:16.403736    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:16.591041275Z I0524 18:40:16.591001    1773 proxier.go:806] "SyncProxyRules complete" elapsed="187.46883ms"
+2022-05-24T18:40:17.422790628Z I0524 18:40:17.422750    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:17.638979697Z I0524 18:40:17.638935    1773 proxier.go:806] "SyncProxyRules complete" elapsed="216.350823ms"
+2022-05-24T18:40:17.639756885Z I0524 18:40:17.639725    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:17.793030133Z I0524 18:40:17.792995    1773 pod.go:553] CNI_DEL openshift-backplane/osd-delete-backplane-serviceaccounts-27556960-2kb4j
+2022-05-24T18:40:17.827018644Z I0524 18:40:17.826977    1773 proxier.go:806] "SyncProxyRules complete" elapsed="187.414048ms"
+2022-05-24T18:40:19.613951857Z I0524 18:40:19.613913    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:19.833795531Z I0524 18:40:19.833761    1773 proxier.go:806] "SyncProxyRules complete" elapsed="220.001819ms"
+2022-05-24T18:40:19.834328091Z I0524 18:40:19.834294    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:19.974110584Z I0524 18:40:19.974059    1773 proxier.go:806] "SyncProxyRules complete" elapsed="139.860867ms"
+2022-05-24T18:40:20.137384777Z I0524 18:40:20.137348    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:20.277130611Z I0524 18:40:20.277095    1773 proxier.go:806] "SyncProxyRules complete" elapsed="139.922614ms"
+2022-05-24T18:40:23.847089777Z I0524 18:40:23.847039    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:24.003862174Z I0524 18:40:24.003825    1773 proxier.go:806] "SyncProxyRules complete" elapsed="156.93569ms"
+2022-05-24T18:40:24.846060180Z I0524 18:40:24.846006    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:25.001102347Z I0524 18:40:25.001060    1773 proxier.go:806] "SyncProxyRules complete" elapsed="155.196199ms"
+2022-05-24T18:40:25.001682500Z I0524 18:40:25.001652    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:25.144598544Z I0524 18:40:25.144558    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.017105ms"
+2022-05-24T18:40:25.932346094Z I0524 18:40:25.932305    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:26.108674665Z I0524 18:40:26.108637    1773 proxier.go:806] "SyncProxyRules complete" elapsed="176.475253ms"
+2022-05-24T18:40:26.109244118Z I0524 18:40:26.109226    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:26.253162320Z I0524 18:40:26.253120    1773 proxier.go:806] "SyncProxyRules complete" elapsed="144.026813ms"
+2022-05-24T18:40:26.489672252Z I0524 18:40:26.489608    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:26.638608562Z I0524 18:40:26.638569    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.136599ms"
+2022-05-24T18:40:27.640530200Z I0524 18:40:27.640489    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:27.805128712Z I0524 18:40:27.805090    1773 proxier.go:806] "SyncProxyRules complete" elapsed="164.986324ms"
+2022-05-24T18:40:28.806552132Z I0524 18:40:28.806499    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:28.950294858Z I0524 18:40:28.950259    1773 proxier.go:806] "SyncProxyRules complete" elapsed="143.868831ms"
+2022-05-24T18:40:30.031493388Z I0524 18:40:30.031455    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:30.181964862Z I0524 18:40:30.181929    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.562509ms"
+2022-05-24T18:40:30.479901323Z I0524 18:40:30.479863    1773 service.go:304] "Service updated ports" service="openshift-storage/rook-ceph-mgr" portCount=1
+2022-05-24T18:40:30.479940045Z I0524 18:40:30.479911    1773 service.go:419] "Adding new service port" portName="openshift-storage/rook-ceph-mgr:http-metrics" servicePort="172.30.17.115:9283/TCP"
+2022-05-24T18:40:30.480039272Z I0524 18:40:30.480020    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:30.626281131Z I0524 18:40:30.626242    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.328613ms"
+2022-05-24T18:40:31.627815596Z I0524 18:40:31.627774    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:31.787130018Z I0524 18:40:31.787091    1773 proxier.go:806] "SyncProxyRules complete" elapsed="159.461691ms"
+2022-05-24T18:40:33.454961693Z I0524 18:40:33.454919    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:33.608293440Z I0524 18:40:33.608257    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.453314ms"
+2022-05-24T18:40:39.541448914Z I0524 18:40:39.541410    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:39.691803739Z I0524 18:40:39.691764    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.511053ms"
+2022-05-24T18:40:40.005805634Z I0524 18:40:40.005764    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:40.156927346Z I0524 18:40:40.156893    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.259279ms"
+2022-05-24T18:40:40.393393611Z I0524 18:40:40.393352    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:40.539974358Z I0524 18:40:40.539936    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.687717ms"
+2022-05-24T18:40:40.977184167Z I0524 18:40:40.977141    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:41.144238460Z I0524 18:40:41.144203    1773 proxier.go:806] "SyncProxyRules complete" elapsed="167.264647ms"
+2022-05-24T18:40:41.175255443Z I0524 18:40:41.175211    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:41.325207711Z I0524 18:40:41.325169    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.110857ms"
+2022-05-24T18:40:41.557752030Z I0524 18:40:41.557709    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:41.739351859Z I0524 18:40:41.739316    1773 proxier.go:806] "SyncProxyRules complete" elapsed="181.799167ms"
+2022-05-24T18:40:42.640835554Z I0524 18:40:42.640791    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:42.800153105Z I0524 18:40:42.800116    1773 proxier.go:806] "SyncProxyRules complete" elapsed="159.512007ms"
+2022-05-24T18:40:43.802182250Z I0524 18:40:43.802136    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:43.949544321Z I0524 18:40:43.949509    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.507793ms"
+2022-05-24T18:40:45.478102611Z I0524 18:40:45.478061    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:45.625520016Z I0524 18:40:45.625477    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.516646ms"
+2022-05-24T18:40:45.626090836Z I0524 18:40:45.626072    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:45.775720858Z I0524 18:40:45.775683    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.72051ms"
+2022-05-24T18:40:49.040131091Z I0524 18:40:49.040086    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:49.217585720Z I0524 18:40:49.217550    1773 proxier.go:806] "SyncProxyRules complete" elapsed="177.588701ms"
+2022-05-24T18:40:49.622758590Z I0524 18:40:49.622711    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:49.791687316Z I0524 18:40:49.791618    1773 proxier.go:806] "SyncProxyRules complete" elapsed="169.132465ms"
+2022-05-24T18:40:58.650539012Z I0524 18:40:58.650495    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:40:58.797028840Z I0524 18:40:58.796991    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.603603ms"
+2022-05-24T18:41:00.660760670Z I0524 18:41:00.660719    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:00.806438280Z I0524 18:41:00.806403    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.800693ms"
+2022-05-24T18:41:01.006155709Z I0524 18:41:01.006117    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:01.156614477Z I0524 18:41:01.156573    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.588506ms"
+2022-05-24T18:41:01.660422053Z I0524 18:41:01.660376    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:01.841205331Z I0524 18:41:01.841167    1773 proxier.go:806] "SyncProxyRules complete" elapsed="180.945111ms"
+2022-05-24T18:41:01.841770056Z I0524 18:41:01.841751    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:02.018401002Z I0524 18:41:02.018359    1773 proxier.go:806] "SyncProxyRules complete" elapsed="176.733649ms"
+2022-05-24T18:41:02.501678045Z I0524 18:41:02.501614    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:02.654528685Z I0524 18:41:02.654490    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.998044ms"
+2022-05-24T18:41:02.696149474Z I0524 18:41:02.696108    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:02.845985494Z I0524 18:41:02.845947    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.053607ms"
+2022-05-24T18:41:08.942921054Z I0524 18:41:08.942877    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:09.090678045Z I0524 18:41:09.090637    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.919347ms"
+2022-05-24T18:41:09.091180198Z I0524 18:41:09.091163    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:09.248212200Z I0524 18:41:09.248175    1773 proxier.go:806] "SyncProxyRules complete" elapsed="157.081349ms"
+2022-05-24T18:41:13.575159109Z I0524 18:41:13.575121    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:13.723197409Z I0524 18:41:13.723148    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.130399ms"
+2022-05-24T18:41:15.491243378Z I0524 18:41:15.491202    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:15.639581931Z I0524 18:41:15.639546    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.51389ms"
+2022-05-24T18:41:29.313609851Z I0524 18:41:29.313571    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:29.460784800Z I0524 18:41:29.460745    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.338478ms"
+2022-05-24T18:41:29.461476074Z I0524 18:41:29.461449    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:29.612335464Z I0524 18:41:29.612300    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.996896ms"
+2022-05-24T18:41:29.612910102Z I0524 18:41:29.612879    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:29.773048016Z I0524 18:41:29.773012    1773 proxier.go:806] "SyncProxyRules complete" elapsed="160.227566ms"
+2022-05-24T18:41:31.387242031Z I0524 18:41:31.387196    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:31.533976607Z I0524 18:41:31.533939    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.84719ms"
+2022-05-24T18:41:31.534558480Z I0524 18:41:31.534524    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:31.682480787Z I0524 18:41:31.682446    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.023804ms"
+2022-05-24T18:41:31.741574023Z I0524 18:41:31.741536    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:31.903665013Z I0524 18:41:31.898791    1773 proxier.go:806] "SyncProxyRules complete" elapsed="157.373611ms"
+2022-05-24T18:41:33.659052640Z I0524 18:41:33.659014    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:33.806178128Z I0524 18:41:33.806138    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.221879ms"
+2022-05-24T18:41:35.398464442Z I0524 18:41:35.398423    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:35.549193163Z I0524 18:41:35.549157    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.837429ms"
+2022-05-24T18:41:35.549821824Z I0524 18:41:35.549801    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:35.697346444Z I0524 18:41:35.697311    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.603211ms"
+2022-05-24T18:41:36.766079622Z I0524 18:41:36.766033    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:36.958065025Z I0524 18:41:36.958025    1773 proxier.go:806] "SyncProxyRules complete" elapsed="192.147925ms"
+2022-05-24T18:41:37.005307156Z I0524 18:41:37.005268    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:37.190971652Z I0524 18:41:37.190929    1773 proxier.go:806] "SyncProxyRules complete" elapsed="185.763168ms"
+2022-05-24T18:41:38.192257509Z I0524 18:41:38.192210    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:38.345657037Z I0524 18:41:38.345598    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.610975ms"
+2022-05-24T18:41:41.039206437Z I0524 18:41:41.039150    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:41.189280541Z I0524 18:41:41.189241    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.174997ms"
+2022-05-24T18:41:50.693619811Z I0524 18:41:50.693581    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:41:50.843448613Z I0524 18:41:50.843409    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.927979ms"
+2022-05-24T18:42:04.545846890Z I0524 18:42:04.545808    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:04.721360468Z I0524 18:42:04.721307    1773 proxier.go:806] "SyncProxyRules complete" elapsed="175.686914ms"
+2022-05-24T18:42:04.722009694Z I0524 18:42:04.721988    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:04.875549679Z I0524 18:42:04.875507    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.666932ms"
+2022-05-24T18:42:05.747481800Z I0524 18:42:05.747433    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:05.906949277Z I0524 18:42:05.906912    1773 proxier.go:806] "SyncProxyRules complete" elapsed="159.588171ms"
+2022-05-24T18:42:09.873485828Z I0524 18:42:09.873437    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:10.047839426Z I0524 18:42:10.047800    1773 proxier.go:806] "SyncProxyRules complete" elapsed="174.491907ms"
+2022-05-24T18:42:10.048453882Z I0524 18:42:10.048435    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:10.197479558Z I0524 18:42:10.197440    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.109643ms"
+2022-05-24T18:42:10.814975585Z I0524 18:42:10.814932    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:10.976439146Z I0524 18:42:10.976389    1773 proxier.go:806] "SyncProxyRules complete" elapsed="161.627597ms"
+2022-05-24T18:42:13.718199453Z I0524 18:42:13.718159    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:13.908294731Z I0524 18:42:13.904772    1773 proxier.go:806] "SyncProxyRules complete" elapsed="186.738913ms"
+2022-05-24T18:42:19.323427950Z I0524 18:42:19.323376    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:19.471664998Z I0524 18:42:19.471617    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.340937ms"
+2022-05-24T18:42:29.344521740Z I0524 18:42:29.344479    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:29.519267751Z I0524 18:42:29.519230    1773 proxier.go:806] "SyncProxyRules complete" elapsed="174.837626ms"
+2022-05-24T18:42:29.519882746Z I0524 18:42:29.519863    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:29.677487321Z I0524 18:42:29.677449    1773 proxier.go:806] "SyncProxyRules complete" elapsed="157.762638ms"
+2022-05-24T18:42:29.850577907Z I0524 18:42:29.850519    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:30.001957789Z I0524 18:42:30.001923    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.55024ms"
+2022-05-24T18:42:30.002466504Z I0524 18:42:30.002448    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:30.156068896Z I0524 18:42:30.156028    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.661424ms"
+2022-05-24T18:42:30.286559894Z I0524 18:42:30.286513    1773 pod.go:517] CNI_ADD openshift-image-registry/image-registry-6cf9b659bc-9vfp2 got IP 10.131.2.22, ofport 23
+2022-05-24T18:42:30.731451578Z I0524 18:42:30.731400    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:30.885591754Z I0524 18:42:30.885551    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.241329ms"
+2022-05-24T18:42:31.372572032Z I0524 18:42:31.372535    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=0
+2022-05-24T18:42:31.372613722Z I0524 18:42:31.372578    1773 service.go:444] "Removing service port" portName="openshift-addon-operator/addon-operator-webhook-service:443"
+2022-05-24T18:42:31.372801398Z I0524 18:42:31.372786    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:31.419785127Z I0524 18:42:31.419746    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=1
+2022-05-24T18:42:31.526379571Z I0524 18:42:31.526338    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.753311ms"
+2022-05-24T18:42:31.644029480Z I0524 18:42:31.643991    1773 service.go:304] "Service updated ports" service="openshift-addon-operator/addon-operator-webhook-service" portCount=1
+2022-05-24T18:42:32.527164914Z I0524 18:42:32.527117    1773 service.go:419] "Adding new service port" portName="openshift-addon-operator/addon-operator-webhook-service:443" servicePort="172.30.229.159:443/TCP"
+2022-05-24T18:42:32.527363943Z I0524 18:42:32.527348    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:32.693450737Z I0524 18:42:32.693412    1773 proxier.go:806] "SyncProxyRules complete" elapsed="166.349131ms"
+2022-05-24T18:42:33.532032883Z I0524 18:42:33.531993    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:33.681827316Z I0524 18:42:33.681789    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.935715ms"
+2022-05-24T18:42:34.514096939Z I0524 18:42:34.514049    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:34.694428039Z I0524 18:42:34.694388    1773 proxier.go:806] "SyncProxyRules complete" elapsed="180.564165ms"
+2022-05-24T18:42:35.564536979Z I0524 18:42:35.564488    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:35.720937873Z I0524 18:42:35.720894    1773 proxier.go:806] "SyncProxyRules complete" elapsed="156.59846ms"
+2022-05-24T18:42:36.722200738Z I0524 18:42:36.722155    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:36.909889324Z I0524 18:42:36.909839    1773 proxier.go:806] "SyncProxyRules complete" elapsed="187.809236ms"
+2022-05-24T18:42:54.291792531Z I0524 18:42:54.291751    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:54.473841637Z I0524 18:42:54.473805    1773 proxier.go:806] "SyncProxyRules complete" elapsed="182.164498ms"
+2022-05-24T18:42:54.474590226Z I0524 18:42:54.474537    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:54.626470777Z I0524 18:42:54.626424    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.139083ms"
+2022-05-24T18:42:56.095693491Z I0524 18:42:56.095648    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:56.253525165Z I0524 18:42:56.253482    1773 proxier.go:806] "SyncProxyRules complete" elapsed="157.983971ms"
+2022-05-24T18:42:56.406405278Z I0524 18:42:56.406359    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:56.556334589Z I0524 18:42:56.556294    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.045776ms"
+2022-05-24T18:42:56.941322924Z I0524 18:42:56.941278    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:57.088798687Z I0524 18:42:57.088760    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.639984ms"
+2022-05-24T18:42:57.661275779Z I0524 18:42:57.661235    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:57.808109875Z I0524 18:42:57.808067    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.925656ms"
+2022-05-24T18:42:57.886982633Z I0524 18:42:57.886935    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:58.035053121Z I0524 18:42:58.035012    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.238668ms"
+2022-05-24T18:42:58.718245228Z I0524 18:42:58.718202    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:42:58.885372527Z I0524 18:42:58.885336    1773 proxier.go:806] "SyncProxyRules complete" elapsed="167.295543ms"
+2022-05-24T18:42:59.886940142Z I0524 18:42:59.886896    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:00.040814490Z I0524 18:43:00.040772    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.023657ms"
+2022-05-24T18:43:04.137280985Z I0524 18:43:04.137238    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:04.294770995Z I0524 18:43:04.294728    1773 proxier.go:806] "SyncProxyRules complete" elapsed="157.596108ms"
+2022-05-24T18:43:04.295341978Z I0524 18:43:04.295317    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:04.447466921Z I0524 18:43:04.447406    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.193048ms"
+2022-05-24T18:43:04.479308877Z I0524 18:43:04.479269    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:04.632839047Z I0524 18:43:04.632784    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.643545ms"
+2022-05-24T18:43:05.695136455Z I0524 18:43:05.695095    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:05.848516678Z I0524 18:43:05.848479    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.479374ms"
+2022-05-24T18:43:06.897045605Z I0524 18:43:06.897001    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:07.077155442Z I0524 18:43:07.077119    1773 proxier.go:806] "SyncProxyRules complete" elapsed="180.277059ms"
+2022-05-24T18:43:07.895748578Z I0524 18:43:07.895707    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:08.061931092Z I0524 18:43:08.061882    1773 proxier.go:806] "SyncProxyRules complete" elapsed="166.321842ms"
+2022-05-24T18:43:19.308331239Z I0524 18:43:19.308292    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:19.458365762Z I0524 18:43:19.458327    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.198965ms"
+2022-05-24T18:43:19.458937030Z I0524 18:43:19.458918    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:19.610466102Z I0524 18:43:19.610425    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.59983ms"
+2022-05-24T18:43:19.945150713Z I0524 18:43:19.945092    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:20.097732851Z I0524 18:43:20.097695    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.714433ms"
+2022-05-24T18:43:34.677370691Z I0524 18:43:34.677333    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:34.832790852Z I0524 18:43:34.832755    1773 proxier.go:806] "SyncProxyRules complete" elapsed="155.52687ms"
+2022-05-24T18:43:44.253429241Z I0524 18:43:44.253384    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:44.425423583Z I0524 18:43:44.425388    1773 proxier.go:806] "SyncProxyRules complete" elapsed="172.202453ms"
+2022-05-24T18:43:44.426110751Z I0524 18:43:44.426090    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:44.587868125Z I0524 18:43:44.587808    1773 proxier.go:806] "SyncProxyRules complete" elapsed="161.902029ms"
+2022-05-24T18:43:44.588463357Z I0524 18:43:44.588444    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:44.751574308Z I0524 18:43:44.751537    1773 proxier.go:806] "SyncProxyRules complete" elapsed="163.214465ms"
+2022-05-24T18:43:50.718562954Z I0524 18:43:50.718512    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:50.876291868Z I0524 18:43:50.876247    1773 proxier.go:806] "SyncProxyRules complete" elapsed="157.850976ms"
+2022-05-24T18:43:59.476473379Z I0524 18:43:59.476422    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:59.632722554Z I0524 18:43:59.632676    1773 proxier.go:806] "SyncProxyRules complete" elapsed="156.35146ms"
+2022-05-24T18:43:59.633541439Z I0524 18:43:59.633507    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:43:59.787510702Z I0524 18:43:59.787473    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.139313ms"
+2022-05-24T18:44:01.041257360Z I0524 18:44:01.040782    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:01.244836606Z I0524 18:44:01.244798    1773 proxier.go:806] "SyncProxyRules complete" elapsed="204.190774ms"
+2022-05-24T18:44:10.100878293Z I0524 18:44:10.100834    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:10.246673754Z I0524 18:44:10.246617    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.995037ms"
+2022-05-24T18:44:14.186392181Z I0524 18:44:14.186354    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:14.339402341Z I0524 18:44:14.339363    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.112217ms"
+2022-05-24T18:44:14.340104885Z I0524 18:44:14.340083    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:14.485914004Z I0524 18:44:14.485876    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.990494ms"
+2022-05-24T18:44:15.011900463Z I0524 18:44:15.011857    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:15.162275139Z I0524 18:44:15.162238    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.499429ms"
+2022-05-24T18:44:15.253010532Z I0524 18:44:15.252965    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:15.404482402Z I0524 18:44:15.404445    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.592218ms"
+2022-05-24T18:44:20.246928027Z I0524 18:44:20.246886    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:20.428218658Z I0524 18:44:20.428181    1773 proxier.go:806] "SyncProxyRules complete" elapsed="181.498371ms"
+2022-05-24T18:44:20.428891985Z I0524 18:44:20.428871    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:20.575784940Z I0524 18:44:20.575747    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.057206ms"
+2022-05-24T18:44:24.521105676Z I0524 18:44:24.521059    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:24.680323605Z I0524 18:44:24.680284    1773 proxier.go:806] "SyncProxyRules complete" elapsed="159.437848ms"
+2022-05-24T18:44:29.797476829Z I0524 18:44:29.797437    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:29.945755392Z I0524 18:44:29.945716    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.409783ms"
+2022-05-24T18:44:56.739568277Z I0524 18:44:56.739532    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:44:56.898657115Z I0524 18:44:56.898603    1773 proxier.go:806] "SyncProxyRules complete" elapsed="159.165508ms"
+2022-05-24T18:45:14.472944080Z I0524 18:45:14.472899    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:45:14.623112616Z I0524 18:45:14.623063    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.311904ms"
+2022-05-24T18:45:14.623831737Z I0524 18:45:14.623806    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:45:14.778120194Z I0524 18:45:14.778083    1773 proxier.go:806] "SyncProxyRules complete" elapsed="154.458421ms"
+2022-05-24T18:45:15.365739226Z I0524 18:45:15.365697    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:45:15.516378300Z I0524 18:45:15.516340    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.77621ms"
+2022-05-24T18:45:19.729819520Z I0524 18:45:19.729780    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:45:19.877855622Z I0524 18:45:19.877815    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.144704ms"
+2022-05-24T18:45:27.665494245Z I0524 18:45:27.665449    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:45:27.815842215Z I0524 18:45:27.815801    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.457164ms"
+2022-05-24T18:46:48.495406713Z I0524 18:46:48.495366    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:46:48.647759252Z I0524 18:46:48.647722    1773 proxier.go:806] "SyncProxyRules complete" elapsed="152.49107ms"
+2022-05-24T18:49:10.394948257Z I0524 18:49:10.394908    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:49:10.543111656Z I0524 18:49:10.543073    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.310177ms"
+2022-05-24T18:49:10.543705628Z I0524 18:49:10.543687    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:49:10.689199120Z I0524 18:49:10.689156    1773 proxier.go:806] "SyncProxyRules complete" elapsed="145.597304ms"
+2022-05-24T18:49:10.870031843Z I0524 18:49:10.869995    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:49:11.016955651Z I0524 18:49:11.016914    1773 proxier.go:806] "SyncProxyRules complete" elapsed="147.026225ms"
+2022-05-24T18:49:14.746294531Z I0524 18:49:14.746225    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:49:14.896978645Z I0524 18:49:14.896934    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.820313ms"
+2022-05-24T18:49:28.522713390Z I0524 18:49:28.522670    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T18:49:28.669508155Z I0524 18:49:28.669470    1773 proxier.go:806] "SyncProxyRules complete" elapsed="146.924569ms"
+2022-05-24T19:00:00.724788248Z I0524 19:00:00.724748    1773 pod.go:517] CNI_ADD openshift-image-registry/image-pruner-27556980-ldktc got IP 10.131.2.23, ofport 24
+2022-05-24T19:00:00.831579971Z I0524 19:00:00.831533    1773 pod.go:517] CNI_ADD openshift-monitoring/osd-rebalance-infra-nodes-27556980-5d7qx got IP 10.131.2.24, ofport 25
+2022-05-24T19:00:05.759944339Z I0524 19:00:05.759905    1773 pod.go:553] CNI_DEL openshift-image-registry/image-pruner-27556980-ldktc
+2022-05-24T19:00:05.898380254Z I0524 19:00:05.898343    1773 pod.go:553] CNI_DEL openshift-monitoring/osd-rebalance-infra-nodes-27556980-5d7qx
+2022-05-24T19:32:24.276083530Z I0524 19:32:24.276042    1773 networkpolicy.go:525] SyncVNIDRules: 3 unused VNIDs
+2022-05-24T19:49:28.670279823Z I0524 19:49:28.670229    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T19:49:28.820037413Z I0524 19:49:28.819997    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.910252ms"
+2022-05-24T20:00:00.768026853Z I0524 20:00:00.767985    1773 pod.go:517] CNI_ADD openshift-sre-pruning/builds-pruner-27557040-sg8b5 got IP 10.131.2.25, ofport 26
+2022-05-24T20:00:00.878686046Z I0524 20:00:00.878615    1773 pod.go:517] CNI_ADD openshift-backplane/osd-delete-backplane-serviceaccounts-27557040-2dszr got IP 10.131.2.26, ofport 27
+2022-05-24T20:00:00.993682336Z I0524 20:00:00.993619    1773 pod.go:517] CNI_ADD openshift-monitoring/osd-rebalance-infra-nodes-27557040-c8s25 got IP 10.131.2.27, ofport 28
+2022-05-24T20:00:04.915838260Z I0524 20:00:04.915796    1773 pod.go:553] CNI_DEL openshift-sre-pruning/builds-pruner-27557040-sg8b5
+2022-05-24T20:00:05.919509202Z I0524 20:00:05.919468    1773 pod.go:553] CNI_DEL openshift-monitoring/osd-rebalance-infra-nodes-27557040-c8s25
+2022-05-24T20:00:06.991158872Z I0524 20:00:06.991118    1773 pod.go:553] CNI_DEL openshift-backplane/osd-delete-backplane-serviceaccounts-27557040-2dszr
+2022-05-24T20:21:46.251401383Z I0524 20:21:46.251346    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T20:21:46.402833287Z I0524 20:21:46.402792    1773 proxier.go:806] "SyncProxyRules complete" elapsed="151.558587ms"
+2022-05-24T20:21:47.261477625Z I0524 20:21:47.261425    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T20:21:47.418577142Z I0524 20:21:47.418537    1773 proxier.go:806] "SyncProxyRules complete" elapsed="157.220767ms"
+2022-05-24T20:21:47.419178832Z I0524 20:21:47.419148    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T20:21:47.572863908Z I0524 20:21:47.572818    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.773874ms"
+2022-05-24T20:32:24.283954675Z I0524 20:32:24.283911    1773 networkpolicy.go:525] SyncVNIDRules: 2 unused VNIDs
+2022-05-24T21:00:00.745401892Z I0524 21:00:00.745353    1773 pod.go:517] CNI_ADD openshift-marketplace/osd-patch-subscription-source-27557100-btf6n got IP 10.131.2.28, ofport 29
+2022-05-24T21:00:00.860118632Z I0524 21:00:00.860075    1773 pod.go:517] CNI_ADD openshift-backplane/osd-delete-backplane-serviceaccounts-27557100-zp4z7 got IP 10.131.2.29, ofport 30
+2022-05-24T21:00:05.956606351Z I0524 21:00:05.956564    1773 pod.go:553] CNI_DEL openshift-marketplace/osd-patch-subscription-source-27557100-btf6n
+2022-05-24T21:00:06.998436682Z I0524 21:00:06.998391    1773 pod.go:553] CNI_DEL openshift-backplane/osd-delete-backplane-serviceaccounts-27557100-zp4z7
+2022-05-24T21:21:47.573903507Z I0524 21:21:47.573851    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T21:21:47.722483156Z I0524 21:21:47.722441    1773 proxier.go:806] "SyncProxyRules complete" elapsed="148.71296ms"
+2022-05-24T21:32:24.291608650Z I0524 21:32:24.291564    1773 networkpolicy.go:525] SyncVNIDRules: 2 unused VNIDs
+2022-05-24T22:00:00.813163675Z I0524 22:00:00.813118    1773 pod.go:517] CNI_ADD openshift-sre-pruning/deployments-pruner-27557160-f78lp got IP 10.131.2.30, ofport 31
+2022-05-24T22:00:00.926691432Z I0524 22:00:00.926640    1773 pod.go:517] CNI_ADD openshift-backplane/osd-delete-backplane-serviceaccounts-27557160-pc5x4 got IP 10.131.2.31, ofport 32
+2022-05-24T22:00:01.042177103Z I0524 22:00:01.042131    1773 pod.go:517] CNI_ADD openshift-monitoring/osd-rebalance-infra-nodes-27557160-5vbqb got IP 10.131.2.32, ofport 33
+2022-05-24T22:00:05.098135415Z I0524 22:00:05.098096    1773 pod.go:553] CNI_DEL openshift-sre-pruning/deployments-pruner-27557160-f78lp
+2022-05-24T22:00:06.113599176Z I0524 22:00:06.113560    1773 pod.go:553] CNI_DEL openshift-monitoring/osd-rebalance-infra-nodes-27557160-5vbqb
+2022-05-24T22:00:06.236656105Z I0524 22:00:06.236579    1773 pod.go:553] CNI_DEL openshift-backplane/osd-delete-backplane-serviceaccounts-27557160-pc5x4
+2022-05-24T22:21:47.723404374Z I0524 22:21:47.723359    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T22:21:47.872779926Z I0524 22:21:47.872741    1773 proxier.go:806] "SyncProxyRules complete" elapsed="149.517599ms"
+2022-05-24T22:22:59.615165737Z I0524 22:22:59.615128    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T22:22:59.784550628Z I0524 22:22:59.784496    1773 proxier.go:806] "SyncProxyRules complete" elapsed="169.484398ms"
+2022-05-24T22:22:59.785178035Z I0524 22:22:59.785145    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T22:22:59.938384749Z I0524 22:22:59.938346    1773 proxier.go:806] "SyncProxyRules complete" elapsed="153.32606ms"
+2022-05-24T22:23:00.323591459Z I0524 22:23:00.323553    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T22:23:00.473839764Z I0524 22:23:00.473798    1773 proxier.go:806] "SyncProxyRules complete" elapsed="150.344063ms"
+2022-05-24T22:23:00.474483670Z I0524 22:23:00.474451    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T22:23:00.631282676Z I0524 22:23:00.631241    1773 proxier.go:806] "SyncProxyRules complete" elapsed="156.886443ms"
+2022-05-24T22:32:24.299602230Z I0524 22:32:24.299556    1773 networkpolicy.go:525] SyncVNIDRules: 2 unused VNIDs
+2022-05-24T23:00:00.817260563Z I0524 23:00:00.817201    1773 pod.go:517] CNI_ADD openshift-sre-pruning/deployments-pruner-27557220-bhkfm got IP 10.131.2.33, ofport 34
+2022-05-24T23:00:00.956027804Z I0524 23:00:00.955976    1773 pod.go:517] CNI_ADD openshift-backplane/osd-delete-backplane-serviceaccounts-27557220-lzhzb got IP 10.131.2.34, ofport 35
+2022-05-24T23:00:01.090241712Z I0524 23:00:01.090192    1773 pod.go:517] CNI_ADD openshift-monitoring/osd-rebalance-infra-nodes-27557220-hvmvc got IP 10.131.2.35, ofport 36
+2022-05-24T23:00:05.304875225Z I0524 23:00:05.304831    1773 pod.go:553] CNI_DEL openshift-sre-pruning/deployments-pruner-27557220-bhkfm
+2022-05-24T23:00:06.285252198Z I0524 23:00:06.285211    1773 pod.go:553] CNI_DEL openshift-monitoring/osd-rebalance-infra-nodes-27557220-hvmvc
+2022-05-24T23:00:07.302713150Z I0524 23:00:07.302664    1773 pod.go:553] CNI_DEL openshift-backplane/osd-delete-backplane-serviceaccounts-27557220-lzhzb
+2022-05-24T23:23:00.633987400Z I0524 23:23:00.633921    1773 proxier.go:839] "Syncing iptables rules"
+2022-05-24T23:23:00.789260092Z I0524 23:23:00.789222    1773 proxier.go:806] "SyncProxyRules complete" elapsed="155.523031ms"
+2022-05-24T23:32:24.308196700Z I0524 23:32:24.308150    1773 networkpolicy.go:525] SyncVNIDRules: 2 unused VNIDs

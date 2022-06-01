@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:35Z"
+    creationTimestamp: "2022-05-24T18:06:08Z"
+    labels:
+      app: machine-approver
+      service.kubernetes.io/headless: ""
+    name: machine-approver
+    namespace: openshift-cluster-machine-approver
+    resourceVersion: "63248"
+    uid: caa8ddbb-0ca0-4984-986e-48117b4ccee8
+  subsets:
+  - addresses:
+    - ip: 10.0.138.197
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: machine-approver-6c94df4c6c-wvw6z
+        namespace: openshift-cluster-machine-approver
+        resourceVersion: "63242"
+        uid: d67e1263-d1bf-44eb-9938-486b6f7649f1
+    ports:
+    - name: https
+      port: 9192
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "319240"

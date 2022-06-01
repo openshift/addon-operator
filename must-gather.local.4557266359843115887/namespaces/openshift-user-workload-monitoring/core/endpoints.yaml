@@ -1,0 +1,232 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:28:17Z"
+    creationTimestamp: "2022-05-24T18:28:17Z"
+    labels:
+      operated-prometheus: "true"
+      service.kubernetes.io/headless: ""
+    name: prometheus-operated
+    namespace: openshift-user-workload-monitoring
+    resourceVersion: "76384"
+    uid: b6ad8b7f-203a-4b32-9cf4-cc82f5eb0c77
+  subsets:
+  - addresses:
+    - hostname: prometheus-user-workload-1
+      ip: 10.128.2.17
+      nodeName: ip-10-0-164-190.ec2.internal
+      targetRef:
+        kind: Pod
+        name: prometheus-user-workload-1
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "76229"
+        uid: 0cfc3a99-7e4e-4f7d-a5f9-7e1ef20db3a7
+    - hostname: prometheus-user-workload-0
+      ip: 10.131.0.17
+      nodeName: ip-10-0-128-34.ec2.internal
+      targetRef:
+        kind: Pod
+        name: prometheus-user-workload-0
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "42992"
+        uid: 4fafbb4b-1735-49ba-ade7-ed98020449e8
+    ports:
+    - name: grpc
+      port: 10901
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:32:00Z"
+    creationTimestamp: "2022-05-24T18:28:13Z"
+    labels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/name: prometheus-operator
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 0.53.1
+      service.kubernetes.io/headless: ""
+    name: prometheus-operator
+    namespace: openshift-user-workload-monitoring
+    resourceVersion: "54523"
+    uid: 62fe62e7-3a62-4f1c-a6f9-47a923f0d7ad
+  subsets:
+  - addresses:
+    - ip: 10.128.0.37
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: prometheus-operator-6c5df8b7cc-6bmpc
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "54517"
+        uid: 35373b4f-02b5-4cb0-82e6-550872ed5301
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:28:13Z"
+    creationTimestamp: "2022-05-24T18:28:13Z"
+    labels:
+      app.kubernetes.io/component: prometheus
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 2.32.1
+    name: prometheus-user-workload
+    namespace: openshift-user-workload-monitoring
+    resourceVersion: "76388"
+    uid: ba3df4db-c2d2-4bf6-abfa-b0097779af32
+  subsets:
+  - addresses:
+    - ip: 10.128.2.17
+      nodeName: ip-10-0-164-190.ec2.internal
+      targetRef:
+        kind: Pod
+        name: prometheus-user-workload-1
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "76229"
+        uid: 0cfc3a99-7e4e-4f7d-a5f9-7e1ef20db3a7
+    - ip: 10.131.0.17
+      nodeName: ip-10-0-128-34.ec2.internal
+      targetRef:
+        kind: Pod
+        name: prometheus-user-workload-0
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "42992"
+        uid: 4fafbb4b-1735-49ba-ade7-ed98020449e8
+    ports:
+    - name: thanos-proxy
+      port: 10902
+      protocol: TCP
+    - name: metrics
+      port: 9091
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:28:13Z"
+    creationTimestamp: "2022-05-24T18:28:14Z"
+    labels:
+      app.kubernetes.io/component: thanos-sidecar
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 2.32.1
+      service.kubernetes.io/headless: ""
+    name: prometheus-user-workload-thanos-sidecar
+    namespace: openshift-user-workload-monitoring
+    resourceVersion: "76392"
+    uid: e5245e36-fe40-4dbf-bdc2-7e079df0646e
+  subsets:
+  - addresses:
+    - ip: 10.128.2.17
+      nodeName: ip-10-0-164-190.ec2.internal
+      targetRef:
+        kind: Pod
+        name: prometheus-user-workload-1
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "76229"
+        uid: 0cfc3a99-7e4e-4f7d-a5f9-7e1ef20db3a7
+    - ip: 10.131.0.17
+      nodeName: ip-10-0-128-34.ec2.internal
+      targetRef:
+        kind: Pod
+        name: prometheus-user-workload-0
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "42992"
+        uid: 4fafbb4b-1735-49ba-ade7-ed98020449e8
+    ports:
+    - name: thanos-proxy
+      port: 10902
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:43:50Z"
+    creationTimestamp: "2022-05-24T18:28:13Z"
+    labels:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: thanos-ruler
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 0.23.1
+    name: thanos-ruler
+    namespace: openshift-user-workload-monitoring
+    resourceVersion: "78001"
+    uid: 6138eb27-8716-4497-bba6-f1c13f58bc48
+  subsets:
+  - addresses:
+    - ip: 10.128.2.15
+      nodeName: ip-10-0-164-190.ec2.internal
+      targetRef:
+        kind: Pod
+        name: thanos-ruler-user-workload-1
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "77995"
+        uid: 3210092f-04da-4b74-8bb6-aa12ce0cd96c
+    - ip: 10.131.0.19
+      nodeName: ip-10-0-128-34.ec2.internal
+      targetRef:
+        kind: Pod
+        name: thanos-ruler-user-workload-0
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "67531"
+        uid: b66c4bba-9287-49bc-833d-161808c1f2fa
+    ports:
+    - name: web
+      port: 9091
+      protocol: TCP
+    - name: grpc
+      port: 10901
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:43:50Z"
+    creationTimestamp: "2022-05-24T18:28:20Z"
+    labels:
+      operated-thanos-ruler: "true"
+      service.kubernetes.io/headless: ""
+    name: thanos-ruler-operated
+    namespace: openshift-user-workload-monitoring
+    resourceVersion: "78000"
+    uid: a887404c-d411-4b2a-acd4-b1adf588810e
+  subsets:
+  - addresses:
+    - ip: 10.128.2.15
+      nodeName: ip-10-0-164-190.ec2.internal
+      targetRef:
+        kind: Pod
+        name: thanos-ruler-user-workload-1
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "77995"
+        uid: 3210092f-04da-4b74-8bb6-aa12ce0cd96c
+    - ip: 10.131.0.19
+      nodeName: ip-10-0-128-34.ec2.internal
+      targetRef:
+        kind: Pod
+        name: thanos-ruler-user-workload-0
+        namespace: openshift-user-workload-monitoring
+        resourceVersion: "67531"
+        uid: b66c4bba-9287-49bc-833d-161808c1f2fa
+    ports:
+    - name: web
+      port: 9091
+      protocol: TCP
+    - name: grpc
+      port: 10901
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "322676"

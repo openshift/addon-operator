@@ -1,0 +1,42 @@
+2022-05-24T18:35:59.559664159Z I0524 18:35:59.559581    2808 start.go:108] Version: v4.10.0-202204301617.p0.g7f47027.assembly.stream-dirty (7f47027996164e00c6e7916f0047c9fab855f818)
+2022-05-24T18:35:59.698089358Z I0524 18:35:59.698056    2808 start.go:121] Calling chroot("/rootfs")
+2022-05-24T18:35:59.706188521Z I0524 18:35:59.706154    2808 update.go:1941] Running: systemctl start rpm-ostreed
+2022-05-24T18:36:01.284860990Z I0524 18:36:01.284824    2808 rpm-ostree.go:325] Running captured: rpm-ostree status --json
+2022-05-24T18:36:01.506056326Z I0524 18:36:01.506014    2808 rpm-ostree.go:325] Running captured: rpm-ostree status --json
+2022-05-24T18:36:01.585691414Z I0524 18:36:01.585642    2808 daemon.go:223] Booted osImageURL: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9d6149c1bc4f5629e1d18ecc0a15b7e8677519b0fbb8a13b2eead89d918460f1 (410.84.202204291735-0)
+2022-05-24T18:36:02.241986033Z I0524 18:36:02.241952    2808 start.go:97] Copied self to /run/bin/machine-config-daemon on host
+2022-05-24T18:36:02.243972044Z I0524 18:36:02.243938    2808 metrics.go:106] Registering Prometheus metrics
+2022-05-24T18:36:02.244042650Z I0524 18:36:02.244018    2808 metrics.go:111] Starting metrics listener on 127.0.0.1:8797
+2022-05-24T18:36:02.244662317Z I0524 18:36:02.244644    2808 update.go:1956] Starting to manage node: ip-10-0-138-197.ec2.internal
+2022-05-24T18:36:02.262909925Z I0524 18:36:02.262840    2808 rpm-ostree.go:325] Running captured: rpm-ostree status
+2022-05-24T18:36:02.370464420Z I0524 18:36:02.370424    2808 daemon.go:957] State: idle
+2022-05-24T18:36:02.370464420Z Deployments:
+2022-05-24T18:36:02.370464420Z * pivot://quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9d6149c1bc4f5629e1d18ecc0a15b7e8677519b0fbb8a13b2eead89d918460f1
+2022-05-24T18:36:02.370464420Z               CustomOrigin: Managed by machine-config-operator
+2022-05-24T18:36:02.370464420Z                    Version: 410.84.202204291735-0 (2022-04-29T17:38:06Z)
+2022-05-24T18:36:02.370464420Z 
+2022-05-24T18:36:02.370464420Z   ostree://b1529f891c792557fd28e040870ab4b8220e65c5416427032701d21147815293
+2022-05-24T18:36:02.370464420Z                    Version: 410.84.202201251210-0 (2022-01-25T12:13:24Z)
+2022-05-24T18:36:02.370517031Z I0524 18:36:02.370501    2808 rpm-ostree.go:325] Running captured: journalctl --list-boots
+2022-05-24T18:36:02.378089996Z I0524 18:36:02.378054    2808 daemon.go:964] journalctl --list-boots:
+2022-05-24T18:36:02.378089996Z -2 3fad2d0128224d45bfc9ca3fb7bda598 Tue 2022-05-24 17:59:17 UTC—Tue 2022-05-24 18:06:28 UTC
+2022-05-24T18:36:02.378089996Z -1 0a0142b1f2d94c5d902db8bdfa637b74 Tue 2022-05-24 18:06:43 UTC—Tue 2022-05-24 18:35:16 UTC
+2022-05-24T18:36:02.378089996Z  0 d7ae7efc2fa84f9fac94a2d731b2578a Tue 2022-05-24 18:35:30 UTC—Tue 2022-05-24 18:36:02 UTC
+2022-05-24T18:36:02.378089996Z I0524 18:36:02.378075    2808 rpm-ostree.go:325] Running captured: systemctl list-units --state=failed --no-legend
+2022-05-24T18:36:02.385519834Z I0524 18:36:02.385488    2808 daemon.go:979] systemd service state: OK
+2022-05-24T18:36:02.385565917Z I0524 18:36:02.385550    2808 daemon.go:647] Starting MachineConfigDaemon
+2022-05-24T18:36:02.385674713Z I0524 18:36:02.385660    2808 daemon.go:654] Enabling Kubelet Healthz Monitor
+2022-05-24T18:36:03.273836770Z I0524 18:36:03.273797    2808 daemon.go:388] Node ip-10-0-138-197.ec2.internal is part of the control plane
+2022-05-24T18:36:10.938876113Z I0524 18:36:10.938837    2808 daemon.go:910] Current config: rendered-master-facb2e385b53334229e907cd3978cf4c
+2022-05-24T18:36:10.938967196Z I0524 18:36:10.938932    2808 daemon.go:911] Desired config: rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:10.970148655Z I0524 18:36:10.970090    2808 update.go:1956] Disk currentConfig rendered-master-271b97bce1b2740bd1d9af836320d507 overrides node's currentConfig annotation rendered-master-facb2e385b53334229e907cd3978cf4c
+2022-05-24T18:36:10.975088277Z I0524 18:36:10.975052    2808 daemon.go:1193] Validating against pending config rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:11.078147609Z I0524 18:36:11.078104    2808 daemon.go:1211] Validated on-disk state
+2022-05-24T18:36:11.101915385Z I0524 18:36:11.101880    2808 daemon.go:1262] Completing pending config rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:11.101966790Z I0524 18:36:11.101954    2808 drain.go:44] Initiating uncordon on node (currently schedulable: false)
+2022-05-24T18:36:11.121730233Z I0524 18:36:11.121499    2808 drain.go:62] RunCordonOrUncordon() succeeded but node is still not in uncordon state, retrying
+2022-05-24T18:36:21.124697466Z I0524 18:36:21.124649    2808 drain.go:44] Initiating uncordon on node (currently schedulable: true)
+2022-05-24T18:36:21.124697466Z I0524 18:36:21.124680    2808 drain.go:66] uncordon succeeded on node (currently schedulable: true)
+2022-05-24T18:36:21.124697466Z I0524 18:36:21.124689    2808 update.go:1956] Update completed for config rendered-master-271b97bce1b2740bd1d9af836320d507 and node has been successfully uncordoned
+2022-05-24T18:36:21.127201844Z I0524 18:36:21.127181    2808 daemon.go:1278] In desired config rendered-master-271b97bce1b2740bd1d9af836320d507
+2022-05-24T18:36:21.137562063Z I0524 18:36:21.137528    2808 config_drift_monitor.go:240] Config Drift Monitor started

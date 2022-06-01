@@ -1,0 +1,111 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: red-hat-clustertype=rosa,red-hat-managed=true
+      service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
+      service.beta.kubernetes.io/aws-load-balancer-healthcheck-interval: "5"
+      service.beta.kubernetes.io/aws-load-balancer-healthcheck-timeout: "4"
+      service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
+      service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: '*'
+      traffic-policy.network.alpha.openshift.io/local-with-fallback: ""
+    creationTimestamp: "2022-05-24T18:08:52Z"
+    finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+    labels:
+      app: router
+      ingresscontroller.operator.openshift.io/owning-ingresscontroller: default
+      router: router-default
+    name: router-default
+    namespace: openshift-ingress
+    ownerReferences:
+    - apiVersion: apps/v1
+      controller: true
+      kind: Deployment
+      name: router-default
+      uid: b76058fd-20e9-43c4-a6ef-4a9bae514f62
+    resourceVersion: "15293"
+    uid: 886fe245-b580-4cb6-9232-fbd2feef57e8
+  spec:
+    allocateLoadBalancerNodePorts: true
+    clusterIP: 172.30.136.147
+    clusterIPs:
+    - 172.30.136.147
+    externalTrafficPolicy: Local
+    healthCheckNodePort: 30063
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      nodePort: 32384
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      nodePort: 31311
+      port: 443
+      protocol: TCP
+      targetPort: https
+    selector:
+      ingresscontroller.operator.openshift.io/deployment-ingresscontroller: default
+    sessionAffinity: None
+    type: LoadBalancer
+  status:
+    loadBalancer:
+      ingress:
+      - hostname: a886fe245b5804cb69232fbd2feef57e-1782300549.us-east-1.elb.amazonaws.com
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: router-metrics-certs-default
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:08:52Z"
+    labels:
+      ingresscontroller.operator.openshift.io/owning-ingresscontroller: default
+    name: router-internal-default
+    namespace: openshift-ingress
+    ownerReferences:
+    - apiVersion: apps/v1
+      controller: true
+      kind: Deployment
+      name: router-default
+      uid: b76058fd-20e9-43c4-a6ef-4a9bae514f62
+    resourceVersion: "8546"
+    uid: a437ff14-00a9-446a-aa05-26a0b36903ff
+  spec:
+    clusterIP: 172.30.169.134
+    clusterIPs:
+    - 172.30.169.134
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+    - name: metrics
+      port: 1936
+      protocol: TCP
+      targetPort: 1936
+    selector:
+      ingresscontroller.operator.openshift.io/deployment-ingresscontroller: default
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "297079"

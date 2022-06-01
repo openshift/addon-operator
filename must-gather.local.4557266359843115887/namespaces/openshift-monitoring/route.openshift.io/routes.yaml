@@ -1,0 +1,150 @@
+---
+apiVersion: route.openshift.io/v1
+items:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      haproxy.router.openshift.io/hsts_header: max-age=31536000;preload
+      openshift.io/host.generated: "true"
+      router.openshift.io/cookie-same-site: Strict
+    creationTimestamp: "2022-05-24T18:13:09Z"
+    name: alertmanager-main
+    namespace: openshift-monitoring
+    resourceVersion: "30243"
+    uid: e92c76f8-8b06-49d4-bcd4-d5eae400e3ff
+  spec:
+    host: alertmanager-main-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+    path: /api
+    port:
+      targetPort: web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: alertmanager-main
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:13:16Z"
+        status: "True"
+        type: Admitted
+      host: alertmanager-main-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      haproxy.router.openshift.io/hsts_header: max-age=31536000;preload
+      openshift.io/host.generated: "true"
+      router.openshift.io/cookie-same-site: Strict
+    creationTimestamp: "2022-05-24T18:13:09Z"
+    name: grafana
+    namespace: openshift-monitoring
+    resourceVersion: "30247"
+    uid: 6b336a6d-a666-4ef9-8a13-f6d8132607c4
+  spec:
+    host: grafana-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: grafana
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:13:16Z"
+        status: "True"
+        type: Admitted
+      host: grafana-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      haproxy.router.openshift.io/hsts_header: max-age=31536000;preload
+      openshift.io/host.generated: "true"
+      router.openshift.io/cookie-same-site: Strict
+    creationTimestamp: "2022-05-24T18:13:09Z"
+    name: prometheus-k8s
+    namespace: openshift-monitoring
+    resourceVersion: "30250"
+    uid: bc91f013-e511-428c-81ec-9bd02e3e6378
+  spec:
+    host: prometheus-k8s-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+    port:
+      targetPort: web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: prometheus-k8s
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:13:16Z"
+        status: "True"
+        type: Admitted
+      host: prometheus-k8s-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      haproxy.router.openshift.io/hsts_header: max-age=31536000;preload
+      openshift.io/host.generated: "true"
+      router.openshift.io/cookie-same-site: Strict
+    creationTimestamp: "2022-05-24T18:13:09Z"
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: thanos-querier
+      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 0.23.1
+    name: thanos-querier
+    namespace: openshift-monitoring
+    resourceVersion: "30253"
+    uid: fe96eb01-8b40-4d1d-a886-206aa16c76fb
+  spec:
+    host: thanos-querier-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+    path: /api
+    port:
+      targetPort: web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: thanos-querier
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:13:16Z"
+        status: "True"
+        type: Admitted
+      host: thanos-querier-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+kind: RouteList
+metadata:
+  resourceVersion: "322407"

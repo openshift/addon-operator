@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:33Z"
+    creationTimestamp: "2022-05-24T18:05:37Z"
+    labels:
+      app: openshift-kube-scheduler-operator
+    name: metrics
+    namespace: openshift-kube-scheduler-operator
+    resourceVersion: "62996"
+    uid: af7f7d76-f2cb-4760-a2e8-a56d062f4791
+  subsets:
+  - addresses:
+    - ip: 10.128.0.63
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: openshift-kube-scheduler-operator-5ccc7cc887-hqrtq
+        namespace: openshift-kube-scheduler-operator
+        resourceVersion: "62985"
+        uid: 84268a8e-2a2a-457e-b994-266b925fcb0a
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "316783"

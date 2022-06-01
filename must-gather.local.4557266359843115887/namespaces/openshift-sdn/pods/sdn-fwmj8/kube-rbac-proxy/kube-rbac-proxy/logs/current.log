@@ -1,0 +1,5 @@
+2022-05-24T18:31:23.853041836Z 2022-05-24T18:31:23+00:00 INFO: sdn-metrics-certs mounted, starting kube-rbac-proxy
+2022-05-24T18:31:26.105098471Z I0524 18:31:26.104957    3587 main.go:181] Valid token audiences: 
+2022-05-24T18:31:26.105126261Z I0524 18:31:26.105118    3587 main.go:305] Reading certificate files
+2022-05-24T18:31:26.105961540Z I0524 18:31:26.105929    3587 main.go:339] Starting TCP socket on :9101
+2022-05-24T18:31:26.106297583Z I0524 18:31:26.106263    3587 main.go:346] Listening securely on :9101

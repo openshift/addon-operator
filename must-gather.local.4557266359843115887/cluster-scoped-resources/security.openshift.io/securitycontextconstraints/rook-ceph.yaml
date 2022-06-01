@@ -1,0 +1,44 @@
+---
+allowHostDirVolumePlugin: true
+allowHostIPC: true
+allowHostNetwork: true
+allowHostPID: true
+allowHostPorts: true
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: true
+allowedCapabilities: null
+apiVersion: security.openshift.io/v1
+defaultAddCapabilities:
+- MKNOD
+fsGroup:
+  type: MustRunAs
+groups: []
+kind: SecurityContextConstraints
+metadata:
+  creationTimestamp: "2022-05-24T18:29:15Z"
+  generation: 1
+  name: rook-ceph
+  resourceVersion: "46231"
+  uid: e8dfb974-7267-4dfa-b2c7-30394c5f0fe9
+priority: null
+readOnlyRootFilesystem: false
+requiredDropCapabilities: []
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: MustRunAs
+supplementalGroups:
+  type: RunAsAny
+users:
+- system:serviceaccount:openshift-storage:rook-ceph-system
+- system:serviceaccount:openshift-storage:default
+- system:serviceaccount:openshift-storage:rook-ceph-mgr
+- system:serviceaccount:openshift-storage:rook-ceph-osd
+volumes:
+- configMap
+- downwardAPI
+- emptyDir
+- hostPath
+- persistentVolumeClaim
+- projected
+- secret

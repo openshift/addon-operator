@@ -1,0 +1,33 @@
+---
+apiVersion: policy/v1
+items:
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:41Z"
+    generation: 1
+    name: kube-controller-manager-guard-pdb
+    namespace: openshift-kube-controller-manager
+    resourceVersion: "73954"
+    uid: 1467361b-6e56-469b-a2c5-3d4c7229e0f0
+  spec:
+    minAvailable: 2
+    selector:
+      matchLabels:
+        app: guard
+  status:
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:41:37Z"
+      message: ""
+      observedGeneration: 1
+      reason: SufficientPods
+      status: "True"
+      type: DisruptionAllowed
+    currentHealthy: 3
+    desiredHealthy: 2
+    disruptionsAllowed: 1
+    expectedPods: 3
+    observedGeneration: 1
+kind: PodDisruptionBudgetList
+metadata:
+  resourceVersion: "315367"

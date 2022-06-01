@@ -1,0 +1,128 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+    kubernetes.io/description: |
+      This daemon set launches the Multus admisson controller component on each node.
+    networkoperator.openshift.io/non-critical: ""
+    release.openshift.io/version: 4.10.13
+  creationTimestamp: "2022-05-24T18:06:58Z"
+  generation: 1
+  labels:
+    app: multus-admission-controller
+  name: multus-admission-controller
+  namespace: openshift-multus
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "71686"
+  uid: 0ce67ee9-5bfa-4d70-8f75-c4b6e0ebf403
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: multus-admission-controller
+      namespace: openshift-multus
+  template:
+    metadata:
+      annotations:
+        target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+      creationTimestamp: null
+      labels:
+        app: multus-admission-controller
+        component: network
+        namespace: openshift-multus
+        openshift.io/component: network
+        type: infra
+    spec:
+      containers:
+      - args:
+        - -bind-address=0.0.0.0
+        - -port=6443
+        - -tls-private-key-file=/etc/webhook/tls.key
+        - -tls-cert-file=/etc/webhook/tls.crt
+        - -alsologtostderr=true
+        - -metrics-listen-address=127.0.0.1:9091
+        command:
+        - /usr/bin/webhook
+        image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5da7e070826cda9425f84cca10cdf94df1724f7050e2492f0b42c7e13aaa5f80
+        imagePullPolicy: IfNotPresent
+        name: multus-admission-controller
+        ports:
+        - containerPort: 9091
+          name: metrics-port
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 10m
+            memory: 50Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/webhook
+          name: webhook-certs
+          readOnly: true
+      - args:
+        - --logtostderr
+        - --secure-listen-address=:8443
+        - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+        - --upstream=http://127.0.0.1:9091/
+        - --tls-private-key-file=/etc/webhook/tls.key
+        - --tls-cert-file=/etc/webhook/tls.crt
+        image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+        imagePullPolicy: IfNotPresent
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 10m
+            memory: 20Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /etc/webhook
+          name: webhook-certs
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      priorityClassName: system-cluster-critical
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      serviceAccount: multus
+      serviceAccountName: multus
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+      volumes:
+      - name: webhook-certs
+        secret:
+          defaultMode: 420
+          secretName: multus-admission-controller-secret
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 3
+  desiredNumberScheduled: 3
+  numberAvailable: 3
+  numberMisscheduled: 0
+  numberReady: 3
+  observedGeneration: 1
+  updatedNumberScheduled: 3

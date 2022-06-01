@@ -1,0 +1,206 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.4.68"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.4.68"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T22:00:00Z"
+  generateName: osd-patch-subscription-source-27557160-
+  labels:
+    controller-uid: 5a19a11a-fe0b-4de9-a0dc-98742f524275
+    job-name: osd-patch-subscription-source-27557160
+  name: osd-patch-subscription-source-27557160-gkzjr
+  namespace: openshift-marketplace
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: osd-patch-subscription-source-27557160
+    uid: 5a19a11a-fe0b-4de9-a0dc-98742f524275
+  resourceVersion: "235227"
+  uid: 9220e7a3-2912-43ec-8f9f-428d358970fc
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: node-role.kubernetes.io/infra
+            operator: Exists
+        weight: 1
+  containers:
+  - args:
+    - /bin/bash
+    - -c
+    - |
+      # Script run as an idempotent cronjob to fix existing subscriptions when disabling OSD operator curation.
+
+      # for each type of source (redhat, certified, communit)
+      # AND for each namespace having a subscription with a curated community source
+      # AND for each subscription having a curated source
+      # patch the source
+      # NOTE there are loops for each source to keep the jsonpath simple and the logic easy to read
+
+      echo START
+      for NS in $(oc get subscription -A -o jsonpath='{.items[?(@.spec.source=="osd-curated-redhat-operators")].metadata.namespace}');
+      do
+        for SUB in $(oc -n $NS get subscription -o jsonpath='{.items[?(@.spec.source=="osd-curated-redhat-operators")].metadata.name}');
+        do
+          echo "Patching subscription '$SUB' in namespace '$NS'"
+          oc -n $NS patch subscription $SUB --patch '{"spec":{"source":"redhat-operators"}}' --type merge
+        done
+      done
+
+      for NS in $(oc get subscription -A -o jsonpath='{.items[?(@.spec.source=="osd-curated-certified-operators")].metadata.namespace}');
+      do
+        for SUB in $(oc -n $NS get subscription -o jsonpath='{.items[?(@.spec.source=="osd-curated-certified-operators")].metadata.name}');
+        do
+          echo "Patching subscription '$SUB' in namespace '$NS'"
+          oc -n $NS patch subscription $SUB --patch '{"spec":{"source":"certified-operators"}}' --type merge
+        done
+      done
+
+      for NS in $(oc get subscription -A -o jsonpath='{.items[?(@.spec.source=="osd-curated-community-operators")].metadata.namespace}');
+      do
+        for SUB in $(oc -n $NS get subscription -o jsonpath='{.items[?(@.spec.source=="osd-curated-community-operators")].metadata.name}');
+        do
+          echo "Patching subscription '$SUB' in namespace '$NS'"
+          oc -n $NS patch subscription $SUB --patch '{"spec":{"source":"community-operators"}}' --type merge
+        done
+      done
+      echo FINISH
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    imagePullPolicy: Always
+    name: osd-patch-subscription-source
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000190000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-sr992
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: osd-patch-subscription-source-dockercfg-rmdjx
+  nodeName: ip-10-0-148-123.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000190000
+    seLinuxOptions:
+      level: s0:c14,c4
+  serviceAccount: osd-patch-subscription-source
+  serviceAccountName: osd-patch-subscription-source
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-sr992
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T22:00:00Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T22:00:05Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T22:00:05Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T22:00:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://1e37748404daf05ff83418b37722bba56f319da02aaac2861908123cdd73e68f
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    imageID: image-registry.openshift-image-registry.svc:5000/openshift/cli@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+    lastState: {}
+    name: osd-patch-subscription-source
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://1e37748404daf05ff83418b37722bba56f319da02aaac2861908123cdd73e68f
+        exitCode: 0
+        finishedAt: "2022-05-24T22:00:04Z"
+        reason: Completed
+        startedAt: "2022-05-24T22:00:03Z"
+  hostIP: 10.0.148.123
+  phase: Succeeded
+  podIP: 10.128.4.68
+  podIPs:
+  - ip: 10.128.4.68
+  qosClass: BestEffort
+  startTime: "2022-05-24T22:00:00Z"

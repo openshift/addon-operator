@@ -1,0 +1,145 @@
+---
+apiVersion: operator.openshift.io/v1
+kind: KubeControllerManager
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2022-05-24T18:05:38Z"
+  generation: 3
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "78435"
+  uid: ac2a710d-1bef-492d-9e25-c4bcaf57ea13
+spec:
+  logLevel: Normal
+  managementState: Managed
+  observedConfig:
+    extendedArguments:
+      cloud-provider:
+      - aws
+      cluster-cidr:
+      - 10.128.0.0/14
+      cluster-name:
+      - odf-service-c778b
+      feature-gates:
+      - APIPriorityAndFairness=true
+      - RotateKubeletServerCertificate=true
+      - DownwardAPIHugePages=true
+      - PodSecurity=true
+      - CSIMigrationAWS=false
+      - CSIMigrationOpenStack=false
+      - CSIMigrationGCE=false
+      - CSIMigrationAzureDisk=false
+      - CSIMigrationAzureFile=false
+      - CSIMigrationvSphere=false
+      service-cluster-ip-range:
+      - 172.30.0.0/16
+    serviceServingCert:
+      certFile: /etc/kubernetes/static-pod-resources/configmaps/service-ca/ca-bundle.crt
+    servingInfo:
+      cipherSuites:
+      - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+      - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      minTLSVersion: VersionTLS12
+  operatorLogLevel: Normal
+  unsupportedConfigOverrides: null
+  useMoreSecureServiceCA: true
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:07:41Z"
+    reason: AsExpected
+    status: "False"
+    type: MissingStaticPodControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:26:23Z"
+    status: "False"
+    type: InstallerControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:11:07Z"
+    message: 3 nodes are active; 3 nodes are at revision 11
+    status: "True"
+    type: StaticPodsAvailable
+  - lastTransitionTime: "2022-05-24T18:44:13Z"
+    message: 3 nodes are at revision 11
+    reason: AllNodesAtLatestRevision
+    status: "False"
+    type: NodeInstallerProgressing
+  - lastTransitionTime: "2022-05-24T18:07:41Z"
+    status: "False"
+    type: NodeInstallerDegraded
+  - lastTransitionTime: "2022-05-24T18:12:04Z"
+    status: "False"
+    type: StaticPodsDegraded
+  - lastTransitionTime: "2022-05-24T18:40:25Z"
+    message: All master nodes are ready
+    reason: MasterNodesReady
+    status: "False"
+    type: NodeControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:44:11Z"
+    reason: AsExpected
+    status: "False"
+    type: GuardControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:45Z"
+    status: "False"
+    type: ConfigObservationDegraded
+  - lastTransitionTime: "2022-05-24T18:07:47Z"
+    reason: AsExpected
+    status: "False"
+    type: BackingResourceControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:49Z"
+    status: "False"
+    type: InstallerPodPendingDegraded
+  - lastTransitionTime: "2022-05-24T18:07:49Z"
+    status: "False"
+    type: InstallerPodContainerWaitingDegraded
+  - lastTransitionTime: "2022-05-24T18:07:49Z"
+    status: "False"
+    type: InstallerPodNetworkingDegraded
+  - lastTransitionTime: "2022-05-24T18:07:52Z"
+    status: "False"
+    type: ResourceSyncControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:53Z"
+    reason: NoUnsupportedConfigOverrides
+    status: "True"
+    type: UnsupportedConfigOverridesUpgradeable
+  - lastTransitionTime: "2022-05-24T18:07:53Z"
+    status: "False"
+    type: CertRotation_CSRSigningCert_Degraded
+  - lastTransitionTime: "2022-05-24T18:07:56Z"
+    reason: AsExpected
+    status: "False"
+    type: KubeControllerManagerStaticResourcesDegraded
+  - lastTransitionTime: "2022-05-24T18:38:12Z"
+    status: "False"
+    type: RevisionControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:12:50Z"
+    status: "False"
+    type: SATokenSignerDegraded
+  - lastTransitionTime: "2022-05-24T18:08:11Z"
+    status: "True"
+    type: Upgradeable
+  - lastTransitionTime: "2022-05-24T18:08:11Z"
+    status: "True"
+    type: CloudControllerOwner
+  - lastTransitionTime: "2022-05-24T18:08:11Z"
+    status: "False"
+    type: TargetConfigControllerDegraded
+  latestAvailableRevision: 11
+  latestAvailableRevisionReason: ""
+  nodeStatuses:
+  - currentRevision: 11
+    nodeName: ip-10-0-138-197.ec2.internal
+  - currentRevision: 11
+    nodeName: ip-10-0-169-205.ec2.internal
+  - currentRevision: 11
+    nodeName: ip-10-0-149-121.ec2.internal
+  readyReplicas: 0

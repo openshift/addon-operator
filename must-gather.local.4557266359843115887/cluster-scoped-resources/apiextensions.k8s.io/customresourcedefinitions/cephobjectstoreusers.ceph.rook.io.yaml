@@ -1,0 +1,143 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: (devel)
+    operatorframework.io/installed-alongside-c569578e83a47937: openshift-storage/ocs-operator.v4.10.0
+  creationTimestamp: "2022-05-24T18:28:17Z"
+  generation: 1
+  labels:
+    operators.coreos.com/ocs-operator.openshift-storage: ""
+  name: cephobjectstoreusers.ceph.rook.io
+  resourceVersion: "51116"
+  uid: a3f22287-5f6a-4060-a506-08bbf780f5b2
+spec:
+  conversion:
+    strategy: None
+  group: ceph.rook.io
+  names:
+    kind: CephObjectStoreUser
+    listKind: CephObjectStoreUserList
+    plural: cephobjectstoreusers
+    shortNames:
+    - rcou
+    - objectuser
+    singular: cephobjectstoreuser
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              capabilities:
+                nullable: true
+                properties:
+                  bucket:
+                    enum:
+                    - '*'
+                    - read
+                    - write
+                    - read, write
+                    type: string
+                  metadata:
+                    enum:
+                    - '*'
+                    - read
+                    - write
+                    - read, write
+                    type: string
+                  usage:
+                    enum:
+                    - '*'
+                    - read
+                    - write
+                    - read, write
+                    type: string
+                  user:
+                    enum:
+                    - '*'
+                    - read
+                    - write
+                    - read, write
+                    type: string
+                  zone:
+                    enum:
+                    - '*'
+                    - read
+                    - write
+                    - read, write
+                    type: string
+                type: object
+              displayName:
+                type: string
+              quotas:
+                nullable: true
+                properties:
+                  maxBuckets:
+                    nullable: true
+                    type: integer
+                  maxObjects:
+                    format: int64
+                    nullable: true
+                    type: integer
+                  maxSize:
+                    anyOf:
+                    - type: integer
+                    - type: string
+                    nullable: true
+                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                    x-kubernetes-int-or-string: true
+                type: object
+              store:
+                type: string
+            type: object
+          status:
+            properties:
+              info:
+                additionalProperties:
+                  type: string
+                nullable: true
+                type: object
+              phase:
+                type: string
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        required:
+        - metadata
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: CephObjectStoreUser
+    listKind: CephObjectStoreUserList
+    plural: cephobjectstoreusers
+    shortNames:
+    - rcou
+    - objectuser
+    singular: cephobjectstoreuser
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:28:17Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2022-05-24T18:28:17Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1

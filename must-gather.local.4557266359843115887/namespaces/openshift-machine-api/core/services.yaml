@@ -1,0 +1,262 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-secret-name: cluster-autoscaler-operator-cert
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:06:17Z"
+    labels:
+      k8s-app: cluster-autoscaler-operator
+    name: cluster-autoscaler-operator
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "5827"
+    uid: 9edadaea-552f-44a8-9c73-117c23e53d68
+  spec:
+    clusterIP: 172.30.243.124
+    clusterIPs:
+    - 172.30.243.124
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    - name: metrics
+      port: 9192
+      protocol: TCP
+      targetPort: metrics
+    selector:
+      k8s-app: cluster-autoscaler-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      service.alpha.openshift.io/serving-cert-secret-name: cluster-baremetal-operator-tls
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:06:10Z"
+    labels:
+      k8s-app: cluster-baremetal-operator
+    name: cluster-baremetal-operator-service
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "5602"
+    uid: 7b48d153-d5a9-4f8f-9797-356033c63f1f
+  spec:
+    clusterIP: 172.30.210.50
+    clusterIPs:
+    - 172.30.210.50
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+      targetPort: https
+    selector:
+      k8s-app: cluster-baremetal-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-secret-name: cluster-baremetal-webhook-server-cert
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:06:11Z"
+    labels:
+      k8s-app: cluster-baremetal-operator
+    name: cluster-baremetal-webhook-service
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "5221"
+    uid: 8a6c3268-ed8d-44e7-a771-2c3dd7be40fc
+  spec:
+    clusterIP: 172.30.37.163
+    clusterIPs:
+    - 172.30.37.163
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 9443
+    selector:
+      k8s-app: cluster-baremetal-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+      service.alpha.openshift.io/serving-cert-secret-name: machine-api-controllers-tls
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:06:20Z"
+    labels:
+      k8s-app: controller
+    name: machine-api-controllers
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "5322"
+    uid: 797d4a7b-5c81-465c-9988-1cd622092e99
+  spec:
+    clusterIP: 172.30.125.232
+    clusterIPs:
+    - 172.30.125.232
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: machine-mtrc
+      port: 8441
+      protocol: TCP
+      targetPort: machine-mtrc
+    - name: machineset-mtrc
+      port: 8442
+      protocol: TCP
+      targetPort: machineset-mtrc
+    - name: mhc-mtrc
+      port: 8444
+      protocol: TCP
+      targetPort: mhc-mtrc
+    selector:
+      k8s-app: controller
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+      service.alpha.openshift.io/serving-cert-secret-name: machine-api-operator-tls
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:06:20Z"
+    labels:
+      k8s-app: machine-api-operator
+    name: machine-api-operator
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "6130"
+    uid: 3dcd3727-230a-4beb-b214-0f3140300f07
+  spec:
+    clusterIP: 172.30.108.6
+    clusterIPs:
+    - 172.30.108.6
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+      targetPort: https
+    selector:
+      k8s-app: machine-api-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-secret-name: machine-api-operator-webhook-cert
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:06:11Z"
+    labels:
+      k8s-app: machine-api-operator-webhook
+    name: machine-api-operator-webhook
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "6227"
+    uid: 9a5e5734-4150-4f3a-9b58-fac76a2229fb
+  spec:
+    clusterIP: 172.30.99.111
+    clusterIPs:
+    - 172.30.99.111
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: webhook-server
+    selector:
+      api: clusterapi
+      k8s-app: controller
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "297565"

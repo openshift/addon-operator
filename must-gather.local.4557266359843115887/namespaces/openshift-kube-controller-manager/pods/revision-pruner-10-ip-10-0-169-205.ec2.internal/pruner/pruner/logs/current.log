@@ -1,0 +1,17 @@
+2022-05-24T18:31:33.177447672Z I0524 18:31:33.177278       1 cmd.go:41] &{<nil> true {false} prune true map[cert-dir:0xc00016a6e0 max-eligible-revision:0xc00016a460 protected-revisions:0xc00016a500 resource-dir:0xc00016a5a0 static-pod-name:0xc00016a640 v:0xc00016b4a0] [0xc00016b4a0 0xc00016a460 0xc00016a500 0xc00016a5a0 0xc00016a6e0 0xc00016a640] [] map[add-dir-header:0xc00016ad20 alsologtostderr:0xc00016adc0 cert-dir:0xc00016a6e0 help:0xc00016b860 log-backtrace-at:0xc00016af00 log-dir:0xc00016afa0 log-file:0xc00016b040 log-file-max-size:0xc00016b0e0 log-flush-frequency:0xc00016ae60 logtostderr:0xc00016b180 max-eligible-revision:0xc00016a460 one-output:0xc00016b220 protected-revisions:0xc00016a500 resource-dir:0xc00016a5a0 skip-headers:0xc00016b2c0 skip-log-headers:0xc00016b360 static-pod-name:0xc00016a640 stderrthreshold:0xc00016b400 v:0xc00016b4a0 vmodule:0xc00016b540] [0xc00016a460 0xc00016a500 0xc00016a5a0 0xc00016a640 0xc00016a6e0 0xc00016ad20 0xc00016adc0 0xc00016af00 0xc00016afa0 0xc00016b040 0xc00016b0e0 0xc00016ae60 0xc00016b180 0xc00016b220 0xc00016b2c0 0xc00016b360 0xc00016b400 0xc00016b4a0 0xc00016b540 0xc00016b860] [0xc00016ad20 0xc00016adc0 0xc00016a6e0 0xc00016b860 0xc00016af00 0xc00016afa0 0xc00016b040 0xc00016b0e0 0xc00016ae60 0xc00016b180 0xc00016a460 0xc00016b220 0xc00016a500 0xc00016a5a0 0xc00016b2c0 0xc00016b360 0xc00016a640 0xc00016b400 0xc00016b4a0 0xc00016b540] map[104:0xc00016b860 118:0xc00016b4a0] [] -1 0 0xc0006db950 true 0x6bb5c0 []}
+2022-05-24T18:31:33.177541756Z I0524 18:31:33.177452       1 cmd.go:42] (*prune.PruneOptions)(0xc0001807d0)({
+2022-05-24T18:31:33.177541756Z  MaxEligibleRevision: (int) 10,
+2022-05-24T18:31:33.177541756Z  ProtectedRevisions: ([]int) (len=8 cap=8) {
+2022-05-24T18:31:33.177541756Z   (int) 3,
+2022-05-24T18:31:33.177541756Z   (int) 4,
+2022-05-24T18:31:33.177541756Z   (int) 5,
+2022-05-24T18:31:33.177541756Z   (int) 6,
+2022-05-24T18:31:33.177541756Z   (int) 7,
+2022-05-24T18:31:33.177541756Z   (int) 8,
+2022-05-24T18:31:33.177541756Z   (int) 9,
+2022-05-24T18:31:33.177541756Z   (int) 10
+2022-05-24T18:31:33.177541756Z  },
+2022-05-24T18:31:33.177541756Z  ResourceDir: (string) (len=36) "/etc/kubernetes/static-pod-resources",
+2022-05-24T18:31:33.177541756Z  CertDir: (string) (len=29) "kube-controller-manager-certs",
+2022-05-24T18:31:33.177541756Z  StaticPodName: (string) (len=27) "kube-controller-manager-pod"
+2022-05-24T18:31:33.177541756Z })

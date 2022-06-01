@@ -1,0 +1,67 @@
+---
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: false
+allowedCapabilities:
+- NET_ADMIN
+- NET_RAW
+apiVersion: security.openshift.io/v1
+defaultAddCapabilities: null
+fsGroup:
+  type: RunAsAny
+groups: []
+kind: SecurityContextConstraints
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"allowHostNetwork":false,"allowPrivilegedContainer":false,"allowedCapabilities":["NET_ADMIN","NET_RAW"],"apiVersion":"security.openshift.io/v1","kind":"SecurityContextConstraints","metadata":{"annotations":{},"labels":{"hive.openshift.io/managed":"true"},"name":"pcap-dedicated-admins"},"runAsUser":{"type":"RunAsAny"},"seLinuxContext":{"type":"RunAsAny"}}
+  creationTimestamp: "2022-05-24T18:25:35Z"
+  generation: 1
+  labels:
+    hive.openshift.io/managed: "true"
+  name: pcap-dedicated-admins
+  resourceVersion: "30190"
+  uid: 3345b3cc-3b1a-4ef8-aeae-61417ca6e572
+priority: null
+readOnlyRootFilesystem: false
+requiredDropCapabilities: null
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+supplementalGroups:
+  type: RunAsAny
+users: []
+volumes:
+- awsElasticBlockStore
+- azureDisk
+- azureFile
+- cephFS
+- cinder
+- configMap
+- csi
+- downwardAPI
+- emptyDir
+- ephemeral
+- fc
+- flexVolume
+- flocker
+- gcePersistentDisk
+- gitRepo
+- glusterfs
+- iscsi
+- nfs
+- persistentVolumeClaim
+- photonPersistentDisk
+- portworxVolume
+- projected
+- quobyte
+- rbd
+- scaleIO
+- secret
+- storageOS
+- vsphere

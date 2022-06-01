@@ -1,0 +1,66 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    service.beta.openshift.io/inject-cabundle: "true"
+  creationTimestamp: "2022-05-24T18:08:35Z"
+  generation: 2
+  name: machine-api
+  resourceVersion: "7665"
+  uid: e529b97f-add6-4f12-9ded-917e23cd015a
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURVVENDQWptZ0F3SUJBZ0lJUVpyeGlYaVBPb1l3RFFZSktvWklodmNOQVFFTEJRQXdOakUwTURJR0ExVUUKQXd3cmIzQmxibk5vYVdaMExYTmxjblpwWTJVdGMyVnlkbWx1WnkxemFXZHVaWEpBTVRZMU16UXhOVFkyTWpBZQpGdzB5TWpBMU1qUXhPREEzTkRGYUZ3MHlOREEzTWpJeE9EQTNOREphTURZeE5EQXlCZ05WQkFNTUsyOXdaVzV6CmFHbG1kQzF6WlhKMmFXTmxMWE5sY25acGJtY3RjMmxuYm1WeVFERTJOVE0wTVRVMk5qSXdnZ0VpTUEwR0NTcUcKU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRRGV0bUw4N29NaGowd0V1Rmh0aEpUSjY2V1p6VThIUFhsegpobi9JNGdOWHhFMzdjdEFBeHBiNzdPUGF3WkFPZVpOdWlhYyszUHVqaHhNZnlXSnd0V3gzanpxZk9hMXFDeiszClpUMnQvNlhiaFI4QWQxQStMakFkNkZNMVlRQURKNXVIcm5LTWhGam5XR3NMQTE3TWV6Wk5wZkVUajlZSHJabWoKTzZLTXhRMktONGEvSkczTHNROFlnVWJwbW94YXhjaldVaklUKzFndFU5dHhXNjc3K1VnTy90Z3FyaEcxOGIwdwovMHZhVlFNdjhXRi9aTmpUdW9uY0NhMCtOcjZDNHRPbzg0bFQ3dmlhSlRMK1FoVXdMYU94SHF2UDNLRU9UTzQ1ClduUnN6UnUrMmlmMW5NM1hDQUhBc25zTkhwM2Q2b0xNeXVvc20xL1pGODJ4RjBGemFxQVhBZ01CQUFHall6QmgKTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVdCQlJ5OHZlUwpQVkxhOXNkUklybjExWjlKSjVWZDB6QWZCZ05WSFNNRUdEQVdnQlJ5OHZlU1BWTGE5c2RSSXJuMTFaOUpKNVZkCjB6QU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFRU1JKMjQxM0tWUEo2WmY2a0o1Sk1VOEJaNHZKWkMyTlJJMUoKWk1IUHpDUllQSVM1Z2dJOW1VY1hnL00yQnY4eTFqM0VudUNJNERWc25mclVNdlBqNEJyZ2E4T0QrYm9wNUNZcApIamRjZG4xdHhDUUZFNDlPbk85UGRXSVlUSHZCZEFNRmI5Y2dmbDRyOWdZYk1CSWtiREVpdjdjeWFPUS9LcmI2ClVFTGd3RFdhWC9Mb2gxZjJ3YVUyQUFPWFhOenN4cHU2TnBCY1hwemtNL1BZanZBUFlkZjBWOW93L1ViOVJYRFYKY3FveFgycmI2NFNEZ09KTlNtUlRTOENYdXZNQnFYQ2dTWEFxRmR0UHB6dEdIdE1ZR2ZTR3BQNUs5UDNXbnJOZwpkS01VdXFiU3UvLy9rR3Y3VktjeDk1WUFDclFBQjZkelpidGxreE9tb1B2ajVuVnEzdz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    service:
+      name: machine-api-operator-webhook
+      namespace: openshift-machine-api
+      path: /validate-machine-openshift-io-v1beta1-machine
+      port: 443
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: validation.machine.machine.openshift.io
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - machine.openshift.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machines
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURVVENDQWptZ0F3SUJBZ0lJUVpyeGlYaVBPb1l3RFFZSktvWklodmNOQVFFTEJRQXdOakUwTURJR0ExVUUKQXd3cmIzQmxibk5vYVdaMExYTmxjblpwWTJVdGMyVnlkbWx1WnkxemFXZHVaWEpBTVRZMU16UXhOVFkyTWpBZQpGdzB5TWpBMU1qUXhPREEzTkRGYUZ3MHlOREEzTWpJeE9EQTNOREphTURZeE5EQXlCZ05WQkFNTUsyOXdaVzV6CmFHbG1kQzF6WlhKMmFXTmxMWE5sY25acGJtY3RjMmxuYm1WeVFERTJOVE0wTVRVMk5qSXdnZ0VpTUEwR0NTcUcKU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRRGV0bUw4N29NaGowd0V1Rmh0aEpUSjY2V1p6VThIUFhsegpobi9JNGdOWHhFMzdjdEFBeHBiNzdPUGF3WkFPZVpOdWlhYyszUHVqaHhNZnlXSnd0V3gzanpxZk9hMXFDeiszClpUMnQvNlhiaFI4QWQxQStMakFkNkZNMVlRQURKNXVIcm5LTWhGam5XR3NMQTE3TWV6Wk5wZkVUajlZSHJabWoKTzZLTXhRMktONGEvSkczTHNROFlnVWJwbW94YXhjaldVaklUKzFndFU5dHhXNjc3K1VnTy90Z3FyaEcxOGIwdwovMHZhVlFNdjhXRi9aTmpUdW9uY0NhMCtOcjZDNHRPbzg0bFQ3dmlhSlRMK1FoVXdMYU94SHF2UDNLRU9UTzQ1ClduUnN6UnUrMmlmMW5NM1hDQUhBc25zTkhwM2Q2b0xNeXVvc20xL1pGODJ4RjBGemFxQVhBZ01CQUFHall6QmgKTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVdCQlJ5OHZlUwpQVkxhOXNkUklybjExWjlKSjVWZDB6QWZCZ05WSFNNRUdEQVdnQlJ5OHZlU1BWTGE5c2RSSXJuMTFaOUpKNVZkCjB6QU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFRU1JKMjQxM0tWUEo2WmY2a0o1Sk1VOEJaNHZKWkMyTlJJMUoKWk1IUHpDUllQSVM1Z2dJOW1VY1hnL00yQnY4eTFqM0VudUNJNERWc25mclVNdlBqNEJyZ2E4T0QrYm9wNUNZcApIamRjZG4xdHhDUUZFNDlPbk85UGRXSVlUSHZCZEFNRmI5Y2dmbDRyOWdZYk1CSWtiREVpdjdjeWFPUS9LcmI2ClVFTGd3RFdhWC9Mb2gxZjJ3YVUyQUFPWFhOenN4cHU2TnBCY1hwemtNL1BZanZBUFlkZjBWOW93L1ViOVJYRFYKY3FveFgycmI2NFNEZ09KTlNtUlRTOENYdXZNQnFYQ2dTWEFxRmR0UHB6dEdIdE1ZR2ZTR3BQNUs5UDNXbnJOZwpkS01VdXFiU3UvLy9rR3Y3VktjeDk1WUFDclFBQjZkelpidGxreE9tb1B2ajVuVnEzdz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    service:
+      name: machine-api-operator-webhook
+      namespace: openshift-machine-api
+      path: /validate-machine-openshift-io-v1beta1-machineset
+      port: 443
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: validation.machineset.machine.openshift.io
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - machine.openshift.io
+    apiVersions:
+    - v1beta1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - machinesets
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10

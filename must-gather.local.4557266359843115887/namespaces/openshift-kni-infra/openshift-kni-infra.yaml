@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    openshift.io/node-selector: ""
+    openshift.io/sa.scc.mcs: s0:c19,c14
+    openshift.io/sa.scc.supplemental-groups: 1000370000/10000
+    openshift.io/sa.scc.uid-range: 1000370000/10000
+    workload.openshift.io/allowed: management
+  creationTimestamp: "2022-05-24T18:05:38Z"
+  labels:
+    kubernetes.io/metadata.name: openshift-kni-infra
+    name: openshift-kni-infra
+  name: openshift-kni-infra
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "1187"
+  uid: d09964e2-5fad-4984-84ba-8098cb90f3ca
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active

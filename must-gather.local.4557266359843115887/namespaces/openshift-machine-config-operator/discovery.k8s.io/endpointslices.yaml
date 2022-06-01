@@ -1,0 +1,161 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.0.169.205
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-bvj5w
+      namespace: openshift-machine-config-operator
+      resourceVersion: "52775"
+      uid: a5890b24-5ea4-4c09-bf77-f9aa059a499a
+    zone: us-east-1c
+  - addresses:
+    - 10.0.138.197
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-kwrsz
+      namespace: openshift-machine-config-operator
+      resourceVersion: "61512"
+      uid: 1e520bd5-fd64-4842-a1dd-b0cc0f646e74
+    zone: us-east-1a
+  - addresses:
+    - 10.0.149.121
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-149-121.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-vwfcw
+      namespace: openshift-machine-config-operator
+      resourceVersion: "71118"
+      uid: 7a56f422-7812-4859-b4f6-bab7177e7d9e
+    zone: us-east-1b
+  - addresses:
+    - 10.0.128.34
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-dbckk
+      namespace: openshift-machine-config-operator
+      resourceVersion: "37257"
+      uid: 85eaec3c-9b24-42be-8b6a-0b6815d44d45
+    zone: us-east-1a
+  - addresses:
+    - 10.0.164.190
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-kdmbt
+      namespace: openshift-machine-config-operator
+      resourceVersion: "69664"
+      uid: e33f6410-a2fc-47e0-a52e-c00dc3057a4a
+    zone: us-east-1c
+  - addresses:
+    - 10.0.145.179
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-145-179.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-9s7zm
+      namespace: openshift-machine-config-operator
+      resourceVersion: "78500"
+      uid: 918d187e-e014-4db0-94eb-f650c99bdcee
+    zone: us-east-1b
+  - addresses:
+    - 10.0.140.240
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-140-240.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-srmkw
+      namespace: openshift-machine-config-operator
+      resourceVersion: "67109"
+      uid: db66daec-c4c3-471b-8b1a-9ce35fda3245
+    zone: us-east-1a
+  - addresses:
+    - 10.0.166.35
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-166-35.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-5s9jw
+      namespace: openshift-machine-config-operator
+      resourceVersion: "56167"
+      uid: 6dad4209-b384-44e8-a70f-db22c4af773a
+    zone: us-east-1c
+  - addresses:
+    - 10.0.148.123
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-148-123.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-config-daemon-52j8l
+      namespace: openshift-machine-config-operator
+      resourceVersion: "74513"
+      uid: d26fc329-0a7b-45ee-b3aa-1f1df248e97b
+    zone: us-east-1b
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:15Z"
+    creationTimestamp: "2022-05-24T18:05:44Z"
+    generateName: machine-config-daemon-
+    generation: 36
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      k8s-app: machine-config-daemon
+      kubernetes.io/service-name: machine-config-daemon
+    name: machine-config-daemon-9lpw2
+    namespace: openshift-machine-config-operator
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: machine-config-daemon
+      uid: 28e93ad2-b5e2-4da3-9cea-a7c60cbbb2ea
+    resourceVersion: "78502"
+    uid: 18ff95b1-c090-47e0-9a86-94e230c60170
+  ports:
+  - name: metrics
+    port: 9001
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "319652"

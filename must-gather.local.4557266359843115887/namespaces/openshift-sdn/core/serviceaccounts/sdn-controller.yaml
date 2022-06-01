@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+imagePullSecrets:
+- name: sdn-controller-dockercfg-nhp6k
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2022-05-24T18:06:58Z"
+  name: sdn-controller
+  namespace: openshift-sdn
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "16894"
+  uid: 8de60582-e37b-4c5b-9c0a-529f4ef41933
+secrets:
+- name: sdn-controller-token-dvztf
+- name: sdn-controller-dockercfg-nhp6k

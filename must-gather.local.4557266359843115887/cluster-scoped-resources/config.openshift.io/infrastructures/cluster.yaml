@@ -1,0 +1,32 @@
+---
+apiVersion: config.openshift.io/v1
+kind: Infrastructure
+metadata:
+  creationTimestamp: "2022-05-24T18:05:20Z"
+  generation: 1
+  name: cluster
+  resourceVersion: "595"
+  uid: b51f4519-7a41-47d8-8e77-6d527922e4e0
+spec:
+  cloudConfig:
+    name: ""
+  platformSpec:
+    aws: {}
+    type: AWS
+status:
+  apiServerInternalURI: https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+  apiServerURL: https://api.odf-service.dif5.p1.openshiftapps.com:6443
+  controlPlaneTopology: HighlyAvailable
+  etcdDiscoveryDomain: ""
+  infrastructureName: odf-service-c778b
+  infrastructureTopology: HighlyAvailable
+  platform: AWS
+  platformStatus:
+    aws:
+      region: us-east-1
+      resourceTags:
+      - key: red-hat-clustertype
+        value: rosa
+      - key: red-hat-managed
+        value: "true"
+    type: AWS

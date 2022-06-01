@@ -1,0 +1,2049 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    annotations:
+      control-plane.alpha.kubernetes.io/leader: '{"holderIdentity":"ip-10-0-169-205_7ad7f0dd-2b8b-45ee-b8d0-be7281ba7a73","leaseDurationSeconds":137,"acquireTime":"2022-05-24T18:39:21Z","renewTime":"2022-05-24T23:41:37Z","leaderTransitions":3}'
+    creationTimestamp: "2022-05-24T18:16:40Z"
+    name: cert-recovery-controller-lock
+    namespace: openshift-kube-scheduler
+    resourceVersion: "316274"
+    uid: 94f0c084-3900-43d6-a493-60073bf9d5f5
+- apiVersion: v1
+  data:
+    config.yaml: |
+      {"apiVersion":"kubescheduler.config.k8s.io/v1beta3","clientConnection":{"kubeconfig":"/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"},"kind":"KubeSchedulerConfiguration","leaderElection":{"leaderElect":true,"leaseDuration":"137s","renewDeadline":"107s","resourceLock":"configmapsleases","resourceNamespace":"openshift-kube-scheduler","retryPeriod":"26s"}}
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:44Z"
+    name: config
+    namespace: openshift-kube-scheduler
+    resourceVersion: "4695"
+    uid: 82cfab85-c1ad-4301-acd0-1d41dddcb2c7
+- apiVersion: v1
+  data:
+    config.yaml: |
+      {"apiVersion":"kubescheduler.config.k8s.io/v1beta3","clientConnection":{"kubeconfig":"/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"},"kind":"KubeSchedulerConfiguration","leaderElection":{"leaderElect":true,"leaseDuration":"137s","renewDeadline":"107s","resourceLock":"configmapsleases","resourceNamespace":"openshift-kube-scheduler","retryPeriod":"26s"}}
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:30:15Z"
+    name: config-10
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-10
+      uid: 76a3fe5f-88f6-4958-9492-babbde19b4cf
+    resourceVersion: "49677"
+    uid: a15b0d57-6f1a-431d-991e-91c8b2b5e20f
+- apiVersion: v1
+  data:
+    config.yaml: |
+      {"apiVersion":"kubescheduler.config.k8s.io/v1beta3","clientConnection":{"kubeconfig":"/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"},"kind":"KubeSchedulerConfiguration","leaderElection":{"leaderElect":true,"leaseDuration":"137s","renewDeadline":"107s","resourceLock":"configmapsleases","resourceNamespace":"openshift-kube-scheduler","retryPeriod":"26s"}}
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:38:03Z"
+    name: config-11
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-11
+      uid: 0d3630c3-6964-48a8-8117-973e43aac299
+    resourceVersion: "66123"
+    uid: bb604b53-9284-40de-b4f8-60fa57c98cb4
+- apiVersion: v1
+  data:
+    config.yaml: |
+      {"apiVersion":"kubescheduler.config.k8s.io/v1beta3","clientConnection":{"kubeconfig":"/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"},"kind":"KubeSchedulerConfiguration","leaderElection":{"leaderElect":true,"leaseDuration":"137s","renewDeadline":"107s","resourceLock":"configmapsleases","resourceNamespace":"openshift-kube-scheduler","retryPeriod":"26s"}}
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:09:45Z"
+    name: config-6
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-6
+      uid: 1f04e8a3-f28f-4d9c-998f-d5d4e0840bd7
+    resourceVersion: "10019"
+    uid: 3bcc8727-1b18-4158-ad23-b32aa9549795
+- apiVersion: v1
+  data:
+    config.yaml: |
+      {"apiVersion":"kubescheduler.config.k8s.io/v1beta3","clientConnection":{"kubeconfig":"/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"},"kind":"KubeSchedulerConfiguration","leaderElection":{"leaderElect":true,"leaseDuration":"137s","renewDeadline":"107s","resourceLock":"configmapsleases","resourceNamespace":"openshift-kube-scheduler","retryPeriod":"26s"}}
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:05Z"
+    name: config-7
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-7
+      uid: d765b71d-0b55-4a66-9e82-100d535e6e31
+    resourceVersion: "15256"
+    uid: 8a809a06-6601-4a7f-8747-a92731749239
+- apiVersion: v1
+  data:
+    config.yaml: |
+      {"apiVersion":"kubescheduler.config.k8s.io/v1beta3","clientConnection":{"kubeconfig":"/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"},"kind":"KubeSchedulerConfiguration","leaderElection":{"leaderElect":true,"leaseDuration":"137s","renewDeadline":"107s","resourceLock":"configmapsleases","resourceNamespace":"openshift-kube-scheduler","retryPeriod":"26s"}}
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:14Z"
+    name: config-8
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-8
+      uid: 68ae9f63-9336-414f-ab31-79185d7cf875
+    resourceVersion: "36350"
+    uid: a9392247-d3c0-408f-ae34-979291d63b14
+- apiVersion: v1
+  data:
+    config.yaml: |
+      {"apiVersion":"kubescheduler.config.k8s.io/v1beta3","clientConnection":{"kubeconfig":"/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"},"kind":"KubeSchedulerConfiguration","leaderElection":{"leaderElect":true,"leaseDuration":"137s","renewDeadline":"107s","resourceLock":"configmapsleases","resourceNamespace":"openshift-kube-scheduler","retryPeriod":"26s"}}
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:28:59Z"
+    name: config-9
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-9
+      uid: 6e53daf4-a7d8-4591-aa36-817720c27013
+    resourceVersion: "45412"
+    uid: 4c9f6163-a6ee-4831-b654-2590161cf996
+- apiVersion: v1
+  data:
+    ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDMjCCAhqgAwIBAgIIaF6NeZ+aXe0wDQYJKoZIhvcNAQELBQAwNzESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSEwHwYDVQQDExhrdWJlLWFwaXNlcnZlci1sYi1zaWduZXIw
+      HhcNMjIwNTI0MTc1ODA5WhcNMzIwNTIxMTc1ODA5WjA3MRIwEAYDVQQLEwlvcGVu
+      c2hpZnQxITAfBgNVBAMTGGt1YmUtYXBpc2VydmVyLWxiLXNpZ25lcjCCASIwDQYJ
+      KoZIhvcNAQEBBQADggEPADCCAQoCggEBALwVpbI2tHFkVQrTfwH3tkneIikpA/hl
+      b1BRaPs1bwvVxTgkv0ctRjuJGZpcLja8saZB/wlVIFCGq6c5J6dwNWmVoZu1KIGp
+      9qNnNkRgttm8wSz2HA+lCW9yUxjDgUA8Pc5bCcUhY8qSPA2m9qq/tvPr4vGSa8x0
+      AcGOlPheM8PeCv40Zc2EPmhKfFAp6ZuJ7ZLVJAO6ncnOTtkDqYMKORGdFgNYKdKZ
+      sfJ9qnSH8Ps4fSyqwPxQAyQ85yjJEdahu2ZoKopiacH7uU6wS2Ni49XUGXeS5kct
+      iDYCmMCJHtsF4F74qv2Gh8stWGyA9JLyMi/m342dr2f1VdgmgGn1io0CAwEAAaNC
+      MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKEH
+      goCqgLWx3Ma0M2iSXtQFfXCsMA0GCSqGSIb3DQEBCwUAA4IBAQAofVvp05u+GGv7
+      w34hPGfwXb0rupUhSbm+KzcZ9p7jZKPSN4lvkLRNUprfmP4gR33Xkjn91watSM2x
+      FMsSMFvPoLQkfHu2cP3TlN2ddbYb+3v01fCYDKPyaoIAaCVUgpJ2gNYsVPhD3LQd
+      sA/EkWyKs7Ggu8yL88ArKN8Nsv7WUtKHmqbiqrX6K0DM9pdI3upfXYCngeL5IsU8
+      Fq1NyK086wVdYfjOnipTXtTvPiO/fE1oX2nVXsxNxowjhYVScC2T1ZH9cVSP26fq
+      uoyj99JfxxDL9hpbK5K2YzNrDO7fkzn6UP0j+Fu96gVoHci2s0oK2JxQsxgfxcYZ
+      8TfG1e82
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDQDCCAiigAwIBAgIIM46x6byvII8wDQYJKoZIhvcNAQELBQAwPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVrAeaJosaY1
+      E9o4oPkpxLDx8QF5Ji3uMMfoBAO+9Wt2tykPO9/CTghsDM1fN/kg94DE4rb6CMWb
+      aFyUlBok97zlO7rjKBySOnTahRArHuzurQtMyDrUJD0pWLbXIiyjE4L26Rz3wW9C
+      CZsXfwnmytPhraguIbUnKDz7ykSRzf79pqvP17dK+Vsiyy/ViOFqHuSGa2d2RlBI
+      jshHo2jRZLPCVGUvfAQTT+pfbxrDcg3XpDmGukXTZnWqL12Qc22teoTjXAHCL0Ny
+      XjitCo+nSyt+NcoZgJ3HZqEufO4F3DqfF6Ja7zNGbH0rDPKBQjsqkSR0sFz8VKXF
+      xdvHKantCQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+      /zAdBgNVHQ4EFgQUxGqZhXeomt9poP3ST8CNGz3NS2IwDQYJKoZIhvcNAQELBQAD
+      ggEBALggP2dTHzzs9i5i5Vo04NuzosogdCK67tWd85nPwWza9s1P4KHpgIYTp+Ve
+      nt7oRNqEmcDdV3LYLcqzfrghjChheEcrK35439VeUqdjQdmHM/WmYXzwzszBtbCY
+      G/vkff8X5pzwIxJJp40u3iVtEbnVvz1BnrYg568WRctaZabKVzklPuMspOndOOSg
+      8JT+V59RMrsnL2I8ccfOH/vABiU92Zq8TC483TBzwjX72+573pBTOigZCypSGaXo
+      YeYj0nLVabALOLnwGxD/BJXS3X01Ehv1zVP1r58t2sxuF+k55nPXYDs9VSVgx5kT
+      +odoALQyN4PXN/+lZCJK4ISHqyA=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDTDCCAjSgAwIBAgIISQR4oKgvETwwDQYJKoZIhvcNAQELBQAwRDESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2aWNlLW5l
+      dHdvcmstc2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowRDES
+      MBAGA1UECxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2
+      aWNlLW5ldHdvcmstc2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEA1azJdx1cmrP0oFXUtF+Y1TVVxLU6HC7k9CVwKpDSCHtzOY9cxXn3edBGYiok
+      HcnIP2vziKS29enFK5H9Msqhc/dueYaFHzuKtAgteKGJifvWBxYA0R8FOYwRn2gC
+      +NIlYlpeLPeiE7dvt1OQTaNnAn6ZwZKMvSsbwcmgi04C+XxkKgCx4oqFgGysg794
+      d1YpTc1NoonJ85i3zeiJ5X3Z66EPWtQXIlU67IedX8Vd3jC7KqAoqV3hm4GyImT1
+      q5OQzqb0+mAuxzIuLaCLQu8JhKKHB8j1I0qclpmotxWOju3jimgZ3i0QWl8LXKFv
+      7+Hyrtisb+1BzSiLZz6vKgJxeQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYD
+      VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU8ZjsCxNdiq7xt0hqHLNElJK6SHEwDQYJ
+      KoZIhvcNAQELBQADggEBAB9BOikS47zebhNtVkY7Lf4r3HVQ13zxsx9FthmqayXr
+      KDRJ5AWiXASoF0lPgElsUQ0Qsp3etXR2POfd9Ei7ytwV3ftfRdR/JnCWTJ1jlqvc
+      d3oUJlU/Mg3qFNVhYdfn0H6BMcdHkOibsyigkCeWzIC1VU04Dl8cD9IoltDWeJfM
+      Bi30K2dJsJN3LYn8Ic0nwYzeccLxqG7ADEL8YjFPC8sL2YvTACYYJVkHZHuSyL+h
+      qVv7odKp+x/LuAxJiTn8rZie0xYLt6Z+X8Hm72BaoikmerKInClM03DGrieHWDlY
+      KFE/Boetn7nRsomkRsCoUJMC6HjMSFr5D7UrOok5LC0=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDlzCCAn+gAwIBAgIIA02EfcpLCEIwDQYJKoZIhvcNAQELBQAwWTFXMFUGA1UE
+      AwxOb3BlbnNoaWZ0LWt1YmUtYXBpc2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1y
+      ZWNvdmVyeS1zZXJ2aW5nLXNpZ25lckAxNjUzNDE1NjYzMB4XDTIyMDUyNDE4MDc0
+      M1oXDTMyMDUyMTE4MDc0NFowWTFXMFUGA1UEAwxOb3BlbnNoaWZ0LWt1YmUtYXBp
+      c2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1yZWNvdmVyeS1zZXJ2aW5nLXNpZ25l
+      ckAxNjUzNDE1NjYzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4unV
+      faO+MHjSSGkR9ZSXYfvdIuVRnfDBjl3lWRT6z4vdafaw+/tJAWgROgQ+2c80nGhD
+      NYJMp+l1gHFAowaxblu38SqB8rhZTGa3dbvbIJZ/NCSEZsHKJwlahFaoyuOTnguv
+      yzFRJnZPJY57IojaL0AtLLq5xxojzijiSPwZE/XoKxXTewfWoOKuANvGdtaKvWqG
+      oQf8Iq4Lc130iEwTZgYYTQQIoNRkNwVSPL0mDJO2tR8q/m38HMtLFqOxZPrTms2H
+      tGjH4gS9JIOtcuGSr3H6XlBnI+UrQa2IxhVCRvGMN9Yd/xZeygE0Ttl8Ux0jgKfM
+      FT/7Cqlc5M24AVcZQQIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/
+      BAUwAwEB/zAdBgNVHQ4EFgQUBgHjWEA8cGDOxOEE9NeUoTgosCkwHwYDVR0jBBgw
+      FoAUBgHjWEA8cGDOxOEE9NeUoTgosCkwDQYJKoZIhvcNAQELBQADggEBAKEkSDDM
+      uNU0msYFwYzWVJ6ZuLqh/ZgwoKT/HfBpkxyX44rJo66ZDvapl4eBfF2Qho+WAyEY
+      dUXiHAM+murwivPAhdBxafCockCQSygz8hLooUf4KICSOZdGYeR96BqArZ3aMEOU
+      6DlxVOWfpowwT4FD/CUqbtSX5F4KmRdoD+1ks3WIcwPbl0zb+MZ2HLCpFPQMAomq
+      A0s+eCJ/6oTNGTzttyUjeKlNQK7GcZZU3ZYqftf3f4kAxAyFWgG7wvUhFuxeoP8y
+      OpVILyPvOqb3WBN+KDrGmXFUZFjzGzqD3buqED3NA4ZWx+Rc7hPZvFCRUQobSfQV
+      tlOPSHzf9Y9rSgo=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFtjCCBJ6gAwIBAgISBFLw17r/CuNNqWSjg41GCK3OMA0GCSqGSIb3DQEBCwUA
+      MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+      EwJSMzAeFw0yMjA1MjQxNzI3MDJaFw0yMjA4MjIxNzI3MDFaMDQxMjAwBgNVBAMT
+      KWFwaS5vZGYtc2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMIIBIjAN
+      BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzd4EF451gHcY+pDj4YM2hLiIWuGX
+      iCe9DGYzUNC4jrijeJVYs8tPp/iH63gOYvsY3fW7coZEbaFvq597qzKb6CAjsP72
+      s0VBJH4vnljJysMv6VpU9D4NECYvAQjy1OHVP6VrURBhu61bOgLrYFfxCtGWD81a
+      O7rNwquWsGqQDiGXfg6LbApX3Y9kg+zyuTL1Pc2b6fzAC3BEMviOI9o6QPZhHH1P
+      7H0STFfEWRRt7IHC5KLi1IvQ1aPHG+LJcQ58etnoYNydkNkB3DN4CjjaXitdLnoi
+      G2d2cVMXmCMMYPkSuZEIlhoAmn1BuUV/SHuoSs63XVjhy4bE1MV3arwCWwIDAQAB
+      o4ICwjCCAr4wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggr
+      BgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBQXbq8TuDsow74svn3WxCIX
+      E6KtEjAfBgNVHSMEGDAWgBQULrMXt1hWy65QCUDmH6+dixTCxjBVBggrBgEFBQcB
+      AQRJMEcwIQYIKwYBBQUHMAGGFWh0dHA6Ly9yMy5vLmxlbmNyLm9yZzAiBggrBgEF
+      BQcwAoYWaHR0cDovL3IzLmkubGVuY3Iub3JnLzCBkgYDVR0RBIGKMIGHgiwqLmFw
+      cHMub2RmLXNlcnZpY2UuZGlmNS5wMS5vcGVuc2hpZnRhcHBzLmNvbYIpYXBpLm9k
+      Zi1zZXJ2aWNlLmRpZjUucDEub3BlbnNoaWZ0YXBwcy5jb22CLHJoLWFwaS5vZGYt
+      c2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMEwGA1UdIARFMEMwCAYG
+      Z4EMAQIBMDcGCysGAQQBgt8TAQEBMCgwJgYIKwYBBQUHAgEWGmh0dHA6Ly9jcHMu
+      bGV0c2VuY3J5cHQub3JnMIIBAwYKKwYBBAHWeQIEAgSB9ASB8QDvAHYA36Veq2iC
+      Tx9sre64X04+WurNohKkal6OOxLAIERcKnMAAAGA91KJLwAABAMARzBFAiAIZWF8
+      HxoZi8Uc4gbb1tP92WtRG697l9lmSfXbnC1XLQIhAL/e0q4GXuEUlIkJW0jwqc6O
+      Md7T/AizyojNvIRU5mVyAHUARqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+
+      bUcAAAGA91KJUwAABAMARjBEAiB7//joMC2x7OAo92PRcbaOuyjPQG2w51dX+xlF
+      vucv0gIgaTD8sFKPppA70+k/s9M/FuUM61tUl21nI2FQ52/L8qowDQYJKoZIhvcN
+      AQELBQADggEBAC05nXdp+2WBPR5Tg/tceka3INm7/IOC4sYIqxwUopF9ePmlk58F
+      hSbZzvzM4teaH4o3kAke4bzzFhnnBqWG4cW52c7eOgO4tYzE3SkjfipqytT2Ed1D
+      jOorCI+EQjV9EFZeEzvxtnZsAwgIjLvqpB/LXlnSf5EkmjtzHcHqucZcDFsqcMjL
+      Qolbk1+a+TOTM4FPz4qlPAslLh8xCXZHCIYuM2n4r71XRPYeKUnj9JBRZVSN7znK
+      s0uo646L0S4Slp/HBDrrDHHoqjucqO1ad40uKzP4jwtMp0w5wYtCzTrTZrLuyVEh
+      emR91a/GVQgnV2LpWDwVXPpt5H1p/tDFA08=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
+      TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+      cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjAwOTA0MDAwMDAw
+      WhcNMjUwOTE1MTYwMDAwWjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+      RW5jcnlwdDELMAkGA1UEAxMCUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQC7AhUozPaglNMPEuyNVZLD+ILxmaZ6QoinXSaqtSu5xUyxr45r+XXIo9cP
+      R5QUVTVXjJ6oojkZ9YI8QqlObvU7wy7bjcCwXPNZOOftz2nwWgsbvsCUJCWH+jdx
+      sxPnHKzhm+/b5DtFUkWWqcFTzjTIUu61ru2P3mBw4qVUq7ZtDpelQDRrK9O8Zutm
+      NHz6a4uPVymZ+DAXXbpyb/uBxa3Shlg9F8fnCbvxK/eG3MHacV3URuPMrSXBiLxg
+      Z3Vms/EY96Jc5lP/Ooi2R6X/ExjqmAl3P51T+c8B5fWmcBcUr2Ok/5mzk53cU6cG
+      /kiFHaFpriV1uxPMUgP17VGhi9sVAgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMC
+      AYYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMBIGA1UdEwEB/wQIMAYB
+      Af8CAQAwHQYDVR0OBBYEFBQusxe3WFbLrlAJQOYfr52LFMLGMB8GA1UdIwQYMBaA
+      FHm0WeZ7tuXkAXOACIjIGlj26ZtuMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEFBQcw
+      AoYWaHR0cDovL3gxLmkubGVuY3Iub3JnLzAnBgNVHR8EIDAeMBygGqAYhhZodHRw
+      Oi8veDEuYy5sZW5jci5vcmcvMCIGA1UdIAQbMBkwCAYGZ4EMAQIBMA0GCysGAQQB
+      gt8TAQEBMA0GCSqGSIb3DQEBCwUAA4ICAQCFyk5HPqP3hUSFvNVneLKYY611TR6W
+      PTNlclQtgaDqw+34IL9fzLdwALduO/ZelN7kIJ+m74uyA+eitRY8kc607TkC53wl
+      ikfmZW4/RvTZ8M6UK+5UzhK8jCdLuMGYL6KvzXGRSgi3yLgjewQtCPkIVz6D2QQz
+      CkcheAmCJ8MqyJu5zlzyZMjAvnnAT45tRAxekrsu94sQ4egdRCnbWSDtY7kh+BIm
+      lJNXoB1lBMEKIq4QDUOXoRgffuDghje1WrG9ML+Hbisq/yFOGwXD9RiX8F6sw6W4
+      avAuvDszue5L3sz85K+EC4Y/wFVDNvZo4TYXao6Z0f+lQKc0t8DQYzk1OXVu8rp2
+      yJMC6alLbBfODALZvYH7n7do1AZls4I9d1P4jnkDrQoxB3UqQ9hVl3LEKQ73xF1O
+      yK5GhDDX8oVfGKF5u+decIsH4YaTw7mP3GFxJSqv3+0lUFJoi5Lc5da149p90Ids
+      hCExroL1+7mryIkXPeFM5TgO9r0rvZaBFOvV2z0gp35Z0+L4WPlbuEjN/lxPFin+
+      HlUjr8gRsI3qfJOQFy/9rKIJR0Y/8Omwt/8oTWgy1mdeHmmjk7j1nYsvC9JSQ6Zv
+      MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
+      nLRbwHOoq7hHwg==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubernetes.io/description: Contains a CA bundle that can be used to verify the
+        kube-apiserver when using internal endpoints such as the internal service
+        IP or kubernetes.default.svc. No other usage is guaranteed across distributions
+        of Kubernetes clusters.
+    creationTimestamp: "2022-05-24T18:05:15Z"
+    name: kube-root-ca.crt
+    namespace: openshift-kube-scheduler
+    resourceVersion: "65417"
+    uid: 327b12d6-7dde-448f-9b16-9d75fa71ef22
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    annotations:
+      control-plane.alpha.kubernetes.io/leader: '{"holderIdentity":"ip-10-0-138-197_0636c106-c5b9-43e1-92d0-86ea0811032b","leaseDurationSeconds":137,"acquireTime":"2022-05-24T18:43:20Z","renewTime":"2022-05-24T23:41:50Z","leaderTransitions":5}'
+    creationTimestamp: "2022-05-24T18:10:43Z"
+    name: kube-scheduler
+    namespace: openshift-kube-scheduler
+    resourceVersion: "316450"
+    uid: fb15f4f2-f82d-467c-b6b6-bf6b72c00cf9
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/ca.crt
+            server: https://localhost:6443
+            tls-server-name: localhost-recovery
+          name: loopback
+      contexts:
+        - context:
+            cluster: loopback
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            tokenFile: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/token
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:45Z"
+    name: kube-scheduler-cert-syncer-kubeconfig
+    namespace: openshift-kube-scheduler
+    resourceVersion: "4746"
+    uid: 48d04dfb-5ac6-4cb0-b055-6226f3758aca
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/ca.crt
+            server: https://localhost:6443
+            tls-server-name: localhost-recovery
+          name: loopback
+      contexts:
+        - context:
+            cluster: loopback
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            tokenFile: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/token
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:30:19Z"
+    name: kube-scheduler-cert-syncer-kubeconfig-10
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-10
+      uid: 76a3fe5f-88f6-4958-9492-babbde19b4cf
+    resourceVersion: "50241"
+    uid: 720a73e2-0e25-4237-847f-491ae38461a1
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/ca.crt
+            server: https://localhost:6443
+            tls-server-name: localhost-recovery
+          name: loopback
+      contexts:
+        - context:
+            cluster: loopback
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            tokenFile: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/token
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:38:06Z"
+    name: kube-scheduler-cert-syncer-kubeconfig-11
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-11
+      uid: 0d3630c3-6964-48a8-8117-973e43aac299
+    resourceVersion: "66349"
+    uid: f0447809-417b-45b0-9392-6fe5b516ebcd
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/ca.crt
+            server: https://localhost:6443
+            tls-server-name: localhost-recovery
+          name: loopback
+      contexts:
+        - context:
+            cluster: loopback
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            tokenFile: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/token
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:09:50Z"
+    name: kube-scheduler-cert-syncer-kubeconfig-6
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-6
+      uid: 1f04e8a3-f28f-4d9c-998f-d5d4e0840bd7
+    resourceVersion: "10117"
+    uid: 66fb5a66-c2ec-4a0b-a5e7-ea280799278a
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/ca.crt
+            server: https://localhost:6443
+            tls-server-name: localhost-recovery
+          name: loopback
+      contexts:
+        - context:
+            cluster: loopback
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            tokenFile: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/token
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:11Z"
+    name: kube-scheduler-cert-syncer-kubeconfig-7
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-7
+      uid: d765b71d-0b55-4a66-9e82-100d535e6e31
+    resourceVersion: "17267"
+    uid: c673e9b5-9f70-4f55-b3d2-47ba130670d7
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/ca.crt
+            server: https://localhost:6443
+            tls-server-name: localhost-recovery
+          name: loopback
+      contexts:
+        - context:
+            cluster: loopback
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            tokenFile: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/token
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:18Z"
+    name: kube-scheduler-cert-syncer-kubeconfig-8
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-8
+      uid: 68ae9f63-9336-414f-ab31-79185d7cf875
+    resourceVersion: "36520"
+    uid: 97be99a3-b271-4b8c-91f0-b58a4464511f
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/ca.crt
+            server: https://localhost:6443
+            tls-server-name: localhost-recovery
+          name: loopback
+      contexts:
+        - context:
+            cluster: loopback
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            tokenFile: /etc/kubernetes/static-pod-resources/secrets/localhost-recovery-client-token/token
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:29:03Z"
+    name: kube-scheduler-cert-syncer-kubeconfig-9
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-9
+      uid: 6e53daf4-a7d8-4591-aa36-817720c27013
+    resourceVersion: "45647"
+    uid: 9620bbfa-fe6b-4937-80b9-a65401753c4e
+- apiVersion: v1
+  data:
+    forceRedeploymentReason: ""
+    pod.yaml: |
+      {"kind":"Pod","apiVersion":"v1","metadata":{"name":"openshift-kube-scheduler","namespace":"openshift-kube-scheduler","creationTimestamp":null,"labels":{"app":"openshift-kube-scheduler","revision":"REVISION","scheduler":"true"},"annotations":{"kubectl.kubernetes.io/default-container":"kube-scheduler","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}},"spec":{"volumes":[{"name":"resource-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-pod-REVISION"}},{"name":"cert-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-certs"}}],"initContainers":[{"name":"wait-for-host-port","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["/usr/bin/timeout","30","/bin/bash","-c"],"args":["echo -n \"Waiting for port :10259 and :10251 to be released.\"\nwhile [ -n \"$(ss -Htan '( sport = 10251 or sport = 10259 )')\" ]; do\n  echo -n \".\"\n  sleep 1\ndone\n"],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"containers":[{"name":"kube-scheduler","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["hyperkube","kube-scheduler"],"args":["--config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml","--cert-dir=/var/run/kubernetes","--authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--feature-gates=APIPriorityAndFairness=true,CSIMigrationAWS=false,CSIMigrationAzureDisk=false,CSIMigrationAzureFile=false,CSIMigrationGCE=false,CSIMigrationOpenStack=false,CSIMigrationvSphere=false,DownwardAPIHugePages=true,PodSecurity=true,RotateKubeletServerCertificate=true","-v=2","--tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt","--tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key","--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256","--tls-min-version=VersionTLS12"],"ports":[{"containerPort":10259}],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"livenessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"readinessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-cert-syncer","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["cluster-kube-scheduler-operator","cert-syncer"],"args":["--kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig","--namespace=$(POD_NAMESPACE)","--destination-dir=/etc/kubernetes/static-pod-certs"],"env":[{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-recovery-controller","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["/bin/bash","-euxo","pipefail","-c"],"args":["timeout 3m /bin/bash -exuo pipefail -c 'while [ -n \"$(ss -Htanop \\( sport = 11443 \\))\" ]; do sleep 1; done'\n\nexec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2\n"],"env":[{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"hostNetwork":true,"tolerations":[{"operator":"Exists"}],"priorityClassName":"system-node-critical"},"status":{}}
+    version: 4.10.0-202204211158.p0.g0c57d73.assembly.stream-0c57d73
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:54Z"
+    name: kube-scheduler-pod
+    namespace: openshift-kube-scheduler
+    resourceVersion: "6119"
+    uid: da81d286-65f9-467a-a2cb-38c9428439e4
+- apiVersion: v1
+  data:
+    forceRedeploymentReason: ""
+    pod.yaml: |
+      {"kind":"Pod","apiVersion":"v1","metadata":{"name":"openshift-kube-scheduler","namespace":"openshift-kube-scheduler","creationTimestamp":null,"labels":{"app":"openshift-kube-scheduler","revision":"REVISION","scheduler":"true"},"annotations":{"kubectl.kubernetes.io/default-container":"kube-scheduler","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}},"spec":{"volumes":[{"name":"resource-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-pod-REVISION"}},{"name":"cert-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-certs"}}],"initContainers":[{"name":"wait-for-host-port","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["/usr/bin/timeout","30","/bin/bash","-c"],"args":["echo -n \"Waiting for port :10259 and :10251 to be released.\"\nwhile [ -n \"$(ss -Htan '( sport = 10251 or sport = 10259 )')\" ]; do\n  echo -n \".\"\n  sleep 1\ndone\n"],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"containers":[{"name":"kube-scheduler","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["hyperkube","kube-scheduler"],"args":["--config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml","--cert-dir=/var/run/kubernetes","--authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--feature-gates=APIPriorityAndFairness=true,CSIMigrationAWS=false,CSIMigrationAzureDisk=false,CSIMigrationAzureFile=false,CSIMigrationGCE=false,CSIMigrationOpenStack=false,CSIMigrationvSphere=false,DownwardAPIHugePages=true,PodSecurity=true,RotateKubeletServerCertificate=true","-v=2","--tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt","--tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key","--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256","--tls-min-version=VersionTLS12"],"ports":[{"containerPort":10259}],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"livenessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"readinessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-cert-syncer","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["cluster-kube-scheduler-operator","cert-syncer"],"args":["--kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig","--namespace=$(POD_NAMESPACE)","--destination-dir=/etc/kubernetes/static-pod-certs"],"env":[{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-recovery-controller","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["/bin/bash","-euxo","pipefail","-c"],"args":["timeout 3m /bin/bash -exuo pipefail -c 'while [ -n \"$(ss -Htanop \\( sport = 11443 \\))\" ]; do sleep 1; done'\n\nexec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2\n"],"env":[{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"hostNetwork":true,"tolerations":[{"operator":"Exists"}],"priorityClassName":"system-node-critical"},"status":{}}
+    version: 4.10.0-202204211158.p0.g0c57d73.assembly.stream-0c57d73
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:30:14Z"
+    name: kube-scheduler-pod-10
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-10
+      uid: 76a3fe5f-88f6-4958-9492-babbde19b4cf
+    resourceVersion: "49451"
+    uid: 2014899d-4a65-43d9-ba31-7ed098a2d635
+- apiVersion: v1
+  data:
+    forceRedeploymentReason: ""
+    pod.yaml: |
+      {"kind":"Pod","apiVersion":"v1","metadata":{"name":"openshift-kube-scheduler","namespace":"openshift-kube-scheduler","creationTimestamp":null,"labels":{"app":"openshift-kube-scheduler","revision":"REVISION","scheduler":"true"},"annotations":{"kubectl.kubernetes.io/default-container":"kube-scheduler","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}},"spec":{"volumes":[{"name":"resource-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-pod-REVISION"}},{"name":"cert-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-certs"}}],"initContainers":[{"name":"wait-for-host-port","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["/usr/bin/timeout","30","/bin/bash","-c"],"args":["echo -n \"Waiting for port :10259 and :10251 to be released.\"\nwhile [ -n \"$(ss -Htan '( sport = 10251 or sport = 10259 )')\" ]; do\n  echo -n \".\"\n  sleep 1\ndone\n"],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"containers":[{"name":"kube-scheduler","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["hyperkube","kube-scheduler"],"args":["--config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml","--cert-dir=/var/run/kubernetes","--authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--feature-gates=APIPriorityAndFairness=true,CSIMigrationAWS=false,CSIMigrationAzureDisk=false,CSIMigrationAzureFile=false,CSIMigrationGCE=false,CSIMigrationOpenStack=false,CSIMigrationvSphere=false,DownwardAPIHugePages=true,PodSecurity=true,RotateKubeletServerCertificate=true","-v=2","--tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt","--tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key","--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256","--tls-min-version=VersionTLS12"],"ports":[{"containerPort":10259}],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"livenessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"readinessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-cert-syncer","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["cluster-kube-scheduler-operator","cert-syncer"],"args":["--kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig","--namespace=$(POD_NAMESPACE)","--destination-dir=/etc/kubernetes/static-pod-certs"],"env":[{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-recovery-controller","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["/bin/bash","-euxo","pipefail","-c"],"args":["timeout 3m /bin/bash -exuo pipefail -c 'while [ -n \"$(ss -Htanop \\( sport = 11443 \\))\" ]; do sleep 1; done'\n\nexec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2\n"],"env":[{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"hostNetwork":true,"tolerations":[{"operator":"Exists"}],"priorityClassName":"system-node-critical"},"status":{}}
+    version: 4.10.0-202204211158.p0.g0c57d73.assembly.stream-0c57d73
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:38:03Z"
+    name: kube-scheduler-pod-11
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-11
+      uid: 0d3630c3-6964-48a8-8117-973e43aac299
+    resourceVersion: "66071"
+    uid: cb5f2456-7363-42cf-b5f3-cee8961d2494
+- apiVersion: v1
+  data:
+    forceRedeploymentReason: ""
+    pod.yaml: |
+      {"kind":"Pod","apiVersion":"v1","metadata":{"name":"openshift-kube-scheduler","namespace":"openshift-kube-scheduler","creationTimestamp":null,"labels":{"app":"openshift-kube-scheduler","revision":"REVISION","scheduler":"true"},"annotations":{"kubectl.kubernetes.io/default-container":"kube-scheduler","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}},"spec":{"volumes":[{"name":"resource-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-pod-REVISION"}},{"name":"cert-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-certs"}}],"initContainers":[{"name":"wait-for-host-port","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["/usr/bin/timeout","30","/bin/bash","-c"],"args":["echo -n \"Waiting for port :10259 and :10251 to be released.\"\nwhile [ -n \"$(ss -Htan '( sport = 10251 or sport = 10259 )')\" ]; do\n  echo -n \".\"\n  sleep 1\ndone\n"],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"containers":[{"name":"kube-scheduler","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["hyperkube","kube-scheduler"],"args":["--config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml","--cert-dir=/var/run/kubernetes","--authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--feature-gates=APIPriorityAndFairness=true,CSIMigrationAWS=false,CSIMigrationAzureDisk=false,CSIMigrationAzureFile=false,CSIMigrationGCE=false,CSIMigrationOpenStack=false,CSIMigrationvSphere=false,DownwardAPIHugePages=true,PodSecurity=true,RotateKubeletServerCertificate=true","-v=2","--tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt","--tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key","--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256","--tls-min-version=VersionTLS12"],"ports":[{"containerPort":10259}],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"livenessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"readinessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-cert-syncer","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["cluster-kube-scheduler-operator","cert-syncer"],"args":["--kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig","--namespace=$(POD_NAMESPACE)","--destination-dir=/etc/kubernetes/static-pod-certs"],"env":[{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-recovery-controller","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["/bin/bash","-euxo","pipefail","-c"],"args":["timeout 3m /bin/bash -exuo pipefail -c 'while [ -n \"$(ss -Htanop \\( sport = 11443 \\))\" ]; do sleep 1; done'\n\nexec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2\n"],"env":[{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"hostNetwork":true,"tolerations":[{"operator":"Exists"}],"priorityClassName":"system-node-critical"},"status":{}}
+    version: 4.10.0-202204211158.p0.g0c57d73.assembly.stream-0c57d73
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:09:44Z"
+    name: kube-scheduler-pod-6
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-6
+      uid: 1f04e8a3-f28f-4d9c-998f-d5d4e0840bd7
+    resourceVersion: "9990"
+    uid: 227cd175-e0c4-4f6d-b3d5-494f4742a61a
+- apiVersion: v1
+  data:
+    forceRedeploymentReason: ""
+    pod.yaml: |
+      {"kind":"Pod","apiVersion":"v1","metadata":{"name":"openshift-kube-scheduler","namespace":"openshift-kube-scheduler","creationTimestamp":null,"labels":{"app":"openshift-kube-scheduler","revision":"REVISION","scheduler":"true"},"annotations":{"kubectl.kubernetes.io/default-container":"kube-scheduler","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}},"spec":{"volumes":[{"name":"resource-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-pod-REVISION"}},{"name":"cert-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-certs"}}],"initContainers":[{"name":"wait-for-host-port","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["/usr/bin/timeout","30","/bin/bash","-c"],"args":["echo -n \"Waiting for port :10259 and :10251 to be released.\"\nwhile [ -n \"$(ss -Htan '( sport = 10251 or sport = 10259 )')\" ]; do\n  echo -n \".\"\n  sleep 1\ndone\n"],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"containers":[{"name":"kube-scheduler","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["hyperkube","kube-scheduler"],"args":["--config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml","--cert-dir=/var/run/kubernetes","--authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--feature-gates=APIPriorityAndFairness=true,CSIMigrationAWS=false,CSIMigrationAzureDisk=false,CSIMigrationAzureFile=false,CSIMigrationGCE=false,CSIMigrationOpenStack=false,CSIMigrationvSphere=false,DownwardAPIHugePages=true,PodSecurity=true,RotateKubeletServerCertificate=true","-v=2","--tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt","--tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key","--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256","--tls-min-version=VersionTLS12"],"ports":[{"containerPort":10259}],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"livenessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"readinessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-cert-syncer","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["cluster-kube-scheduler-operator","cert-syncer"],"args":["--kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig","--namespace=$(POD_NAMESPACE)","--destination-dir=/etc/kubernetes/static-pod-certs"],"env":[{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-recovery-controller","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["/bin/bash","-euxo","pipefail","-c"],"args":["timeout 3m /bin/bash -exuo pipefail -c 'while [ -n \"$(ss -Htanop \\( sport = 11443 \\))\" ]; do sleep 1; done'\n\nexec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2\n"],"env":[{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"hostNetwork":true,"tolerations":[{"operator":"Exists"}],"priorityClassName":"system-node-critical"},"status":{}}
+    version: 4.10.0-202204211158.p0.g0c57d73.assembly.stream-0c57d73
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:04Z"
+    name: kube-scheduler-pod-7
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-7
+      uid: d765b71d-0b55-4a66-9e82-100d535e6e31
+    resourceVersion: "15090"
+    uid: df925105-4bfc-40f0-9da8-a1140376f94d
+- apiVersion: v1
+  data:
+    forceRedeploymentReason: ""
+    pod.yaml: |
+      {"kind":"Pod","apiVersion":"v1","metadata":{"name":"openshift-kube-scheduler","namespace":"openshift-kube-scheduler","creationTimestamp":null,"labels":{"app":"openshift-kube-scheduler","revision":"REVISION","scheduler":"true"},"annotations":{"kubectl.kubernetes.io/default-container":"kube-scheduler","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}},"spec":{"volumes":[{"name":"resource-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-pod-REVISION"}},{"name":"cert-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-certs"}}],"initContainers":[{"name":"wait-for-host-port","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["/usr/bin/timeout","30","/bin/bash","-c"],"args":["echo -n \"Waiting for port :10259 and :10251 to be released.\"\nwhile [ -n \"$(ss -Htan '( sport = 10251 or sport = 10259 )')\" ]; do\n  echo -n \".\"\n  sleep 1\ndone\n"],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"containers":[{"name":"kube-scheduler","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["hyperkube","kube-scheduler"],"args":["--config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml","--cert-dir=/var/run/kubernetes","--authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--feature-gates=APIPriorityAndFairness=true,CSIMigrationAWS=false,CSIMigrationAzureDisk=false,CSIMigrationAzureFile=false,CSIMigrationGCE=false,CSIMigrationOpenStack=false,CSIMigrationvSphere=false,DownwardAPIHugePages=true,PodSecurity=true,RotateKubeletServerCertificate=true","-v=2","--tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt","--tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key","--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256","--tls-min-version=VersionTLS12"],"ports":[{"containerPort":10259}],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"livenessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"readinessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-cert-syncer","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["cluster-kube-scheduler-operator","cert-syncer"],"args":["--kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig","--namespace=$(POD_NAMESPACE)","--destination-dir=/etc/kubernetes/static-pod-certs"],"env":[{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-recovery-controller","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["/bin/bash","-euxo","pipefail","-c"],"args":["timeout 3m /bin/bash -exuo pipefail -c 'while [ -n \"$(ss -Htanop \\( sport = 11443 \\))\" ]; do sleep 1; done'\n\nexec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2\n"],"env":[{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"hostNetwork":true,"tolerations":[{"operator":"Exists"}],"priorityClassName":"system-node-critical"},"status":{}}
+    version: 4.10.0-202204211158.p0.g0c57d73.assembly.stream-0c57d73
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:13Z"
+    name: kube-scheduler-pod-8
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-8
+      uid: 68ae9f63-9336-414f-ab31-79185d7cf875
+    resourceVersion: "36294"
+    uid: 81deed04-a9af-45b3-a65f-470cb2f5909c
+- apiVersion: v1
+  data:
+    forceRedeploymentReason: ""
+    pod.yaml: |
+      {"kind":"Pod","apiVersion":"v1","metadata":{"name":"openshift-kube-scheduler","namespace":"openshift-kube-scheduler","creationTimestamp":null,"labels":{"app":"openshift-kube-scheduler","revision":"REVISION","scheduler":"true"},"annotations":{"kubectl.kubernetes.io/default-container":"kube-scheduler","target.workload.openshift.io/management":"{\"effect\": \"PreferredDuringScheduling\"}"}},"spec":{"volumes":[{"name":"resource-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-pod-REVISION"}},{"name":"cert-dir","hostPath":{"path":"/etc/kubernetes/static-pod-resources/kube-scheduler-certs"}}],"initContainers":[{"name":"wait-for-host-port","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["/usr/bin/timeout","30","/bin/bash","-c"],"args":["echo -n \"Waiting for port :10259 and :10251 to be released.\"\nwhile [ -n \"$(ss -Htan '( sport = 10251 or sport = 10259 )')\" ]; do\n  echo -n \".\"\n  sleep 1\ndone\n"],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"containers":[{"name":"kube-scheduler","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b","command":["hyperkube","kube-scheduler"],"args":["--config=/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml","--cert-dir=/var/run/kubernetes","--authentication-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--authorization-kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig","--feature-gates=APIPriorityAndFairness=true,CSIMigrationAWS=false,CSIMigrationAzureDisk=false,CSIMigrationAzureFile=false,CSIMigrationGCE=false,CSIMigrationOpenStack=false,CSIMigrationvSphere=false,DownwardAPIHugePages=true,PodSecurity=true,RotateKubeletServerCertificate=true","-v=2","--tls-cert-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt","--tls-private-key-file=/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key","--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256","--tls-min-version=VersionTLS12"],"ports":[{"containerPort":10259}],"resources":{"requests":{"cpu":"15m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"livenessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"readinessProbe":{"httpGet":{"path":"healthz","port":10259,"scheme":"HTTPS"},"initialDelaySeconds":45},"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-cert-syncer","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["cluster-kube-scheduler-operator","cert-syncer"],"args":["--kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig","--namespace=$(POD_NAMESPACE)","--destination-dir=/etc/kubernetes/static-pod-certs"],"env":[{"name":"POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"},{"name":"kube-scheduler-recovery-controller","image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94","command":["/bin/bash","-euxo","pipefail","-c"],"args":["timeout 3m /bin/bash -exuo pipefail -c 'while [ -n \"$(ss -Htanop \\( sport = 11443 \\))\" ]; do sleep 1; done'\n\nexec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig  --namespace=${POD_NAMESPACE} --listen=0.0.0.0:11443 -v=2\n"],"env":[{"name":"POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"resources":{"requests":{"cpu":"5m","memory":"50Mi"}},"volumeMounts":[{"name":"resource-dir","mountPath":"/etc/kubernetes/static-pod-resources"},{"name":"cert-dir","mountPath":"/etc/kubernetes/static-pod-certs"}],"terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent"}],"hostNetwork":true,"tolerations":[{"operator":"Exists"}],"priorityClassName":"system-node-critical"},"status":{}}
+    version: 4.10.0-202204211158.p0.g0c57d73.assembly.stream-0c57d73
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:28:58Z"
+    name: kube-scheduler-pod-9
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-9
+      uid: 6e53daf4-a7d8-4591-aa36-817720c27013
+    resourceVersion: "45334"
+    uid: 56010c7e-a090-4cd5-a343-c7c49383c976
+- apiVersion: v1
+  data:
+    service-ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDUTCCAjmgAwIBAgIIQZrxiXiPOoYwDQYJKoZIhvcNAQELBQAwNjE0MDIGA1UE
+      Awwrb3BlbnNoaWZ0LXNlcnZpY2Utc2VydmluZy1zaWduZXJAMTY1MzQxNTY2MjAe
+      Fw0yMjA1MjQxODA3NDFaFw0yNDA3MjIxODA3NDJaMDYxNDAyBgNVBAMMK29wZW5z
+      aGlmdC1zZXJ2aWNlLXNlcnZpbmctc2lnbmVyQDE2NTM0MTU2NjIwggEiMA0GCSqG
+      SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDetmL87oMhj0wEuFhthJTJ66WZzU8HPXlz
+      hn/I4gNXxE37ctAAxpb77OPawZAOeZNuiac+3PujhxMfyWJwtWx3jzqfOa1qCz+3
+      ZT2t/6XbhR8Ad1A+LjAd6FM1YQADJ5uHrnKMhFjnWGsLA17MezZNpfETj9YHrZmj
+      O6KMxQ2KN4a/JG3LsQ8YgUbpmoxaxcjWUjIT+1gtU9txW677+UgO/tgqrhG18b0w
+      /0vaVQMv8WF/ZNjTuoncCa0+Nr6C4tOo84lT7viaJTL+QhUwLaOxHqvP3KEOTO45
+      WnRszRu+2if1nM3XCAHAsnsNHp3d6oLMyuosm1/ZF82xF0FzaqAXAgMBAAGjYzBh
+      MA4GA1UdDwEB/wQEAwICpDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBRy8veS
+      PVLa9sdRIrn11Z9JJ5Vd0zAfBgNVHSMEGDAWgBRy8veSPVLa9sdRIrn11Z9JJ5Vd
+      0zANBgkqhkiG9w0BAQsFAAOCAQEAQSRJ2413KVPJ6Zf6kJ5JMU8BZ4vJZC2NRI1J
+      ZMHPzCRYPIS5ggI9mUcXg/M2Bv8y1j3EnuCI4DVsnfrUMvPj4Brga8OD+bop5CYp
+      Hjdcdn1txCQFE49OnO9PdWIYTHvBdAMFb9cgfl4r9gYbMBIkbDEiv7cyaOQ/Krb6
+      UELgwDWaX/Loh1f2waU2AAOXXNzsxpu6NpBcXpzkM/PYjvAPYdf0V9ow/Ub9RXDV
+      cqoxX2rb64SDgOJNSmRTS8CXuvMBqXCgSXAqFdtPpztGHtMYGfSGpP5K9P3WnrNg
+      dKMUuqbSu///kGv7VKcx95YACrQAB6dzZbtlkxOmoPvj5nVq3w==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    annotations:
+      service.beta.openshift.io/inject-cabundle: "true"
+    creationTimestamp: "2022-05-24T18:05:15Z"
+    name: openshift-service-ca.crt
+    namespace: openshift-kube-scheduler
+    resourceVersion: "5205"
+    uid: a5d2b19c-4ee7-4bcb-8e0a-c8aa5a95fddb
+- apiVersion: v1
+  data:
+    reason: secret/localhost-recovery-client-token has changed
+    revision: "10"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:30:13Z"
+    name: revision-status-10
+    namespace: openshift-kube-scheduler
+    resourceVersion: "49322"
+    uid: 76a3fe5f-88f6-4958-9492-babbde19b4cf
+- apiVersion: v1
+  data:
+    reason: secret/localhost-recovery-client-token has changed
+    revision: "11"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:38:02Z"
+    name: revision-status-11
+    namespace: openshift-kube-scheduler
+    resourceVersion: "66015"
+    uid: 0d3630c3-6964-48a8-8117-973e43aac299
+- apiVersion: v1
+  data:
+    reason: configmap "scheduler-kubeconfig-5" not found
+    revision: "6"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:09:42Z"
+    name: revision-status-6
+    namespace: openshift-kube-scheduler
+    resourceVersion: "9974"
+    uid: 1f04e8a3-f28f-4d9c-998f-d5d4e0840bd7
+- apiVersion: v1
+  data:
+    reason: secret/localhost-recovery-client-token has changed
+    revision: "7"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:02Z"
+    name: revision-status-7
+    namespace: openshift-kube-scheduler
+    resourceVersion: "14915"
+    uid: d765b71d-0b55-4a66-9e82-100d535e6e31
+- apiVersion: v1
+  data:
+    reason: configmap/serviceaccount-ca has changed
+    revision: "8"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:12Z"
+    name: revision-status-8
+    namespace: openshift-kube-scheduler
+    resourceVersion: "36245"
+    uid: 68ae9f63-9336-414f-ab31-79185d7cf875
+- apiVersion: v1
+  data:
+    reason: secret/localhost-recovery-client-token has changed
+    revision: "9"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:28:57Z"
+    name: revision-status-9
+    namespace: openshift-kube-scheduler
+    resourceVersion: "45223"
+    uid: 6e53daf4-a7d8-4591-aa36-817720c27013
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/configmaps/serviceaccount-ca/ca-bundle.crt
+            server: https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+          name: lb-int
+      contexts:
+        - context:
+            cluster: lb-int
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            client-certificate: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.crt
+            client-key: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.key
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:50Z"
+    name: scheduler-kubeconfig
+    namespace: openshift-kube-scheduler
+    resourceVersion: "5230"
+    uid: 5b91db00-8807-4c0c-8614-80583fe7d509
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/configmaps/serviceaccount-ca/ca-bundle.crt
+            server: https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+          name: lb-int
+      contexts:
+        - context:
+            cluster: lb-int
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            client-certificate: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.crt
+            client-key: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.key
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:30:18Z"
+    name: scheduler-kubeconfig-10
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-10
+      uid: 76a3fe5f-88f6-4958-9492-babbde19b4cf
+    resourceVersion: "50109"
+    uid: 56c959e9-8b70-4e5e-8200-8e8b20d257b9
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/configmaps/serviceaccount-ca/ca-bundle.crt
+            server: https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+          name: lb-int
+      contexts:
+        - context:
+            cluster: lb-int
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            client-certificate: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.crt
+            client-key: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.key
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:38:05Z"
+    name: scheduler-kubeconfig-11
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-11
+      uid: 0d3630c3-6964-48a8-8117-973e43aac299
+    resourceVersion: "66296"
+    uid: 1831ed29-7ac7-4a3a-871d-aab9feb21746
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/configmaps/serviceaccount-ca/ca-bundle.crt
+            server: https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+          name: lb-int
+      contexts:
+        - context:
+            cluster: lb-int
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            client-certificate: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.crt
+            client-key: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.key
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:09:49Z"
+    name: scheduler-kubeconfig-6
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-6
+      uid: 1f04e8a3-f28f-4d9c-998f-d5d4e0840bd7
+    resourceVersion: "10096"
+    uid: e98840c3-b93c-4cd1-b0c9-f2f3c3bff8be
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/configmaps/serviceaccount-ca/ca-bundle.crt
+            server: https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+          name: lb-int
+      contexts:
+        - context:
+            cluster: lb-int
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            client-certificate: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.crt
+            client-key: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.key
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:10Z"
+    name: scheduler-kubeconfig-7
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-7
+      uid: d765b71d-0b55-4a66-9e82-100d535e6e31
+    resourceVersion: "16810"
+    uid: 75132d31-9934-496e-b282-af0dcc053e3c
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/configmaps/serviceaccount-ca/ca-bundle.crt
+            server: https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+          name: lb-int
+      contexts:
+        - context:
+            cluster: lb-int
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            client-certificate: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.crt
+            client-key: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.key
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:17Z"
+    name: scheduler-kubeconfig-8
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-8
+      uid: 68ae9f63-9336-414f-ab31-79185d7cf875
+    resourceVersion: "36506"
+    uid: e8fd73e1-3b18-439b-a37d-3655eb61e5d2
+- apiVersion: v1
+  data:
+    kubeconfig: |
+      apiVersion: v1
+      clusters:
+        - cluster:
+            certificate-authority: /etc/kubernetes/static-pod-resources/configmaps/serviceaccount-ca/ca-bundle.crt
+            server: https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+          name: lb-int
+      contexts:
+        - context:
+            cluster: lb-int
+            user: kube-scheduler
+          name: kube-scheduler
+      current-context: kube-scheduler
+      kind: Config
+      preferences: {}
+      users:
+        - name: kube-scheduler
+          user:
+            client-certificate: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.crt
+            client-key: /etc/kubernetes/static-pod-certs/secrets/kube-scheduler-client-cert-key/tls.key
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:29:02Z"
+    name: scheduler-kubeconfig-9
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-9
+      uid: 6e53daf4-a7d8-4591-aa36-817720c27013
+    resourceVersion: "45619"
+    uid: d704086b-cff8-464a-9f05-822d05d85d03
+- apiVersion: v1
+  data:
+    ca-bundle.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDMjCCAhqgAwIBAgIIaF6NeZ+aXe0wDQYJKoZIhvcNAQELBQAwNzESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSEwHwYDVQQDExhrdWJlLWFwaXNlcnZlci1sYi1zaWduZXIw
+      HhcNMjIwNTI0MTc1ODA5WhcNMzIwNTIxMTc1ODA5WjA3MRIwEAYDVQQLEwlvcGVu
+      c2hpZnQxITAfBgNVBAMTGGt1YmUtYXBpc2VydmVyLWxiLXNpZ25lcjCCASIwDQYJ
+      KoZIhvcNAQEBBQADggEPADCCAQoCggEBALwVpbI2tHFkVQrTfwH3tkneIikpA/hl
+      b1BRaPs1bwvVxTgkv0ctRjuJGZpcLja8saZB/wlVIFCGq6c5J6dwNWmVoZu1KIGp
+      9qNnNkRgttm8wSz2HA+lCW9yUxjDgUA8Pc5bCcUhY8qSPA2m9qq/tvPr4vGSa8x0
+      AcGOlPheM8PeCv40Zc2EPmhKfFAp6ZuJ7ZLVJAO6ncnOTtkDqYMKORGdFgNYKdKZ
+      sfJ9qnSH8Ps4fSyqwPxQAyQ85yjJEdahu2ZoKopiacH7uU6wS2Ni49XUGXeS5kct
+      iDYCmMCJHtsF4F74qv2Gh8stWGyA9JLyMi/m342dr2f1VdgmgGn1io0CAwEAAaNC
+      MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKEH
+      goCqgLWx3Ma0M2iSXtQFfXCsMA0GCSqGSIb3DQEBCwUAA4IBAQAofVvp05u+GGv7
+      w34hPGfwXb0rupUhSbm+KzcZ9p7jZKPSN4lvkLRNUprfmP4gR33Xkjn91watSM2x
+      FMsSMFvPoLQkfHu2cP3TlN2ddbYb+3v01fCYDKPyaoIAaCVUgpJ2gNYsVPhD3LQd
+      sA/EkWyKs7Ggu8yL88ArKN8Nsv7WUtKHmqbiqrX6K0DM9pdI3upfXYCngeL5IsU8
+      Fq1NyK086wVdYfjOnipTXtTvPiO/fE1oX2nVXsxNxowjhYVScC2T1ZH9cVSP26fq
+      uoyj99JfxxDL9hpbK5K2YzNrDO7fkzn6UP0j+Fu96gVoHci2s0oK2JxQsxgfxcYZ
+      8TfG1e82
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDQDCCAiigAwIBAgIIM46x6byvII8wDQYJKoZIhvcNAQELBQAwPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVrAeaJosaY1
+      E9o4oPkpxLDx8QF5Ji3uMMfoBAO+9Wt2tykPO9/CTghsDM1fN/kg94DE4rb6CMWb
+      aFyUlBok97zlO7rjKBySOnTahRArHuzurQtMyDrUJD0pWLbXIiyjE4L26Rz3wW9C
+      CZsXfwnmytPhraguIbUnKDz7ykSRzf79pqvP17dK+Vsiyy/ViOFqHuSGa2d2RlBI
+      jshHo2jRZLPCVGUvfAQTT+pfbxrDcg3XpDmGukXTZnWqL12Qc22teoTjXAHCL0Ny
+      XjitCo+nSyt+NcoZgJ3HZqEufO4F3DqfF6Ja7zNGbH0rDPKBQjsqkSR0sFz8VKXF
+      xdvHKantCQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+      /zAdBgNVHQ4EFgQUxGqZhXeomt9poP3ST8CNGz3NS2IwDQYJKoZIhvcNAQELBQAD
+      ggEBALggP2dTHzzs9i5i5Vo04NuzosogdCK67tWd85nPwWza9s1P4KHpgIYTp+Ve
+      nt7oRNqEmcDdV3LYLcqzfrghjChheEcrK35439VeUqdjQdmHM/WmYXzwzszBtbCY
+      G/vkff8X5pzwIxJJp40u3iVtEbnVvz1BnrYg568WRctaZabKVzklPuMspOndOOSg
+      8JT+V59RMrsnL2I8ccfOH/vABiU92Zq8TC483TBzwjX72+573pBTOigZCypSGaXo
+      YeYj0nLVabALOLnwGxD/BJXS3X01Ehv1zVP1r58t2sxuF+k55nPXYDs9VSVgx5kT
+      +odoALQyN4PXN/+lZCJK4ISHqyA=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDTDCCAjSgAwIBAgIISQR4oKgvETwwDQYJKoZIhvcNAQELBQAwRDESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2aWNlLW5l
+      dHdvcmstc2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowRDES
+      MBAGA1UECxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2
+      aWNlLW5ldHdvcmstc2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEA1azJdx1cmrP0oFXUtF+Y1TVVxLU6HC7k9CVwKpDSCHtzOY9cxXn3edBGYiok
+      HcnIP2vziKS29enFK5H9Msqhc/dueYaFHzuKtAgteKGJifvWBxYA0R8FOYwRn2gC
+      +NIlYlpeLPeiE7dvt1OQTaNnAn6ZwZKMvSsbwcmgi04C+XxkKgCx4oqFgGysg794
+      d1YpTc1NoonJ85i3zeiJ5X3Z66EPWtQXIlU67IedX8Vd3jC7KqAoqV3hm4GyImT1
+      q5OQzqb0+mAuxzIuLaCLQu8JhKKHB8j1I0qclpmotxWOju3jimgZ3i0QWl8LXKFv
+      7+Hyrtisb+1BzSiLZz6vKgJxeQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYD
+      VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU8ZjsCxNdiq7xt0hqHLNElJK6SHEwDQYJ
+      KoZIhvcNAQELBQADggEBAB9BOikS47zebhNtVkY7Lf4r3HVQ13zxsx9FthmqayXr
+      KDRJ5AWiXASoF0lPgElsUQ0Qsp3etXR2POfd9Ei7ytwV3ftfRdR/JnCWTJ1jlqvc
+      d3oUJlU/Mg3qFNVhYdfn0H6BMcdHkOibsyigkCeWzIC1VU04Dl8cD9IoltDWeJfM
+      Bi30K2dJsJN3LYn8Ic0nwYzeccLxqG7ADEL8YjFPC8sL2YvTACYYJVkHZHuSyL+h
+      qVv7odKp+x/LuAxJiTn8rZie0xYLt6Z+X8Hm72BaoikmerKInClM03DGrieHWDlY
+      KFE/Boetn7nRsomkRsCoUJMC6HjMSFr5D7UrOok5LC0=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDlzCCAn+gAwIBAgIIA02EfcpLCEIwDQYJKoZIhvcNAQELBQAwWTFXMFUGA1UE
+      AwxOb3BlbnNoaWZ0LWt1YmUtYXBpc2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1y
+      ZWNvdmVyeS1zZXJ2aW5nLXNpZ25lckAxNjUzNDE1NjYzMB4XDTIyMDUyNDE4MDc0
+      M1oXDTMyMDUyMTE4MDc0NFowWTFXMFUGA1UEAwxOb3BlbnNoaWZ0LWt1YmUtYXBp
+      c2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1yZWNvdmVyeS1zZXJ2aW5nLXNpZ25l
+      ckAxNjUzNDE1NjYzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4unV
+      faO+MHjSSGkR9ZSXYfvdIuVRnfDBjl3lWRT6z4vdafaw+/tJAWgROgQ+2c80nGhD
+      NYJMp+l1gHFAowaxblu38SqB8rhZTGa3dbvbIJZ/NCSEZsHKJwlahFaoyuOTnguv
+      yzFRJnZPJY57IojaL0AtLLq5xxojzijiSPwZE/XoKxXTewfWoOKuANvGdtaKvWqG
+      oQf8Iq4Lc130iEwTZgYYTQQIoNRkNwVSPL0mDJO2tR8q/m38HMtLFqOxZPrTms2H
+      tGjH4gS9JIOtcuGSr3H6XlBnI+UrQa2IxhVCRvGMN9Yd/xZeygE0Ttl8Ux0jgKfM
+      FT/7Cqlc5M24AVcZQQIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/
+      BAUwAwEB/zAdBgNVHQ4EFgQUBgHjWEA8cGDOxOEE9NeUoTgosCkwHwYDVR0jBBgw
+      FoAUBgHjWEA8cGDOxOEE9NeUoTgosCkwDQYJKoZIhvcNAQELBQADggEBAKEkSDDM
+      uNU0msYFwYzWVJ6ZuLqh/ZgwoKT/HfBpkxyX44rJo66ZDvapl4eBfF2Qho+WAyEY
+      dUXiHAM+murwivPAhdBxafCockCQSygz8hLooUf4KICSOZdGYeR96BqArZ3aMEOU
+      6DlxVOWfpowwT4FD/CUqbtSX5F4KmRdoD+1ks3WIcwPbl0zb+MZ2HLCpFPQMAomq
+      A0s+eCJ/6oTNGTzttyUjeKlNQK7GcZZU3ZYqftf3f4kAxAyFWgG7wvUhFuxeoP8y
+      OpVILyPvOqb3WBN+KDrGmXFUZFjzGzqD3buqED3NA4ZWx+Rc7hPZvFCRUQobSfQV
+      tlOPSHzf9Y9rSgo=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFtjCCBJ6gAwIBAgISBFLw17r/CuNNqWSjg41GCK3OMA0GCSqGSIb3DQEBCwUA
+      MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+      EwJSMzAeFw0yMjA1MjQxNzI3MDJaFw0yMjA4MjIxNzI3MDFaMDQxMjAwBgNVBAMT
+      KWFwaS5vZGYtc2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMIIBIjAN
+      BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzd4EF451gHcY+pDj4YM2hLiIWuGX
+      iCe9DGYzUNC4jrijeJVYs8tPp/iH63gOYvsY3fW7coZEbaFvq597qzKb6CAjsP72
+      s0VBJH4vnljJysMv6VpU9D4NECYvAQjy1OHVP6VrURBhu61bOgLrYFfxCtGWD81a
+      O7rNwquWsGqQDiGXfg6LbApX3Y9kg+zyuTL1Pc2b6fzAC3BEMviOI9o6QPZhHH1P
+      7H0STFfEWRRt7IHC5KLi1IvQ1aPHG+LJcQ58etnoYNydkNkB3DN4CjjaXitdLnoi
+      G2d2cVMXmCMMYPkSuZEIlhoAmn1BuUV/SHuoSs63XVjhy4bE1MV3arwCWwIDAQAB
+      o4ICwjCCAr4wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggr
+      BgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBQXbq8TuDsow74svn3WxCIX
+      E6KtEjAfBgNVHSMEGDAWgBQULrMXt1hWy65QCUDmH6+dixTCxjBVBggrBgEFBQcB
+      AQRJMEcwIQYIKwYBBQUHMAGGFWh0dHA6Ly9yMy5vLmxlbmNyLm9yZzAiBggrBgEF
+      BQcwAoYWaHR0cDovL3IzLmkubGVuY3Iub3JnLzCBkgYDVR0RBIGKMIGHgiwqLmFw
+      cHMub2RmLXNlcnZpY2UuZGlmNS5wMS5vcGVuc2hpZnRhcHBzLmNvbYIpYXBpLm9k
+      Zi1zZXJ2aWNlLmRpZjUucDEub3BlbnNoaWZ0YXBwcy5jb22CLHJoLWFwaS5vZGYt
+      c2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMEwGA1UdIARFMEMwCAYG
+      Z4EMAQIBMDcGCysGAQQBgt8TAQEBMCgwJgYIKwYBBQUHAgEWGmh0dHA6Ly9jcHMu
+      bGV0c2VuY3J5cHQub3JnMIIBAwYKKwYBBAHWeQIEAgSB9ASB8QDvAHYA36Veq2iC
+      Tx9sre64X04+WurNohKkal6OOxLAIERcKnMAAAGA91KJLwAABAMARzBFAiAIZWF8
+      HxoZi8Uc4gbb1tP92WtRG697l9lmSfXbnC1XLQIhAL/e0q4GXuEUlIkJW0jwqc6O
+      Md7T/AizyojNvIRU5mVyAHUARqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+
+      bUcAAAGA91KJUwAABAMARjBEAiB7//joMC2x7OAo92PRcbaOuyjPQG2w51dX+xlF
+      vucv0gIgaTD8sFKPppA70+k/s9M/FuUM61tUl21nI2FQ52/L8qowDQYJKoZIhvcN
+      AQELBQADggEBAC05nXdp+2WBPR5Tg/tceka3INm7/IOC4sYIqxwUopF9ePmlk58F
+      hSbZzvzM4teaH4o3kAke4bzzFhnnBqWG4cW52c7eOgO4tYzE3SkjfipqytT2Ed1D
+      jOorCI+EQjV9EFZeEzvxtnZsAwgIjLvqpB/LXlnSf5EkmjtzHcHqucZcDFsqcMjL
+      Qolbk1+a+TOTM4FPz4qlPAslLh8xCXZHCIYuM2n4r71XRPYeKUnj9JBRZVSN7znK
+      s0uo646L0S4Slp/HBDrrDHHoqjucqO1ad40uKzP4jwtMp0w5wYtCzTrTZrLuyVEh
+      emR91a/GVQgnV2LpWDwVXPpt5H1p/tDFA08=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
+      TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+      cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjAwOTA0MDAwMDAw
+      WhcNMjUwOTE1MTYwMDAwWjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+      RW5jcnlwdDELMAkGA1UEAxMCUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQC7AhUozPaglNMPEuyNVZLD+ILxmaZ6QoinXSaqtSu5xUyxr45r+XXIo9cP
+      R5QUVTVXjJ6oojkZ9YI8QqlObvU7wy7bjcCwXPNZOOftz2nwWgsbvsCUJCWH+jdx
+      sxPnHKzhm+/b5DtFUkWWqcFTzjTIUu61ru2P3mBw4qVUq7ZtDpelQDRrK9O8Zutm
+      NHz6a4uPVymZ+DAXXbpyb/uBxa3Shlg9F8fnCbvxK/eG3MHacV3URuPMrSXBiLxg
+      Z3Vms/EY96Jc5lP/Ooi2R6X/ExjqmAl3P51T+c8B5fWmcBcUr2Ok/5mzk53cU6cG
+      /kiFHaFpriV1uxPMUgP17VGhi9sVAgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMC
+      AYYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMBIGA1UdEwEB/wQIMAYB
+      Af8CAQAwHQYDVR0OBBYEFBQusxe3WFbLrlAJQOYfr52LFMLGMB8GA1UdIwQYMBaA
+      FHm0WeZ7tuXkAXOACIjIGlj26ZtuMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEFBQcw
+      AoYWaHR0cDovL3gxLmkubGVuY3Iub3JnLzAnBgNVHR8EIDAeMBygGqAYhhZodHRw
+      Oi8veDEuYy5sZW5jci5vcmcvMCIGA1UdIAQbMBkwCAYGZ4EMAQIBMA0GCysGAQQB
+      gt8TAQEBMA0GCSqGSIb3DQEBCwUAA4ICAQCFyk5HPqP3hUSFvNVneLKYY611TR6W
+      PTNlclQtgaDqw+34IL9fzLdwALduO/ZelN7kIJ+m74uyA+eitRY8kc607TkC53wl
+      ikfmZW4/RvTZ8M6UK+5UzhK8jCdLuMGYL6KvzXGRSgi3yLgjewQtCPkIVz6D2QQz
+      CkcheAmCJ8MqyJu5zlzyZMjAvnnAT45tRAxekrsu94sQ4egdRCnbWSDtY7kh+BIm
+      lJNXoB1lBMEKIq4QDUOXoRgffuDghje1WrG9ML+Hbisq/yFOGwXD9RiX8F6sw6W4
+      avAuvDszue5L3sz85K+EC4Y/wFVDNvZo4TYXao6Z0f+lQKc0t8DQYzk1OXVu8rp2
+      yJMC6alLbBfODALZvYH7n7do1AZls4I9d1P4jnkDrQoxB3UqQ9hVl3LEKQ73xF1O
+      yK5GhDDX8oVfGKF5u+decIsH4YaTw7mP3GFxJSqv3+0lUFJoi5Lc5da149p90Ids
+      hCExroL1+7mryIkXPeFM5TgO9r0rvZaBFOvV2z0gp35Z0+L4WPlbuEjN/lxPFin+
+      HlUjr8gRsI3qfJOQFy/9rKIJR0Y/8Omwt/8oTWgy1mdeHmmjk7j1nYsvC9JSQ6Zv
+      MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
+      nLRbwHOoq7hHwg==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:47Z"
+    name: serviceaccount-ca
+    namespace: openshift-kube-scheduler
+    resourceVersion: "36191"
+    uid: 2c9cf197-4db1-480b-b50f-d8c7b3f672b4
+- apiVersion: v1
+  data:
+    ca-bundle.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDMjCCAhqgAwIBAgIIaF6NeZ+aXe0wDQYJKoZIhvcNAQELBQAwNzESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSEwHwYDVQQDExhrdWJlLWFwaXNlcnZlci1sYi1zaWduZXIw
+      HhcNMjIwNTI0MTc1ODA5WhcNMzIwNTIxMTc1ODA5WjA3MRIwEAYDVQQLEwlvcGVu
+      c2hpZnQxITAfBgNVBAMTGGt1YmUtYXBpc2VydmVyLWxiLXNpZ25lcjCCASIwDQYJ
+      KoZIhvcNAQEBBQADggEPADCCAQoCggEBALwVpbI2tHFkVQrTfwH3tkneIikpA/hl
+      b1BRaPs1bwvVxTgkv0ctRjuJGZpcLja8saZB/wlVIFCGq6c5J6dwNWmVoZu1KIGp
+      9qNnNkRgttm8wSz2HA+lCW9yUxjDgUA8Pc5bCcUhY8qSPA2m9qq/tvPr4vGSa8x0
+      AcGOlPheM8PeCv40Zc2EPmhKfFAp6ZuJ7ZLVJAO6ncnOTtkDqYMKORGdFgNYKdKZ
+      sfJ9qnSH8Ps4fSyqwPxQAyQ85yjJEdahu2ZoKopiacH7uU6wS2Ni49XUGXeS5kct
+      iDYCmMCJHtsF4F74qv2Gh8stWGyA9JLyMi/m342dr2f1VdgmgGn1io0CAwEAAaNC
+      MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKEH
+      goCqgLWx3Ma0M2iSXtQFfXCsMA0GCSqGSIb3DQEBCwUAA4IBAQAofVvp05u+GGv7
+      w34hPGfwXb0rupUhSbm+KzcZ9p7jZKPSN4lvkLRNUprfmP4gR33Xkjn91watSM2x
+      FMsSMFvPoLQkfHu2cP3TlN2ddbYb+3v01fCYDKPyaoIAaCVUgpJ2gNYsVPhD3LQd
+      sA/EkWyKs7Ggu8yL88ArKN8Nsv7WUtKHmqbiqrX6K0DM9pdI3upfXYCngeL5IsU8
+      Fq1NyK086wVdYfjOnipTXtTvPiO/fE1oX2nVXsxNxowjhYVScC2T1ZH9cVSP26fq
+      uoyj99JfxxDL9hpbK5K2YzNrDO7fkzn6UP0j+Fu96gVoHci2s0oK2JxQsxgfxcYZ
+      8TfG1e82
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDQDCCAiigAwIBAgIIM46x6byvII8wDQYJKoZIhvcNAQELBQAwPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVrAeaJosaY1
+      E9o4oPkpxLDx8QF5Ji3uMMfoBAO+9Wt2tykPO9/CTghsDM1fN/kg94DE4rb6CMWb
+      aFyUlBok97zlO7rjKBySOnTahRArHuzurQtMyDrUJD0pWLbXIiyjE4L26Rz3wW9C
+      CZsXfwnmytPhraguIbUnKDz7ykSRzf79pqvP17dK+Vsiyy/ViOFqHuSGa2d2RlBI
+      jshHo2jRZLPCVGUvfAQTT+pfbxrDcg3XpDmGukXTZnWqL12Qc22teoTjXAHCL0Ny
+      XjitCo+nSyt+NcoZgJ3HZqEufO4F3DqfF6Ja7zNGbH0rDPKBQjsqkSR0sFz8VKXF
+      xdvHKantCQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+      /zAdBgNVHQ4EFgQUxGqZhXeomt9poP3ST8CNGz3NS2IwDQYJKoZIhvcNAQELBQAD
+      ggEBALggP2dTHzzs9i5i5Vo04NuzosogdCK67tWd85nPwWza9s1P4KHpgIYTp+Ve
+      nt7oRNqEmcDdV3LYLcqzfrghjChheEcrK35439VeUqdjQdmHM/WmYXzwzszBtbCY
+      G/vkff8X5pzwIxJJp40u3iVtEbnVvz1BnrYg568WRctaZabKVzklPuMspOndOOSg
+      8JT+V59RMrsnL2I8ccfOH/vABiU92Zq8TC483TBzwjX72+573pBTOigZCypSGaXo
+      YeYj0nLVabALOLnwGxD/BJXS3X01Ehv1zVP1r58t2sxuF+k55nPXYDs9VSVgx5kT
+      +odoALQyN4PXN/+lZCJK4ISHqyA=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDTDCCAjSgAwIBAgIISQR4oKgvETwwDQYJKoZIhvcNAQELBQAwRDESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2aWNlLW5l
+      dHdvcmstc2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowRDES
+      MBAGA1UECxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2
+      aWNlLW5ldHdvcmstc2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEA1azJdx1cmrP0oFXUtF+Y1TVVxLU6HC7k9CVwKpDSCHtzOY9cxXn3edBGYiok
+      HcnIP2vziKS29enFK5H9Msqhc/dueYaFHzuKtAgteKGJifvWBxYA0R8FOYwRn2gC
+      +NIlYlpeLPeiE7dvt1OQTaNnAn6ZwZKMvSsbwcmgi04C+XxkKgCx4oqFgGysg794
+      d1YpTc1NoonJ85i3zeiJ5X3Z66EPWtQXIlU67IedX8Vd3jC7KqAoqV3hm4GyImT1
+      q5OQzqb0+mAuxzIuLaCLQu8JhKKHB8j1I0qclpmotxWOju3jimgZ3i0QWl8LXKFv
+      7+Hyrtisb+1BzSiLZz6vKgJxeQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYD
+      VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU8ZjsCxNdiq7xt0hqHLNElJK6SHEwDQYJ
+      KoZIhvcNAQELBQADggEBAB9BOikS47zebhNtVkY7Lf4r3HVQ13zxsx9FthmqayXr
+      KDRJ5AWiXASoF0lPgElsUQ0Qsp3etXR2POfd9Ei7ytwV3ftfRdR/JnCWTJ1jlqvc
+      d3oUJlU/Mg3qFNVhYdfn0H6BMcdHkOibsyigkCeWzIC1VU04Dl8cD9IoltDWeJfM
+      Bi30K2dJsJN3LYn8Ic0nwYzeccLxqG7ADEL8YjFPC8sL2YvTACYYJVkHZHuSyL+h
+      qVv7odKp+x/LuAxJiTn8rZie0xYLt6Z+X8Hm72BaoikmerKInClM03DGrieHWDlY
+      KFE/Boetn7nRsomkRsCoUJMC6HjMSFr5D7UrOok5LC0=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDlzCCAn+gAwIBAgIIA02EfcpLCEIwDQYJKoZIhvcNAQELBQAwWTFXMFUGA1UE
+      AwxOb3BlbnNoaWZ0LWt1YmUtYXBpc2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1y
+      ZWNvdmVyeS1zZXJ2aW5nLXNpZ25lckAxNjUzNDE1NjYzMB4XDTIyMDUyNDE4MDc0
+      M1oXDTMyMDUyMTE4MDc0NFowWTFXMFUGA1UEAwxOb3BlbnNoaWZ0LWt1YmUtYXBp
+      c2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1yZWNvdmVyeS1zZXJ2aW5nLXNpZ25l
+      ckAxNjUzNDE1NjYzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4unV
+      faO+MHjSSGkR9ZSXYfvdIuVRnfDBjl3lWRT6z4vdafaw+/tJAWgROgQ+2c80nGhD
+      NYJMp+l1gHFAowaxblu38SqB8rhZTGa3dbvbIJZ/NCSEZsHKJwlahFaoyuOTnguv
+      yzFRJnZPJY57IojaL0AtLLq5xxojzijiSPwZE/XoKxXTewfWoOKuANvGdtaKvWqG
+      oQf8Iq4Lc130iEwTZgYYTQQIoNRkNwVSPL0mDJO2tR8q/m38HMtLFqOxZPrTms2H
+      tGjH4gS9JIOtcuGSr3H6XlBnI+UrQa2IxhVCRvGMN9Yd/xZeygE0Ttl8Ux0jgKfM
+      FT/7Cqlc5M24AVcZQQIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/
+      BAUwAwEB/zAdBgNVHQ4EFgQUBgHjWEA8cGDOxOEE9NeUoTgosCkwHwYDVR0jBBgw
+      FoAUBgHjWEA8cGDOxOEE9NeUoTgosCkwDQYJKoZIhvcNAQELBQADggEBAKEkSDDM
+      uNU0msYFwYzWVJ6ZuLqh/ZgwoKT/HfBpkxyX44rJo66ZDvapl4eBfF2Qho+WAyEY
+      dUXiHAM+murwivPAhdBxafCockCQSygz8hLooUf4KICSOZdGYeR96BqArZ3aMEOU
+      6DlxVOWfpowwT4FD/CUqbtSX5F4KmRdoD+1ks3WIcwPbl0zb+MZ2HLCpFPQMAomq
+      A0s+eCJ/6oTNGTzttyUjeKlNQK7GcZZU3ZYqftf3f4kAxAyFWgG7wvUhFuxeoP8y
+      OpVILyPvOqb3WBN+KDrGmXFUZFjzGzqD3buqED3NA4ZWx+Rc7hPZvFCRUQobSfQV
+      tlOPSHzf9Y9rSgo=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFtjCCBJ6gAwIBAgISBFLw17r/CuNNqWSjg41GCK3OMA0GCSqGSIb3DQEBCwUA
+      MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+      EwJSMzAeFw0yMjA1MjQxNzI3MDJaFw0yMjA4MjIxNzI3MDFaMDQxMjAwBgNVBAMT
+      KWFwaS5vZGYtc2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMIIBIjAN
+      BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzd4EF451gHcY+pDj4YM2hLiIWuGX
+      iCe9DGYzUNC4jrijeJVYs8tPp/iH63gOYvsY3fW7coZEbaFvq597qzKb6CAjsP72
+      s0VBJH4vnljJysMv6VpU9D4NECYvAQjy1OHVP6VrURBhu61bOgLrYFfxCtGWD81a
+      O7rNwquWsGqQDiGXfg6LbApX3Y9kg+zyuTL1Pc2b6fzAC3BEMviOI9o6QPZhHH1P
+      7H0STFfEWRRt7IHC5KLi1IvQ1aPHG+LJcQ58etnoYNydkNkB3DN4CjjaXitdLnoi
+      G2d2cVMXmCMMYPkSuZEIlhoAmn1BuUV/SHuoSs63XVjhy4bE1MV3arwCWwIDAQAB
+      o4ICwjCCAr4wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggr
+      BgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBQXbq8TuDsow74svn3WxCIX
+      E6KtEjAfBgNVHSMEGDAWgBQULrMXt1hWy65QCUDmH6+dixTCxjBVBggrBgEFBQcB
+      AQRJMEcwIQYIKwYBBQUHMAGGFWh0dHA6Ly9yMy5vLmxlbmNyLm9yZzAiBggrBgEF
+      BQcwAoYWaHR0cDovL3IzLmkubGVuY3Iub3JnLzCBkgYDVR0RBIGKMIGHgiwqLmFw
+      cHMub2RmLXNlcnZpY2UuZGlmNS5wMS5vcGVuc2hpZnRhcHBzLmNvbYIpYXBpLm9k
+      Zi1zZXJ2aWNlLmRpZjUucDEub3BlbnNoaWZ0YXBwcy5jb22CLHJoLWFwaS5vZGYt
+      c2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMEwGA1UdIARFMEMwCAYG
+      Z4EMAQIBMDcGCysGAQQBgt8TAQEBMCgwJgYIKwYBBQUHAgEWGmh0dHA6Ly9jcHMu
+      bGV0c2VuY3J5cHQub3JnMIIBAwYKKwYBBAHWeQIEAgSB9ASB8QDvAHYA36Veq2iC
+      Tx9sre64X04+WurNohKkal6OOxLAIERcKnMAAAGA91KJLwAABAMARzBFAiAIZWF8
+      HxoZi8Uc4gbb1tP92WtRG697l9lmSfXbnC1XLQIhAL/e0q4GXuEUlIkJW0jwqc6O
+      Md7T/AizyojNvIRU5mVyAHUARqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+
+      bUcAAAGA91KJUwAABAMARjBEAiB7//joMC2x7OAo92PRcbaOuyjPQG2w51dX+xlF
+      vucv0gIgaTD8sFKPppA70+k/s9M/FuUM61tUl21nI2FQ52/L8qowDQYJKoZIhvcN
+      AQELBQADggEBAC05nXdp+2WBPR5Tg/tceka3INm7/IOC4sYIqxwUopF9ePmlk58F
+      hSbZzvzM4teaH4o3kAke4bzzFhnnBqWG4cW52c7eOgO4tYzE3SkjfipqytT2Ed1D
+      jOorCI+EQjV9EFZeEzvxtnZsAwgIjLvqpB/LXlnSf5EkmjtzHcHqucZcDFsqcMjL
+      Qolbk1+a+TOTM4FPz4qlPAslLh8xCXZHCIYuM2n4r71XRPYeKUnj9JBRZVSN7znK
+      s0uo646L0S4Slp/HBDrrDHHoqjucqO1ad40uKzP4jwtMp0w5wYtCzTrTZrLuyVEh
+      emR91a/GVQgnV2LpWDwVXPpt5H1p/tDFA08=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
+      TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+      cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjAwOTA0MDAwMDAw
+      WhcNMjUwOTE1MTYwMDAwWjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+      RW5jcnlwdDELMAkGA1UEAxMCUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQC7AhUozPaglNMPEuyNVZLD+ILxmaZ6QoinXSaqtSu5xUyxr45r+XXIo9cP
+      R5QUVTVXjJ6oojkZ9YI8QqlObvU7wy7bjcCwXPNZOOftz2nwWgsbvsCUJCWH+jdx
+      sxPnHKzhm+/b5DtFUkWWqcFTzjTIUu61ru2P3mBw4qVUq7ZtDpelQDRrK9O8Zutm
+      NHz6a4uPVymZ+DAXXbpyb/uBxa3Shlg9F8fnCbvxK/eG3MHacV3URuPMrSXBiLxg
+      Z3Vms/EY96Jc5lP/Ooi2R6X/ExjqmAl3P51T+c8B5fWmcBcUr2Ok/5mzk53cU6cG
+      /kiFHaFpriV1uxPMUgP17VGhi9sVAgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMC
+      AYYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMBIGA1UdEwEB/wQIMAYB
+      Af8CAQAwHQYDVR0OBBYEFBQusxe3WFbLrlAJQOYfr52LFMLGMB8GA1UdIwQYMBaA
+      FHm0WeZ7tuXkAXOACIjIGlj26ZtuMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEFBQcw
+      AoYWaHR0cDovL3gxLmkubGVuY3Iub3JnLzAnBgNVHR8EIDAeMBygGqAYhhZodHRw
+      Oi8veDEuYy5sZW5jci5vcmcvMCIGA1UdIAQbMBkwCAYGZ4EMAQIBMA0GCysGAQQB
+      gt8TAQEBMA0GCSqGSIb3DQEBCwUAA4ICAQCFyk5HPqP3hUSFvNVneLKYY611TR6W
+      PTNlclQtgaDqw+34IL9fzLdwALduO/ZelN7kIJ+m74uyA+eitRY8kc607TkC53wl
+      ikfmZW4/RvTZ8M6UK+5UzhK8jCdLuMGYL6KvzXGRSgi3yLgjewQtCPkIVz6D2QQz
+      CkcheAmCJ8MqyJu5zlzyZMjAvnnAT45tRAxekrsu94sQ4egdRCnbWSDtY7kh+BIm
+      lJNXoB1lBMEKIq4QDUOXoRgffuDghje1WrG9ML+Hbisq/yFOGwXD9RiX8F6sw6W4
+      avAuvDszue5L3sz85K+EC4Y/wFVDNvZo4TYXao6Z0f+lQKc0t8DQYzk1OXVu8rp2
+      yJMC6alLbBfODALZvYH7n7do1AZls4I9d1P4jnkDrQoxB3UqQ9hVl3LEKQ73xF1O
+      yK5GhDDX8oVfGKF5u+decIsH4YaTw7mP3GFxJSqv3+0lUFJoi5Lc5da149p90Ids
+      hCExroL1+7mryIkXPeFM5TgO9r0rvZaBFOvV2z0gp35Z0+L4WPlbuEjN/lxPFin+
+      HlUjr8gRsI3qfJOQFy/9rKIJR0Y/8Omwt/8oTWgy1mdeHmmjk7j1nYsvC9JSQ6Zv
+      MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
+      nLRbwHOoq7hHwg==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:30:16Z"
+    name: serviceaccount-ca-10
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-10
+      uid: 76a3fe5f-88f6-4958-9492-babbde19b4cf
+    resourceVersion: "49861"
+    uid: 23e7c409-4800-4fce-9e2a-15d5819e41df
+- apiVersion: v1
+  data:
+    ca-bundle.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDMjCCAhqgAwIBAgIIaF6NeZ+aXe0wDQYJKoZIhvcNAQELBQAwNzESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSEwHwYDVQQDExhrdWJlLWFwaXNlcnZlci1sYi1zaWduZXIw
+      HhcNMjIwNTI0MTc1ODA5WhcNMzIwNTIxMTc1ODA5WjA3MRIwEAYDVQQLEwlvcGVu
+      c2hpZnQxITAfBgNVBAMTGGt1YmUtYXBpc2VydmVyLWxiLXNpZ25lcjCCASIwDQYJ
+      KoZIhvcNAQEBBQADggEPADCCAQoCggEBALwVpbI2tHFkVQrTfwH3tkneIikpA/hl
+      b1BRaPs1bwvVxTgkv0ctRjuJGZpcLja8saZB/wlVIFCGq6c5J6dwNWmVoZu1KIGp
+      9qNnNkRgttm8wSz2HA+lCW9yUxjDgUA8Pc5bCcUhY8qSPA2m9qq/tvPr4vGSa8x0
+      AcGOlPheM8PeCv40Zc2EPmhKfFAp6ZuJ7ZLVJAO6ncnOTtkDqYMKORGdFgNYKdKZ
+      sfJ9qnSH8Ps4fSyqwPxQAyQ85yjJEdahu2ZoKopiacH7uU6wS2Ni49XUGXeS5kct
+      iDYCmMCJHtsF4F74qv2Gh8stWGyA9JLyMi/m342dr2f1VdgmgGn1io0CAwEAAaNC
+      MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKEH
+      goCqgLWx3Ma0M2iSXtQFfXCsMA0GCSqGSIb3DQEBCwUAA4IBAQAofVvp05u+GGv7
+      w34hPGfwXb0rupUhSbm+KzcZ9p7jZKPSN4lvkLRNUprfmP4gR33Xkjn91watSM2x
+      FMsSMFvPoLQkfHu2cP3TlN2ddbYb+3v01fCYDKPyaoIAaCVUgpJ2gNYsVPhD3LQd
+      sA/EkWyKs7Ggu8yL88ArKN8Nsv7WUtKHmqbiqrX6K0DM9pdI3upfXYCngeL5IsU8
+      Fq1NyK086wVdYfjOnipTXtTvPiO/fE1oX2nVXsxNxowjhYVScC2T1ZH9cVSP26fq
+      uoyj99JfxxDL9hpbK5K2YzNrDO7fkzn6UP0j+Fu96gVoHci2s0oK2JxQsxgfxcYZ
+      8TfG1e82
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDQDCCAiigAwIBAgIIM46x6byvII8wDQYJKoZIhvcNAQELBQAwPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVrAeaJosaY1
+      E9o4oPkpxLDx8QF5Ji3uMMfoBAO+9Wt2tykPO9/CTghsDM1fN/kg94DE4rb6CMWb
+      aFyUlBok97zlO7rjKBySOnTahRArHuzurQtMyDrUJD0pWLbXIiyjE4L26Rz3wW9C
+      CZsXfwnmytPhraguIbUnKDz7ykSRzf79pqvP17dK+Vsiyy/ViOFqHuSGa2d2RlBI
+      jshHo2jRZLPCVGUvfAQTT+pfbxrDcg3XpDmGukXTZnWqL12Qc22teoTjXAHCL0Ny
+      XjitCo+nSyt+NcoZgJ3HZqEufO4F3DqfF6Ja7zNGbH0rDPKBQjsqkSR0sFz8VKXF
+      xdvHKantCQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+      /zAdBgNVHQ4EFgQUxGqZhXeomt9poP3ST8CNGz3NS2IwDQYJKoZIhvcNAQELBQAD
+      ggEBALggP2dTHzzs9i5i5Vo04NuzosogdCK67tWd85nPwWza9s1P4KHpgIYTp+Ve
+      nt7oRNqEmcDdV3LYLcqzfrghjChheEcrK35439VeUqdjQdmHM/WmYXzwzszBtbCY
+      G/vkff8X5pzwIxJJp40u3iVtEbnVvz1BnrYg568WRctaZabKVzklPuMspOndOOSg
+      8JT+V59RMrsnL2I8ccfOH/vABiU92Zq8TC483TBzwjX72+573pBTOigZCypSGaXo
+      YeYj0nLVabALOLnwGxD/BJXS3X01Ehv1zVP1r58t2sxuF+k55nPXYDs9VSVgx5kT
+      +odoALQyN4PXN/+lZCJK4ISHqyA=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDTDCCAjSgAwIBAgIISQR4oKgvETwwDQYJKoZIhvcNAQELBQAwRDESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2aWNlLW5l
+      dHdvcmstc2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowRDES
+      MBAGA1UECxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2
+      aWNlLW5ldHdvcmstc2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEA1azJdx1cmrP0oFXUtF+Y1TVVxLU6HC7k9CVwKpDSCHtzOY9cxXn3edBGYiok
+      HcnIP2vziKS29enFK5H9Msqhc/dueYaFHzuKtAgteKGJifvWBxYA0R8FOYwRn2gC
+      +NIlYlpeLPeiE7dvt1OQTaNnAn6ZwZKMvSsbwcmgi04C+XxkKgCx4oqFgGysg794
+      d1YpTc1NoonJ85i3zeiJ5X3Z66EPWtQXIlU67IedX8Vd3jC7KqAoqV3hm4GyImT1
+      q5OQzqb0+mAuxzIuLaCLQu8JhKKHB8j1I0qclpmotxWOju3jimgZ3i0QWl8LXKFv
+      7+Hyrtisb+1BzSiLZz6vKgJxeQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYD
+      VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU8ZjsCxNdiq7xt0hqHLNElJK6SHEwDQYJ
+      KoZIhvcNAQELBQADggEBAB9BOikS47zebhNtVkY7Lf4r3HVQ13zxsx9FthmqayXr
+      KDRJ5AWiXASoF0lPgElsUQ0Qsp3etXR2POfd9Ei7ytwV3ftfRdR/JnCWTJ1jlqvc
+      d3oUJlU/Mg3qFNVhYdfn0H6BMcdHkOibsyigkCeWzIC1VU04Dl8cD9IoltDWeJfM
+      Bi30K2dJsJN3LYn8Ic0nwYzeccLxqG7ADEL8YjFPC8sL2YvTACYYJVkHZHuSyL+h
+      qVv7odKp+x/LuAxJiTn8rZie0xYLt6Z+X8Hm72BaoikmerKInClM03DGrieHWDlY
+      KFE/Boetn7nRsomkRsCoUJMC6HjMSFr5D7UrOok5LC0=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDlzCCAn+gAwIBAgIIA02EfcpLCEIwDQYJKoZIhvcNAQELBQAwWTFXMFUGA1UE
+      AwxOb3BlbnNoaWZ0LWt1YmUtYXBpc2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1y
+      ZWNvdmVyeS1zZXJ2aW5nLXNpZ25lckAxNjUzNDE1NjYzMB4XDTIyMDUyNDE4MDc0
+      M1oXDTMyMDUyMTE4MDc0NFowWTFXMFUGA1UEAwxOb3BlbnNoaWZ0LWt1YmUtYXBp
+      c2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1yZWNvdmVyeS1zZXJ2aW5nLXNpZ25l
+      ckAxNjUzNDE1NjYzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4unV
+      faO+MHjSSGkR9ZSXYfvdIuVRnfDBjl3lWRT6z4vdafaw+/tJAWgROgQ+2c80nGhD
+      NYJMp+l1gHFAowaxblu38SqB8rhZTGa3dbvbIJZ/NCSEZsHKJwlahFaoyuOTnguv
+      yzFRJnZPJY57IojaL0AtLLq5xxojzijiSPwZE/XoKxXTewfWoOKuANvGdtaKvWqG
+      oQf8Iq4Lc130iEwTZgYYTQQIoNRkNwVSPL0mDJO2tR8q/m38HMtLFqOxZPrTms2H
+      tGjH4gS9JIOtcuGSr3H6XlBnI+UrQa2IxhVCRvGMN9Yd/xZeygE0Ttl8Ux0jgKfM
+      FT/7Cqlc5M24AVcZQQIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/
+      BAUwAwEB/zAdBgNVHQ4EFgQUBgHjWEA8cGDOxOEE9NeUoTgosCkwHwYDVR0jBBgw
+      FoAUBgHjWEA8cGDOxOEE9NeUoTgosCkwDQYJKoZIhvcNAQELBQADggEBAKEkSDDM
+      uNU0msYFwYzWVJ6ZuLqh/ZgwoKT/HfBpkxyX44rJo66ZDvapl4eBfF2Qho+WAyEY
+      dUXiHAM+murwivPAhdBxafCockCQSygz8hLooUf4KICSOZdGYeR96BqArZ3aMEOU
+      6DlxVOWfpowwT4FD/CUqbtSX5F4KmRdoD+1ks3WIcwPbl0zb+MZ2HLCpFPQMAomq
+      A0s+eCJ/6oTNGTzttyUjeKlNQK7GcZZU3ZYqftf3f4kAxAyFWgG7wvUhFuxeoP8y
+      OpVILyPvOqb3WBN+KDrGmXFUZFjzGzqD3buqED3NA4ZWx+Rc7hPZvFCRUQobSfQV
+      tlOPSHzf9Y9rSgo=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFtjCCBJ6gAwIBAgISBFLw17r/CuNNqWSjg41GCK3OMA0GCSqGSIb3DQEBCwUA
+      MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+      EwJSMzAeFw0yMjA1MjQxNzI3MDJaFw0yMjA4MjIxNzI3MDFaMDQxMjAwBgNVBAMT
+      KWFwaS5vZGYtc2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMIIBIjAN
+      BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzd4EF451gHcY+pDj4YM2hLiIWuGX
+      iCe9DGYzUNC4jrijeJVYs8tPp/iH63gOYvsY3fW7coZEbaFvq597qzKb6CAjsP72
+      s0VBJH4vnljJysMv6VpU9D4NECYvAQjy1OHVP6VrURBhu61bOgLrYFfxCtGWD81a
+      O7rNwquWsGqQDiGXfg6LbApX3Y9kg+zyuTL1Pc2b6fzAC3BEMviOI9o6QPZhHH1P
+      7H0STFfEWRRt7IHC5KLi1IvQ1aPHG+LJcQ58etnoYNydkNkB3DN4CjjaXitdLnoi
+      G2d2cVMXmCMMYPkSuZEIlhoAmn1BuUV/SHuoSs63XVjhy4bE1MV3arwCWwIDAQAB
+      o4ICwjCCAr4wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggr
+      BgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBQXbq8TuDsow74svn3WxCIX
+      E6KtEjAfBgNVHSMEGDAWgBQULrMXt1hWy65QCUDmH6+dixTCxjBVBggrBgEFBQcB
+      AQRJMEcwIQYIKwYBBQUHMAGGFWh0dHA6Ly9yMy5vLmxlbmNyLm9yZzAiBggrBgEF
+      BQcwAoYWaHR0cDovL3IzLmkubGVuY3Iub3JnLzCBkgYDVR0RBIGKMIGHgiwqLmFw
+      cHMub2RmLXNlcnZpY2UuZGlmNS5wMS5vcGVuc2hpZnRhcHBzLmNvbYIpYXBpLm9k
+      Zi1zZXJ2aWNlLmRpZjUucDEub3BlbnNoaWZ0YXBwcy5jb22CLHJoLWFwaS5vZGYt
+      c2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMEwGA1UdIARFMEMwCAYG
+      Z4EMAQIBMDcGCysGAQQBgt8TAQEBMCgwJgYIKwYBBQUHAgEWGmh0dHA6Ly9jcHMu
+      bGV0c2VuY3J5cHQub3JnMIIBAwYKKwYBBAHWeQIEAgSB9ASB8QDvAHYA36Veq2iC
+      Tx9sre64X04+WurNohKkal6OOxLAIERcKnMAAAGA91KJLwAABAMARzBFAiAIZWF8
+      HxoZi8Uc4gbb1tP92WtRG697l9lmSfXbnC1XLQIhAL/e0q4GXuEUlIkJW0jwqc6O
+      Md7T/AizyojNvIRU5mVyAHUARqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+
+      bUcAAAGA91KJUwAABAMARjBEAiB7//joMC2x7OAo92PRcbaOuyjPQG2w51dX+xlF
+      vucv0gIgaTD8sFKPppA70+k/s9M/FuUM61tUl21nI2FQ52/L8qowDQYJKoZIhvcN
+      AQELBQADggEBAC05nXdp+2WBPR5Tg/tceka3INm7/IOC4sYIqxwUopF9ePmlk58F
+      hSbZzvzM4teaH4o3kAke4bzzFhnnBqWG4cW52c7eOgO4tYzE3SkjfipqytT2Ed1D
+      jOorCI+EQjV9EFZeEzvxtnZsAwgIjLvqpB/LXlnSf5EkmjtzHcHqucZcDFsqcMjL
+      Qolbk1+a+TOTM4FPz4qlPAslLh8xCXZHCIYuM2n4r71XRPYeKUnj9JBRZVSN7znK
+      s0uo646L0S4Slp/HBDrrDHHoqjucqO1ad40uKzP4jwtMp0w5wYtCzTrTZrLuyVEh
+      emR91a/GVQgnV2LpWDwVXPpt5H1p/tDFA08=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
+      TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+      cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjAwOTA0MDAwMDAw
+      WhcNMjUwOTE1MTYwMDAwWjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+      RW5jcnlwdDELMAkGA1UEAxMCUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQC7AhUozPaglNMPEuyNVZLD+ILxmaZ6QoinXSaqtSu5xUyxr45r+XXIo9cP
+      R5QUVTVXjJ6oojkZ9YI8QqlObvU7wy7bjcCwXPNZOOftz2nwWgsbvsCUJCWH+jdx
+      sxPnHKzhm+/b5DtFUkWWqcFTzjTIUu61ru2P3mBw4qVUq7ZtDpelQDRrK9O8Zutm
+      NHz6a4uPVymZ+DAXXbpyb/uBxa3Shlg9F8fnCbvxK/eG3MHacV3URuPMrSXBiLxg
+      Z3Vms/EY96Jc5lP/Ooi2R6X/ExjqmAl3P51T+c8B5fWmcBcUr2Ok/5mzk53cU6cG
+      /kiFHaFpriV1uxPMUgP17VGhi9sVAgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMC
+      AYYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMBIGA1UdEwEB/wQIMAYB
+      Af8CAQAwHQYDVR0OBBYEFBQusxe3WFbLrlAJQOYfr52LFMLGMB8GA1UdIwQYMBaA
+      FHm0WeZ7tuXkAXOACIjIGlj26ZtuMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEFBQcw
+      AoYWaHR0cDovL3gxLmkubGVuY3Iub3JnLzAnBgNVHR8EIDAeMBygGqAYhhZodHRw
+      Oi8veDEuYy5sZW5jci5vcmcvMCIGA1UdIAQbMBkwCAYGZ4EMAQIBMA0GCysGAQQB
+      gt8TAQEBMA0GCSqGSIb3DQEBCwUAA4ICAQCFyk5HPqP3hUSFvNVneLKYY611TR6W
+      PTNlclQtgaDqw+34IL9fzLdwALduO/ZelN7kIJ+m74uyA+eitRY8kc607TkC53wl
+      ikfmZW4/RvTZ8M6UK+5UzhK8jCdLuMGYL6KvzXGRSgi3yLgjewQtCPkIVz6D2QQz
+      CkcheAmCJ8MqyJu5zlzyZMjAvnnAT45tRAxekrsu94sQ4egdRCnbWSDtY7kh+BIm
+      lJNXoB1lBMEKIq4QDUOXoRgffuDghje1WrG9ML+Hbisq/yFOGwXD9RiX8F6sw6W4
+      avAuvDszue5L3sz85K+EC4Y/wFVDNvZo4TYXao6Z0f+lQKc0t8DQYzk1OXVu8rp2
+      yJMC6alLbBfODALZvYH7n7do1AZls4I9d1P4jnkDrQoxB3UqQ9hVl3LEKQ73xF1O
+      yK5GhDDX8oVfGKF5u+decIsH4YaTw7mP3GFxJSqv3+0lUFJoi5Lc5da149p90Ids
+      hCExroL1+7mryIkXPeFM5TgO9r0rvZaBFOvV2z0gp35Z0+L4WPlbuEjN/lxPFin+
+      HlUjr8gRsI3qfJOQFy/9rKIJR0Y/8Omwt/8oTWgy1mdeHmmjk7j1nYsvC9JSQ6Zv
+      MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
+      nLRbwHOoq7hHwg==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:38:04Z"
+    name: serviceaccount-ca-11
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-11
+      uid: 0d3630c3-6964-48a8-8117-973e43aac299
+    resourceVersion: "66185"
+    uid: a87c8489-f237-4627-a03b-62ff3a9f5231
+- apiVersion: v1
+  data:
+    ca-bundle.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDMjCCAhqgAwIBAgIIaF6NeZ+aXe0wDQYJKoZIhvcNAQELBQAwNzESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSEwHwYDVQQDExhrdWJlLWFwaXNlcnZlci1sYi1zaWduZXIw
+      HhcNMjIwNTI0MTc1ODA5WhcNMzIwNTIxMTc1ODA5WjA3MRIwEAYDVQQLEwlvcGVu
+      c2hpZnQxITAfBgNVBAMTGGt1YmUtYXBpc2VydmVyLWxiLXNpZ25lcjCCASIwDQYJ
+      KoZIhvcNAQEBBQADggEPADCCAQoCggEBALwVpbI2tHFkVQrTfwH3tkneIikpA/hl
+      b1BRaPs1bwvVxTgkv0ctRjuJGZpcLja8saZB/wlVIFCGq6c5J6dwNWmVoZu1KIGp
+      9qNnNkRgttm8wSz2HA+lCW9yUxjDgUA8Pc5bCcUhY8qSPA2m9qq/tvPr4vGSa8x0
+      AcGOlPheM8PeCv40Zc2EPmhKfFAp6ZuJ7ZLVJAO6ncnOTtkDqYMKORGdFgNYKdKZ
+      sfJ9qnSH8Ps4fSyqwPxQAyQ85yjJEdahu2ZoKopiacH7uU6wS2Ni49XUGXeS5kct
+      iDYCmMCJHtsF4F74qv2Gh8stWGyA9JLyMi/m342dr2f1VdgmgGn1io0CAwEAAaNC
+      MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKEH
+      goCqgLWx3Ma0M2iSXtQFfXCsMA0GCSqGSIb3DQEBCwUAA4IBAQAofVvp05u+GGv7
+      w34hPGfwXb0rupUhSbm+KzcZ9p7jZKPSN4lvkLRNUprfmP4gR33Xkjn91watSM2x
+      FMsSMFvPoLQkfHu2cP3TlN2ddbYb+3v01fCYDKPyaoIAaCVUgpJ2gNYsVPhD3LQd
+      sA/EkWyKs7Ggu8yL88ArKN8Nsv7WUtKHmqbiqrX6K0DM9pdI3upfXYCngeL5IsU8
+      Fq1NyK086wVdYfjOnipTXtTvPiO/fE1oX2nVXsxNxowjhYVScC2T1ZH9cVSP26fq
+      uoyj99JfxxDL9hpbK5K2YzNrDO7fkzn6UP0j+Fu96gVoHci2s0oK2JxQsxgfxcYZ
+      8TfG1e82
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDQDCCAiigAwIBAgIIM46x6byvII8wDQYJKoZIhvcNAQELBQAwPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVrAeaJosaY1
+      E9o4oPkpxLDx8QF5Ji3uMMfoBAO+9Wt2tykPO9/CTghsDM1fN/kg94DE4rb6CMWb
+      aFyUlBok97zlO7rjKBySOnTahRArHuzurQtMyDrUJD0pWLbXIiyjE4L26Rz3wW9C
+      CZsXfwnmytPhraguIbUnKDz7ykSRzf79pqvP17dK+Vsiyy/ViOFqHuSGa2d2RlBI
+      jshHo2jRZLPCVGUvfAQTT+pfbxrDcg3XpDmGukXTZnWqL12Qc22teoTjXAHCL0Ny
+      XjitCo+nSyt+NcoZgJ3HZqEufO4F3DqfF6Ja7zNGbH0rDPKBQjsqkSR0sFz8VKXF
+      xdvHKantCQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+      /zAdBgNVHQ4EFgQUxGqZhXeomt9poP3ST8CNGz3NS2IwDQYJKoZIhvcNAQELBQAD
+      ggEBALggP2dTHzzs9i5i5Vo04NuzosogdCK67tWd85nPwWza9s1P4KHpgIYTp+Ve
+      nt7oRNqEmcDdV3LYLcqzfrghjChheEcrK35439VeUqdjQdmHM/WmYXzwzszBtbCY
+      G/vkff8X5pzwIxJJp40u3iVtEbnVvz1BnrYg568WRctaZabKVzklPuMspOndOOSg
+      8JT+V59RMrsnL2I8ccfOH/vABiU92Zq8TC483TBzwjX72+573pBTOigZCypSGaXo
+      YeYj0nLVabALOLnwGxD/BJXS3X01Ehv1zVP1r58t2sxuF+k55nPXYDs9VSVgx5kT
+      +odoALQyN4PXN/+lZCJK4ISHqyA=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDTDCCAjSgAwIBAgIISQR4oKgvETwwDQYJKoZIhvcNAQELBQAwRDESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2aWNlLW5l
+      dHdvcmstc2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowRDES
+      MBAGA1UECxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2
+      aWNlLW5ldHdvcmstc2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEA1azJdx1cmrP0oFXUtF+Y1TVVxLU6HC7k9CVwKpDSCHtzOY9cxXn3edBGYiok
+      HcnIP2vziKS29enFK5H9Msqhc/dueYaFHzuKtAgteKGJifvWBxYA0R8FOYwRn2gC
+      +NIlYlpeLPeiE7dvt1OQTaNnAn6ZwZKMvSsbwcmgi04C+XxkKgCx4oqFgGysg794
+      d1YpTc1NoonJ85i3zeiJ5X3Z66EPWtQXIlU67IedX8Vd3jC7KqAoqV3hm4GyImT1
+      q5OQzqb0+mAuxzIuLaCLQu8JhKKHB8j1I0qclpmotxWOju3jimgZ3i0QWl8LXKFv
+      7+Hyrtisb+1BzSiLZz6vKgJxeQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYD
+      VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU8ZjsCxNdiq7xt0hqHLNElJK6SHEwDQYJ
+      KoZIhvcNAQELBQADggEBAB9BOikS47zebhNtVkY7Lf4r3HVQ13zxsx9FthmqayXr
+      KDRJ5AWiXASoF0lPgElsUQ0Qsp3etXR2POfd9Ei7ytwV3ftfRdR/JnCWTJ1jlqvc
+      d3oUJlU/Mg3qFNVhYdfn0H6BMcdHkOibsyigkCeWzIC1VU04Dl8cD9IoltDWeJfM
+      Bi30K2dJsJN3LYn8Ic0nwYzeccLxqG7ADEL8YjFPC8sL2YvTACYYJVkHZHuSyL+h
+      qVv7odKp+x/LuAxJiTn8rZie0xYLt6Z+X8Hm72BaoikmerKInClM03DGrieHWDlY
+      KFE/Boetn7nRsomkRsCoUJMC6HjMSFr5D7UrOok5LC0=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDlzCCAn+gAwIBAgIIA02EfcpLCEIwDQYJKoZIhvcNAQELBQAwWTFXMFUGA1UE
+      AwxOb3BlbnNoaWZ0LWt1YmUtYXBpc2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1y
+      ZWNvdmVyeS1zZXJ2aW5nLXNpZ25lckAxNjUzNDE1NjYzMB4XDTIyMDUyNDE4MDc0
+      M1oXDTMyMDUyMTE4MDc0NFowWTFXMFUGA1UEAwxOb3BlbnNoaWZ0LWt1YmUtYXBp
+      c2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1yZWNvdmVyeS1zZXJ2aW5nLXNpZ25l
+      ckAxNjUzNDE1NjYzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4unV
+      faO+MHjSSGkR9ZSXYfvdIuVRnfDBjl3lWRT6z4vdafaw+/tJAWgROgQ+2c80nGhD
+      NYJMp+l1gHFAowaxblu38SqB8rhZTGa3dbvbIJZ/NCSEZsHKJwlahFaoyuOTnguv
+      yzFRJnZPJY57IojaL0AtLLq5xxojzijiSPwZE/XoKxXTewfWoOKuANvGdtaKvWqG
+      oQf8Iq4Lc130iEwTZgYYTQQIoNRkNwVSPL0mDJO2tR8q/m38HMtLFqOxZPrTms2H
+      tGjH4gS9JIOtcuGSr3H6XlBnI+UrQa2IxhVCRvGMN9Yd/xZeygE0Ttl8Ux0jgKfM
+      FT/7Cqlc5M24AVcZQQIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/
+      BAUwAwEB/zAdBgNVHQ4EFgQUBgHjWEA8cGDOxOEE9NeUoTgosCkwHwYDVR0jBBgw
+      FoAUBgHjWEA8cGDOxOEE9NeUoTgosCkwDQYJKoZIhvcNAQELBQADggEBAKEkSDDM
+      uNU0msYFwYzWVJ6ZuLqh/ZgwoKT/HfBpkxyX44rJo66ZDvapl4eBfF2Qho+WAyEY
+      dUXiHAM+murwivPAhdBxafCockCQSygz8hLooUf4KICSOZdGYeR96BqArZ3aMEOU
+      6DlxVOWfpowwT4FD/CUqbtSX5F4KmRdoD+1ks3WIcwPbl0zb+MZ2HLCpFPQMAomq
+      A0s+eCJ/6oTNGTzttyUjeKlNQK7GcZZU3ZYqftf3f4kAxAyFWgG7wvUhFuxeoP8y
+      OpVILyPvOqb3WBN+KDrGmXFUZFjzGzqD3buqED3NA4ZWx+Rc7hPZvFCRUQobSfQV
+      tlOPSHzf9Y9rSgo=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDjzCCAnegAwIBAgIIO+4MPap6EbYwDQYJKoZIhvcNAQELBQAwJjEkMCIGA1UE
+      AwwbaW5ncmVzcy1vcGVyYXRvckAxNjUzNDE1NzMyMB4XDTIyMDUyNDE4MDg1MloX
+      DTI0MDUyMzE4MDg1M1owNzE1MDMGA1UEAwwsKi5hcHBzLm9kZi1zZXJ2aWNlLmRp
+      ZjUucDEub3BlbnNoaWZ0YXBwcy5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+      ggEKAoIBAQDpjFVtJGLoQcRiRD4Y7PhvZEsedNqleS2y5nMMaQyagBph48j25ZEm
+      iiakvxtvUGoCQ5jdYTYo3MBTKCum7ydwWbLTZYHCO4ethNgz0joQgBBzmag56Tk+
+      fYfQtV5aEWHQ5eMPAHSYzYDW6a5gsbKdNT1SrkyO+jIX155gy6aGdNKfeOEAIaJf
+      g8KnVoKyalDqQuLJp+g7Teyp3A+TTir0dhQdvcwT8njFBzsK/AcbUGJeI2/DIDgf
+      uQqwKcb+ifvwtvM0YgPkCPLnsk1Y7PmQhkT0Chj6S/4AjA7kyQKm68DxnrnDZuy+
+      BRlksXDSHIQzAdqmwPpnF6/c/9omGbUHAgMBAAGjga8wgawwDgYDVR0PAQH/BAQD
+      AgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMBMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYE
+      FHtBeYK+OUYwe7S6bGiASyol001OMB8GA1UdIwQYMBaAFBjNWtxZq7azzX88+ckD
+      SQJgxzD0MDcGA1UdEQQwMC6CLCouYXBwcy5vZGYtc2VydmljZS5kaWY1LnAxLm9w
+      ZW5zaGlmdGFwcHMuY29tMA0GCSqGSIb3DQEBCwUAA4IBAQCKZfBl5ZXSB38xFGzd
+      6P7o8M4WCEo5e1s5PTM4gqLWr7z81HEM8BHK+vBj7cBICFNU7s8QMT6e6w3Fjlc/
+      l2aS9W4rndXEPn34t+I/IAluawBGwcgqu844kIve4MwuEajhGW1ecUIlodS3beA0
+      23naOsTZzSuJqhPrM9CUHguIcpd2ZAmAo0bJW+ofwI0BNW/XrxzSL6JPYp+uvOew
+      57Gnp0Jod/OhJis3IH4vi3RrTJro1MZf+7hNreOI2I1L9h4oXtNkyuhivM7oJAMv
+      Ry8GSfna8bjymLzz+XxvyxN7WrU/hlqcjhDuTfpwG7SrtnUlpy2Hg1GtAxvIV5/P
+      YDQ9
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDDDCCAfSgAwIBAgIBATANBgkqhkiG9w0BAQsFADAmMSQwIgYDVQQDDBtpbmdy
+      ZXNzLW9wZXJhdG9yQDE2NTM0MTU3MzIwHhcNMjIwNTI0MTgwODUxWhcNMjQwNTIz
+      MTgwODUyWjAmMSQwIgYDVQQDDBtpbmdyZXNzLW9wZXJhdG9yQDE2NTM0MTU3MzIw
+      ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDHVdn8FTwcyS+bu1zUfStI
+      nsUSuCmV5X+qnXzTZE6ltKeY1x2LDYSYPX0gtZFXUnLK2dai9h8TyVld1uDWCbcv
+      yj8B5tLlGMpJywKf/p54+IEq6qlsFIVuqofmFboUVAYitynXSkLfjkKgdF2O2bKE
+      njHIl6v7o6qaFG1BW4vXm1pXWO59Ojz2tc13EUoTtc1XPrOxoyqq+SuD6iOWL5IZ
+      NbM3wR7xbo8riATKi092ljdAeIgp2nfOBl4Io13X3HvvkGaam95Cg394qOgpxHiJ
+      kOMpQENmx8jvuVLFRuRmncDb4rTKw4ciQ5RqI64PFye+eOt0PhDrU69SfRESoM6P
+      AgMBAAGjRTBDMA4GA1UdDwEB/wQEAwICpDASBgNVHRMBAf8ECDAGAQH/AgEAMB0G
+      A1UdDgQWBBQYzVrcWau2s81/PPnJA0kCYMcw9DANBgkqhkiG9w0BAQsFAAOCAQEA
+      TVipZ1edukZNv9w4Ti0N6LVkq1G0WIRyQzoY5lfXsXfzhteESSfRliBWTQ7H3war
+      kD3W1SL4xLFVXj43WNPJTp6voh8Au74FVyze2dd7Wn2ttcrPZ0grFo9t2PD6Yo4j
+      7EAghuajWxFyi7a0DuTk7Ohsfn0xdCDUFaKGLO3btm0ooBNcbd46FkULkK7rRA/a
+      Muym/7/nSSKgtg6R59G3A0RM38zQvEbISOiKor7nUAWulISBNN8Y8XzNCCWwpjjs
+      UH4/PoZeeVTliSqS2BqdnN+h6GFEw3NnUrPpz1I4lBcTA6YAXN3gvUXmC7vgblCN
+      Blj4OZScMFSGI0VPrz2h5g==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:09:46Z"
+    name: serviceaccount-ca-6
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-6
+      uid: 1f04e8a3-f28f-4d9c-998f-d5d4e0840bd7
+    resourceVersion: "10042"
+    uid: f6b57ae0-be68-44d1-88a0-a43d0c6fe247
+- apiVersion: v1
+  data:
+    ca-bundle.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDMjCCAhqgAwIBAgIIaF6NeZ+aXe0wDQYJKoZIhvcNAQELBQAwNzESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSEwHwYDVQQDExhrdWJlLWFwaXNlcnZlci1sYi1zaWduZXIw
+      HhcNMjIwNTI0MTc1ODA5WhcNMzIwNTIxMTc1ODA5WjA3MRIwEAYDVQQLEwlvcGVu
+      c2hpZnQxITAfBgNVBAMTGGt1YmUtYXBpc2VydmVyLWxiLXNpZ25lcjCCASIwDQYJ
+      KoZIhvcNAQEBBQADggEPADCCAQoCggEBALwVpbI2tHFkVQrTfwH3tkneIikpA/hl
+      b1BRaPs1bwvVxTgkv0ctRjuJGZpcLja8saZB/wlVIFCGq6c5J6dwNWmVoZu1KIGp
+      9qNnNkRgttm8wSz2HA+lCW9yUxjDgUA8Pc5bCcUhY8qSPA2m9qq/tvPr4vGSa8x0
+      AcGOlPheM8PeCv40Zc2EPmhKfFAp6ZuJ7ZLVJAO6ncnOTtkDqYMKORGdFgNYKdKZ
+      sfJ9qnSH8Ps4fSyqwPxQAyQ85yjJEdahu2ZoKopiacH7uU6wS2Ni49XUGXeS5kct
+      iDYCmMCJHtsF4F74qv2Gh8stWGyA9JLyMi/m342dr2f1VdgmgGn1io0CAwEAAaNC
+      MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKEH
+      goCqgLWx3Ma0M2iSXtQFfXCsMA0GCSqGSIb3DQEBCwUAA4IBAQAofVvp05u+GGv7
+      w34hPGfwXb0rupUhSbm+KzcZ9p7jZKPSN4lvkLRNUprfmP4gR33Xkjn91watSM2x
+      FMsSMFvPoLQkfHu2cP3TlN2ddbYb+3v01fCYDKPyaoIAaCVUgpJ2gNYsVPhD3LQd
+      sA/EkWyKs7Ggu8yL88ArKN8Nsv7WUtKHmqbiqrX6K0DM9pdI3upfXYCngeL5IsU8
+      Fq1NyK086wVdYfjOnipTXtTvPiO/fE1oX2nVXsxNxowjhYVScC2T1ZH9cVSP26fq
+      uoyj99JfxxDL9hpbK5K2YzNrDO7fkzn6UP0j+Fu96gVoHci2s0oK2JxQsxgfxcYZ
+      8TfG1e82
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDQDCCAiigAwIBAgIIM46x6byvII8wDQYJKoZIhvcNAQELBQAwPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVrAeaJosaY1
+      E9o4oPkpxLDx8QF5Ji3uMMfoBAO+9Wt2tykPO9/CTghsDM1fN/kg94DE4rb6CMWb
+      aFyUlBok97zlO7rjKBySOnTahRArHuzurQtMyDrUJD0pWLbXIiyjE4L26Rz3wW9C
+      CZsXfwnmytPhraguIbUnKDz7ykSRzf79pqvP17dK+Vsiyy/ViOFqHuSGa2d2RlBI
+      jshHo2jRZLPCVGUvfAQTT+pfbxrDcg3XpDmGukXTZnWqL12Qc22teoTjXAHCL0Ny
+      XjitCo+nSyt+NcoZgJ3HZqEufO4F3DqfF6Ja7zNGbH0rDPKBQjsqkSR0sFz8VKXF
+      xdvHKantCQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+      /zAdBgNVHQ4EFgQUxGqZhXeomt9poP3ST8CNGz3NS2IwDQYJKoZIhvcNAQELBQAD
+      ggEBALggP2dTHzzs9i5i5Vo04NuzosogdCK67tWd85nPwWza9s1P4KHpgIYTp+Ve
+      nt7oRNqEmcDdV3LYLcqzfrghjChheEcrK35439VeUqdjQdmHM/WmYXzwzszBtbCY
+      G/vkff8X5pzwIxJJp40u3iVtEbnVvz1BnrYg568WRctaZabKVzklPuMspOndOOSg
+      8JT+V59RMrsnL2I8ccfOH/vABiU92Zq8TC483TBzwjX72+573pBTOigZCypSGaXo
+      YeYj0nLVabALOLnwGxD/BJXS3X01Ehv1zVP1r58t2sxuF+k55nPXYDs9VSVgx5kT
+      +odoALQyN4PXN/+lZCJK4ISHqyA=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDTDCCAjSgAwIBAgIISQR4oKgvETwwDQYJKoZIhvcNAQELBQAwRDESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2aWNlLW5l
+      dHdvcmstc2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowRDES
+      MBAGA1UECxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2
+      aWNlLW5ldHdvcmstc2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEA1azJdx1cmrP0oFXUtF+Y1TVVxLU6HC7k9CVwKpDSCHtzOY9cxXn3edBGYiok
+      HcnIP2vziKS29enFK5H9Msqhc/dueYaFHzuKtAgteKGJifvWBxYA0R8FOYwRn2gC
+      +NIlYlpeLPeiE7dvt1OQTaNnAn6ZwZKMvSsbwcmgi04C+XxkKgCx4oqFgGysg794
+      d1YpTc1NoonJ85i3zeiJ5X3Z66EPWtQXIlU67IedX8Vd3jC7KqAoqV3hm4GyImT1
+      q5OQzqb0+mAuxzIuLaCLQu8JhKKHB8j1I0qclpmotxWOju3jimgZ3i0QWl8LXKFv
+      7+Hyrtisb+1BzSiLZz6vKgJxeQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYD
+      VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU8ZjsCxNdiq7xt0hqHLNElJK6SHEwDQYJ
+      KoZIhvcNAQELBQADggEBAB9BOikS47zebhNtVkY7Lf4r3HVQ13zxsx9FthmqayXr
+      KDRJ5AWiXASoF0lPgElsUQ0Qsp3etXR2POfd9Ei7ytwV3ftfRdR/JnCWTJ1jlqvc
+      d3oUJlU/Mg3qFNVhYdfn0H6BMcdHkOibsyigkCeWzIC1VU04Dl8cD9IoltDWeJfM
+      Bi30K2dJsJN3LYn8Ic0nwYzeccLxqG7ADEL8YjFPC8sL2YvTACYYJVkHZHuSyL+h
+      qVv7odKp+x/LuAxJiTn8rZie0xYLt6Z+X8Hm72BaoikmerKInClM03DGrieHWDlY
+      KFE/Boetn7nRsomkRsCoUJMC6HjMSFr5D7UrOok5LC0=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDlzCCAn+gAwIBAgIIA02EfcpLCEIwDQYJKoZIhvcNAQELBQAwWTFXMFUGA1UE
+      AwxOb3BlbnNoaWZ0LWt1YmUtYXBpc2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1y
+      ZWNvdmVyeS1zZXJ2aW5nLXNpZ25lckAxNjUzNDE1NjYzMB4XDTIyMDUyNDE4MDc0
+      M1oXDTMyMDUyMTE4MDc0NFowWTFXMFUGA1UEAwxOb3BlbnNoaWZ0LWt1YmUtYXBp
+      c2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1yZWNvdmVyeS1zZXJ2aW5nLXNpZ25l
+      ckAxNjUzNDE1NjYzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4unV
+      faO+MHjSSGkR9ZSXYfvdIuVRnfDBjl3lWRT6z4vdafaw+/tJAWgROgQ+2c80nGhD
+      NYJMp+l1gHFAowaxblu38SqB8rhZTGa3dbvbIJZ/NCSEZsHKJwlahFaoyuOTnguv
+      yzFRJnZPJY57IojaL0AtLLq5xxojzijiSPwZE/XoKxXTewfWoOKuANvGdtaKvWqG
+      oQf8Iq4Lc130iEwTZgYYTQQIoNRkNwVSPL0mDJO2tR8q/m38HMtLFqOxZPrTms2H
+      tGjH4gS9JIOtcuGSr3H6XlBnI+UrQa2IxhVCRvGMN9Yd/xZeygE0Ttl8Ux0jgKfM
+      FT/7Cqlc5M24AVcZQQIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/
+      BAUwAwEB/zAdBgNVHQ4EFgQUBgHjWEA8cGDOxOEE9NeUoTgosCkwHwYDVR0jBBgw
+      FoAUBgHjWEA8cGDOxOEE9NeUoTgosCkwDQYJKoZIhvcNAQELBQADggEBAKEkSDDM
+      uNU0msYFwYzWVJ6ZuLqh/ZgwoKT/HfBpkxyX44rJo66ZDvapl4eBfF2Qho+WAyEY
+      dUXiHAM+murwivPAhdBxafCockCQSygz8hLooUf4KICSOZdGYeR96BqArZ3aMEOU
+      6DlxVOWfpowwT4FD/CUqbtSX5F4KmRdoD+1ks3WIcwPbl0zb+MZ2HLCpFPQMAomq
+      A0s+eCJ/6oTNGTzttyUjeKlNQK7GcZZU3ZYqftf3f4kAxAyFWgG7wvUhFuxeoP8y
+      OpVILyPvOqb3WBN+KDrGmXFUZFjzGzqD3buqED3NA4ZWx+Rc7hPZvFCRUQobSfQV
+      tlOPSHzf9Y9rSgo=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDjzCCAnegAwIBAgIIO+4MPap6EbYwDQYJKoZIhvcNAQELBQAwJjEkMCIGA1UE
+      AwwbaW5ncmVzcy1vcGVyYXRvckAxNjUzNDE1NzMyMB4XDTIyMDUyNDE4MDg1MloX
+      DTI0MDUyMzE4MDg1M1owNzE1MDMGA1UEAwwsKi5hcHBzLm9kZi1zZXJ2aWNlLmRp
+      ZjUucDEub3BlbnNoaWZ0YXBwcy5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+      ggEKAoIBAQDpjFVtJGLoQcRiRD4Y7PhvZEsedNqleS2y5nMMaQyagBph48j25ZEm
+      iiakvxtvUGoCQ5jdYTYo3MBTKCum7ydwWbLTZYHCO4ethNgz0joQgBBzmag56Tk+
+      fYfQtV5aEWHQ5eMPAHSYzYDW6a5gsbKdNT1SrkyO+jIX155gy6aGdNKfeOEAIaJf
+      g8KnVoKyalDqQuLJp+g7Teyp3A+TTir0dhQdvcwT8njFBzsK/AcbUGJeI2/DIDgf
+      uQqwKcb+ifvwtvM0YgPkCPLnsk1Y7PmQhkT0Chj6S/4AjA7kyQKm68DxnrnDZuy+
+      BRlksXDSHIQzAdqmwPpnF6/c/9omGbUHAgMBAAGjga8wgawwDgYDVR0PAQH/BAQD
+      AgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMBMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYE
+      FHtBeYK+OUYwe7S6bGiASyol001OMB8GA1UdIwQYMBaAFBjNWtxZq7azzX88+ckD
+      SQJgxzD0MDcGA1UdEQQwMC6CLCouYXBwcy5vZGYtc2VydmljZS5kaWY1LnAxLm9w
+      ZW5zaGlmdGFwcHMuY29tMA0GCSqGSIb3DQEBCwUAA4IBAQCKZfBl5ZXSB38xFGzd
+      6P7o8M4WCEo5e1s5PTM4gqLWr7z81HEM8BHK+vBj7cBICFNU7s8QMT6e6w3Fjlc/
+      l2aS9W4rndXEPn34t+I/IAluawBGwcgqu844kIve4MwuEajhGW1ecUIlodS3beA0
+      23naOsTZzSuJqhPrM9CUHguIcpd2ZAmAo0bJW+ofwI0BNW/XrxzSL6JPYp+uvOew
+      57Gnp0Jod/OhJis3IH4vi3RrTJro1MZf+7hNreOI2I1L9h4oXtNkyuhivM7oJAMv
+      Ry8GSfna8bjymLzz+XxvyxN7WrU/hlqcjhDuTfpwG7SrtnUlpy2Hg1GtAxvIV5/P
+      YDQ9
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDDDCCAfSgAwIBAgIBATANBgkqhkiG9w0BAQsFADAmMSQwIgYDVQQDDBtpbmdy
+      ZXNzLW9wZXJhdG9yQDE2NTM0MTU3MzIwHhcNMjIwNTI0MTgwODUxWhcNMjQwNTIz
+      MTgwODUyWjAmMSQwIgYDVQQDDBtpbmdyZXNzLW9wZXJhdG9yQDE2NTM0MTU3MzIw
+      ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDHVdn8FTwcyS+bu1zUfStI
+      nsUSuCmV5X+qnXzTZE6ltKeY1x2LDYSYPX0gtZFXUnLK2dai9h8TyVld1uDWCbcv
+      yj8B5tLlGMpJywKf/p54+IEq6qlsFIVuqofmFboUVAYitynXSkLfjkKgdF2O2bKE
+      njHIl6v7o6qaFG1BW4vXm1pXWO59Ojz2tc13EUoTtc1XPrOxoyqq+SuD6iOWL5IZ
+      NbM3wR7xbo8riATKi092ljdAeIgp2nfOBl4Io13X3HvvkGaam95Cg394qOgpxHiJ
+      kOMpQENmx8jvuVLFRuRmncDb4rTKw4ciQ5RqI64PFye+eOt0PhDrU69SfRESoM6P
+      AgMBAAGjRTBDMA4GA1UdDwEB/wQEAwICpDASBgNVHRMBAf8ECDAGAQH/AgEAMB0G
+      A1UdDgQWBBQYzVrcWau2s81/PPnJA0kCYMcw9DANBgkqhkiG9w0BAQsFAAOCAQEA
+      TVipZ1edukZNv9w4Ti0N6LVkq1G0WIRyQzoY5lfXsXfzhteESSfRliBWTQ7H3war
+      kD3W1SL4xLFVXj43WNPJTp6voh8Au74FVyze2dd7Wn2ttcrPZ0grFo9t2PD6Yo4j
+      7EAghuajWxFyi7a0DuTk7Ohsfn0xdCDUFaKGLO3btm0ooBNcbd46FkULkK7rRA/a
+      Muym/7/nSSKgtg6R59G3A0RM38zQvEbISOiKor7nUAWulISBNN8Y8XzNCCWwpjjs
+      UH4/PoZeeVTliSqS2BqdnN+h6GFEw3NnUrPpz1I4lBcTA6YAXN3gvUXmC7vgblCN
+      Blj4OZScMFSGI0VPrz2h5g==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:07Z"
+    name: serviceaccount-ca-7
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-7
+      uid: d765b71d-0b55-4a66-9e82-100d535e6e31
+    resourceVersion: "15383"
+    uid: 4d97ef35-ae1c-4d49-aabe-d0cbfac7c834
+- apiVersion: v1
+  data:
+    ca-bundle.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDMjCCAhqgAwIBAgIIaF6NeZ+aXe0wDQYJKoZIhvcNAQELBQAwNzESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSEwHwYDVQQDExhrdWJlLWFwaXNlcnZlci1sYi1zaWduZXIw
+      HhcNMjIwNTI0MTc1ODA5WhcNMzIwNTIxMTc1ODA5WjA3MRIwEAYDVQQLEwlvcGVu
+      c2hpZnQxITAfBgNVBAMTGGt1YmUtYXBpc2VydmVyLWxiLXNpZ25lcjCCASIwDQYJ
+      KoZIhvcNAQEBBQADggEPADCCAQoCggEBALwVpbI2tHFkVQrTfwH3tkneIikpA/hl
+      b1BRaPs1bwvVxTgkv0ctRjuJGZpcLja8saZB/wlVIFCGq6c5J6dwNWmVoZu1KIGp
+      9qNnNkRgttm8wSz2HA+lCW9yUxjDgUA8Pc5bCcUhY8qSPA2m9qq/tvPr4vGSa8x0
+      AcGOlPheM8PeCv40Zc2EPmhKfFAp6ZuJ7ZLVJAO6ncnOTtkDqYMKORGdFgNYKdKZ
+      sfJ9qnSH8Ps4fSyqwPxQAyQ85yjJEdahu2ZoKopiacH7uU6wS2Ni49XUGXeS5kct
+      iDYCmMCJHtsF4F74qv2Gh8stWGyA9JLyMi/m342dr2f1VdgmgGn1io0CAwEAAaNC
+      MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKEH
+      goCqgLWx3Ma0M2iSXtQFfXCsMA0GCSqGSIb3DQEBCwUAA4IBAQAofVvp05u+GGv7
+      w34hPGfwXb0rupUhSbm+KzcZ9p7jZKPSN4lvkLRNUprfmP4gR33Xkjn91watSM2x
+      FMsSMFvPoLQkfHu2cP3TlN2ddbYb+3v01fCYDKPyaoIAaCVUgpJ2gNYsVPhD3LQd
+      sA/EkWyKs7Ggu8yL88ArKN8Nsv7WUtKHmqbiqrX6K0DM9pdI3upfXYCngeL5IsU8
+      Fq1NyK086wVdYfjOnipTXtTvPiO/fE1oX2nVXsxNxowjhYVScC2T1ZH9cVSP26fq
+      uoyj99JfxxDL9hpbK5K2YzNrDO7fkzn6UP0j+Fu96gVoHci2s0oK2JxQsxgfxcYZ
+      8TfG1e82
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDQDCCAiigAwIBAgIIM46x6byvII8wDQYJKoZIhvcNAQELBQAwPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVrAeaJosaY1
+      E9o4oPkpxLDx8QF5Ji3uMMfoBAO+9Wt2tykPO9/CTghsDM1fN/kg94DE4rb6CMWb
+      aFyUlBok97zlO7rjKBySOnTahRArHuzurQtMyDrUJD0pWLbXIiyjE4L26Rz3wW9C
+      CZsXfwnmytPhraguIbUnKDz7ykSRzf79pqvP17dK+Vsiyy/ViOFqHuSGa2d2RlBI
+      jshHo2jRZLPCVGUvfAQTT+pfbxrDcg3XpDmGukXTZnWqL12Qc22teoTjXAHCL0Ny
+      XjitCo+nSyt+NcoZgJ3HZqEufO4F3DqfF6Ja7zNGbH0rDPKBQjsqkSR0sFz8VKXF
+      xdvHKantCQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+      /zAdBgNVHQ4EFgQUxGqZhXeomt9poP3ST8CNGz3NS2IwDQYJKoZIhvcNAQELBQAD
+      ggEBALggP2dTHzzs9i5i5Vo04NuzosogdCK67tWd85nPwWza9s1P4KHpgIYTp+Ve
+      nt7oRNqEmcDdV3LYLcqzfrghjChheEcrK35439VeUqdjQdmHM/WmYXzwzszBtbCY
+      G/vkff8X5pzwIxJJp40u3iVtEbnVvz1BnrYg568WRctaZabKVzklPuMspOndOOSg
+      8JT+V59RMrsnL2I8ccfOH/vABiU92Zq8TC483TBzwjX72+573pBTOigZCypSGaXo
+      YeYj0nLVabALOLnwGxD/BJXS3X01Ehv1zVP1r58t2sxuF+k55nPXYDs9VSVgx5kT
+      +odoALQyN4PXN/+lZCJK4ISHqyA=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDTDCCAjSgAwIBAgIISQR4oKgvETwwDQYJKoZIhvcNAQELBQAwRDESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2aWNlLW5l
+      dHdvcmstc2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowRDES
+      MBAGA1UECxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2
+      aWNlLW5ldHdvcmstc2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEA1azJdx1cmrP0oFXUtF+Y1TVVxLU6HC7k9CVwKpDSCHtzOY9cxXn3edBGYiok
+      HcnIP2vziKS29enFK5H9Msqhc/dueYaFHzuKtAgteKGJifvWBxYA0R8FOYwRn2gC
+      +NIlYlpeLPeiE7dvt1OQTaNnAn6ZwZKMvSsbwcmgi04C+XxkKgCx4oqFgGysg794
+      d1YpTc1NoonJ85i3zeiJ5X3Z66EPWtQXIlU67IedX8Vd3jC7KqAoqV3hm4GyImT1
+      q5OQzqb0+mAuxzIuLaCLQu8JhKKHB8j1I0qclpmotxWOju3jimgZ3i0QWl8LXKFv
+      7+Hyrtisb+1BzSiLZz6vKgJxeQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYD
+      VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU8ZjsCxNdiq7xt0hqHLNElJK6SHEwDQYJ
+      KoZIhvcNAQELBQADggEBAB9BOikS47zebhNtVkY7Lf4r3HVQ13zxsx9FthmqayXr
+      KDRJ5AWiXASoF0lPgElsUQ0Qsp3etXR2POfd9Ei7ytwV3ftfRdR/JnCWTJ1jlqvc
+      d3oUJlU/Mg3qFNVhYdfn0H6BMcdHkOibsyigkCeWzIC1VU04Dl8cD9IoltDWeJfM
+      Bi30K2dJsJN3LYn8Ic0nwYzeccLxqG7ADEL8YjFPC8sL2YvTACYYJVkHZHuSyL+h
+      qVv7odKp+x/LuAxJiTn8rZie0xYLt6Z+X8Hm72BaoikmerKInClM03DGrieHWDlY
+      KFE/Boetn7nRsomkRsCoUJMC6HjMSFr5D7UrOok5LC0=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDlzCCAn+gAwIBAgIIA02EfcpLCEIwDQYJKoZIhvcNAQELBQAwWTFXMFUGA1UE
+      AwxOb3BlbnNoaWZ0LWt1YmUtYXBpc2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1y
+      ZWNvdmVyeS1zZXJ2aW5nLXNpZ25lckAxNjUzNDE1NjYzMB4XDTIyMDUyNDE4MDc0
+      M1oXDTMyMDUyMTE4MDc0NFowWTFXMFUGA1UEAwxOb3BlbnNoaWZ0LWt1YmUtYXBp
+      c2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1yZWNvdmVyeS1zZXJ2aW5nLXNpZ25l
+      ckAxNjUzNDE1NjYzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4unV
+      faO+MHjSSGkR9ZSXYfvdIuVRnfDBjl3lWRT6z4vdafaw+/tJAWgROgQ+2c80nGhD
+      NYJMp+l1gHFAowaxblu38SqB8rhZTGa3dbvbIJZ/NCSEZsHKJwlahFaoyuOTnguv
+      yzFRJnZPJY57IojaL0AtLLq5xxojzijiSPwZE/XoKxXTewfWoOKuANvGdtaKvWqG
+      oQf8Iq4Lc130iEwTZgYYTQQIoNRkNwVSPL0mDJO2tR8q/m38HMtLFqOxZPrTms2H
+      tGjH4gS9JIOtcuGSr3H6XlBnI+UrQa2IxhVCRvGMN9Yd/xZeygE0Ttl8Ux0jgKfM
+      FT/7Cqlc5M24AVcZQQIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/
+      BAUwAwEB/zAdBgNVHQ4EFgQUBgHjWEA8cGDOxOEE9NeUoTgosCkwHwYDVR0jBBgw
+      FoAUBgHjWEA8cGDOxOEE9NeUoTgosCkwDQYJKoZIhvcNAQELBQADggEBAKEkSDDM
+      uNU0msYFwYzWVJ6ZuLqh/ZgwoKT/HfBpkxyX44rJo66ZDvapl4eBfF2Qho+WAyEY
+      dUXiHAM+murwivPAhdBxafCockCQSygz8hLooUf4KICSOZdGYeR96BqArZ3aMEOU
+      6DlxVOWfpowwT4FD/CUqbtSX5F4KmRdoD+1ks3WIcwPbl0zb+MZ2HLCpFPQMAomq
+      A0s+eCJ/6oTNGTzttyUjeKlNQK7GcZZU3ZYqftf3f4kAxAyFWgG7wvUhFuxeoP8y
+      OpVILyPvOqb3WBN+KDrGmXFUZFjzGzqD3buqED3NA4ZWx+Rc7hPZvFCRUQobSfQV
+      tlOPSHzf9Y9rSgo=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFtjCCBJ6gAwIBAgISBFLw17r/CuNNqWSjg41GCK3OMA0GCSqGSIb3DQEBCwUA
+      MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+      EwJSMzAeFw0yMjA1MjQxNzI3MDJaFw0yMjA4MjIxNzI3MDFaMDQxMjAwBgNVBAMT
+      KWFwaS5vZGYtc2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMIIBIjAN
+      BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzd4EF451gHcY+pDj4YM2hLiIWuGX
+      iCe9DGYzUNC4jrijeJVYs8tPp/iH63gOYvsY3fW7coZEbaFvq597qzKb6CAjsP72
+      s0VBJH4vnljJysMv6VpU9D4NECYvAQjy1OHVP6VrURBhu61bOgLrYFfxCtGWD81a
+      O7rNwquWsGqQDiGXfg6LbApX3Y9kg+zyuTL1Pc2b6fzAC3BEMviOI9o6QPZhHH1P
+      7H0STFfEWRRt7IHC5KLi1IvQ1aPHG+LJcQ58etnoYNydkNkB3DN4CjjaXitdLnoi
+      G2d2cVMXmCMMYPkSuZEIlhoAmn1BuUV/SHuoSs63XVjhy4bE1MV3arwCWwIDAQAB
+      o4ICwjCCAr4wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggr
+      BgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBQXbq8TuDsow74svn3WxCIX
+      E6KtEjAfBgNVHSMEGDAWgBQULrMXt1hWy65QCUDmH6+dixTCxjBVBggrBgEFBQcB
+      AQRJMEcwIQYIKwYBBQUHMAGGFWh0dHA6Ly9yMy5vLmxlbmNyLm9yZzAiBggrBgEF
+      BQcwAoYWaHR0cDovL3IzLmkubGVuY3Iub3JnLzCBkgYDVR0RBIGKMIGHgiwqLmFw
+      cHMub2RmLXNlcnZpY2UuZGlmNS5wMS5vcGVuc2hpZnRhcHBzLmNvbYIpYXBpLm9k
+      Zi1zZXJ2aWNlLmRpZjUucDEub3BlbnNoaWZ0YXBwcy5jb22CLHJoLWFwaS5vZGYt
+      c2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMEwGA1UdIARFMEMwCAYG
+      Z4EMAQIBMDcGCysGAQQBgt8TAQEBMCgwJgYIKwYBBQUHAgEWGmh0dHA6Ly9jcHMu
+      bGV0c2VuY3J5cHQub3JnMIIBAwYKKwYBBAHWeQIEAgSB9ASB8QDvAHYA36Veq2iC
+      Tx9sre64X04+WurNohKkal6OOxLAIERcKnMAAAGA91KJLwAABAMARzBFAiAIZWF8
+      HxoZi8Uc4gbb1tP92WtRG697l9lmSfXbnC1XLQIhAL/e0q4GXuEUlIkJW0jwqc6O
+      Md7T/AizyojNvIRU5mVyAHUARqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+
+      bUcAAAGA91KJUwAABAMARjBEAiB7//joMC2x7OAo92PRcbaOuyjPQG2w51dX+xlF
+      vucv0gIgaTD8sFKPppA70+k/s9M/FuUM61tUl21nI2FQ52/L8qowDQYJKoZIhvcN
+      AQELBQADggEBAC05nXdp+2WBPR5Tg/tceka3INm7/IOC4sYIqxwUopF9ePmlk58F
+      hSbZzvzM4teaH4o3kAke4bzzFhnnBqWG4cW52c7eOgO4tYzE3SkjfipqytT2Ed1D
+      jOorCI+EQjV9EFZeEzvxtnZsAwgIjLvqpB/LXlnSf5EkmjtzHcHqucZcDFsqcMjL
+      Qolbk1+a+TOTM4FPz4qlPAslLh8xCXZHCIYuM2n4r71XRPYeKUnj9JBRZVSN7znK
+      s0uo646L0S4Slp/HBDrrDHHoqjucqO1ad40uKzP4jwtMp0w5wYtCzTrTZrLuyVEh
+      emR91a/GVQgnV2LpWDwVXPpt5H1p/tDFA08=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
+      TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+      cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjAwOTA0MDAwMDAw
+      WhcNMjUwOTE1MTYwMDAwWjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+      RW5jcnlwdDELMAkGA1UEAxMCUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQC7AhUozPaglNMPEuyNVZLD+ILxmaZ6QoinXSaqtSu5xUyxr45r+XXIo9cP
+      R5QUVTVXjJ6oojkZ9YI8QqlObvU7wy7bjcCwXPNZOOftz2nwWgsbvsCUJCWH+jdx
+      sxPnHKzhm+/b5DtFUkWWqcFTzjTIUu61ru2P3mBw4qVUq7ZtDpelQDRrK9O8Zutm
+      NHz6a4uPVymZ+DAXXbpyb/uBxa3Shlg9F8fnCbvxK/eG3MHacV3URuPMrSXBiLxg
+      Z3Vms/EY96Jc5lP/Ooi2R6X/ExjqmAl3P51T+c8B5fWmcBcUr2Ok/5mzk53cU6cG
+      /kiFHaFpriV1uxPMUgP17VGhi9sVAgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMC
+      AYYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMBIGA1UdEwEB/wQIMAYB
+      Af8CAQAwHQYDVR0OBBYEFBQusxe3WFbLrlAJQOYfr52LFMLGMB8GA1UdIwQYMBaA
+      FHm0WeZ7tuXkAXOACIjIGlj26ZtuMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEFBQcw
+      AoYWaHR0cDovL3gxLmkubGVuY3Iub3JnLzAnBgNVHR8EIDAeMBygGqAYhhZodHRw
+      Oi8veDEuYy5sZW5jci5vcmcvMCIGA1UdIAQbMBkwCAYGZ4EMAQIBMA0GCysGAQQB
+      gt8TAQEBMA0GCSqGSIb3DQEBCwUAA4ICAQCFyk5HPqP3hUSFvNVneLKYY611TR6W
+      PTNlclQtgaDqw+34IL9fzLdwALduO/ZelN7kIJ+m74uyA+eitRY8kc607TkC53wl
+      ikfmZW4/RvTZ8M6UK+5UzhK8jCdLuMGYL6KvzXGRSgi3yLgjewQtCPkIVz6D2QQz
+      CkcheAmCJ8MqyJu5zlzyZMjAvnnAT45tRAxekrsu94sQ4egdRCnbWSDtY7kh+BIm
+      lJNXoB1lBMEKIq4QDUOXoRgffuDghje1WrG9ML+Hbisq/yFOGwXD9RiX8F6sw6W4
+      avAuvDszue5L3sz85K+EC4Y/wFVDNvZo4TYXao6Z0f+lQKc0t8DQYzk1OXVu8rp2
+      yJMC6alLbBfODALZvYH7n7do1AZls4I9d1P4jnkDrQoxB3UqQ9hVl3LEKQ73xF1O
+      yK5GhDDX8oVfGKF5u+decIsH4YaTw7mP3GFxJSqv3+0lUFJoi5Lc5da149p90Ids
+      hCExroL1+7mryIkXPeFM5TgO9r0rvZaBFOvV2z0gp35Z0+L4WPlbuEjN/lxPFin+
+      HlUjr8gRsI3qfJOQFy/9rKIJR0Y/8Omwt/8oTWgy1mdeHmmjk7j1nYsvC9JSQ6Zv
+      MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
+      nLRbwHOoq7hHwg==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:15Z"
+    name: serviceaccount-ca-8
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-8
+      uid: 68ae9f63-9336-414f-ab31-79185d7cf875
+    resourceVersion: "36430"
+    uid: c87dc612-702b-4cea-bffb-09cf31e92070
+- apiVersion: v1
+  data:
+    ca-bundle.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDMjCCAhqgAwIBAgIIaF6NeZ+aXe0wDQYJKoZIhvcNAQELBQAwNzESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSEwHwYDVQQDExhrdWJlLWFwaXNlcnZlci1sYi1zaWduZXIw
+      HhcNMjIwNTI0MTc1ODA5WhcNMzIwNTIxMTc1ODA5WjA3MRIwEAYDVQQLEwlvcGVu
+      c2hpZnQxITAfBgNVBAMTGGt1YmUtYXBpc2VydmVyLWxiLXNpZ25lcjCCASIwDQYJ
+      KoZIhvcNAQEBBQADggEPADCCAQoCggEBALwVpbI2tHFkVQrTfwH3tkneIikpA/hl
+      b1BRaPs1bwvVxTgkv0ctRjuJGZpcLja8saZB/wlVIFCGq6c5J6dwNWmVoZu1KIGp
+      9qNnNkRgttm8wSz2HA+lCW9yUxjDgUA8Pc5bCcUhY8qSPA2m9qq/tvPr4vGSa8x0
+      AcGOlPheM8PeCv40Zc2EPmhKfFAp6ZuJ7ZLVJAO6ncnOTtkDqYMKORGdFgNYKdKZ
+      sfJ9qnSH8Ps4fSyqwPxQAyQ85yjJEdahu2ZoKopiacH7uU6wS2Ni49XUGXeS5kct
+      iDYCmMCJHtsF4F74qv2Gh8stWGyA9JLyMi/m342dr2f1VdgmgGn1io0CAwEAAaNC
+      MEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFKEH
+      goCqgLWx3Ma0M2iSXtQFfXCsMA0GCSqGSIb3DQEBCwUAA4IBAQAofVvp05u+GGv7
+      w34hPGfwXb0rupUhSbm+KzcZ9p7jZKPSN4lvkLRNUprfmP4gR33Xkjn91watSM2x
+      FMsSMFvPoLQkfHu2cP3TlN2ddbYb+3v01fCYDKPyaoIAaCVUgpJ2gNYsVPhD3LQd
+      sA/EkWyKs7Ggu8yL88ArKN8Nsv7WUtKHmqbiqrX6K0DM9pdI3upfXYCngeL5IsU8
+      Fq1NyK086wVdYfjOnipTXtTvPiO/fE1oX2nVXsxNxowjhYVScC2T1ZH9cVSP26fq
+      uoyj99JfxxDL9hpbK5K2YzNrDO7fkzn6UP0j+Fu96gVoHci2s0oK2JxQsxgfxcYZ
+      8TfG1e82
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDQDCCAiigAwIBAgIIM46x6byvII8wDQYJKoZIhvcNAQELBQAwPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowPjESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MSgwJgYDVQQDEx9rdWJlLWFwaXNlcnZlci1sb2NhbGhvc3Qt
+      c2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVrAeaJosaY1
+      E9o4oPkpxLDx8QF5Ji3uMMfoBAO+9Wt2tykPO9/CTghsDM1fN/kg94DE4rb6CMWb
+      aFyUlBok97zlO7rjKBySOnTahRArHuzurQtMyDrUJD0pWLbXIiyjE4L26Rz3wW9C
+      CZsXfwnmytPhraguIbUnKDz7ykSRzf79pqvP17dK+Vsiyy/ViOFqHuSGa2d2RlBI
+      jshHo2jRZLPCVGUvfAQTT+pfbxrDcg3XpDmGukXTZnWqL12Qc22teoTjXAHCL0Ny
+      XjitCo+nSyt+NcoZgJ3HZqEufO4F3DqfF6Ja7zNGbH0rDPKBQjsqkSR0sFz8VKXF
+      xdvHKantCQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB
+      /zAdBgNVHQ4EFgQUxGqZhXeomt9poP3ST8CNGz3NS2IwDQYJKoZIhvcNAQELBQAD
+      ggEBALggP2dTHzzs9i5i5Vo04NuzosogdCK67tWd85nPwWza9s1P4KHpgIYTp+Ve
+      nt7oRNqEmcDdV3LYLcqzfrghjChheEcrK35439VeUqdjQdmHM/WmYXzwzszBtbCY
+      G/vkff8X5pzwIxJJp40u3iVtEbnVvz1BnrYg568WRctaZabKVzklPuMspOndOOSg
+      8JT+V59RMrsnL2I8ccfOH/vABiU92Zq8TC483TBzwjX72+573pBTOigZCypSGaXo
+      YeYj0nLVabALOLnwGxD/BJXS3X01Ehv1zVP1r58t2sxuF+k55nPXYDs9VSVgx5kT
+      +odoALQyN4PXN/+lZCJK4ISHqyA=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDTDCCAjSgAwIBAgIISQR4oKgvETwwDQYJKoZIhvcNAQELBQAwRDESMBAGA1UE
+      CxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2aWNlLW5l
+      dHdvcmstc2lnbmVyMB4XDTIyMDUyNDE3NTgwOVoXDTMyMDUyMTE3NTgwOVowRDES
+      MBAGA1UECxMJb3BlbnNoaWZ0MS4wLAYDVQQDEyVrdWJlLWFwaXNlcnZlci1zZXJ2
+      aWNlLW5ldHdvcmstc2lnbmVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEA1azJdx1cmrP0oFXUtF+Y1TVVxLU6HC7k9CVwKpDSCHtzOY9cxXn3edBGYiok
+      HcnIP2vziKS29enFK5H9Msqhc/dueYaFHzuKtAgteKGJifvWBxYA0R8FOYwRn2gC
+      +NIlYlpeLPeiE7dvt1OQTaNnAn6ZwZKMvSsbwcmgi04C+XxkKgCx4oqFgGysg794
+      d1YpTc1NoonJ85i3zeiJ5X3Z66EPWtQXIlU67IedX8Vd3jC7KqAoqV3hm4GyImT1
+      q5OQzqb0+mAuxzIuLaCLQu8JhKKHB8j1I0qclpmotxWOju3jimgZ3i0QWl8LXKFv
+      7+Hyrtisb+1BzSiLZz6vKgJxeQIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAqQwDwYD
+      VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU8ZjsCxNdiq7xt0hqHLNElJK6SHEwDQYJ
+      KoZIhvcNAQELBQADggEBAB9BOikS47zebhNtVkY7Lf4r3HVQ13zxsx9FthmqayXr
+      KDRJ5AWiXASoF0lPgElsUQ0Qsp3etXR2POfd9Ei7ytwV3ftfRdR/JnCWTJ1jlqvc
+      d3oUJlU/Mg3qFNVhYdfn0H6BMcdHkOibsyigkCeWzIC1VU04Dl8cD9IoltDWeJfM
+      Bi30K2dJsJN3LYn8Ic0nwYzeccLxqG7ADEL8YjFPC8sL2YvTACYYJVkHZHuSyL+h
+      qVv7odKp+x/LuAxJiTn8rZie0xYLt6Z+X8Hm72BaoikmerKInClM03DGrieHWDlY
+      KFE/Boetn7nRsomkRsCoUJMC6HjMSFr5D7UrOok5LC0=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIDlzCCAn+gAwIBAgIIA02EfcpLCEIwDQYJKoZIhvcNAQELBQAwWTFXMFUGA1UE
+      AwxOb3BlbnNoaWZ0LWt1YmUtYXBpc2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1y
+      ZWNvdmVyeS1zZXJ2aW5nLXNpZ25lckAxNjUzNDE1NjYzMB4XDTIyMDUyNDE4MDc0
+      M1oXDTMyMDUyMTE4MDc0NFowWTFXMFUGA1UEAwxOb3BlbnNoaWZ0LWt1YmUtYXBp
+      c2VydmVyLW9wZXJhdG9yX2xvY2FsaG9zdC1yZWNvdmVyeS1zZXJ2aW5nLXNpZ25l
+      ckAxNjUzNDE1NjYzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4unV
+      faO+MHjSSGkR9ZSXYfvdIuVRnfDBjl3lWRT6z4vdafaw+/tJAWgROgQ+2c80nGhD
+      NYJMp+l1gHFAowaxblu38SqB8rhZTGa3dbvbIJZ/NCSEZsHKJwlahFaoyuOTnguv
+      yzFRJnZPJY57IojaL0AtLLq5xxojzijiSPwZE/XoKxXTewfWoOKuANvGdtaKvWqG
+      oQf8Iq4Lc130iEwTZgYYTQQIoNRkNwVSPL0mDJO2tR8q/m38HMtLFqOxZPrTms2H
+      tGjH4gS9JIOtcuGSr3H6XlBnI+UrQa2IxhVCRvGMN9Yd/xZeygE0Ttl8Ux0jgKfM
+      FT/7Cqlc5M24AVcZQQIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/
+      BAUwAwEB/zAdBgNVHQ4EFgQUBgHjWEA8cGDOxOEE9NeUoTgosCkwHwYDVR0jBBgw
+      FoAUBgHjWEA8cGDOxOEE9NeUoTgosCkwDQYJKoZIhvcNAQELBQADggEBAKEkSDDM
+      uNU0msYFwYzWVJ6ZuLqh/ZgwoKT/HfBpkxyX44rJo66ZDvapl4eBfF2Qho+WAyEY
+      dUXiHAM+murwivPAhdBxafCockCQSygz8hLooUf4KICSOZdGYeR96BqArZ3aMEOU
+      6DlxVOWfpowwT4FD/CUqbtSX5F4KmRdoD+1ks3WIcwPbl0zb+MZ2HLCpFPQMAomq
+      A0s+eCJ/6oTNGTzttyUjeKlNQK7GcZZU3ZYqftf3f4kAxAyFWgG7wvUhFuxeoP8y
+      OpVILyPvOqb3WBN+KDrGmXFUZFjzGzqD3buqED3NA4ZWx+Rc7hPZvFCRUQobSfQV
+      tlOPSHzf9Y9rSgo=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFtjCCBJ6gAwIBAgISBFLw17r/CuNNqWSjg41GCK3OMA0GCSqGSIb3DQEBCwUA
+      MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+      EwJSMzAeFw0yMjA1MjQxNzI3MDJaFw0yMjA4MjIxNzI3MDFaMDQxMjAwBgNVBAMT
+      KWFwaS5vZGYtc2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMIIBIjAN
+      BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzd4EF451gHcY+pDj4YM2hLiIWuGX
+      iCe9DGYzUNC4jrijeJVYs8tPp/iH63gOYvsY3fW7coZEbaFvq597qzKb6CAjsP72
+      s0VBJH4vnljJysMv6VpU9D4NECYvAQjy1OHVP6VrURBhu61bOgLrYFfxCtGWD81a
+      O7rNwquWsGqQDiGXfg6LbApX3Y9kg+zyuTL1Pc2b6fzAC3BEMviOI9o6QPZhHH1P
+      7H0STFfEWRRt7IHC5KLi1IvQ1aPHG+LJcQ58etnoYNydkNkB3DN4CjjaXitdLnoi
+      G2d2cVMXmCMMYPkSuZEIlhoAmn1BuUV/SHuoSs63XVjhy4bE1MV3arwCWwIDAQAB
+      o4ICwjCCAr4wDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggr
+      BgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBQXbq8TuDsow74svn3WxCIX
+      E6KtEjAfBgNVHSMEGDAWgBQULrMXt1hWy65QCUDmH6+dixTCxjBVBggrBgEFBQcB
+      AQRJMEcwIQYIKwYBBQUHMAGGFWh0dHA6Ly9yMy5vLmxlbmNyLm9yZzAiBggrBgEF
+      BQcwAoYWaHR0cDovL3IzLmkubGVuY3Iub3JnLzCBkgYDVR0RBIGKMIGHgiwqLmFw
+      cHMub2RmLXNlcnZpY2UuZGlmNS5wMS5vcGVuc2hpZnRhcHBzLmNvbYIpYXBpLm9k
+      Zi1zZXJ2aWNlLmRpZjUucDEub3BlbnNoaWZ0YXBwcy5jb22CLHJoLWFwaS5vZGYt
+      c2VydmljZS5kaWY1LnAxLm9wZW5zaGlmdGFwcHMuY29tMEwGA1UdIARFMEMwCAYG
+      Z4EMAQIBMDcGCysGAQQBgt8TAQEBMCgwJgYIKwYBBQUHAgEWGmh0dHA6Ly9jcHMu
+      bGV0c2VuY3J5cHQub3JnMIIBAwYKKwYBBAHWeQIEAgSB9ASB8QDvAHYA36Veq2iC
+      Tx9sre64X04+WurNohKkal6OOxLAIERcKnMAAAGA91KJLwAABAMARzBFAiAIZWF8
+      HxoZi8Uc4gbb1tP92WtRG697l9lmSfXbnC1XLQIhAL/e0q4GXuEUlIkJW0jwqc6O
+      Md7T/AizyojNvIRU5mVyAHUARqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+
+      bUcAAAGA91KJUwAABAMARjBEAiB7//joMC2x7OAo92PRcbaOuyjPQG2w51dX+xlF
+      vucv0gIgaTD8sFKPppA70+k/s9M/FuUM61tUl21nI2FQ52/L8qowDQYJKoZIhvcN
+      AQELBQADggEBAC05nXdp+2WBPR5Tg/tceka3INm7/IOC4sYIqxwUopF9ePmlk58F
+      hSbZzvzM4teaH4o3kAke4bzzFhnnBqWG4cW52c7eOgO4tYzE3SkjfipqytT2Ed1D
+      jOorCI+EQjV9EFZeEzvxtnZsAwgIjLvqpB/LXlnSf5EkmjtzHcHqucZcDFsqcMjL
+      Qolbk1+a+TOTM4FPz4qlPAslLh8xCXZHCIYuM2n4r71XRPYeKUnj9JBRZVSN7znK
+      s0uo646L0S4Slp/HBDrrDHHoqjucqO1ad40uKzP4jwtMp0w5wYtCzTrTZrLuyVEh
+      emR91a/GVQgnV2LpWDwVXPpt5H1p/tDFA08=
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      MIIFFjCCAv6gAwIBAgIRAJErCErPDBinU/bWLiWnX1owDQYJKoZIhvcNAQELBQAw
+      TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+      cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjAwOTA0MDAwMDAw
+      WhcNMjUwOTE1MTYwMDAwWjAyMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+      RW5jcnlwdDELMAkGA1UEAxMCUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQC7AhUozPaglNMPEuyNVZLD+ILxmaZ6QoinXSaqtSu5xUyxr45r+XXIo9cP
+      R5QUVTVXjJ6oojkZ9YI8QqlObvU7wy7bjcCwXPNZOOftz2nwWgsbvsCUJCWH+jdx
+      sxPnHKzhm+/b5DtFUkWWqcFTzjTIUu61ru2P3mBw4qVUq7ZtDpelQDRrK9O8Zutm
+      NHz6a4uPVymZ+DAXXbpyb/uBxa3Shlg9F8fnCbvxK/eG3MHacV3URuPMrSXBiLxg
+      Z3Vms/EY96Jc5lP/Ooi2R6X/ExjqmAl3P51T+c8B5fWmcBcUr2Ok/5mzk53cU6cG
+      /kiFHaFpriV1uxPMUgP17VGhi9sVAgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMC
+      AYYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMBIGA1UdEwEB/wQIMAYB
+      Af8CAQAwHQYDVR0OBBYEFBQusxe3WFbLrlAJQOYfr52LFMLGMB8GA1UdIwQYMBaA
+      FHm0WeZ7tuXkAXOACIjIGlj26ZtuMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEFBQcw
+      AoYWaHR0cDovL3gxLmkubGVuY3Iub3JnLzAnBgNVHR8EIDAeMBygGqAYhhZodHRw
+      Oi8veDEuYy5sZW5jci5vcmcvMCIGA1UdIAQbMBkwCAYGZ4EMAQIBMA0GCysGAQQB
+      gt8TAQEBMA0GCSqGSIb3DQEBCwUAA4ICAQCFyk5HPqP3hUSFvNVneLKYY611TR6W
+      PTNlclQtgaDqw+34IL9fzLdwALduO/ZelN7kIJ+m74uyA+eitRY8kc607TkC53wl
+      ikfmZW4/RvTZ8M6UK+5UzhK8jCdLuMGYL6KvzXGRSgi3yLgjewQtCPkIVz6D2QQz
+      CkcheAmCJ8MqyJu5zlzyZMjAvnnAT45tRAxekrsu94sQ4egdRCnbWSDtY7kh+BIm
+      lJNXoB1lBMEKIq4QDUOXoRgffuDghje1WrG9ML+Hbisq/yFOGwXD9RiX8F6sw6W4
+      avAuvDszue5L3sz85K+EC4Y/wFVDNvZo4TYXao6Z0f+lQKc0t8DQYzk1OXVu8rp2
+      yJMC6alLbBfODALZvYH7n7do1AZls4I9d1P4jnkDrQoxB3UqQ9hVl3LEKQ73xF1O
+      yK5GhDDX8oVfGKF5u+decIsH4YaTw7mP3GFxJSqv3+0lUFJoi5Lc5da149p90Ids
+      hCExroL1+7mryIkXPeFM5TgO9r0rvZaBFOvV2z0gp35Z0+L4WPlbuEjN/lxPFin+
+      HlUjr8gRsI3qfJOQFy/9rKIJR0Y/8Omwt/8oTWgy1mdeHmmjk7j1nYsvC9JSQ6Zv
+      MldlTTKB3zhThV1+XWYp6rjd5JW1zbVWEkLNxE7GJThEUG3szgBVGP7pSWTUTsqX
+      nLRbwHOoq7hHwg==
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2022-05-24T18:29:00Z"
+    name: serviceaccount-ca-9
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      kind: ConfigMap
+      name: revision-status-9
+      uid: 6e53daf4-a7d8-4591-aa36-817720c27013
+    resourceVersion: "45533"
+    uid: dd4187a4-3f52-4380-8902-71401ffbb2be
+kind: ConfigMapList
+metadata:
+  resourceVersion: "316576"

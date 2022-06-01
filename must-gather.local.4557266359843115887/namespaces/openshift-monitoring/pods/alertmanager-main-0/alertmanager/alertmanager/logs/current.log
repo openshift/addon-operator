@@ -1,0 +1,13 @@
+2022-05-24T18:40:23.311010766Z level=info ts=2022-05-24T18:40:23.310Z caller=main.go:225 msg="Starting Alertmanager" version="(version=0.23.0, branch=rhaos-4.10-rhel-8, revision=9cbe4b41285a6c16aaa21b5d59e7be0b1d3aa146)"
+2022-05-24T18:40:23.315272259Z level=info ts=2022-05-24T18:40:23.315Z caller=main.go:226 build_context="(go=go1.17.5, user=root@9a0c10b9e467, date=20220421-13:25:41)"
+2022-05-24T18:40:28.331902655Z level=info ts=2022-05-24T18:40:28.331Z caller=cluster.go:671 component=cluster msg="Waiting for gossip to settle..." interval=2s
+2022-05-24T18:40:28.362699150Z level=info ts=2022-05-24T18:40:28.362Z caller=coordinator.go:113 component=configuration msg="Loading configuration file" file=/etc/alertmanager/config/alertmanager.yaml
+2022-05-24T18:40:28.364069731Z level=info ts=2022-05-24T18:40:28.364Z caller=coordinator.go:126 component=configuration msg="Completed loading of configuration file" file=/etc/alertmanager/config/alertmanager.yaml
+2022-05-24T18:40:28.367802605Z level=info ts=2022-05-24T18:40:28.367Z caller=main.go:518 msg=Listening address=127.0.0.1:9093
+2022-05-24T18:40:28.367880446Z level=info ts=2022-05-24T18:40:28.367Z caller=tls_config.go:191 msg="TLS is disabled." http2=false
+2022-05-24T18:40:30.332351516Z level=info ts=2022-05-24T18:40:30.332Z caller=cluster.go:696 component=cluster msg="gossip not settled" polls=0 before=0 now=2 elapsed=2.000397352s
+2022-05-24T18:40:32.007307805Z level=info ts=2022-05-24T18:40:32.007Z caller=coordinator.go:113 component=configuration msg="Loading configuration file" file=/etc/alertmanager/config/alertmanager.yaml
+2022-05-24T18:40:32.007940303Z level=info ts=2022-05-24T18:40:32.007Z caller=coordinator.go:126 component=configuration msg="Completed loading of configuration file" file=/etc/alertmanager/config/alertmanager.yaml
+2022-05-24T18:40:38.334751685Z level=info ts=2022-05-24T18:40:38.334Z caller=cluster.go:688 component=cluster msg="gossip settled; proceeding" elapsed=10.002806037s
+2022-05-24T20:06:00.761065241Z level=info ts=2022-05-24T20:06:00.761Z caller=coordinator.go:113 component=configuration msg="Loading configuration file" file=/etc/alertmanager/config/alertmanager.yaml
+2022-05-24T20:06:00.767567898Z level=info ts=2022-05-24T20:06:00.767Z caller=coordinator.go:126 component=configuration msg="Completed loading of configuration file" file=/etc/alertmanager/config/alertmanager.yaml

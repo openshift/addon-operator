@@ -1,0 +1,3 @@
+2022-05-24T18:32:10.819827644Z I0524 18:32:10.819732       1 main.go:126] Version: v4.10.0-202204211158.p0.gfe4a0a2.assembly.stream-0-ga1c174a-dirty
+2022-05-24T18:32:10.823311196Z I0524 18:32:10.823274       1 main.go:175] Start NewCSISnapshotController with kubeconfig [] resyncPeriod [15m0s]
+2022-05-24T18:32:12.488711904Z I0524 18:32:12.488673       1 leaderelection.go:248] attempting to acquire leader lease openshift-cluster-storage-operator/snapshot-controller-leader...

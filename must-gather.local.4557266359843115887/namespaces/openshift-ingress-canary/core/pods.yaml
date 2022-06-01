@@ -1,0 +1,1106 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.6"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.6"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:13:03Z"
+    generateName: ingress-canary-
+    labels:
+      controller-revision-hash: 548bb84d49
+      ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+      pod-template-generation: "1"
+    name: ingress-canary-7g79x
+    namespace: openshift-ingress-canary
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: ingress-canary
+      uid: 142e58b0-8290-4e8f-b18a-38e14138b83a
+    resourceVersion: "69783"
+    uid: f5834302-1315-496b-bc6f-408acdaf43bd
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-164-190.ec2.internal
+    containers:
+    - command:
+      - ingress-operator
+      - serve-healthcheck
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imagePullPolicy: IfNotPresent
+      name: serve-healthcheck-canary
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      - containerPort: 8888
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000610000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-46l96
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ip-10-0-164-190.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000610000
+      seLinuxOptions:
+        level: s0:c25,c5
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/infra
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: kube-api-access-46l96
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:13:03Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:06Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:06Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:13:03Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://ce2e09943d42f962ef2d4db4a9b79627856b5375e32723e6c35c87766efe5fd6
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      lastState: {}
+      name: serve-healthcheck-canary
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:05Z"
+    hostIP: 10.0.164.190
+    phase: Running
+    podIP: 10.128.2.6
+    podIPs:
+    - ip: 10.128.2.6
+    qosClass: Burstable
+    startTime: "2022-05-24T18:13:03Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.2.5"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.2.5"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:16:19Z"
+    generateName: ingress-canary-
+    labels:
+      controller-revision-hash: 548bb84d49
+      ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+      pod-template-generation: "1"
+    name: ingress-canary-mvn6j
+    namespace: openshift-ingress-canary
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: ingress-canary
+      uid: 142e58b0-8290-4e8f-b18a-38e14138b83a
+    resourceVersion: "78663"
+    uid: ee669ddb-fb38-40c5-974c-a01baf3981c2
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-145-179.ec2.internal
+    containers:
+    - command:
+      - ingress-operator
+      - serve-healthcheck
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imagePullPolicy: IfNotPresent
+      name: serve-healthcheck-canary
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      - containerPort: 8888
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000610000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-ntgwx
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: default-dockercfg-fm52c
+    nodeName: ip-10-0-145-179.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000610000
+      seLinuxOptions:
+        level: s0:c25,c5
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/infra
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: kube-api-access-ntgwx
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:16:19Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:44:20Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:44:20Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:16:19Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://50e1406601c0c2ef03f61a2942a7efd905445d1198dbf42d024a89d56cbe8191
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      lastState: {}
+      name: serve-healthcheck-canary
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:44:19Z"
+    hostIP: 10.0.145.179
+    phase: Running
+    podIP: 10.129.2.5
+    podIPs:
+    - ip: 10.129.2.5
+    qosClass: Burstable
+    startTime: "2022-05-24T18:16:19Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.130.2.5"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.130.2.5"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:27:59Z"
+    generateName: ingress-canary-
+    labels:
+      controller-revision-hash: 548bb84d49
+      ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+      pod-template-generation: "1"
+    name: ingress-canary-p2mb7
+    namespace: openshift-ingress-canary
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: ingress-canary
+      uid: 142e58b0-8290-4e8f-b18a-38e14138b83a
+    resourceVersion: "67335"
+    uid: 92af3cc8-7fed-46bf-9b65-8e3619bfda1a
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-140-240.ec2.internal
+    containers:
+    - command:
+      - ingress-operator
+      - serve-healthcheck
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imagePullPolicy: IfNotPresent
+      name: serve-healthcheck-canary
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      - containerPort: 8888
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000610000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-k6vkt
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: default-dockercfg-fm52c
+    nodeName: ip-10-0-140-240.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000610000
+      seLinuxOptions:
+        level: s0:c25,c5
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/infra
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: kube-api-access-k6vkt
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:59Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:38:36Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:38:36Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:59Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://79af668af1d70b3184df9c620e4515db5c0df5a392f5ba0325694eb5b5ff1ec6
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      lastState: {}
+      name: serve-healthcheck-canary
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:38:36Z"
+    hostIP: 10.0.140.240
+    phase: Running
+    podIP: 10.130.2.5
+    podIPs:
+    - ip: 10.130.2.5
+    qosClass: Burstable
+    startTime: "2022-05-24T18:27:59Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.7"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.7"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:13:03Z"
+    generateName: ingress-canary-
+    labels:
+      controller-revision-hash: 548bb84d49
+      ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+      pod-template-generation: "1"
+    name: ingress-canary-pdsms
+    namespace: openshift-ingress-canary
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: ingress-canary
+      uid: 142e58b0-8290-4e8f-b18a-38e14138b83a
+    resourceVersion: "37737"
+    uid: 1d5b80be-0c47-4b15-bf94-29d5f8cc2557
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-128-34.ec2.internal
+    containers:
+    - command:
+      - ingress-operator
+      - serve-healthcheck
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imagePullPolicy: IfNotPresent
+      name: serve-healthcheck-canary
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      - containerPort: 8888
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000610000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2lnss
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ip-10-0-128-34.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000610000
+      seLinuxOptions:
+        level: s0:c25,c5
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/infra
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: kube-api-access-2lnss
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:13:03Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:35Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:35Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:13:03Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://1fb2707ca9b3e3b70f0d4bebf1c426116eb26fa3be0da65c12a02f590eede136
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      lastState: {}
+      name: serve-healthcheck-canary
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:27:35Z"
+    hostIP: 10.0.128.34
+    phase: Running
+    podIP: 10.131.0.7
+    podIPs:
+    - ip: 10.131.0.7
+    qosClass: Burstable
+    startTime: "2022-05-24T18:13:03Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.4.2"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.4.2"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:28:50Z"
+    generateName: ingress-canary-
+    labels:
+      controller-revision-hash: 548bb84d49
+      ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+      pod-template-generation: "1"
+    name: ingress-canary-tpk7x
+    namespace: openshift-ingress-canary
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: ingress-canary
+      uid: 142e58b0-8290-4e8f-b18a-38e14138b83a
+    resourceVersion: "74651"
+    uid: 03c1973e-d1ef-442c-bb2d-769ff055aced
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-148-123.ec2.internal
+    containers:
+    - command:
+      - ingress-operator
+      - serve-healthcheck
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imagePullPolicy: IfNotPresent
+      name: serve-healthcheck-canary
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      - containerPort: 8888
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000610000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-rt4lb
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: default-dockercfg-fm52c
+    nodeName: ip-10-0-148-123.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000610000
+      seLinuxOptions:
+        level: s0:c25,c5
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/infra
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: kube-api-access-rt4lb
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:57Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:09Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:09Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:57Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://05f8062ad188b7ceebadc62d66f9e8cfb66200d8c2fd4aa99ddb8c08db88c148
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      lastState: {}
+      name: serve-healthcheck-canary
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:08Z"
+    hostIP: 10.0.148.123
+    phase: Running
+    podIP: 10.128.4.2
+    podIPs:
+    - ip: 10.128.4.2
+    qosClass: Burstable
+    startTime: "2022-05-24T18:28:57Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.2.6"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.2.6"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:28:18Z"
+    generateName: ingress-canary-
+    labels:
+      controller-revision-hash: 548bb84d49
+      ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+      pod-template-generation: "1"
+    name: ingress-canary-wgsvd
+    namespace: openshift-ingress-canary
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: ingress-canary
+      uid: 142e58b0-8290-4e8f-b18a-38e14138b83a
+    resourceVersion: "56489"
+    uid: af1b504b-c295-40ec-87a1-ccd35f71675d
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-166-35.ec2.internal
+    containers:
+    - command:
+      - ingress-operator
+      - serve-healthcheck
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imagePullPolicy: IfNotPresent
+      name: serve-healthcheck-canary
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      - containerPort: 8888
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000610000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-p4d98
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: default-dockercfg-fm52c
+    nodeName: ip-10-0-166-35.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000610000
+      seLinuxOptions:
+        level: s0:c25,c5
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/infra
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - name: kube-api-access-p4d98
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:18Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:29Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:29Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:18Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://ce6025364cf5cb55dcf9fb75341d8a0f3bb21d9070677927a38f7ac572ef617e
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+      lastState: {}
+      name: serve-healthcheck-canary
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:32:28Z"
+    hostIP: 10.0.166.35
+    phase: Running
+    podIP: 10.131.2.6
+    podIPs:
+    - ip: 10.131.2.6
+    qosClass: Burstable
+    startTime: "2022-05-24T18:28:18Z"
+kind: PodList
+metadata:
+  resourceVersion: "312928"

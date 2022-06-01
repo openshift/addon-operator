@@ -1,0 +1,18 @@
+2022-05-24T18:39:20.366987906Z + timeout 3m /bin/bash -exuo pipefail -c 'while [ -n "$(ss -Htanop \( sport = 11443 \))" ]; do sleep 1; done'
+2022-05-24T18:39:20.381452352Z ++ ss -Htanop '(' sport = 11443 ')'
+2022-05-24T18:39:20.386145066Z + '[' -n '' ']'
+2022-05-24T18:39:20.386715228Z + exec cluster-kube-scheduler-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-scheduler-cert-syncer-kubeconfig/kubeconfig --namespace=openshift-kube-scheduler --listen=0.0.0.0:11443 -v=2
+2022-05-24T18:39:20.433816934Z W0524 18:39:20.433716       1 cmd.go:213] Using insecure, self-signed certificates
+2022-05-24T18:39:20.433958061Z I0524 18:39:20.433940       1 crypto.go:601] Generating new CA for cert-recovery-controller-signer@1653417560 cert, and key in /tmp/serving-cert-548920423/serving-signer.crt, /tmp/serving-cert-548920423/serving-signer.key
+2022-05-24T18:39:21.051818611Z I0524 18:39:21.051780       1 observer_polling.go:159] Starting file observer
+2022-05-24T18:39:21.077566312Z I0524 18:39:21.077524       1 builder.go:262] cert-recovery-controller version v0.0.0-master+$Format:%H$-$Format:%H$
+2022-05-24T18:39:21.082708926Z I0524 18:39:21.082680       1 leaderelection.go:248] attempting to acquire leader lease openshift-kube-scheduler/cert-recovery-controller-lock...
+2022-05-24T18:39:21.102999315Z I0524 18:39:21.102971       1 leaderelection.go:258] successfully acquired lease openshift-kube-scheduler/cert-recovery-controller-lock
+2022-05-24T18:39:21.103172943Z I0524 18:39:21.103109       1 event.go:285] Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"openshift-kube-scheduler", Name:"cert-recovery-controller-lock", UID:"94f0c084-3900-43d6-a493-60073bf9d5f5", APIVersion:"v1", ResourceVersion:"68904", FieldPath:""}): type: 'Normal' reason: 'LeaderElection' ip-10-0-169-205_7ad7f0dd-2b8b-45ee-b8d0-be7281ba7a73 became leader
+2022-05-24T18:39:21.103215317Z I0524 18:39:21.103160       1 event.go:285] Event(v1.ObjectReference{Kind:"Lease", Namespace:"openshift-kube-scheduler", Name:"cert-recovery-controller-lock", UID:"9386a181-7954-4ed7-88d9-9351c75f4a4e", APIVersion:"coordination.k8s.io/v1", ResourceVersion:"68906", FieldPath:""}): type: 'Normal' reason: 'LeaderElection' ip-10-0-169-205_7ad7f0dd-2b8b-45ee-b8d0-be7281ba7a73 became leader
+2022-05-24T18:39:21.103794118Z I0524 18:39:21.103763       1 base_controller.go:67] Waiting for caches to sync for ResourceSyncController
+2022-05-24T18:39:21.204418366Z I0524 18:39:21.204380       1 base_controller.go:73] Caches are synced for ResourceSyncController 
+2022-05-24T18:39:21.204418366Z I0524 18:39:21.204405       1 base_controller.go:110] Starting #1 worker of ResourceSyncController controller ...
+2022-05-24T18:45:18.290111669Z E0524 18:45:18.287622       1 reflector.go:138] k8s.io/client-go@v0.23.0/tools/cache/reflector.go:167: Failed to watch *v1.Secret: unknown (get secrets)
+2022-05-24T18:45:18.290111669Z E0524 18:45:18.287713       1 reflector.go:138] k8s.io/client-go@v0.23.0/tools/cache/reflector.go:167: Failed to watch *unstructured.Unstructured: unknown
+2022-05-24T18:45:18.290111669Z E0524 18:45:18.289002       1 reflector.go:138] k8s.io/client-go@v0.23.0/tools/cache/reflector.go:167: Failed to watch *v1.ConfigMap: unknown (get configmaps)

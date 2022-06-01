@@ -1,0 +1,214 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.2.5"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.2.5"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:25:30Z"
+  generateName: sre-dns-latency-exporter-
+  labels:
+    controller-revision-hash: 77c4fb4fdb
+    name: sre-dns-latency-exporter
+    pod-template-generation: "1"
+  name: sre-dns-latency-exporter-6vr76
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: sre-dns-latency-exporter
+    uid: 70b79ab5-c7d4-4dbf-96af-4a340318b62a
+  resourceVersion: "69839"
+  uid: f9838e5d-a590-40a2-b634-a2f5ed3452a5
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ip-10-0-164-190.ec2.internal
+  containers:
+  - command:
+    - /bin/sh
+    - /monitor/start.sh
+    env:
+    - name: PYTHONPATH
+      value: /openshift-python/packages:/support/packages
+    image: quay.io/app-sre/managed-prometheus-exporter-base:latest
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 2
+      httpGet:
+        path: /
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 420
+      periodSeconds: 360
+      successThreshold: 1
+      timeoutSeconds: 240
+    name: main
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 3
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 240
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /monitor
+      name: monitor-volume
+      readOnly: true
+    - mountPath: /etc/pki/ca-trust/extracted/pem
+      name: trusted-ca-bundle
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-frlh8
+      readOnly: true
+    workingDir: /monitor
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ip-10-0-164-190.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: sre-dns-latency-exporter
+  serviceAccountName: sre-dns-latency-exporter
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/pid-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: sre-dns-latency-exporter-code
+    name: monitor-volume
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: ca-bundle.crt
+        path: tls-ca-bundle.pem
+      name: sre-dns-latency-exporter-trusted-ca-bundle
+    name: trusted-ca-bundle
+  - name: kube-api-access-frlh8
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:25:30Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:40:08Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:40:08Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:25:30Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://5d278ab9cec367fc16e5db901d30258c4ee19c469cbe4f772006511caec131ad
+    image: quay.io/app-sre/managed-prometheus-exporter-base:latest
+    imageID: quay.io/app-sre/managed-prometheus-exporter-base@sha256:81123c64980b958e5d1c74d054fb82b8e752395dde6e5d92ec158d2b58dfedf6
+    lastState: {}
+    name: main
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:40:05Z"
+  hostIP: 10.0.164.190
+  phase: Running
+  podIP: 10.128.2.5
+  podIPs:
+  - ip: 10.128.2.5
+  qosClass: BestEffort
+  startTime: "2022-05-24T18:25:30Z"

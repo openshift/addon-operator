@@ -1,0 +1,503 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-05-24T18:27:57Z"
+  generateName: multus-additional-cni-plugins-
+  labels:
+    app: multus-additional-cni-plugins
+    component: network
+    controller-revision-hash: 658b4ddd67
+    openshift.io/component: network
+    pod-template-generation: "1"
+    type: infra
+  name: multus-additional-cni-plugins-kg26z
+  namespace: openshift-multus
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: multus-additional-cni-plugins
+    uid: 0555c677-a90b-4f2d-b92c-ba2d1a6c25d5
+  resourceVersion: "56485"
+  uid: 272f821f-e7d2-4c99-b200-ac815ab1a538
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ip-10-0-166-35.ec2.internal
+  containers:
+  - args:
+    - |
+      trap : TERM INT; sleep infinity & wait
+    command:
+    - /bin/bash
+    - -ec
+    - --
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e720cb9b6b36b1e750b65c78ed7331f9e02ec10c1bcbe36823ff9199e0eaea5
+    imagePullPolicy: IfNotPresent
+    name: kube-multus-additional-cni-plugins
+    resources:
+      requests:
+        cpu: 10m
+        memory: 10Mi
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-knzxn
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  imagePullSecrets:
+  - name: multus-dockercfg-lnjz8
+  initContainers:
+  - command:
+    - /entrypoint/cnibincopy.sh
+    env:
+    - name: RHEL7_SOURCE_DIRECTORY
+      value: /usr/src/egress-router-cni/rhel7/bin/
+    - name: RHEL8_SOURCE_DIRECTORY
+      value: /usr/src/egress-router-cni/rhel8/bin/
+    - name: DEFAULT_SOURCE_DIRECTORY
+      value: /usr/src/egress-router-cni/bin/
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bf72af3b6c4d3a4eccbabf81ebfcc39168f258ae61f264b489a52ee4381e7cb6
+    imagePullPolicy: IfNotPresent
+    name: egress-router-binary-copy
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /entrypoint
+      name: cni-binary-copy
+    - mountPath: /host/opt/cni/bin
+      name: cnibin
+    - mountPath: /host/etc/os-release
+      name: os-release
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-knzxn
+      readOnly: true
+  - command:
+    - /entrypoint/cnibincopy.sh
+    env:
+    - name: RHEL7_SOURCE_DIRECTORY
+      value: /usr/src/plugins/rhel7/bin/
+    - name: RHEL8_SOURCE_DIRECTORY
+      value: /usr/src/plugins/rhel8/bin/
+    - name: DEFAULT_SOURCE_DIRECTORY
+      value: /usr/src/plugins/bin/
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:73610667c64c1fe9980c6d42ef5c770f16521dcf52fb0d188c6c7c6e79c499d4
+    imagePullPolicy: IfNotPresent
+    name: cni-plugins
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /entrypoint
+      name: cni-binary-copy
+    - mountPath: /host/opt/cni/bin
+      name: cnibin
+    - mountPath: /host/etc/os-release
+      name: os-release
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-knzxn
+      readOnly: true
+  - command:
+    - /entrypoint/cnibincopy.sh
+    env:
+    - name: RHEL7_SOURCE_DIRECTORY
+      value: /bondcni/rhel7/
+    - name: RHEL8_SOURCE_DIRECTORY
+      value: /bondcni/rhel8/
+    - name: DEFAULT_SOURCE_DIRECTORY
+      value: /bondcni/
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:248e6554431d3c57d0588a34ab56a71564ee531abb815f7c5f670c0967ee0bce
+    imagePullPolicy: IfNotPresent
+    name: bond-cni-plugin
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /entrypoint
+      name: cni-binary-copy
+    - mountPath: /host/opt/cni/bin
+      name: cnibin
+    - mountPath: /host/etc/os-release
+      name: os-release
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-knzxn
+      readOnly: true
+  - command:
+    - /entrypoint/cnibincopy.sh
+    env:
+    - name: RHEL7_SOURCE_DIRECTORY
+      value: /usr/src/route-override/rhel7/bin/
+    - name: RHEL8_SOURCE_DIRECTORY
+      value: /usr/src/whereabouts/rhel8/bin/
+    - name: DEFAULT_SOURCE_DIRECTORY
+      value: /usr/src/route-override/bin/
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6011aad069b5e8113a2ba0e82a8efbcc57522c3302e5d47cbfc2d388816fc6ca
+    imagePullPolicy: IfNotPresent
+    name: routeoverride-cni
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /entrypoint
+      name: cni-binary-copy
+    - mountPath: /host/opt/cni/bin
+      name: cnibin
+    - mountPath: /host/etc/os-release
+      name: os-release
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-knzxn
+      readOnly: true
+  - command:
+    - /entrypoint/cnibincopy.sh
+    env:
+    - name: RHEL7_SOURCE_DIRECTORY
+      value: /usr/src/whereabouts/rhel7/bin/
+    - name: RHEL8_SOURCE_DIRECTORY
+      value: /usr/src/whereabouts/rhel8/bin/
+    - name: DEFAULT_SOURCE_DIRECTORY
+      value: /usr/src/whereabouts/bin/
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4
+    imagePullPolicy: IfNotPresent
+    name: whereabouts-cni-bincopy
+    resources:
+      requests:
+        cpu: 10m
+        memory: 10Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /entrypoint
+      name: cni-binary-copy
+    - mountPath: /host/opt/cni/bin
+      name: cnibin
+    - mountPath: /host/etc/os-release
+      name: os-release
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-knzxn
+      readOnly: true
+  - command:
+    - /bin/sh
+    - -c
+    - |
+      #!/bin/sh
+
+      set -u -e
+
+      CNI_BIN_DIR=${CNI_BIN_DIR:-"/host/opt/cni/bin/"}
+      WHEREABOUTS_KUBECONFIG_FILE_HOST=${WHEREABOUTS_KUBECONFIG_FILE_HOST:-"/etc/cni/net.d/whereabouts.d/whereabouts.kubeconfig"}
+      CNI_CONF_DIR=${CNI_CONF_DIR:-"/host/etc/cni/net.d"}
+
+      # Make a whereabouts.d directory (for our kubeconfig)
+
+      mkdir -p $CNI_CONF_DIR/whereabouts.d
+      WHEREABOUTS_KUBECONFIG=$CNI_CONF_DIR/whereabouts.d/whereabouts.kubeconfig
+      WHEREABOUTS_GLOBALCONFIG=$CNI_CONF_DIR/whereabouts.d/whereabouts.conf
+
+      # ------------------------------- Generate a "kube-config"
+      SERVICE_ACCOUNT_PATH=/var/run/secrets/kubernetes.io/serviceaccount
+      KUBE_CA_FILE=${KUBE_CA_FILE:-$SERVICE_ACCOUNT_PATH/ca.crt}
+      SERVICEACCOUNT_TOKEN=$(cat $SERVICE_ACCOUNT_PATH/token)
+      SKIP_TLS_VERIFY=${SKIP_TLS_VERIFY:-false}
+
+
+      # Check if we're running as a k8s pod.
+      if [ -f "$SERVICE_ACCOUNT_PATH/token" ]; then
+        # We're running as a k8d pod - expect some variables.
+        if [ -z ${KUBERNETES_SERVICE_HOST} ]; then
+          error "KUBERNETES_SERVICE_HOST not set"; exit 1;
+        fi
+        if [ -z ${KUBERNETES_SERVICE_PORT} ]; then
+          error "KUBERNETES_SERVICE_PORT not set"; exit 1;
+        fi
+
+        if [ "$SKIP_TLS_VERIFY" == "true" ]; then
+          TLS_CFG="insecure-skip-tls-verify: true"
+        elif [ -f "$KUBE_CA_FILE" ]; then
+          TLS_CFG="certificate-authority-data: $(cat $KUBE_CA_FILE | base64 | tr -d '\n')"
+        fi
+
+        # Write a kubeconfig file for the CNI plugin.  Do this
+        # to skip TLS verification for now.  We should eventually support
+        # writing more complete kubeconfig files. This is only used
+        # if the provided CNI network config references it.
+        touch $WHEREABOUTS_KUBECONFIG
+        chmod ${KUBECONFIG_MODE:-600} $WHEREABOUTS_KUBECONFIG
+        cat > $WHEREABOUTS_KUBECONFIG <<EOF
+      # Kubeconfig file for Multus CNI plugin.
+      apiVersion: v1
+      kind: Config
+      clusters:
+      - name: local
+        cluster:
+          server: ${KUBERNETES_SERVICE_PROTOCOL:-https}://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}
+          $TLS_CFG
+      users:
+      - name: whereabouts
+        user:
+          token: "${SERVICEACCOUNT_TOKEN}"
+      contexts:
+      - name: whereabouts-context
+        context:
+          cluster: local
+          user: whereabouts
+          namespace: ${WHEREABOUTS_NAMESPACE}
+      current-context: whereabouts-context
+      EOF
+
+      # Kubeconfig file for Multus CNI plugin.
+      cat > $WHEREABOUTS_GLOBALCONFIG <<EOF
+      {
+        "datastore": "kubernetes",
+        "kubernetes": {
+          "kubeconfig": "/etc/kubernetes/cni/net.d/whereabouts.d/whereabouts.kubeconfig"
+        },
+        "log_level": "debug"
+      }
+      EOF
+
+      else
+        warn "Doesn't look like we're running in a kubernetes environment (no serviceaccount token)"
+      fi
+
+      # copy whereabouts to the cni bin dir
+      # SKIPPED DUE TO FIPS COPY.
+      # cp -f /whereabouts $CNI_BIN_DIR
+
+      # ---------------------- end Generate a "kube-config".
+
+      # Unless told otherwise, sleep forever.
+      # This prevents Kubernetes from restarting the pod repeatedly.
+      should_sleep=${SLEEP:-"true"}
+      echo "Done configuring CNI.  Sleep=$should_sleep"
+      while [ "$should_sleep" == "true"  ]; do
+          sleep 1000000000000
+      done
+    env:
+    - name: KUBERNETES_SERVICE_PORT
+      value: "6443"
+    - name: KUBERNETES_SERVICE_HOST
+      value: api-int.odf-service.dif5.p1.openshiftapps.com
+    - name: CNI_BIN_DIR
+      value: /host/opt/cni/bin/
+    - name: CNI_CONF_DIR
+      value: /host/etc/cni/net.d
+    - name: SLEEP
+      value: "false"
+    - name: WHEREABOUTS_NAMESPACE
+      value: openshift-multus
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4
+    imagePullPolicy: IfNotPresent
+    name: whereabouts-cni
+    resources:
+      requests:
+        cpu: 10m
+        memory: 10Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /host/opt/cni/bin
+      name: cnibin
+    - mountPath: /host/etc/cni/net.d
+      name: system-cni-dir
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-knzxn
+      readOnly: true
+  nodeName: ip-10-0-166-35.ec2.internal
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: multus
+  serviceAccountName: multus
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/cni/net.d
+      type: ""
+    name: system-cni-dir
+  - hostPath:
+      path: /var/run/multus/cni/net.d
+      type: ""
+    name: multus-cni-dir
+  - hostPath:
+      path: /var/lib/cni/bin
+      type: ""
+    name: cnibin
+  - hostPath:
+      path: /etc/os-release
+      type: File
+    name: os-release
+  - configMap:
+      defaultMode: 484
+      name: cni-binary-copy-script
+    name: cni-binary-copy
+  - name: kube-api-access-knzxn
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:28:35Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:29Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:29Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:27:57Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://b32f411445838fb9a60c1510c13a5ad818dba3d229a4813c0f50e45820cc2e8e
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e720cb9b6b36b1e750b65c78ed7331f9e02ec10c1bcbe36823ff9199e0eaea5
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0e720cb9b6b36b1e750b65c78ed7331f9e02ec10c1bcbe36823ff9199e0eaea5
+    lastState: {}
+    name: kube-multus-additional-cni-plugins
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:28Z"
+  hostIP: 10.0.166.35
+  initContainerStatuses:
+  - containerID: cri-o://322e85852742f6161f1c52ab24fd514d06a32881c02692a912ac99b1c6f36de3
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bf72af3b6c4d3a4eccbabf81ebfcc39168f258ae61f264b489a52ee4381e7cb6
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:bf72af3b6c4d3a4eccbabf81ebfcc39168f258ae61f264b489a52ee4381e7cb6
+    lastState: {}
+    name: egress-router-binary-copy
+    ready: true
+    restartCount: 1
+    state:
+      terminated:
+        containerID: cri-o://322e85852742f6161f1c52ab24fd514d06a32881c02692a912ac99b1c6f36de3
+        exitCode: 0
+        finishedAt: "2022-05-24T18:32:23Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:32:22Z"
+  - containerID: cri-o://926961a141262c0ec72581bd1f8cb3e317d7f33d742b68bc6b4cd218aba61874
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:73610667c64c1fe9980c6d42ef5c770f16521dcf52fb0d188c6c7c6e79c499d4
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:73610667c64c1fe9980c6d42ef5c770f16521dcf52fb0d188c6c7c6e79c499d4
+    lastState: {}
+    name: cni-plugins
+    ready: true
+    restartCount: 1
+    state:
+      terminated:
+        containerID: cri-o://926961a141262c0ec72581bd1f8cb3e317d7f33d742b68bc6b4cd218aba61874
+        exitCode: 0
+        finishedAt: "2022-05-24T18:32:23Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:32:23Z"
+  - containerID: cri-o://bbc6ecab789a8c86a4c91c111ce0bc377524e0b090bc7e05c834a15df5bc1981
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:248e6554431d3c57d0588a34ab56a71564ee531abb815f7c5f670c0967ee0bce
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:248e6554431d3c57d0588a34ab56a71564ee531abb815f7c5f670c0967ee0bce
+    lastState: {}
+    name: bond-cni-plugin
+    ready: true
+    restartCount: 1
+    state:
+      terminated:
+        containerID: cri-o://bbc6ecab789a8c86a4c91c111ce0bc377524e0b090bc7e05c834a15df5bc1981
+        exitCode: 0
+        finishedAt: "2022-05-24T18:32:24Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:32:24Z"
+  - containerID: cri-o://19cd5bf1fc66ad1f09a1e633bae99193b2f506492507f224886c89cff479c95b
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6011aad069b5e8113a2ba0e82a8efbcc57522c3302e5d47cbfc2d388816fc6ca
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6011aad069b5e8113a2ba0e82a8efbcc57522c3302e5d47cbfc2d388816fc6ca
+    lastState: {}
+    name: routeoverride-cni
+    ready: true
+    restartCount: 1
+    state:
+      terminated:
+        containerID: cri-o://19cd5bf1fc66ad1f09a1e633bae99193b2f506492507f224886c89cff479c95b
+        exitCode: 0
+        finishedAt: "2022-05-24T18:32:25Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:32:25Z"
+  - containerID: cri-o://6d7ae7318737be9fe483f5f0fe10e88368e80a9ec2ead7b45a069ed93000b4bd
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4
+    lastState: {}
+    name: whereabouts-cni-bincopy
+    ready: true
+    restartCount: 1
+    state:
+      terminated:
+        containerID: cri-o://6d7ae7318737be9fe483f5f0fe10e88368e80a9ec2ead7b45a069ed93000b4bd
+        exitCode: 0
+        finishedAt: "2022-05-24T18:32:26Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:32:26Z"
+  - containerID: cri-o://f0b6184e86b41a9f803315c0a58e974f5999bc0def1cfdc3625310c50228ed5d
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4
+    lastState: {}
+    name: whereabouts-cni
+    ready: true
+    restartCount: 1
+    state:
+      terminated:
+        containerID: cri-o://f0b6184e86b41a9f803315c0a58e974f5999bc0def1cfdc3625310c50228ed5d
+        exitCode: 0
+        finishedAt: "2022-05-24T18:32:27Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:32:27Z"
+  phase: Running
+  podIP: 10.0.166.35
+  podIPs:
+  - ip: 10.0.166.35
+  qosClass: Burstable
+  startTime: "2022-05-24T18:27:58Z"

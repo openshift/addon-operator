@@ -1,0 +1,781 @@
+---
+apiVersion: v1
+items:
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:00:00.206255Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: image-pruner-27557100-bsx5l
+    namespace: openshift-image-registry
+    resourceVersion: "187101"
+    uid: 4b201bda-eea0-426d-8d8d-933a5ad38825
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-image-registry/image-pruner-27557100-bsx5l
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: image-pruner-27557100-bsx5l.16f2262fdcb0681e
+    namespace: openshift-image-registry
+    resourceVersion: "187127"
+    uid: 87f9e11e-c5b9-4eac-9cfa-3b861580e7a0
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: image-pruner-27557100-bsx5l
+    namespace: openshift-image-registry
+    resourceVersion: "187153"
+    uid: 4b201bda-eea0-426d-8d8d-933a5ad38825
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:02Z"
+  message: Add eth0 [10.128.4.50/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:02Z"
+    name: image-pruner-27557100-bsx5l.16f226306335c069
+    namespace: openshift-image-registry
+    resourceVersion: "187197"
+    uid: 8b587549-7cf3-4463-bece-609cefd95eeb
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557100-bsx5l
+    namespace: openshift-image-registry
+    resourceVersion: "187119"
+    uid: 4b201bda-eea0-426d-8d8d-933a5ad38825
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:02Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:02Z"
+    name: image-pruner-27557100-bsx5l.16f22630692e1324
+    namespace: openshift-image-registry
+    resourceVersion: "187208"
+    uid: f164a36c-c33c-472c-96bc-23c3aa4e5d90
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557100-bsx5l
+    namespace: openshift-image-registry
+    resourceVersion: "187119"
+    uid: 4b201bda-eea0-426d-8d8d-933a5ad38825
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:02Z"
+  message: Created container image-pruner
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:02Z"
+    name: image-pruner-27557100-bsx5l.16f2263071cd8e2e
+    namespace: openshift-image-registry
+    resourceVersion: "187214"
+    uid: ec1858f0-03d9-49ad-994b-f1275100c3de
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557100-bsx5l
+    namespace: openshift-image-registry
+    resourceVersion: "187119"
+    uid: 4b201bda-eea0-426d-8d8d-933a5ad38825
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:02Z"
+  message: Started container image-pruner
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:02Z"
+    name: image-pruner-27557100-bsx5l.16f2263073bef4f1
+    namespace: openshift-image-registry
+    resourceVersion: "187220"
+    uid: 3f09ac6c-7fe8-4350-97bc-b5ab80b2f0db
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: image-pruner-27557100
+    namespace: openshift-image-registry
+    resourceVersion: "187084"
+    uid: 97fcd727-96a9-4f5e-a69a-b3976a0723db
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: 'Created pod: image-pruner-27557100-bsx5l'
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: image-pruner-27557100.16f2262fdc33dd53
+    namespace: openshift-image-registry
+    resourceVersion: "187136"
+    uid: bc3dd955-b774-4932-83e8-91e40b565f5b
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: image-pruner-27557100
+    namespace: openshift-image-registry
+    resourceVersion: "187125"
+    uid: 97fcd727-96a9-4f5e-a69a-b3976a0723db
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:06Z"
+    name: image-pruner-27557100.16f2263168f17a62
+    namespace: openshift-image-registry
+    resourceVersion: "187350"
+    uid: ec030714-b453-43d9-b8eb-a45cace63d85
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:00:00.212374Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: image-pruner-27557160-8vb87
+    namespace: openshift-image-registry
+    resourceVersion: "234961"
+    uid: f51f3f16-4839-40d4-987b-0125d1bc8bc5
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-image-registry/image-pruner-27557160-8vb87
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: image-pruner-27557160-8vb87.16f229760dc66098
+    namespace: openshift-image-registry
+    resourceVersion: "234981"
+    uid: 66fbde58-43c7-4e58-a447-311fe04af4bb
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:01Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: image-pruner-27557160-8vb87
+    namespace: openshift-image-registry
+    resourceVersion: "234992"
+    uid: f51f3f16-4839-40d4-987b-0125d1bc8bc5
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:01Z"
+  message: Add eth0 [10.128.4.66/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:01Z"
+    name: image-pruner-27557160-8vb87.16f2297670d74905
+    namespace: openshift-image-registry
+    resourceVersion: "235045"
+    uid: abcc56ef-b429-410e-9d7b-f695fc698de2
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:01Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557160-8vb87
+    namespace: openshift-image-registry
+    resourceVersion: "234968"
+    uid: f51f3f16-4839-40d4-987b-0125d1bc8bc5
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:01Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:01Z"
+    name: image-pruner-27557160-8vb87.16f229767279b877
+    namespace: openshift-image-registry
+    resourceVersion: "235047"
+    uid: 9bd5c789-6d62-4c6e-9881-c62f5552a898
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557160-8vb87
+    namespace: openshift-image-registry
+    resourceVersion: "234968"
+    uid: f51f3f16-4839-40d4-987b-0125d1bc8bc5
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:02Z"
+  message: Created container image-pruner
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:02Z"
+    name: image-pruner-27557160-8vb87.16f229767a7abdfb
+    namespace: openshift-image-registry
+    resourceVersion: "235052"
+    uid: 39e72c79-575b-4878-843b-78cd00fa71f3
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557160-8vb87
+    namespace: openshift-image-registry
+    resourceVersion: "234968"
+    uid: f51f3f16-4839-40d4-987b-0125d1bc8bc5
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:02Z"
+  message: Started container image-pruner
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:02Z"
+    name: image-pruner-27557160-8vb87.16f229767ba5e7b3
+    namespace: openshift-image-registry
+    resourceVersion: "235053"
+    uid: fb4aa1a9-fc80-48c7-b280-e86eea398238
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: image-pruner-27557160
+    namespace: openshift-image-registry
+    resourceVersion: "234939"
+    uid: 0513e62c-4896-495d-91a5-e489ce343d22
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: 'Created pod: image-pruner-27557160-8vb87'
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: image-pruner-27557160.16f229760d036823
+    namespace: openshift-image-registry
+    resourceVersion: "234987"
+    uid: 4fcc3628-fbf6-4a33-bcf3-eff09eef824f
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: image-pruner-27557160
+    namespace: openshift-image-registry
+    resourceVersion: "234969"
+    uid: 0513e62c-4896-495d-91a5-e489ce343d22
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:06Z"
+    name: image-pruner-27557160.16f229776ebf967c
+    namespace: openshift-image-registry
+    resourceVersion: "235185"
+    uid: a8f46e2e-4750-49e5-83ac-3939887fc4fd
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:00:00.224642Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: image-pruner-27557220-8wzjg
+    namespace: openshift-image-registry
+    resourceVersion: "282825"
+    uid: b86a6245-1d36-4e46-ab94-418c75723d4e
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-image-registry/image-pruner-27557220-8wzjg
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: image-pruner-27557220-8wzjg.16f22cbc3f3a35a8
+    namespace: openshift-image-registry
+    resourceVersion: "282842"
+    uid: 3f0d998a-dd7d-4981-9f63-bfb93f5f6746
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:01Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: image-pruner-27557220-8wzjg
+    namespace: openshift-image-registry
+    resourceVersion: "282859"
+    uid: b86a6245-1d36-4e46-ab94-418c75723d4e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:01Z"
+  message: Add eth0 [10.128.4.84/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:01Z"
+    name: image-pruner-27557220-8wzjg.16f22cbc9912d4ba
+    namespace: openshift-image-registry
+    resourceVersion: "282895"
+    uid: d4b87022-f5d6-4876-a09c-87708b442746
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:01Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557220-8wzjg
+    namespace: openshift-image-registry
+    resourceVersion: "282835"
+    uid: b86a6245-1d36-4e46-ab94-418c75723d4e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:01Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:01Z"
+    name: image-pruner-27557220-8wzjg.16f22cbc9ac0eaf9
+    namespace: openshift-image-registry
+    resourceVersion: "282897"
+    uid: 7b4871a5-4998-424a-8d9f-91b817e04f1f
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:01Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557220-8wzjg
+    namespace: openshift-image-registry
+    resourceVersion: "282835"
+    uid: b86a6245-1d36-4e46-ab94-418c75723d4e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:01Z"
+  message: Created container image-pruner
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:02Z"
+    name: image-pruner-27557220-8wzjg.16f22cbca8f99418
+    namespace: openshift-image-registry
+    resourceVersion: "282908"
+    uid: 446151ae-1cab-47dc-86dc-9eeb3e67bc2d
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{image-pruner}
+    kind: Pod
+    name: image-pruner-27557220-8wzjg
+    namespace: openshift-image-registry
+    resourceVersion: "282835"
+    uid: b86a6245-1d36-4e46-ab94-418c75723d4e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:02Z"
+  message: Started container image-pruner
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:02Z"
+    name: image-pruner-27557220-8wzjg.16f22cbcaa425e28
+    namespace: openshift-image-registry
+    resourceVersion: "282910"
+    uid: 7f807185-d88e-4c74-95af-aeaa9b83b29f
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: image-pruner-27557220
+    namespace: openshift-image-registry
+    resourceVersion: "282795"
+    uid: 8fd7dc43-51bd-4d67-b89b-7551b681191b
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: 'Created pod: image-pruner-27557220-8wzjg'
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: image-pruner-27557220.16f22cbc3eaa6b07
+    namespace: openshift-image-registry
+    resourceVersion: "282851"
+    uid: 7f14e325-91d5-4db8-8232-40fe5341ac3c
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: image-pruner-27557220
+    namespace: openshift-image-registry
+    resourceVersion: "282837"
+    uid: 8fd7dc43-51bd-4d67-b89b-7551b681191b
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:06Z"
+    name: image-pruner-27557220.16f22cbdaeca5064
+    namespace: openshift-image-registry
+    resourceVersion: "283023"
+    uid: f11019a2-0f8e-45ae-b9fe-36a31ad44323
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: image-pruner
+    namespace: openshift-image-registry
+    resourceVersion: "139428"
+    uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: Created job image-pruner-27557100
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: image-pruner.16f2262fd8dbdf3f
+    namespace: openshift-image-registry
+    resourceVersion: "187095"
+    uid: cc831fcd-60fe-4653-b11f-2eb81efd0847
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: image-pruner
+    namespace: openshift-image-registry
+    resourceVersion: "187091"
+    uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:06Z"
+  message: 'Saw completed job: image-pruner-27557100, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:06Z"
+    name: image-pruner.16f2263169801aac
+    namespace: openshift-image-registry
+    resourceVersion: "187353"
+    uid: d6abcb23-8cd2-495e-b25b-52c9862463db
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: image-pruner
+    namespace: openshift-image-registry
+    resourceVersion: "187363"
+    uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: Created job image-pruner-27557160
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: image-pruner.16f229760a8891e1
+    namespace: openshift-image-registry
+    resourceVersion: "234945"
+    uid: fc893ef1-5df3-4dca-9059-71ac161f1673
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: image-pruner
+    namespace: openshift-image-registry
+    resourceVersion: "234944"
+    uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:06Z"
+  message: 'Saw completed job: image-pruner-27557160, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:06Z"
+    name: image-pruner.16f229776f43bde9
+    namespace: openshift-image-registry
+    resourceVersion: "235187"
+    uid: 4e23c596-6b54-4121-8fac-e300e4b213be
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: image-pruner
+    namespace: openshift-image-registry
+    resourceVersion: "235188"
+    uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:06Z"
+  message: Deleted job image-pruner-27556980
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:06Z"
+    name: image-pruner.16f229777034ac77
+    namespace: openshift-image-registry
+    resourceVersion: "235191"
+    uid: 652100d5-f55c-4b46-b9f2-52098e4c0516
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: image-pruner
+    namespace: openshift-image-registry
+    resourceVersion: "235194"
+    uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: Created job image-pruner-27557220
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: image-pruner.16f22cbc3a4bc668
+    namespace: openshift-image-registry
+    resourceVersion: "282801"
+    uid: 5c5ac0b7-0ba3-475d-a7a9-190605c449e5
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: image-pruner
+    namespace: openshift-image-registry
+    resourceVersion: "282802"
+    uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:06Z"
+  message: 'Saw completed job: image-pruner-27557220, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:06Z"
+    name: image-pruner.16f22cbdaf8013e4
+    namespace: openshift-image-registry
+    resourceVersion: "283028"
+    uid: bb032627-d9a7-4f70-94b2-1bdfdaf53714
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: image-pruner
+    namespace: openshift-image-registry
+    resourceVersion: "283030"
+    uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:06Z"
+  message: Deleted job image-pruner-27557040
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:06Z"
+    name: image-pruner.16f22cbdb2709d22
+    namespace: openshift-image-registry
+    resourceVersion: "283039"
+    uid: 361fda31-ef4b-4736-b080-7022daa4d1f4
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+kind: EventList
+metadata:
+  resourceVersion: "312094"

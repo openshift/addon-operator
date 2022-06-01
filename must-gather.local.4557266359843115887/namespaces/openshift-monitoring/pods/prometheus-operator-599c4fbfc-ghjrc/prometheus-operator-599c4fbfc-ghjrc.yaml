@@ -1,0 +1,257 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.2.9"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.2.9"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/default-container: prometheus-operator
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:34:57Z"
+  generateName: prometheus-operator-599c4fbfc-
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/managed-by: cluster-monitoring-operator
+    app.kubernetes.io/name: prometheus-operator
+    app.kubernetes.io/part-of: openshift-monitoring
+    app.kubernetes.io/version: 0.53.1
+    pod-template-hash: 599c4fbfc
+  name: prometheus-operator-599c4fbfc-ghjrc
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: prometheus-operator-599c4fbfc
+    uid: e7d3ed62-b9fb-413d-b3de-edd4e8f41bca
+  resourceVersion: "60519"
+  uid: de11ba12-e429-4d21-b593-18d19a85386b
+spec:
+  containers:
+  - args:
+    - --kubelet-service=kube-system/kubelet
+    - --prometheus-config-reloader=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+    - --prometheus-instance-namespaces=openshift-monitoring
+    - --thanos-ruler-instance-namespaces=openshift-monitoring
+    - --alertmanager-instance-namespaces=openshift-monitoring
+    - --config-reloader-cpu-limit=0
+    - --config-reloader-memory-limit=0
+    - --web.enable-tls=true
+    - --web.tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - --web.tls-min-version=VersionTLS12
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+    imagePullPolicy: IfNotPresent
+    name: prometheus-operator
+    ports:
+    - containerPort: 8080
+      name: http
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 5m
+        memory: 150Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/tls/private
+      name: prometheus-operator-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-xxhpl
+      readOnly: true
+  - args:
+    - --logtostderr
+    - --secure-listen-address=:8443
+    - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - --upstream=https://prometheus-operator.openshift-monitoring.svc:8080/
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --client-ca-file=/etc/tls/client/client-ca.crt
+    - --upstream-ca-file=/etc/configmaps/operator-cert-ca-bundle/service-ca.crt
+    - --config-file=/etc/kube-rbac-policy/config.yaml
+    - --tls-min-version=VersionTLS12
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 15Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/tls/private
+      name: prometheus-operator-tls
+    - mountPath: /etc/configmaps/operator-cert-ca-bundle
+      name: operator-certs-ca-bundle
+    - mountPath: /etc/tls/client
+      name: metrics-client-ca
+    - mountPath: /etc/kube-rbac-policy
+      name: prometheus-operator-kube-rbac-proxy-config
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-xxhpl
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: prometheus-operator-dockercfg-9hwn2
+  nodeName: ip-10-0-166-35.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/infra: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: prometheus-operator
+  serviceAccountName: prometheus-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: prometheus-operator-tls
+    secret:
+      defaultMode: 420
+      secretName: prometheus-operator-tls
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: service-ca.crt
+        path: service-ca.crt
+      name: operator-certs-ca-bundle
+    name: operator-certs-ca-bundle
+  - name: prometheus-operator-kube-rbac-proxy-config
+    secret:
+      defaultMode: 420
+      secretName: prometheus-operator-kube-rbac-proxy-config
+  - configMap:
+      defaultMode: 420
+      name: metrics-client-ca
+    name: metrics-client-ca
+  - name: kube-api-access-xxhpl
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:57Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:35:03Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:35:03Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:57Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://10697900f781c1d92ea237f408563e92bdafde025f725129e94e680e688bd634
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:35:02Z"
+  - containerID: cri-o://f81862ba35a0e62cba182e792cf2e9696ce4ca3b1e07d99943fb63a802499e65
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+    lastState: {}
+    name: prometheus-operator
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:35:02Z"
+  hostIP: 10.0.166.35
+  phase: Running
+  podIP: 10.131.2.9
+  podIPs:
+  - ip: 10.131.2.9
+  qosClass: Burstable
+  startTime: "2022-05-24T18:34:57Z"

@@ -1,0 +1,49 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    exclude.release.openshift.io/internal-openshift-hosted: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: machine-approver
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "5540"
+  uid: 4e9f9a5b-a925-437e-8d03-95616e6f11aa
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:07:54Z"
+    message: Cluster Machine Approver is available at 4.10.13
+    reason: AsExpected
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:07:54Z"
+    reason: AsExpected
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:07:54Z"
+    reason: AsExpected
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:07:54Z"
+    reason: AsExpected
+    status: "True"
+    type: Upgradeable
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-cluster-machine-approver
+    resource: namespaces
+  - group: certificates.k8s.io
+    name: ""
+    resource: certificatesigningrequests
+  versions:
+  - name: operator
+    version: 4.10.13

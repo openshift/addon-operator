@@ -1,0 +1,67 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: monitoring
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "289110"
+  uid: a5d0f8b3-97f7-4fc9-b6e5-c952843b8c3f
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:14:11Z"
+    message: Successfully rolled out the stack.
+    reason: RollOutDone
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:14:11Z"
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:32:58Z"
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:14:11Z"
+    status: "True"
+    type: Upgradeable
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-monitoring
+    resource: namespaces
+  - group: ""
+    name: openshift-user-workload-monitoring
+    resource: namespaces
+  - group: monitoring.coreos.com
+    name: ""
+    resource: servicemonitors
+  - group: monitoring.coreos.com
+    name: ""
+    resource: podmonitors
+  - group: monitoring.coreos.com
+    name: ""
+    resource: prometheusrules
+  - group: monitoring.coreos.com
+    name: ""
+    resource: alertmanagers
+  - group: monitoring.coreos.com
+    name: ""
+    resource: prometheuses
+  - group: monitoring.coreos.com
+    name: ""
+    resource: thanosrulers
+  - group: monitoring.coreos.com
+    name: ""
+    resource: alertmanagerconfigs
+  versions:
+  - name: operator
+    version: 4.10.13

@@ -1,0 +1,238 @@
+2022-05-24T18:41:31.897516674Z I0524 18:41:31.897401       1 flags.go:64] FLAG: --add-dir-header="false"
+2022-05-24T18:41:31.897516674Z I0524 18:41:31.897491       1 flags.go:64] FLAG: --address="127.0.0.1"
+2022-05-24T18:41:31.897516674Z I0524 18:41:31.897498       1 flags.go:64] FLAG: --allow-metric-labels="[]"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897513       1 flags.go:64] FLAG: --alsologtostderr="false"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897518       1 flags.go:64] FLAG: --authentication-kubeconfig="/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897528       1 flags.go:64] FLAG: --authentication-skip-lookup="false"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897534       1 flags.go:64] FLAG: --authentication-token-webhook-cache-ttl="10s"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897539       1 flags.go:64] FLAG: --authentication-tolerate-lookup-failure="true"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897544       1 flags.go:64] FLAG: --authorization-always-allow-paths="[/healthz,/readyz,/livez]"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897552       1 flags.go:64] FLAG: --authorization-kubeconfig="/etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897558       1 flags.go:64] FLAG: --authorization-webhook-cache-authorized-ttl="10s"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897564       1 flags.go:64] FLAG: --authorization-webhook-cache-unauthorized-ttl="10s"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897569       1 flags.go:64] FLAG: --bind-address="0.0.0.0"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897573       1 flags.go:64] FLAG: --cert-dir="/var/run/kubernetes"
+2022-05-24T18:41:31.897581706Z I0524 18:41:31.897578       1 flags.go:64] FLAG: --client-ca-file=""
+2022-05-24T18:41:31.897592506Z I0524 18:41:31.897582       1 flags.go:64] FLAG: --config="/etc/kubernetes/static-pod-resources/configmaps/config/config.yaml"
+2022-05-24T18:41:31.897592506Z I0524 18:41:31.897588       1 flags.go:64] FLAG: --contention-profiling="true"
+2022-05-24T18:41:31.897601846Z I0524 18:41:31.897592       1 flags.go:64] FLAG: --disabled-metrics="[]"
+2022-05-24T18:41:31.897608959Z I0524 18:41:31.897601       1 flags.go:64] FLAG: --experimental-logging-sanitization="false"
+2022-05-24T18:41:31.897661789Z I0524 18:41:31.897605       1 flags.go:64] FLAG: --feature-gates="APIPriorityAndFairness=true,CSIMigrationAWS=false,CSIMigrationAzureDisk=false,CSIMigrationAzureFile=false,CSIMigrationGCE=false,CSIMigrationOpenStack=false,CSIMigrationvSphere=false,DownwardAPIHugePages=true,PodSecurity=true,RotateKubeletServerCertificate=true"
+2022-05-24T18:41:31.897672462Z I0524 18:41:31.897658       1 flags.go:64] FLAG: --help="false"
+2022-05-24T18:41:31.897672462Z I0524 18:41:31.897664       1 flags.go:64] FLAG: --http2-max-streams-per-connection="0"
+2022-05-24T18:41:31.897679839Z I0524 18:41:31.897671       1 flags.go:64] FLAG: --kube-api-burst="100"
+2022-05-24T18:41:31.897686932Z I0524 18:41:31.897677       1 flags.go:64] FLAG: --kube-api-content-type="application/vnd.kubernetes.protobuf"
+2022-05-24T18:41:31.897694094Z I0524 18:41:31.897686       1 flags.go:64] FLAG: --kube-api-qps="50"
+2022-05-24T18:41:31.897701087Z I0524 18:41:31.897693       1 flags.go:64] FLAG: --kubeconfig=""
+2022-05-24T18:41:31.897701087Z I0524 18:41:31.897697       1 flags.go:64] FLAG: --leader-elect="true"
+2022-05-24T18:41:31.897708346Z I0524 18:41:31.897701       1 flags.go:64] FLAG: --leader-elect-lease-duration="15s"
+2022-05-24T18:41:31.897715296Z I0524 18:41:31.897706       1 flags.go:64] FLAG: --leader-elect-renew-deadline="10s"
+2022-05-24T18:41:31.897715296Z I0524 18:41:31.897711       1 flags.go:64] FLAG: --leader-elect-resource-lock="leases"
+2022-05-24T18:41:31.897726100Z I0524 18:41:31.897715       1 flags.go:64] FLAG: --leader-elect-resource-name="kube-scheduler"
+2022-05-24T18:41:31.897726100Z I0524 18:41:31.897719       1 flags.go:64] FLAG: --leader-elect-resource-namespace="kube-system"
+2022-05-24T18:41:31.897733401Z I0524 18:41:31.897724       1 flags.go:64] FLAG: --leader-elect-retry-period="2s"
+2022-05-24T18:41:31.897733401Z I0524 18:41:31.897728       1 flags.go:64] FLAG: --lock-object-name="kube-scheduler"
+2022-05-24T18:41:31.897740660Z I0524 18:41:31.897733       1 flags.go:64] FLAG: --lock-object-namespace="kube-system"
+2022-05-24T18:41:31.897747637Z I0524 18:41:31.897737       1 flags.go:64] FLAG: --log-backtrace-at=":0"
+2022-05-24T18:41:31.897747637Z I0524 18:41:31.897743       1 flags.go:64] FLAG: --log-dir=""
+2022-05-24T18:41:31.897754869Z I0524 18:41:31.897748       1 flags.go:64] FLAG: --log-file=""
+2022-05-24T18:41:31.897761937Z I0524 18:41:31.897752       1 flags.go:64] FLAG: --log-file-max-size="1800"
+2022-05-24T18:41:31.897761937Z I0524 18:41:31.897757       1 flags.go:64] FLAG: --log-flush-frequency="5s"
+2022-05-24T18:41:31.897770740Z I0524 18:41:31.897761       1 flags.go:64] FLAG: --log-json-info-buffer-size="0"
+2022-05-24T18:41:31.897777708Z I0524 18:41:31.897769       1 flags.go:64] FLAG: --log-json-split-stream="false"
+2022-05-24T18:41:31.897777708Z I0524 18:41:31.897774       1 flags.go:64] FLAG: --logging-format="text"
+2022-05-24T18:41:31.897784819Z I0524 18:41:31.897778       1 flags.go:64] FLAG: --logtostderr="true"
+2022-05-24T18:41:31.897791826Z I0524 18:41:31.897783       1 flags.go:64] FLAG: --master=""
+2022-05-24T18:41:31.897791826Z I0524 18:41:31.897788       1 flags.go:64] FLAG: --one-output="false"
+2022-05-24T18:41:31.897798989Z I0524 18:41:31.897792       1 flags.go:64] FLAG: --permit-address-sharing="false"
+2022-05-24T18:41:31.897805916Z I0524 18:41:31.897796       1 flags.go:64] FLAG: --permit-port-sharing="false"
+2022-05-24T18:41:31.897805916Z I0524 18:41:31.897801       1 flags.go:64] FLAG: --port="0"
+2022-05-24T18:41:31.897813100Z I0524 18:41:31.897805       1 flags.go:64] FLAG: --profiling="true"
+2022-05-24T18:41:31.897820100Z I0524 18:41:31.897810       1 flags.go:64] FLAG: --requestheader-allowed-names="[]"
+2022-05-24T18:41:31.897820100Z I0524 18:41:31.897815       1 flags.go:64] FLAG: --requestheader-client-ca-file=""
+2022-05-24T18:41:31.897828857Z I0524 18:41:31.897819       1 flags.go:64] FLAG: --requestheader-extra-headers-prefix="[x-remote-extra-]"
+2022-05-24T18:41:31.897835865Z I0524 18:41:31.897827       1 flags.go:64] FLAG: --requestheader-group-headers="[x-remote-group]"
+2022-05-24T18:41:31.897842845Z I0524 18:41:31.897832       1 flags.go:64] FLAG: --requestheader-username-headers="[x-remote-user]"
+2022-05-24T18:41:31.897842845Z I0524 18:41:31.897838       1 flags.go:64] FLAG: --secure-port="10259"
+2022-05-24T18:41:31.897850078Z I0524 18:41:31.897843       1 flags.go:64] FLAG: --show-hidden-metrics-for-version=""
+2022-05-24T18:41:31.897850078Z I0524 18:41:31.897847       1 flags.go:64] FLAG: --skip-headers="false"
+2022-05-24T18:41:31.897857186Z I0524 18:41:31.897851       1 flags.go:64] FLAG: --skip-log-headers="false"
+2022-05-24T18:41:31.897864172Z I0524 18:41:31.897856       1 flags.go:64] FLAG: --stderrthreshold="2"
+2022-05-24T18:41:31.897871084Z I0524 18:41:31.897860       1 flags.go:64] FLAG: --tls-cert-file="/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt"
+2022-05-24T18:41:31.897879772Z I0524 18:41:31.897866       1 flags.go:64] FLAG: --tls-cipher-suites="[TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256]"
+2022-05-24T18:41:31.897890213Z I0524 18:41:31.897878       1 flags.go:64] FLAG: --tls-min-version="VersionTLS12"
+2022-05-24T18:41:31.897890213Z I0524 18:41:31.897883       1 flags.go:64] FLAG: --tls-private-key-file="/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key"
+2022-05-24T18:41:31.897897586Z I0524 18:41:31.897889       1 flags.go:64] FLAG: --tls-sni-cert-key="[]"
+2022-05-24T18:41:31.897904571Z I0524 18:41:31.897895       1 flags.go:64] FLAG: --unsupported-kube-api-over-localhost="false"
+2022-05-24T18:41:31.897904571Z I0524 18:41:31.897899       1 flags.go:64] FLAG: --v="2"
+2022-05-24T18:41:31.897913371Z I0524 18:41:31.897905       1 flags.go:64] FLAG: --version="false"
+2022-05-24T18:41:31.897920384Z I0524 18:41:31.897911       1 flags.go:64] FLAG: --vmodule=""
+2022-05-24T18:41:31.897927404Z I0524 18:41:31.897918       1 flags.go:64] FLAG: --write-config-to=""
+2022-05-24T18:41:31.899152369Z I0524 18:41:31.899115       1 dynamic_serving_content.go:112] "Loaded a new cert/key pair" name="serving-cert::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key"
+2022-05-24T18:41:32.408794839Z I0524 18:41:32.408756       1 requestheader_controller.go:244] Loaded a new request header values for RequestHeaderAuthRequestController
+2022-05-24T18:41:32.424336793Z I0524 18:41:32.424297       1 configfile.go:96] Using component config
+2022-05-24T18:41:32.424336793Z -------------------------Configuration File Contents Start Here---------------------- 
+2022-05-24T18:41:32.424336793Z apiVersion: kubescheduler.config.k8s.io/v1beta3
+2022-05-24T18:41:32.424336793Z clientConnection:
+2022-05-24T18:41:32.424336793Z   acceptContentTypes: ""
+2022-05-24T18:41:32.424336793Z   burst: 100
+2022-05-24T18:41:32.424336793Z   contentType: application/vnd.kubernetes.protobuf
+2022-05-24T18:41:32.424336793Z   kubeconfig: /etc/kubernetes/static-pod-resources/configmaps/scheduler-kubeconfig/kubeconfig
+2022-05-24T18:41:32.424336793Z   qps: 50
+2022-05-24T18:41:32.424336793Z enableContentionProfiling: true
+2022-05-24T18:41:32.424336793Z enableProfiling: true
+2022-05-24T18:41:32.424336793Z kind: KubeSchedulerConfiguration
+2022-05-24T18:41:32.424336793Z leaderElection:
+2022-05-24T18:41:32.424336793Z   leaderElect: true
+2022-05-24T18:41:32.424336793Z   leaseDuration: 2m17s
+2022-05-24T18:41:32.424336793Z   renewDeadline: 1m47s
+2022-05-24T18:41:32.424336793Z   resourceLock: configmapsleases
+2022-05-24T18:41:32.424336793Z   resourceName: kube-scheduler
+2022-05-24T18:41:32.424336793Z   resourceNamespace: openshift-kube-scheduler
+2022-05-24T18:41:32.424336793Z   retryPeriod: 26s
+2022-05-24T18:41:32.424336793Z parallelism: 16
+2022-05-24T18:41:32.424336793Z percentageOfNodesToScore: 0
+2022-05-24T18:41:32.424336793Z podInitialBackoffSeconds: 1
+2022-05-24T18:41:32.424336793Z podMaxBackoffSeconds: 10
+2022-05-24T18:41:32.424336793Z profiles:
+2022-05-24T18:41:32.424336793Z - pluginConfig:
+2022-05-24T18:41:32.424336793Z   - args:
+2022-05-24T18:41:32.424336793Z       apiVersion: kubescheduler.config.k8s.io/v1beta3
+2022-05-24T18:41:32.424336793Z       kind: DefaultPreemptionArgs
+2022-05-24T18:41:32.424336793Z       minCandidateNodesAbsolute: 100
+2022-05-24T18:41:32.424336793Z       minCandidateNodesPercentage: 10
+2022-05-24T18:41:32.424336793Z     name: DefaultPreemption
+2022-05-24T18:41:32.424336793Z   - args:
+2022-05-24T18:41:32.424336793Z       apiVersion: kubescheduler.config.k8s.io/v1beta3
+2022-05-24T18:41:32.424336793Z       hardPodAffinityWeight: 1
+2022-05-24T18:41:32.424336793Z       kind: InterPodAffinityArgs
+2022-05-24T18:41:32.424336793Z     name: InterPodAffinity
+2022-05-24T18:41:32.424336793Z   - args:
+2022-05-24T18:41:32.424336793Z       apiVersion: kubescheduler.config.k8s.io/v1beta3
+2022-05-24T18:41:32.424336793Z       kind: NodeAffinityArgs
+2022-05-24T18:41:32.424336793Z     name: NodeAffinity
+2022-05-24T18:41:32.424336793Z   - args:
+2022-05-24T18:41:32.424336793Z       apiVersion: kubescheduler.config.k8s.io/v1beta3
+2022-05-24T18:41:32.424336793Z       kind: NodeResourcesBalancedAllocationArgs
+2022-05-24T18:41:32.424336793Z       resources:
+2022-05-24T18:41:32.424336793Z       - name: cpu
+2022-05-24T18:41:32.424336793Z         weight: 1
+2022-05-24T18:41:32.424336793Z       - name: memory
+2022-05-24T18:41:32.424336793Z         weight: 1
+2022-05-24T18:41:32.424336793Z     name: NodeResourcesBalancedAllocation
+2022-05-24T18:41:32.424336793Z   - args:
+2022-05-24T18:41:32.424336793Z       apiVersion: kubescheduler.config.k8s.io/v1beta3
+2022-05-24T18:41:32.424336793Z       kind: NodeResourcesFitArgs
+2022-05-24T18:41:32.424336793Z       scoringStrategy:
+2022-05-24T18:41:32.424336793Z         resources:
+2022-05-24T18:41:32.424336793Z         - name: cpu
+2022-05-24T18:41:32.424336793Z           weight: 1
+2022-05-24T18:41:32.424336793Z         - name: memory
+2022-05-24T18:41:32.424336793Z           weight: 1
+2022-05-24T18:41:32.424336793Z         type: LeastAllocated
+2022-05-24T18:41:32.424336793Z     name: NodeResourcesFit
+2022-05-24T18:41:32.424336793Z   - args:
+2022-05-24T18:41:32.424336793Z       apiVersion: kubescheduler.config.k8s.io/v1beta3
+2022-05-24T18:41:32.424336793Z       defaultingType: System
+2022-05-24T18:41:32.424336793Z       kind: PodTopologySpreadArgs
+2022-05-24T18:41:32.424336793Z     name: PodTopologySpread
+2022-05-24T18:41:32.424336793Z   - args:
+2022-05-24T18:41:32.424336793Z       apiVersion: kubescheduler.config.k8s.io/v1beta3
+2022-05-24T18:41:32.424336793Z       bindTimeoutSeconds: 600
+2022-05-24T18:41:32.424336793Z       kind: VolumeBindingArgs
+2022-05-24T18:41:32.424336793Z     name: VolumeBinding
+2022-05-24T18:41:32.424336793Z   plugins:
+2022-05-24T18:41:32.424336793Z     bind: {}
+2022-05-24T18:41:32.424336793Z     filter: {}
+2022-05-24T18:41:32.424336793Z     multiPoint:
+2022-05-24T18:41:32.424336793Z       enabled:
+2022-05-24T18:41:32.424336793Z       - name: PrioritySort
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: NodeUnschedulable
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: NodeName
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: TaintToleration
+2022-05-24T18:41:32.424336793Z         weight: 3
+2022-05-24T18:41:32.424336793Z       - name: NodeAffinity
+2022-05-24T18:41:32.424336793Z         weight: 2
+2022-05-24T18:41:32.424336793Z       - name: NodePorts
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: NodeResourcesFit
+2022-05-24T18:41:32.424336793Z         weight: 1
+2022-05-24T18:41:32.424336793Z       - name: VolumeRestrictions
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: EBSLimits
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: GCEPDLimits
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: NodeVolumeLimits
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: AzureDiskLimits
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: VolumeBinding
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: VolumeZone
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: PodTopologySpread
+2022-05-24T18:41:32.424336793Z         weight: 2
+2022-05-24T18:41:32.424336793Z       - name: InterPodAffinity
+2022-05-24T18:41:32.424336793Z         weight: 2
+2022-05-24T18:41:32.424336793Z       - name: DefaultPreemption
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z       - name: NodeResourcesBalancedAllocation
+2022-05-24T18:41:32.424336793Z         weight: 1
+2022-05-24T18:41:32.424336793Z       - name: ImageLocality
+2022-05-24T18:41:32.424336793Z         weight: 1
+2022-05-24T18:41:32.424336793Z       - name: DefaultBinder
+2022-05-24T18:41:32.424336793Z         weight: 0
+2022-05-24T18:41:32.424336793Z     permit: {}
+2022-05-24T18:41:32.424336793Z     postBind: {}
+2022-05-24T18:41:32.424336793Z     postFilter: {}
+2022-05-24T18:41:32.424336793Z     preBind: {}
+2022-05-24T18:41:32.424336793Z     preFilter: {}
+2022-05-24T18:41:32.424336793Z     preScore: {}
+2022-05-24T18:41:32.424336793Z     queueSort: {}
+2022-05-24T18:41:32.424336793Z     reserve: {}
+2022-05-24T18:41:32.424336793Z     score: {}
+2022-05-24T18:41:32.424336793Z   schedulerName: default-scheduler
+2022-05-24T18:41:32.424336793Z 
+2022-05-24T18:41:32.424336793Z ------------------------------------Configuration File Contents End Here---------------------------------
+2022-05-24T18:41:32.424336793Z I0524 18:41:32.424324       1 server.go:143] "Starting Kubernetes Scheduler" version="v1.23.5+b463d71"
+2022-05-24T18:41:32.440517865Z I0524 18:41:32.440485       1 requestheader_controller.go:169] Starting RequestHeaderAuthRequestController
+2022-05-24T18:41:32.440517865Z I0524 18:41:32.440510       1 shared_informer.go:240] Waiting for caches to sync for RequestHeaderAuthRequestController
+2022-05-24T18:41:32.440577416Z I0524 18:41:32.440559       1 configmap_cafile_content.go:201] "Starting controller" name="client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file"
+2022-05-24T18:41:32.440589546Z I0524 18:41:32.440575       1 shared_informer.go:240] Waiting for caches to sync for client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file
+2022-05-24T18:41:32.440589546Z I0524 18:41:32.440577       1 configmap_cafile_content.go:201] "Starting controller" name="client-ca::kube-system::extension-apiserver-authentication::client-ca-file"
+2022-05-24T18:41:32.440599789Z I0524 18:41:32.440591       1 shared_informer.go:240] Waiting for caches to sync for client-ca::kube-system::extension-apiserver-authentication::client-ca-file
+2022-05-24T18:41:32.440764901Z I0524 18:41:32.440747       1 tlsconfig.go:200] "Loaded serving cert" certName="serving-cert::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key" certDetail="\"scheduler.openshift-kube-scheduler.svc\" [serving] validServingFor=[scheduler.openshift-kube-scheduler.svc,scheduler.openshift-kube-scheduler.svc.cluster.local] issuer=\"openshift-service-serving-signer@1653415662\" (2022-05-24 18:07:56 +0000 UTC to 2024-05-23 18:07:57 +0000 UTC (now=2022-05-24 18:41:32.440722094 +0000 UTC))"
+2022-05-24T18:41:32.440880819Z I0524 18:41:32.440862       1 named_certificates.go:53] "Loaded SNI cert" index=0 certName="self-signed loopback" certDetail="\"apiserver-loopback-client@1653417692\" [serving] validServingFor=[apiserver-loopback-client] issuer=\"apiserver-loopback-client-ca@1653417692\" (2022-05-24 17:41:31 +0000 UTC to 2023-05-24 17:41:31 +0000 UTC (now=2022-05-24 18:41:32.440842263 +0000 UTC))"
+2022-05-24T18:41:32.440900582Z I0524 18:41:32.440890       1 secure_serving.go:200] Serving securely on [::]:10259
+2022-05-24T18:41:32.440937752Z I0524 18:41:32.440913       1 dynamic_serving_content.go:131] "Starting controller" name="serving-cert::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key"
+2022-05-24T18:41:32.440977557Z I0524 18:41:32.440957       1 tlsconfig.go:240] "Starting DynamicServingCertificateController"
+2022-05-24T18:41:32.459712426Z I0524 18:41:32.459653       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-128-34.ec2.internal" zone="us-east-1:\x00:us-east-1a"
+2022-05-24T18:41:32.460063043Z I0524 18:41:32.460028       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-140-240.ec2.internal" zone="us-east-1:\x00:us-east-1a"
+2022-05-24T18:41:32.460150429Z I0524 18:41:32.460123       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-148-123.ec2.internal" zone="us-east-1:\x00:us-east-1b"
+2022-05-24T18:41:32.460223278Z I0524 18:41:32.460208       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-149-121.ec2.internal" zone="us-east-1:\x00:us-east-1b"
+2022-05-24T18:41:32.460291335Z I0524 18:41:32.460279       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-164-190.ec2.internal" zone="us-east-1:\x00:us-east-1c"
+2022-05-24T18:41:32.460388817Z I0524 18:41:32.460375       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-138-197.ec2.internal" zone="us-east-1:\x00:us-east-1a"
+2022-05-24T18:41:32.460510696Z I0524 18:41:32.460497       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-145-179.ec2.internal" zone="us-east-1:\x00:us-east-1b"
+2022-05-24T18:41:32.460567042Z I0524 18:41:32.460554       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-166-35.ec2.internal" zone="us-east-1:\x00:us-east-1c"
+2022-05-24T18:41:32.460676326Z I0524 18:41:32.460619       1 node_tree.go:65] "Added node in listed group to NodeTree" node="ip-10-0-169-205.ec2.internal" zone="us-east-1:\x00:us-east-1c"
+2022-05-24T18:41:32.540852373Z I0524 18:41:32.540813       1 shared_informer.go:247] Caches are synced for client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file 
+2022-05-24T18:41:32.540852373Z I0524 18:41:32.540829       1 shared_informer.go:247] Caches are synced for RequestHeaderAuthRequestController 
+2022-05-24T18:41:32.540906386Z I0524 18:41:32.540814       1 shared_informer.go:247] Caches are synced for client-ca::kube-system::extension-apiserver-authentication::client-ca-file 
+2022-05-24T18:41:32.541068140Z I0524 18:41:32.541045       1 tlsconfig.go:178] "Loaded client CA" index=0 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"aggregator-signer\" [] issuer=\"<self>\" (2022-05-24 17:58:10 +0000 UTC to 2022-05-25 17:58:10 +0000 UTC (now=2022-05-24 18:41:32.541018162 +0000 UTC))"
+2022-05-24T18:41:32.541106528Z I0524 18:41:32.541074       1 leaderelection.go:248] attempting to acquire leader lease openshift-kube-scheduler/kube-scheduler...
+2022-05-24T18:41:32.541214734Z I0524 18:41:32.541198       1 tlsconfig.go:200] "Loaded serving cert" certName="serving-cert::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key" certDetail="\"scheduler.openshift-kube-scheduler.svc\" [serving] validServingFor=[scheduler.openshift-kube-scheduler.svc,scheduler.openshift-kube-scheduler.svc.cluster.local] issuer=\"openshift-service-serving-signer@1653415662\" (2022-05-24 18:07:56 +0000 UTC to 2024-05-23 18:07:57 +0000 UTC (now=2022-05-24 18:41:32.541179699 +0000 UTC))"
+2022-05-24T18:41:32.541340575Z I0524 18:41:32.541327       1 named_certificates.go:53] "Loaded SNI cert" index=0 certName="self-signed loopback" certDetail="\"apiserver-loopback-client@1653417692\" [serving] validServingFor=[apiserver-loopback-client] issuer=\"apiserver-loopback-client-ca@1653417692\" (2022-05-24 17:41:31 +0000 UTC to 2023-05-24 17:41:31 +0000 UTC (now=2022-05-24 18:41:32.541309681 +0000 UTC))"
+2022-05-24T18:41:32.541471795Z I0524 18:41:32.541457       1 tlsconfig.go:178] "Loaded client CA" index=0 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"admin-kubeconfig-signer\" [] issuer=\"<self>\" (2022-05-24 17:58:08 +0000 UTC to 2032-05-21 17:58:08 +0000 UTC (now=2022-05-24 18:41:32.541446371 +0000 UTC))"
+2022-05-24T18:41:32.541508830Z I0524 18:41:32.541497       1 tlsconfig.go:178] "Loaded client CA" index=1 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"kubelet-signer\" [] issuer=\"<self>\" (2022-05-24 17:58:11 +0000 UTC to 2022-05-25 17:58:11 +0000 UTC (now=2022-05-24 18:41:32.541472663 +0000 UTC))"
+2022-05-24T18:41:32.541536449Z I0524 18:41:32.541525       1 tlsconfig.go:178] "Loaded client CA" index=2 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"kube-control-plane-signer\" [] issuer=\"<self>\" (2022-05-24 17:58:12 +0000 UTC to 2023-05-24 17:58:12 +0000 UTC (now=2022-05-24 18:41:32.541509883 +0000 UTC))"
+2022-05-24T18:41:32.541565962Z I0524 18:41:32.541554       1 tlsconfig.go:178] "Loaded client CA" index=3 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"kube-apiserver-to-kubelet-signer\" [] issuer=\"<self>\" (2022-05-24 17:58:12 +0000 UTC to 2023-05-24 17:58:12 +0000 UTC (now=2022-05-24 18:41:32.541537687 +0000 UTC))"
+2022-05-24T18:41:32.541593642Z I0524 18:41:32.541582       1 tlsconfig.go:178] "Loaded client CA" index=4 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"kubelet-bootstrap-kubeconfig-signer\" [] issuer=\"<self>\" (2022-05-24 17:58:09 +0000 UTC to 2032-05-21 17:58:09 +0000 UTC (now=2022-05-24 18:41:32.541566793 +0000 UTC))"
+2022-05-24T18:41:32.541622830Z I0524 18:41:32.541611       1 tlsconfig.go:178] "Loaded client CA" index=5 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"kube-csr-signer_@1653415662\" [] issuer=\"kubelet-signer\" (2022-05-24 18:07:41 +0000 UTC to 2022-05-25 17:58:11 +0000 UTC (now=2022-05-24 18:41:32.541597203 +0000 UTC))"
+2022-05-24T18:41:32.541676264Z I0524 18:41:32.541663       1 tlsconfig.go:178] "Loaded client CA" index=6 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"openshift-kube-apiserver-operator_node-system-admin-signer@1653415661\" [] issuer=\"<self>\" (2022-05-24 18:07:40 +0000 UTC to 2023-05-24 18:07:41 +0000 UTC (now=2022-05-24 18:41:32.541623738 +0000 UTC))"
+2022-05-24T18:41:32.541706725Z I0524 18:41:32.541695       1 tlsconfig.go:178] "Loaded client CA" index=7 certName="client-ca::kube-system::extension-apiserver-authentication::client-ca-file,client-ca::kube-system::extension-apiserver-authentication::requestheader-client-ca-file" certDetail="\"aggregator-signer\" [] issuer=\"<self>\" (2022-05-24 17:58:10 +0000 UTC to 2022-05-25 17:58:10 +0000 UTC (now=2022-05-24 18:41:32.541677937 +0000 UTC))"
+2022-05-24T18:41:32.541833301Z I0524 18:41:32.541820       1 tlsconfig.go:200] "Loaded serving cert" certName="serving-cert::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.crt::/etc/kubernetes/static-pod-resources/secrets/serving-cert/tls.key" certDetail="\"scheduler.openshift-kube-scheduler.svc\" [serving] validServingFor=[scheduler.openshift-kube-scheduler.svc,scheduler.openshift-kube-scheduler.svc.cluster.local] issuer=\"openshift-service-serving-signer@1653415662\" (2022-05-24 18:07:56 +0000 UTC to 2024-05-23 18:07:57 +0000 UTC (now=2022-05-24 18:41:32.541804384 +0000 UTC))"
+2022-05-24T18:41:32.541932354Z I0524 18:41:32.541919       1 named_certificates.go:53] "Loaded SNI cert" index=0 certName="self-signed loopback" certDetail="\"apiserver-loopback-client@1653417692\" [serving] validServingFor=[apiserver-loopback-client] issuer=\"apiserver-loopback-client-ca@1653417692\" (2022-05-24 17:41:31 +0000 UTC to 2023-05-24 17:41:31 +0000 UTC (now=2022-05-24 18:41:32.541906308 +0000 UTC))"

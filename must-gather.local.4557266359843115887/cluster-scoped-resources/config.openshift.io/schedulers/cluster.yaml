@@ -1,0 +1,14 @@
+---
+apiVersion: config.openshift.io/v1
+kind: Scheduler
+metadata:
+  creationTimestamp: "2022-05-24T18:05:24Z"
+  generation: 1
+  name: cluster
+  resourceVersion: "622"
+  uid: 2b4b9906-c1f1-4d4b-92d0-18a77ab214a5
+spec:
+  mastersSchedulable: false
+  policy:
+    name: ""
+status: {}

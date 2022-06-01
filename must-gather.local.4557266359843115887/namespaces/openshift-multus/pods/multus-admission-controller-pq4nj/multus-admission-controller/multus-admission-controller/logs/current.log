@@ -1,0 +1,12 @@
+2022-05-24T18:36:04.735958896Z I0524 18:36:04.735512       1 main.go:53] starting net-attach-def-admission-controller webhook server
+2022-05-24T18:36:04.766207519Z I0524 18:36:04.766173       1 localmetrics.go:51] UPdating net-attach-def metrics for any with value 0
+2022-05-24T18:36:04.766230247Z I0524 18:36:04.766208       1 localmetrics.go:51] UPdating net-attach-def metrics for sriov with value 0
+2022-05-24T18:36:04.766230247Z I0524 18:36:04.766216       1 localmetrics.go:51] UPdating net-attach-def metrics for ib-sriov with value 0
+2022-05-24T18:36:04.774611489Z I0524 18:36:04.774558       1 controller.go:194] Starting net-attach-def-admission-controller
+2022-05-24T18:36:20.518836869Z I0524 18:36:20.518794       1 trace.go:81] Trace[1298498081]: "Reflector github.com/k8snetworkplumbingwg/net-attach-def-admission-controller/pkg/controller/controller.go:196 ListAndWatch" (started: 2022-05-24 18:36:04.781735243 +0000 UTC m=+1.203201398) (total time: 15.737025333s):
+2022-05-24T18:36:20.518836869Z Trace[1298498081]: [15.735851594s] [15.735851594s] Objects listed
+2022-05-24T18:36:20.581881649Z I0524 18:36:20.581837       1 controller.go:203] net-attach-def-admission-controller synced and ready
+2022-05-24T18:36:51.342909715Z 2022/05/24 18:36:51 http: TLS handshake error from 10.128.0.71:44742: remote error: tls: bad certificate
+2022-05-24T18:36:54.357485392Z 2022/05/24 18:36:54 http: TLS handshake error from 10.128.0.71:45012: remote error: tls: bad certificate
+2022-05-24T18:39:11.695542997Z 2022/05/24 18:39:11 http: TLS handshake error from 10.128.0.71:37702: remote error: tls: bad certificate
+2022-05-24T18:39:14.824973869Z 2022/05/24 18:39:14 http: TLS handshake error from 10.128.0.71:39182: remote error: tls: bad certificate

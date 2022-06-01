@@ -1,0 +1,19 @@
+---
+apiVersion: migration.k8s.io/v1alpha1
+kind: StorageVersionMigration
+metadata:
+  creationTimestamp: "2022-05-24T18:08:01Z"
+  generation: 1
+  name: flowcontrol-prioritylevel-storage-version-migration
+  resourceVersion: "6193"
+  uid: 800b6d55-276f-46bc-aa11-bb1762505ebc
+spec:
+  resource:
+    group: flowcontrol.apiserver.k8s.io
+    resource: prioritylevelconfigurations
+    version: v1beta1
+status:
+  conditions:
+  - lastUpdateTime: "2022-05-24T18:08:03Z"
+    status: "True"
+    type: Succeeded

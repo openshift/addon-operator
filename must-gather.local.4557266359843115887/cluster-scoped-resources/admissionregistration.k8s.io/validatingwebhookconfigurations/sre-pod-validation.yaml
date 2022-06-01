@@ -1,0 +1,42 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"admissionregistration.k8s.io/v1","kind":"ValidatingWebhookConfiguration","metadata":{"annotations":{"service.beta.openshift.io/inject-cabundle":"true"},"labels":{"hive.openshift.io/managed":"true"},"name":"sre-pod-validation"},"webhooks":[{"admissionReviewVersions":["v1"],"clientConfig":{"service":{"name":"validation-webhook","namespace":"openshift-validation-webhook","path":"/pod-validation"}},"failurePolicy":"Ignore","matchPolicy":"Equivalent","name":"pod-validation.managed.openshift.io","rules":[{"apiGroups":["v1"],"apiVersions":["*"],"operations":["*"],"resources":["pods"],"scope":"Namespaced"}],"sideEffects":"None","timeoutSeconds":1}]}
+    service.beta.openshift.io/inject-cabundle: "true"
+  creationTimestamp: "2022-05-24T18:25:30Z"
+  generation: 2
+  labels:
+    hive.openshift.io/managed: "true"
+  name: sre-pod-validation
+  resourceVersion: "28990"
+  uid: ffe6724c-5c33-4108-a398-0e7822a09538
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURVVENDQWptZ0F3SUJBZ0lJUVpyeGlYaVBPb1l3RFFZSktvWklodmNOQVFFTEJRQXdOakUwTURJR0ExVUUKQXd3cmIzQmxibk5vYVdaMExYTmxjblpwWTJVdGMyVnlkbWx1WnkxemFXZHVaWEpBTVRZMU16UXhOVFkyTWpBZQpGdzB5TWpBMU1qUXhPREEzTkRGYUZ3MHlOREEzTWpJeE9EQTNOREphTURZeE5EQXlCZ05WQkFNTUsyOXdaVzV6CmFHbG1kQzF6WlhKMmFXTmxMWE5sY25acGJtY3RjMmxuYm1WeVFERTJOVE0wTVRVMk5qSXdnZ0VpTUEwR0NTcUcKU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRRGV0bUw4N29NaGowd0V1Rmh0aEpUSjY2V1p6VThIUFhsegpobi9JNGdOWHhFMzdjdEFBeHBiNzdPUGF3WkFPZVpOdWlhYyszUHVqaHhNZnlXSnd0V3gzanpxZk9hMXFDeiszClpUMnQvNlhiaFI4QWQxQStMakFkNkZNMVlRQURKNXVIcm5LTWhGam5XR3NMQTE3TWV6Wk5wZkVUajlZSHJabWoKTzZLTXhRMktONGEvSkczTHNROFlnVWJwbW94YXhjaldVaklUKzFndFU5dHhXNjc3K1VnTy90Z3FyaEcxOGIwdwovMHZhVlFNdjhXRi9aTmpUdW9uY0NhMCtOcjZDNHRPbzg0bFQ3dmlhSlRMK1FoVXdMYU94SHF2UDNLRU9UTzQ1ClduUnN6UnUrMmlmMW5NM1hDQUhBc25zTkhwM2Q2b0xNeXVvc20xL1pGODJ4RjBGemFxQVhBZ01CQUFHall6QmgKTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVdCQlJ5OHZlUwpQVkxhOXNkUklybjExWjlKSjVWZDB6QWZCZ05WSFNNRUdEQVdnQlJ5OHZlU1BWTGE5c2RSSXJuMTFaOUpKNVZkCjB6QU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFRU1JKMjQxM0tWUEo2WmY2a0o1Sk1VOEJaNHZKWkMyTlJJMUoKWk1IUHpDUllQSVM1Z2dJOW1VY1hnL00yQnY4eTFqM0VudUNJNERWc25mclVNdlBqNEJyZ2E4T0QrYm9wNUNZcApIamRjZG4xdHhDUUZFNDlPbk85UGRXSVlUSHZCZEFNRmI5Y2dmbDRyOWdZYk1CSWtiREVpdjdjeWFPUS9LcmI2ClVFTGd3RFdhWC9Mb2gxZjJ3YVUyQUFPWFhOenN4cHU2TnBCY1hwemtNL1BZanZBUFlkZjBWOW93L1ViOVJYRFYKY3FveFgycmI2NFNEZ09KTlNtUlRTOENYdXZNQnFYQ2dTWEFxRmR0UHB6dEdIdE1ZR2ZTR3BQNUs5UDNXbnJOZwpkS01VdXFiU3UvLy9rR3Y3VktjeDk1WUFDclFBQjZkelpidGxreE9tb1B2ajVuVnEzdz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    service:
+      name: validation-webhook
+      namespace: openshift-validation-webhook
+      path: /pod-validation
+      port: 443
+  failurePolicy: Ignore
+  matchPolicy: Equivalent
+  name: pod-validation.managed.openshift.io
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - v1
+    apiVersions:
+    - '*'
+    operations:
+    - '*'
+    resources:
+    - pods
+    scope: Namespaced
+  sideEffects: None
+  timeoutSeconds: 1

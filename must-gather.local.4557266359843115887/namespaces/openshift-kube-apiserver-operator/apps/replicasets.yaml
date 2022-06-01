@@ -1,0 +1,146 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "1"
+      deployment.kubernetes.io/revision: "1"
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+    creationTimestamp: "2022-05-24T18:06:07Z"
+    generation: 1
+    labels:
+      app: kube-apiserver-operator
+      pod-template-hash: 78b5477d97
+    name: kube-apiserver-operator-78b5477d97
+    namespace: openshift-kube-apiserver-operator
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: kube-apiserver-operator
+      uid: f93b6045-6e50-49a6-9e4f-5d1a1f853d0f
+    resourceVersion: "63468"
+    uid: d680a768-d15f-42e5-9691-8e711eb5ead1
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: kube-apiserver-operator
+        pod-template-hash: 78b5477d97
+    template:
+      metadata:
+        annotations:
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: kube-apiserver-operator
+          pod-template-hash: 78b5477d97
+        name: kube-apiserver-operator
+      spec:
+        automountServiceAccountToken: false
+        containers:
+        - args:
+          - --config=/var/run/configmaps/config/config.yaml
+          command:
+          - cluster-kube-apiserver-operator
+          - operator
+          env:
+          - name: IMAGE
+            value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b93993f797e0fc3a71692f6ed51b0a7d4bae1fcb29e7045fae5caa897490f38b
+          - name: OPERATOR_IMAGE
+            value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:74af1b8f610579bf5112a9cdd9338814a07362a19fb9cd24a753348e6473ae42
+          - name: OPERAND_IMAGE_VERSION
+            value: 1.23.5
+          - name: OPERATOR_IMAGE_VERSION
+            value: 4.10.13
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:74af1b8f610579bf5112a9cdd9338814a07362a19fb9cd24a753348e6473ae42
+          imagePullPolicy: IfNotPresent
+          name: kube-apiserver-operator
+          ports:
+          - containerPort: 8443
+            name: metrics
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/run/configmaps/config
+            name: config
+          - mountPath: /var/run/secrets/serving-cert
+            name: serving-cert
+          - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+            name: kube-api-access
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: kube-apiserver-operator
+        serviceAccountName: kube-apiserver-operator
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: serving-cert
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: kube-apiserver-operator-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: kube-apiserver-operator-config
+          name: config
+        - name: kube-api-access
+          projected:
+            defaultMode: 420
+            sources:
+            - serviceAccountToken:
+                expirationSeconds: 3600
+                path: token
+            - configMap:
+                items:
+                - key: ca.crt
+                  path: ca.crt
+                name: kube-root-ca.crt
+            - downwardAPI:
+                items:
+                - fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+                  path: namespace
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+kind: ReplicaSetList
+metadata:
+  resourceVersion: "313913"

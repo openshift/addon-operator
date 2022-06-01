@@ -1,0 +1,5 @@
+2022-05-24T18:35:00.477855674Z I0524 18:35:00.477720       1 main.go:151] Reading config file: /etc/kube-rbac-policy/config.yaml
+2022-05-24T18:35:00.480898260Z I0524 18:35:00.480785       1 main.go:181] Valid token audiences: 
+2022-05-24T18:35:00.481007852Z I0524 18:35:00.480993       1 main.go:305] Reading certificate files
+2022-05-24T18:35:00.481418063Z I0524 18:35:00.481394       1 main.go:339] Starting TCP socket on :9443
+2022-05-24T18:35:00.482162288Z I0524 18:35:00.482130       1 main.go:346] Listening securely on :9443

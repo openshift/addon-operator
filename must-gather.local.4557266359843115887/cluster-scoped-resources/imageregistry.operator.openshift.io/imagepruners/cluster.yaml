@@ -1,0 +1,52 @@
+---
+apiVersion: imageregistry.operator.openshift.io/v1
+kind: ImagePruner
+metadata:
+  creationTimestamp: "2022-05-24T18:08:35Z"
+  generation: 2
+  name: cluster
+  resourceVersion: "30900"
+  uid: c87670be-8aaf-4767-a326-e5d55cec7e79
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: node-role.kubernetes.io/infra
+            operator: Exists
+        weight: 1
+  failedJobsHistoryLimit: 3
+  ignoreInvalidImageReferences: true
+  keepTagRevisions: 3
+  keepYoungerThan: 86400000000000
+  logLevel: Normal
+  schedule: 0 */1 * * *
+  successfulJobsHistoryLimit: 3
+  suspend: false
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:08:35Z"
+    message: Pruner CronJob has been created
+    reason: AsExpected
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:08:35Z"
+    message: Pruner completed successfully
+    reason: Complete
+    status: "False"
+    type: Failed
+  - lastTransitionTime: "2022-05-24T18:08:35Z"
+    message: The pruner job has been scheduled
+    reason: Scheduled
+    status: "True"
+    type: Scheduled
+  - lastTransitionTime: "2022-05-24T18:08:35Z"
+    reason: AsExpected
+    status: "False"
+    type: Degraded
+  observedGeneration: 2

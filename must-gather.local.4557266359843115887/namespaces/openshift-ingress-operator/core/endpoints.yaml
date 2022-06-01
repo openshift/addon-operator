@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:38Z"
+    creationTimestamp: "2022-05-24T18:06:08Z"
+    labels:
+      name: ingress-operator
+    name: metrics
+    namespace: openshift-ingress-operator
+    resourceVersion: "63458"
+    uid: 0070e1ea-12bf-4097-ad94-9050435e0a46
+  subsets:
+  - addresses:
+    - ip: 10.128.0.70
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: ingress-operator-7c597898c4-b97nl
+        namespace: openshift-ingress-operator
+        resourceVersion: "63455"
+        uid: 04d42b21-8df8-4c04-b8d1-2f7505d687b9
+    ports:
+    - name: metrics
+      port: 9393
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "312287"

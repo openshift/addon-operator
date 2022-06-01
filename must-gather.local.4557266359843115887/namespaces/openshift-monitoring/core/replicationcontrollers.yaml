@@ -1,0 +1,358 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/desired-replicas: "1"
+      openshift.io/deployer-pod.completed-at: 2022-05-24 18:36:01 +0000 UTC
+      openshift.io/deployer-pod.created-at: 2022-05-24 18:25:34 +0000 UTC
+      openshift.io/deployer-pod.name: sre-ebs-iops-reporter-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: sre-ebs-iops-reporter
+      openshift.io/deployment.phase: Failed
+      openshift.io/deployment.replicas: "0"
+      openshift.io/deployment.status-reason: config change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"apps.openshift.io/v1","metadata":{"name":"sre-ebs-iops-reporter","namespace":"openshift-monitoring","uid":"8ca1cea1-061d-4c5f-adcc-bffea1cb594f","resourceVersion":"29991","generation":1,"creationTimestamp":"2022-05-24T18:25:34Z","labels":{"hive.openshift.io/managed":"true","name":"sre-ebs-iops-reporter"},"annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"apps.openshift.io/v1\",\"kind\":\"DeploymentConfig\",\"metadata\":{\"annotations\":{},\"labels\":{\"hive.openshift.io/managed\":\"true\",\"name\":\"sre-ebs-iops-reporter\"},\"name\":\"sre-ebs-iops-reporter\",\"namespace\":\"openshift-monitoring\"},\"spec\":{\"paused\":false,\"replicas\":1,\"selector\":{\"name\":\"sre-ebs-iops-reporter\"},\"strategy\":{\"type\":\"Recreate\"},\"template\":{\"metadata\":{\"labels\":{\"name\":\"sre-ebs-iops-reporter\"},\"name\":\"sre-ebs-iops-reporter\"},\"spec\":{\"affinity\":{\"nodeAffinity\":{\"preferredDuringSchedulingIgnoredDuringExecution\":[{\"preference\":{\"matchExpressions\":[{\"key\":\"node-role.kubernetes.io/infra\",\"operator\":\"Exists\"}]},\"weight\":1}]}},\"containers\":[{\"command\":[\"/bin/sh\",\"/monitor/start.sh\"],\"env\":[{\"name\":\"AWS_SHARED_CREDENTIALS_FILE\",\"value\":\"/secrets/aws/credentials.ini\"},{\"name\":\"AWS_CONFIG_FILE\",\"value\":\"/secrets/aws/config.ini\"},{\"name\":\"PYTHONPATH\",\"value\":\"/openshift-python/packages:/support/packages\"}],\"image\":\"quay.io/app-sre/managed-prometheus-exporter-base:latest\",\"imagePullPolicy\":\"IfNotPresent\",\"livenessProbe\":{\"failureThreshold\":2,\"httpGet\":{\"path\":\"/\",\"port\":8080},\"initialDelaySeconds\":420,\"periodSeconds\":360,\"timeoutSeconds\":240},\"name\":\"main\",\"ports\":[{\"containerPort\":8080,\"protocol\":\"TCP\"}],\"readinessProbe\":{\"httpGet\":{\"path\":\"/\",\"port\":8080},\"initialDelaySeconds\":3,\"timeoutSeconds\":240},\"volumeMounts\":[{\"mountPath\":\"/monitor\",\"name\":\"monitor-volume\",\"readOnly\":true},{\"mountPath\":\"/config\",\"name\":\"envfiles\",\"readOnly\":true},{\"mountPath\":\"/secrets\",\"name\":\"secrets\",\"readOnly\":true},{\"mountPath\":\"/etc/pki/ca-trust/extracted/pem\",\"name\":\"trusted-ca-bundle\",\"readOnly\":true}],\"workingDir\":\"/monitor\"}],\"dnsPolicy\":\"ClusterFirst\",\"initContainers\":[{\"command\":[\"/usr/local/bin/init.py\",\"-r\",\"/secrets/aws/config.ini\",\"-a\",\"/rawsecrets/aws_access_key_id\",\"-A\",\"/rawsecrets/aws_secret_access_key\",\"-o\",\"/secrets/aws/credentials.ini\",\"-c\",\"/config/env/CLUSTERID\"],\"image\":\"quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest\",\"name\":\"setupcreds\",\"volumeMounts\":[{\"mountPath\":\"/rawsecrets\",\"name\":\"awsrawcreds\",\"readOnly\":true},{\"mountPath\":\"/secrets\",\"name\":\"secrets\"},{\"mountPath\":\"/config\",\"name\":\"envfiles\"},{\"mountPath\":\"/etc/pki/ca-trust/extracted/pem\",\"name\":\"trusted-ca-bundle\",\"readOnly\":true}]}],\"restartPolicy\":\"Always\",\"serviceAccountName\":\"sre-ebs-iops-reporter\",\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"node-role.kubernetes.io/infra\",\"operator\":\"Exists\"}],\"volumes\":[{\"name\":\"awsrawcreds\",\"secret\":{\"secretName\":\"sre-ebs-iops-reporter-aws-credentials\"}},{\"emptyDir\":{},\"name\":\"secrets\"},{\"emptyDir\":{},\"name\":\"envfiles\"},{\"configMap\":{\"name\":\"sre-ebs-iops-reporter-code\"},\"name\":\"monitor-volume\"},{\"configMap\":{\"defaultMode\":420,\"items\":[{\"key\":\"ca-bundle.crt\",\"path\":\"tls-ca-bundle.pem\"}],\"name\":\"sre-ebs-iops-reporter-trusted-ca-bundle\"},\"name\":\"trusted-ca-bundle\"}]}},\"triggers\":[{\"type\":\"ConfigChange\"}]}}\n"},"managedFields":[{"manager":"manager","operation":"Update","apiVersion":"apps.openshift.io/v1","time":"2022-05-24T18:25:34Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{".":{},"f:kubectl.kubernetes.io/last-applied-configuration":{}},"f:labels":{".":{},"f:hive.openshift.io/managed":{},"f:name":{}}},"f:spec":{"f:replicas":{},"f:selector":{".":{},"f:name":{}},"f:strategy":{"f:activeDeadlineSeconds":{},"f:recreateParams":{".":{},"f:timeoutSeconds":{}},"f:type":{}},"f:template":{".":{},"f:metadata":{".":{},"f:creationTimestamp":{},"f:labels":{".":{},"f:name":{}},"f:name":{}},"f:spec":{".":{},"f:affinity":{".":{},"f:nodeAffinity":{".":{},"f:preferredDuringSchedulingIgnoredDuringExecution":{}}},"f:containers":{".":{},"k:{\"name\":\"main\"}":{".":{},"f:command":{},"f:env":{".":{},"k:{\"name\":\"AWS_CONFIG_FILE\"}":{".":{},"f:name":{},"f:value":{}},"k:{\"name\":\"AWS_SHARED_CREDENTIALS_FILE\"}":{".":{},"f:name":{},"f:value":{}},"k:{\"name\":\"PYTHONPATH\"}":{".":{},"f:name":{},"f:value":{}}},"f:image":{},"f:imagePullPolicy":{},"f:livenessProbe":{".":{},"f:failureThreshold":{},"f:httpGet":{".":{},"f:path":{},"f:port":{},"f:scheme":{}},"f:initialDelaySeconds":{},"f:periodSeconds":{},"f:successThreshold":{},"f:timeoutSeconds":{}},"f:name":{},"f:ports":{".":{},"k:{\"containerPort\":8080,\"protocol\":\"TCP\"}":{".":{},"f:containerPort":{},"f:protocol":{}}},"f:readinessProbe":{".":{},"f:failureThreshold":{},"f:httpGet":{".":{},"f:path":{},"f:port":{},"f:scheme":{}},"f:initialDelaySeconds":{},"f:periodSeconds":{},"f:successThreshold":{},"f:timeoutSeconds":{}},"f:resources":{},"f:terminationMessagePath":{},"f:terminationMessagePolicy":{},"f:volumeMounts":{".":{},"k:{\"mountPath\":\"/config\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/etc/pki/ca-trust/extracted/pem\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/monitor\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/secrets\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}}},"f:workingDir":{}}},"f:dnsPolicy":{},"f:initContainers":{".":{},"k:{\"name\":\"setupcreds\"}":{".":{},"f:command":{},"f:image":{},"f:imagePullPolicy":{},"f:name":{},"f:resources":{},"f:terminationMessagePath":{},"f:terminationMessagePolicy":{},"f:volumeMounts":{".":{},"k:{\"mountPath\":\"/config\"}":{".":{},"f:mountPath":{},"f:name":{}},"k:{\"mountPath\":\"/etc/pki/ca-trust/extracted/pem\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/rawsecrets\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/secrets\"}":{".":{},"f:mountPath":{},"f:name":{}}}}},"f:restartPolicy":{},"f:schedulerName":{},"f:securityContext":{},"f:serviceAccount":{},"f:serviceAccountName":{},"f:terminationGracePeriodSeconds":{},"f:tolerations":{},"f:volumes":{".":{},"k:{\"name\":\"awsrawcreds\"}":{".":{},"f:name":{},"f:secret":{".":{},"f:defaultMode":{},"f:secretName":{}}},"k:{\"name\":\"envfiles\"}":{".":{},"f:emptyDir":{},"f:name":{}},"k:{\"name\":\"monitor-volume\"}":{".":{},"f:configMap":{".":{},"f:defaultMode":{},"f:name":{}},"f:name":{}},"k:{\"name\":\"secrets\"}":{".":{},"f:emptyDir":{},"f:name":{}},"k:{\"name\":\"trusted-ca-bundle\"}":{".":{},"f:configMap":{".":{},"f:defaultMode":{},"f:items":{},"f:name":{}},"f:name":{}}}}},"f:triggers":{}}}},{"manager":"openshift-controller-manager","operation":"Update","apiVersion":"apps.openshift.io/v1","time":"2022-05-24T18:25:34Z","fieldsType":"FieldsV1","fieldsV1":{"f:status":{"f:details":{".":{},"f:causes":{},"f:message":{}},"f:latestVersion":{}}},"subresource":"status"}]},"spec":{"strategy":{"type":"Recreate","recreateParams":{"timeoutSeconds":600},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ConfigChange"}],"replicas":1,"revisionHistoryLimit":10,"test":false,"selector":{"name":"sre-ebs-iops-reporter"},"template":{"metadata":{"name":"sre-ebs-iops-reporter","creationTimestamp":null,"labels":{"name":"sre-ebs-iops-reporter"}},"spec":{"volumes":[{"name":"awsrawcreds","secret":{"secretName":"sre-ebs-iops-reporter-aws-credentials","defaultMode":420}},{"name":"secrets","emptyDir":{}},{"name":"envfiles","emptyDir":{}},{"name":"monitor-volume","configMap":{"name":"sre-ebs-iops-reporter-code","defaultMode":420}},{"name":"trusted-ca-bundle","configMap":{"name":"sre-ebs-iops-reporter-trusted-ca-bundle","items":[{"key":"ca-bundle.crt","path":"tls-ca-bundle.pem"}],"defaultMode":420}}],"initContainers":[{"name":"setupcreds","image":"quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest","command":["/usr/local/bin/init.py","-r","/secrets/aws/config.ini","-a","/rawsecrets/aws_access_key_id","-A","/rawsecrets/aws_secret_access_key","-o","/secrets/aws/credentials.ini","-c","/config/env/CLUSTERID"],"resources":{},"volumeMounts":[{"name":"awsrawcreds","readOnly":true,"mountPath":"/rawsecrets"},{"name":"secrets","mountPath":"/secrets"},{"name":"envfiles","mountPath":"/config"},{"name":"trusted-ca-bundle","readOnly":true,"mountPath":"/etc/pki/ca-trust/extracted/pem"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"containers":[{"name":"main","image":"quay.io/app-sre/managed-prometheus-exporter-base:latest","command":["/bin/sh","/monitor/start.sh"],"workingDir":"/monitor","ports":[{"containerPort":8080,"protocol":"TCP"}],"env":[{"name":"AWS_SHARED_CREDENTIALS_FILE","value":"/secrets/aws/credentials.ini"},{"name":"AWS_CONFIG_FILE","value":"/secrets/aws/config.ini"},{"name":"PYTHONPATH","value":"/openshift-python/packages:/support/packages"}],"resources":{},"volumeMounts":[{"name":"monitor-volume","readOnly":true,"mountPath":"/monitor"},{"name":"envfiles","readOnly":true,"mountPath":"/config"},{"name":"secrets","readOnly":true,"mountPath":"/secrets"},{"name":"trusted-ca-bundle","readOnly":true,"mountPath":"/etc/pki/ca-trust/extracted/pem"}],"livenessProbe":{"httpGet":{"path":"/","port":8080,"scheme":"HTTP"},"initialDelaySeconds":420,"timeoutSeconds":240,"periodSeconds":360,"successThreshold":1,"failureThreshold":2},"readinessProbe":{"httpGet":{"path":"/","port":8080,"scheme":"HTTP"},"initialDelaySeconds":3,"timeoutSeconds":240,"periodSeconds":10,"successThreshold":1,"failureThreshold":3},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","serviceAccountName":"sre-ebs-iops-reporter","serviceAccount":"sre-ebs-iops-reporter","securityContext":{},"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"weight":1,"preference":{"matchExpressions":[{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]}}]}},"schedulerName":"default-scheduler","tolerations":[{"key":"node-role.kubernetes.io/infra","operator":"Exists","effect":"NoSchedule"}]}}},"status":{"latestVersion":1,"observedGeneration":0,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"config change","causes":[{"type":"ConfigChange"}]}}}
+    creationTimestamp: "2022-05-24T18:25:34Z"
+    generation: 3
+    labels:
+      hive.openshift.io/managed: "true"
+      name: sre-ebs-iops-reporter
+      openshift.io/deployment-config.name: sre-ebs-iops-reporter
+    name: sre-ebs-iops-reporter-1
+    namespace: openshift-monitoring
+    ownerReferences:
+    - apiVersion: apps.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DeploymentConfig
+      name: sre-ebs-iops-reporter
+      uid: 8ca1cea1-061d-4c5f-adcc-bffea1cb594f
+    resourceVersion: "61748"
+    uid: 7c0394be-55b2-4386-b7b0-5d466d3b51dc
+  spec:
+    replicas: 0
+    selector:
+      deployment: sre-ebs-iops-reporter-1
+      deploymentconfig: sre-ebs-iops-reporter
+      name: sre-ebs-iops-reporter
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: sre-ebs-iops-reporter
+          openshift.io/deployment.name: sre-ebs-iops-reporter-1
+        creationTimestamp: null
+        labels:
+          deployment: sre-ebs-iops-reporter-1
+          deploymentconfig: sre-ebs-iops-reporter
+          name: sre-ebs-iops-reporter
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - command:
+          - /bin/sh
+          - /monitor/start.sh
+          env:
+          - name: AWS_SHARED_CREDENTIALS_FILE
+            value: /secrets/aws/credentials.ini
+          - name: AWS_CONFIG_FILE
+            value: /secrets/aws/config.ini
+          - name: PYTHONPATH
+            value: /openshift-python/packages:/support/packages
+          image: quay.io/app-sre/managed-prometheus-exporter-base:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 420
+            periodSeconds: 360
+            successThreshold: 1
+            timeoutSeconds: 240
+          name: main
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 240
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /monitor
+            name: monitor-volume
+            readOnly: true
+          - mountPath: /config
+            name: envfiles
+            readOnly: true
+          - mountPath: /secrets
+            name: secrets
+            readOnly: true
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca-bundle
+            readOnly: true
+          workingDir: /monitor
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - /usr/local/bin/init.py
+          - -r
+          - /secrets/aws/config.ini
+          - -a
+          - /rawsecrets/aws_access_key_id
+          - -A
+          - /rawsecrets/aws_secret_access_key
+          - -o
+          - /secrets/aws/credentials.ini
+          - -c
+          - /config/env/CLUSTERID
+          image: quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest
+          imagePullPolicy: Always
+          name: setupcreds
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /rawsecrets
+            name: awsrawcreds
+            readOnly: true
+          - mountPath: /secrets
+            name: secrets
+          - mountPath: /config
+            name: envfiles
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca-bundle
+            readOnly: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: sre-ebs-iops-reporter
+        serviceAccountName: sre-ebs-iops-reporter
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - name: awsrawcreds
+          secret:
+            defaultMode: 420
+            secretName: sre-ebs-iops-reporter-aws-credentials
+        - emptyDir: {}
+          name: secrets
+        - emptyDir: {}
+          name: envfiles
+        - configMap:
+            defaultMode: 420
+            name: sre-ebs-iops-reporter-code
+          name: monitor-volume
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+            name: sre-ebs-iops-reporter-trusted-ca-bundle
+          name: trusted-ca-bundle
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/desired-replicas: "1"
+      openshift.io/deployer-pod.completed-at: 2022-05-24 18:36:01 +0000 UTC
+      openshift.io/deployer-pod.created-at: 2022-05-24 18:25:35 +0000 UTC
+      openshift.io/deployer-pod.name: sre-stuck-ebs-vols-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: sre-stuck-ebs-vols
+      openshift.io/deployment.phase: Failed
+      openshift.io/deployment.replicas: "0"
+      openshift.io/deployment.status-reason: config change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"apps.openshift.io/v1","metadata":{"name":"sre-stuck-ebs-vols","namespace":"openshift-monitoring","uid":"f4e2d54c-0706-480f-be2b-6c25b080fb42","resourceVersion":"30041","generation":1,"creationTimestamp":"2022-05-24T18:25:35Z","labels":{"hive.openshift.io/managed":"true","name":"sre-stuck-ebs-vols"},"annotations":{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"apps.openshift.io/v1\",\"kind\":\"DeploymentConfig\",\"metadata\":{\"annotations\":{},\"labels\":{\"hive.openshift.io/managed\":\"true\",\"name\":\"sre-stuck-ebs-vols\"},\"name\":\"sre-stuck-ebs-vols\",\"namespace\":\"openshift-monitoring\"},\"spec\":{\"paused\":false,\"replicas\":1,\"selector\":{\"name\":\"sre-stuck-ebs-vols\"},\"strategy\":{\"type\":\"Recreate\"},\"template\":{\"metadata\":{\"labels\":{\"name\":\"sre-stuck-ebs-vols\"},\"name\":\"sre-stuck-ebs-vols\"},\"spec\":{\"affinity\":{\"nodeAffinity\":{\"preferredDuringSchedulingIgnoredDuringExecution\":[{\"preference\":{\"matchExpressions\":[{\"key\":\"node-role.kubernetes.io/infra\",\"operator\":\"Exists\"}]},\"weight\":1}]}},\"containers\":[{\"command\":[\"/bin/sh\",\"/monitor/start.sh\"],\"env\":[{\"name\":\"AWS_SHARED_CREDENTIALS_FILE\",\"value\":\"/secrets/aws/credentials.ini\"},{\"name\":\"AWS_CONFIG_FILE\",\"value\":\"/secrets/aws/config.ini\"},{\"name\":\"PYTHONPATH\",\"value\":\"/openshift-python/packages:/support/packages\"}],\"image\":\"quay.io/app-sre/managed-prometheus-exporter-base:latest\",\"imagePullPolicy\":\"IfNotPresent\",\"livenessProbe\":{\"failureThreshold\":2,\"httpGet\":{\"path\":\"/\",\"port\":8080},\"initialDelaySeconds\":420,\"periodSeconds\":360,\"timeoutSeconds\":240},\"name\":\"main\",\"ports\":[{\"containerPort\":8080,\"protocol\":\"TCP\"}],\"readinessProbe\":{\"httpGet\":{\"path\":\"/\",\"port\":8080},\"initialDelaySeconds\":3,\"timeoutSeconds\":240},\"volumeMounts\":[{\"mountPath\":\"/monitor\",\"name\":\"monitor-volume\",\"readOnly\":true},{\"mountPath\":\"/config\",\"name\":\"envfiles\",\"readOnly\":true},{\"mountPath\":\"/secrets\",\"name\":\"secrets\",\"readOnly\":true},{\"mountPath\":\"/etc/pki/ca-trust/extracted/pem\",\"name\":\"trusted-ca-bundle\",\"readOnly\":true}],\"workingDir\":\"/monitor\"}],\"dnsPolicy\":\"ClusterFirst\",\"initContainers\":[{\"command\":[\"/usr/local/bin/init.py\",\"-r\",\"/secrets/aws/config.ini\",\"-a\",\"/rawsecrets/aws_access_key_id\",\"-A\",\"/rawsecrets/aws_secret_access_key\",\"-o\",\"/secrets/aws/credentials.ini\",\"-c\",\"/config/env/CLUSTERID\"],\"image\":\"quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest\",\"name\":\"setupcreds\",\"volumeMounts\":[{\"mountPath\":\"/rawsecrets\",\"name\":\"awsrawcreds\",\"readOnly\":true},{\"mountPath\":\"/secrets\",\"name\":\"secrets\"},{\"mountPath\":\"/config\",\"name\":\"envfiles\"},{\"mountPath\":\"/etc/pki/ca-trust/extracted/pem\",\"name\":\"trusted-ca-bundle\",\"readOnly\":true}]}],\"restartPolicy\":\"Always\",\"serviceAccountName\":\"sre-stuck-ebs-vols\",\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"node-role.kubernetes.io/infra\",\"operator\":\"Exists\"}],\"volumes\":[{\"name\":\"awsrawcreds\",\"secret\":{\"secretName\":\"sre-stuck-ebs-vols-aws-credentials\"}},{\"emptyDir\":{},\"name\":\"secrets\"},{\"emptyDir\":{},\"name\":\"envfiles\"},{\"configMap\":{\"name\":\"sre-stuck-ebs-vols-code\"},\"name\":\"monitor-volume\"},{\"configMap\":{\"defaultMode\":420,\"items\":[{\"key\":\"ca-bundle.crt\",\"path\":\"tls-ca-bundle.pem\"}],\"name\":\"sre-stuck-ebs-vols-trusted-ca-bundle\"},\"name\":\"trusted-ca-bundle\"}]}},\"triggers\":[{\"type\":\"ConfigChange\"}]}}\n"},"managedFields":[{"manager":"manager","operation":"Update","apiVersion":"apps.openshift.io/v1","time":"2022-05-24T18:25:35Z","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{".":{},"f:kubectl.kubernetes.io/last-applied-configuration":{}},"f:labels":{".":{},"f:hive.openshift.io/managed":{},"f:name":{}}},"f:spec":{"f:replicas":{},"f:selector":{".":{},"f:name":{}},"f:strategy":{"f:activeDeadlineSeconds":{},"f:recreateParams":{".":{},"f:timeoutSeconds":{}},"f:type":{}},"f:template":{".":{},"f:metadata":{".":{},"f:creationTimestamp":{},"f:labels":{".":{},"f:name":{}},"f:name":{}},"f:spec":{".":{},"f:affinity":{".":{},"f:nodeAffinity":{".":{},"f:preferredDuringSchedulingIgnoredDuringExecution":{}}},"f:containers":{".":{},"k:{\"name\":\"main\"}":{".":{},"f:command":{},"f:env":{".":{},"k:{\"name\":\"AWS_CONFIG_FILE\"}":{".":{},"f:name":{},"f:value":{}},"k:{\"name\":\"AWS_SHARED_CREDENTIALS_FILE\"}":{".":{},"f:name":{},"f:value":{}},"k:{\"name\":\"PYTHONPATH\"}":{".":{},"f:name":{},"f:value":{}}},"f:image":{},"f:imagePullPolicy":{},"f:livenessProbe":{".":{},"f:failureThreshold":{},"f:httpGet":{".":{},"f:path":{},"f:port":{},"f:scheme":{}},"f:initialDelaySeconds":{},"f:periodSeconds":{},"f:successThreshold":{},"f:timeoutSeconds":{}},"f:name":{},"f:ports":{".":{},"k:{\"containerPort\":8080,\"protocol\":\"TCP\"}":{".":{},"f:containerPort":{},"f:protocol":{}}},"f:readinessProbe":{".":{},"f:failureThreshold":{},"f:httpGet":{".":{},"f:path":{},"f:port":{},"f:scheme":{}},"f:initialDelaySeconds":{},"f:periodSeconds":{},"f:successThreshold":{},"f:timeoutSeconds":{}},"f:resources":{},"f:terminationMessagePath":{},"f:terminationMessagePolicy":{},"f:volumeMounts":{".":{},"k:{\"mountPath\":\"/config\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/etc/pki/ca-trust/extracted/pem\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/monitor\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/secrets\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}}},"f:workingDir":{}}},"f:dnsPolicy":{},"f:initContainers":{".":{},"k:{\"name\":\"setupcreds\"}":{".":{},"f:command":{},"f:image":{},"f:imagePullPolicy":{},"f:name":{},"f:resources":{},"f:terminationMessagePath":{},"f:terminationMessagePolicy":{},"f:volumeMounts":{".":{},"k:{\"mountPath\":\"/config\"}":{".":{},"f:mountPath":{},"f:name":{}},"k:{\"mountPath\":\"/etc/pki/ca-trust/extracted/pem\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/rawsecrets\"}":{".":{},"f:mountPath":{},"f:name":{},"f:readOnly":{}},"k:{\"mountPath\":\"/secrets\"}":{".":{},"f:mountPath":{},"f:name":{}}}}},"f:restartPolicy":{},"f:schedulerName":{},"f:securityContext":{},"f:serviceAccount":{},"f:serviceAccountName":{},"f:terminationGracePeriodSeconds":{},"f:tolerations":{},"f:volumes":{".":{},"k:{\"name\":\"awsrawcreds\"}":{".":{},"f:name":{},"f:secret":{".":{},"f:defaultMode":{},"f:secretName":{}}},"k:{\"name\":\"envfiles\"}":{".":{},"f:emptyDir":{},"f:name":{}},"k:{\"name\":\"monitor-volume\"}":{".":{},"f:configMap":{".":{},"f:defaultMode":{},"f:name":{}},"f:name":{}},"k:{\"name\":\"secrets\"}":{".":{},"f:emptyDir":{},"f:name":{}},"k:{\"name\":\"trusted-ca-bundle\"}":{".":{},"f:configMap":{".":{},"f:defaultMode":{},"f:items":{},"f:name":{}},"f:name":{}}}}},"f:triggers":{}}}},{"manager":"openshift-controller-manager","operation":"Update","apiVersion":"apps.openshift.io/v1","time":"2022-05-24T18:25:35Z","fieldsType":"FieldsV1","fieldsV1":{"f:status":{"f:details":{".":{},"f:causes":{},"f:message":{}},"f:latestVersion":{}}},"subresource":"status"}]},"spec":{"strategy":{"type":"Recreate","recreateParams":{"timeoutSeconds":600},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ConfigChange"}],"replicas":1,"revisionHistoryLimit":10,"test":false,"selector":{"name":"sre-stuck-ebs-vols"},"template":{"metadata":{"name":"sre-stuck-ebs-vols","creationTimestamp":null,"labels":{"name":"sre-stuck-ebs-vols"}},"spec":{"volumes":[{"name":"awsrawcreds","secret":{"secretName":"sre-stuck-ebs-vols-aws-credentials","defaultMode":420}},{"name":"secrets","emptyDir":{}},{"name":"envfiles","emptyDir":{}},{"name":"monitor-volume","configMap":{"name":"sre-stuck-ebs-vols-code","defaultMode":420}},{"name":"trusted-ca-bundle","configMap":{"name":"sre-stuck-ebs-vols-trusted-ca-bundle","items":[{"key":"ca-bundle.crt","path":"tls-ca-bundle.pem"}],"defaultMode":420}}],"initContainers":[{"name":"setupcreds","image":"quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest","command":["/usr/local/bin/init.py","-r","/secrets/aws/config.ini","-a","/rawsecrets/aws_access_key_id","-A","/rawsecrets/aws_secret_access_key","-o","/secrets/aws/credentials.ini","-c","/config/env/CLUSTERID"],"resources":{},"volumeMounts":[{"name":"awsrawcreds","readOnly":true,"mountPath":"/rawsecrets"},{"name":"secrets","mountPath":"/secrets"},{"name":"envfiles","mountPath":"/config"},{"name":"trusted-ca-bundle","readOnly":true,"mountPath":"/etc/pki/ca-trust/extracted/pem"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"containers":[{"name":"main","image":"quay.io/app-sre/managed-prometheus-exporter-base:latest","command":["/bin/sh","/monitor/start.sh"],"workingDir":"/monitor","ports":[{"containerPort":8080,"protocol":"TCP"}],"env":[{"name":"AWS_SHARED_CREDENTIALS_FILE","value":"/secrets/aws/credentials.ini"},{"name":"AWS_CONFIG_FILE","value":"/secrets/aws/config.ini"},{"name":"PYTHONPATH","value":"/openshift-python/packages:/support/packages"}],"resources":{},"volumeMounts":[{"name":"monitor-volume","readOnly":true,"mountPath":"/monitor"},{"name":"envfiles","readOnly":true,"mountPath":"/config"},{"name":"secrets","readOnly":true,"mountPath":"/secrets"},{"name":"trusted-ca-bundle","readOnly":true,"mountPath":"/etc/pki/ca-trust/extracted/pem"}],"livenessProbe":{"httpGet":{"path":"/","port":8080,"scheme":"HTTP"},"initialDelaySeconds":420,"timeoutSeconds":240,"periodSeconds":360,"successThreshold":1,"failureThreshold":2},"readinessProbe":{"httpGet":{"path":"/","port":8080,"scheme":"HTTP"},"initialDelaySeconds":3,"timeoutSeconds":240,"periodSeconds":10,"successThreshold":1,"failureThreshold":3},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","serviceAccountName":"sre-stuck-ebs-vols","serviceAccount":"sre-stuck-ebs-vols","securityContext":{},"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"weight":1,"preference":{"matchExpressions":[{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]}}]}},"schedulerName":"default-scheduler","tolerations":[{"key":"node-role.kubernetes.io/infra","operator":"Exists","effect":"NoSchedule"}]}}},"status":{"latestVersion":1,"observedGeneration":0,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"config change","causes":[{"type":"ConfigChange"}]}}}
+    creationTimestamp: "2022-05-24T18:25:35Z"
+    generation: 3
+    labels:
+      hive.openshift.io/managed: "true"
+      name: sre-stuck-ebs-vols
+      openshift.io/deployment-config.name: sre-stuck-ebs-vols
+    name: sre-stuck-ebs-vols-1
+    namespace: openshift-monitoring
+    ownerReferences:
+    - apiVersion: apps.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DeploymentConfig
+      name: sre-stuck-ebs-vols
+      uid: f4e2d54c-0706-480f-be2b-6c25b080fb42
+    resourceVersion: "61741"
+    uid: 5e8bbfa8-58f2-4b1d-a290-b6e3e4f5ddbe
+  spec:
+    replicas: 0
+    selector:
+      deployment: sre-stuck-ebs-vols-1
+      deploymentconfig: sre-stuck-ebs-vols
+      name: sre-stuck-ebs-vols
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: sre-stuck-ebs-vols
+          openshift.io/deployment.name: sre-stuck-ebs-vols-1
+        creationTimestamp: null
+        labels:
+          deployment: sre-stuck-ebs-vols-1
+          deploymentconfig: sre-stuck-ebs-vols
+          name: sre-stuck-ebs-vols
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - command:
+          - /bin/sh
+          - /monitor/start.sh
+          env:
+          - name: AWS_SHARED_CREDENTIALS_FILE
+            value: /secrets/aws/credentials.ini
+          - name: AWS_CONFIG_FILE
+            value: /secrets/aws/config.ini
+          - name: PYTHONPATH
+            value: /openshift-python/packages:/support/packages
+          image: quay.io/app-sre/managed-prometheus-exporter-base:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 420
+            periodSeconds: 360
+            successThreshold: 1
+            timeoutSeconds: 240
+          name: main
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 240
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /monitor
+            name: monitor-volume
+            readOnly: true
+          - mountPath: /config
+            name: envfiles
+            readOnly: true
+          - mountPath: /secrets
+            name: secrets
+            readOnly: true
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca-bundle
+            readOnly: true
+          workingDir: /monitor
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - /usr/local/bin/init.py
+          - -r
+          - /secrets/aws/config.ini
+          - -a
+          - /rawsecrets/aws_access_key_id
+          - -A
+          - /rawsecrets/aws_secret_access_key
+          - -o
+          - /secrets/aws/credentials.ini
+          - -c
+          - /config/env/CLUSTERID
+          image: quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest
+          imagePullPolicy: Always
+          name: setupcreds
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /rawsecrets
+            name: awsrawcreds
+            readOnly: true
+          - mountPath: /secrets
+            name: secrets
+          - mountPath: /config
+            name: envfiles
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca-bundle
+            readOnly: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: sre-stuck-ebs-vols
+        serviceAccountName: sre-stuck-ebs-vols
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - name: awsrawcreds
+          secret:
+            defaultMode: 420
+            secretName: sre-stuck-ebs-vols-aws-credentials
+        - emptyDir: {}
+          name: secrets
+        - emptyDir: {}
+          name: envfiles
+        - configMap:
+            defaultMode: 420
+            name: sre-stuck-ebs-vols-code
+          name: monitor-volume
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+            name: sre-stuck-ebs-vols-trusted-ca-bundle
+          name: trusted-ca-bundle
+  status:
+    observedGeneration: 3
+    replicas: 0
+kind: ReplicationControllerList
+metadata:
+  resourceVersion: "322405"

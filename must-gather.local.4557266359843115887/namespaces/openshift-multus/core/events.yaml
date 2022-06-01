@@ -1,0 +1,2898 @@
+---
+apiVersion: v1
+items:
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:00:00.222676Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557100-qqdgg
+    namespace: openshift-multus
+    resourceVersion: "187120"
+    uid: 676ab442-6688-4e08-91ce-781693655a6f
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557100-qqdgg to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: ip-reconciler-27557100-qqdgg.16f2262fddaaf3c5
+    namespace: openshift-multus
+    resourceVersion: "187135"
+    uid: 80a6512f-d39f-42d9-ace1-c81555968ea5
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557100-qqdgg
+    namespace: openshift-multus
+    resourceVersion: "187130"
+    uid: 676ab442-6688-4e08-91ce-781693655a6f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: ip-reconciler-27557100-qqdgg.16f2262ff361ae90
+    namespace: openshift-multus
+    resourceVersion: "187158"
+    uid: 6cc2127d-3831-4f8c-b792-d1ac16891809
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557100-qqdgg
+    namespace: openshift-multus
+    resourceVersion: "187130"
+    uid: 676ab442-6688-4e08-91ce-781693655a6f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: ip-reconciler-27557100-qqdgg.16f2262ffcc4f4ca
+    namespace: openshift-multus
+    resourceVersion: "187160"
+    uid: a4697e29-bc3b-439d-a38b-ebf375313836
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557100-qqdgg
+    namespace: openshift-multus
+    resourceVersion: "187130"
+    uid: 676ab442-6688-4e08-91ce-781693655a6f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: ip-reconciler-27557100-qqdgg.16f2262ffe09e6cc
+    namespace: openshift-multus
+    resourceVersion: "187161"
+    uid: 7ac5bba6-8374-4aa7-ab83-b3d038c30563
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557100
+    namespace: openshift-multus
+    resourceVersion: "187103"
+    uid: 0c622050-2be3-4cc4-bec6-39a1e8c43dca
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: 'Created pod: ip-reconciler-27557100-qqdgg'
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: ip-reconciler-27557100.16f2262fdcc21054
+    namespace: openshift-multus
+    resourceVersion: "187144"
+    uid: 32e8fac7-9ee6-4fca-8fbe-d79b4152d37f
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:04Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557100
+    namespace: openshift-multus
+    resourceVersion: "187128"
+    uid: 0c622050-2be3-4cc4-bec6-39a1e8c43dca
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:04Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:04Z"
+    name: ip-reconciler-27557100.16f22630c30d1e54
+    namespace: openshift-multus
+    resourceVersion: "187284"
+    uid: fcf82923-2e55-40f0-a1f5-000fb5c86b97
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:15:00.165496Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557115-7czzf
+    namespace: openshift-multus
+    resourceVersion: "199594"
+    uid: 89d0a810-9d58-406b-bb67-5b31821ddbfa
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557115-7czzf to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: ip-reconciler-27557115-7czzf.16f227016670a8eb
+    namespace: openshift-multus
+    resourceVersion: "199605"
+    uid: 0b453c0f-760d-443d-bebe-5c367bbb0855
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557115-7czzf
+    namespace: openshift-multus
+    resourceVersion: "199599"
+    uid: 89d0a810-9d58-406b-bb67-5b31821ddbfa
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: ip-reconciler-27557115-7czzf.16f227017df31dab
+    namespace: openshift-multus
+    resourceVersion: "199615"
+    uid: 81469259-fdc8-4f68-bed4-bfbd990c62c6
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557115-7czzf
+    namespace: openshift-multus
+    resourceVersion: "199599"
+    uid: 89d0a810-9d58-406b-bb67-5b31821ddbfa
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: ip-reconciler-27557115-7czzf.16f2270186672e33
+    namespace: openshift-multus
+    resourceVersion: "199619"
+    uid: 6423da45-dfc5-4786-ac72-6f6934892f37
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557115-7czzf
+    namespace: openshift-multus
+    resourceVersion: "199599"
+    uid: 89d0a810-9d58-406b-bb67-5b31821ddbfa
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: ip-reconciler-27557115-7czzf.16f2270187a497bb
+    namespace: openshift-multus
+    resourceVersion: "199620"
+    uid: e1a39e04-1387-4f6f-b6ba-b1e57c2cb12d
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557115
+    namespace: openshift-multus
+    resourceVersion: "199588"
+    uid: bfbd4f9d-4445-4b67-b506-26721bfe822f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:00Z"
+  message: 'Created pod: ip-reconciler-27557115-7czzf'
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: ip-reconciler-27557115.16f2270165e2dd43
+    namespace: openshift-multus
+    resourceVersion: "199597"
+    uid: 26477a35-a885-4b01-8e2a-915c9983406c
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557115
+    namespace: openshift-multus
+    resourceVersion: "199598"
+    uid: bfbd4f9d-4445-4b67-b506-26721bfe822f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:03Z"
+    name: ip-reconciler-27557115.16f22702211765bb
+    namespace: openshift-multus
+    resourceVersion: "199672"
+    uid: 3c646183-6f3b-40dd-8b19-672f4f3ebb13
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:30:00.172942Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557130-k6svr
+    namespace: openshift-multus
+    resourceVersion: "211333"
+    uid: 8e7672ea-7840-4ce1-8d3d-08eadc3c2b98
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557130-k6svr to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: ip-reconciler-27557130-k6svr.16f227d2f3106f46
+    namespace: openshift-multus
+    resourceVersion: "211342"
+    uid: f290da0c-b27a-4db2-a8b8-aaff692786cb
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557130-k6svr
+    namespace: openshift-multus
+    resourceVersion: "211338"
+    uid: 8e7672ea-7840-4ce1-8d3d-08eadc3c2b98
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: ip-reconciler-27557130-k6svr.16f227d30a8b819d
+    namespace: openshift-multus
+    resourceVersion: "211367"
+    uid: 616a313a-970d-4f34-87b4-e8825a6308f4
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557130-k6svr
+    namespace: openshift-multus
+    resourceVersion: "211338"
+    uid: 8e7672ea-7840-4ce1-8d3d-08eadc3c2b98
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: ip-reconciler-27557130-k6svr.16f227d313c64d36
+    namespace: openshift-multus
+    resourceVersion: "211370"
+    uid: c8b4d3a6-573a-4e1a-8318-67bcaa6845bb
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557130-k6svr
+    namespace: openshift-multus
+    resourceVersion: "211338"
+    uid: 8e7672ea-7840-4ce1-8d3d-08eadc3c2b98
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: ip-reconciler-27557130-k6svr.16f227d314fd5eff
+    namespace: openshift-multus
+    resourceVersion: "211371"
+    uid: ab342a62-b02d-4aa7-95d5-c19ad8b04535
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557130
+    namespace: openshift-multus
+    resourceVersion: "211324"
+    uid: 61097adc-0f09-4ae5-a9d8-089535fa799f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:00Z"
+  message: 'Created pod: ip-reconciler-27557130-k6svr'
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: ip-reconciler-27557130.16f227d2f24a568d
+    namespace: openshift-multus
+    resourceVersion: "211335"
+    uid: 25263907-6f89-415f-bb40-eb6282ec1b4d
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557130
+    namespace: openshift-multus
+    resourceVersion: "211337"
+    uid: 61097adc-0f09-4ae5-a9d8-089535fa799f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:03Z"
+    name: ip-reconciler-27557130.16f227d3b76bcc01
+    namespace: openshift-multus
+    resourceVersion: "211427"
+    uid: 464af01d-b9ff-4eeb-a8f1-2f26b84646ff
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:45:00.166108Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557145-whbbd
+    namespace: openshift-multus
+    resourceVersion: "223231"
+    uid: 31e25d1f-bf8b-4d0e-b632-894817b195bf
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557145-whbbd to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: ip-reconciler-27557145-whbbd.16f228a47ed64fa2
+    namespace: openshift-multus
+    resourceVersion: "223239"
+    uid: b3ab2442-98f4-4ac7-84e1-a8f50da84f41
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557145-whbbd
+    namespace: openshift-multus
+    resourceVersion: "223235"
+    uid: 31e25d1f-bf8b-4d0e-b632-894817b195bf
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: ip-reconciler-27557145-whbbd.16f228a4963e8e12
+    namespace: openshift-multus
+    resourceVersion: "223258"
+    uid: cf2e1e08-ee51-4376-990f-9ebab4b3ccac
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557145-whbbd
+    namespace: openshift-multus
+    resourceVersion: "223235"
+    uid: 31e25d1f-bf8b-4d0e-b632-894817b195bf
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: ip-reconciler-27557145-whbbd.16f228a49f975294
+    namespace: openshift-multus
+    resourceVersion: "223259"
+    uid: 6b777adf-5149-4d51-b67f-4df4f9266fea
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557145-whbbd
+    namespace: openshift-multus
+    resourceVersion: "223235"
+    uid: 31e25d1f-bf8b-4d0e-b632-894817b195bf
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: ip-reconciler-27557145-whbbd.16f228a4a0d00a49
+    namespace: openshift-multus
+    resourceVersion: "223260"
+    uid: 4fdd055e-036b-4393-bba3-c7f9733b8cb7
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557145
+    namespace: openshift-multus
+    resourceVersion: "223224"
+    uid: 3b68e28a-9ec8-4fc7-af14-38096402ccce
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:00Z"
+  message: 'Created pod: ip-reconciler-27557145-whbbd'
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: ip-reconciler-27557145.16f228a47e48d925
+    namespace: openshift-multus
+    resourceVersion: "223233"
+    uid: e6879d4d-b9ff-4b41-bf6e-bcd66de5f8df
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557145
+    namespace: openshift-multus
+    resourceVersion: "223234"
+    uid: 3b68e28a-9ec8-4fc7-af14-38096402ccce
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:03Z"
+    name: ip-reconciler-27557145.16f228a54dca501e
+    namespace: openshift-multus
+    resourceVersion: "223301"
+    uid: 81388b09-e6fd-4e9d-9002-8f26c57d748d
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:00:00.187917Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557160-fv5wk
+    namespace: openshift-multus
+    resourceVersion: "234950"
+    uid: 0f93c45a-1f39-4281-ae65-3b2eee0f39a6
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557160-fv5wk to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: ip-reconciler-27557160-fv5wk.16f229760c514163
+    namespace: openshift-multus
+    resourceVersion: "234958"
+    uid: be93d050-d47b-41c1-b56a-cfecbd08c9f9
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557160-fv5wk
+    namespace: openshift-multus
+    resourceVersion: "234953"
+    uid: 0f93c45a-1f39-4281-ae65-3b2eee0f39a6
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: ip-reconciler-27557160-fv5wk.16f2297623adcfbd
+    namespace: openshift-multus
+    resourceVersion: "235016"
+    uid: cb05f801-54dc-45c0-83df-afee141ce749
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557160-fv5wk
+    namespace: openshift-multus
+    resourceVersion: "234953"
+    uid: 0f93c45a-1f39-4281-ae65-3b2eee0f39a6
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: ip-reconciler-27557160-fv5wk.16f229762d797725
+    namespace: openshift-multus
+    resourceVersion: "235020"
+    uid: 7edcc82a-4c04-4aa4-8e28-1e443ffad1a0
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557160-fv5wk
+    namespace: openshift-multus
+    resourceVersion: "234953"
+    uid: 0f93c45a-1f39-4281-ae65-3b2eee0f39a6
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: ip-reconciler-27557160-fv5wk.16f229762ec04ade
+    namespace: openshift-multus
+    resourceVersion: "235022"
+    uid: f690c4e1-7005-4726-bdbf-9d6ccc7b7fd1
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557160
+    namespace: openshift-multus
+    resourceVersion: "234941"
+    uid: 026bab3a-6415-4670-ad04-4950e7cf994f
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: 'Created pod: ip-reconciler-27557160-fv5wk'
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: ip-reconciler-27557160.16f229760ba92a3a
+    namespace: openshift-multus
+    resourceVersion: "234955"
+    uid: 80a42700-f91d-4b82-8fd0-40babae9f10f
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557160
+    namespace: openshift-multus
+    resourceVersion: "234954"
+    uid: 026bab3a-6415-4670-ad04-4950e7cf994f
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:03Z"
+    name: ip-reconciler-27557160.16f22976e62763bd
+    namespace: openshift-multus
+    resourceVersion: "235120"
+    uid: 988d7e38-502d-4a86-a567-54431fbe67d6
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:15:00.170469Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557175-ngm94
+    namespace: openshift-multus
+    resourceVersion: "247462"
+    uid: 10eb5c68-d336-4cf9-9f18-a370d48f575e
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557175-ngm94 to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: ip-reconciler-27557175-ngm94.16f22a4797752d20
+    namespace: openshift-multus
+    resourceVersion: "247469"
+    uid: 04728262-2650-4ea5-9aca-fb67d7e1b45f
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557175-ngm94
+    namespace: openshift-multus
+    resourceVersion: "247465"
+    uid: 10eb5c68-d336-4cf9-9f18-a370d48f575e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: ip-reconciler-27557175-ngm94.16f22a47ae22229a
+    namespace: openshift-multus
+    resourceVersion: "247485"
+    uid: 5f10780b-e35d-475b-8c8a-35d414414978
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557175-ngm94
+    namespace: openshift-multus
+    resourceVersion: "247465"
+    uid: 10eb5c68-d336-4cf9-9f18-a370d48f575e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: ip-reconciler-27557175-ngm94.16f22a47b9565f87
+    namespace: openshift-multus
+    resourceVersion: "247488"
+    uid: 65370f91-2aba-417f-8fb3-849790095015
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557175-ngm94
+    namespace: openshift-multus
+    resourceVersion: "247465"
+    uid: 10eb5c68-d336-4cf9-9f18-a370d48f575e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: ip-reconciler-27557175-ngm94.16f22a47baee5bc2
+    namespace: openshift-multus
+    resourceVersion: "247489"
+    uid: 71179be1-b3b5-4e75-80a1-96488a2e2ffd
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557175
+    namespace: openshift-multus
+    resourceVersion: "247454"
+    uid: a90abf22-2c07-462c-aa9e-a2e314cf5c79
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:00Z"
+  message: 'Created pod: ip-reconciler-27557175-ngm94'
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: ip-reconciler-27557175.16f22a4796e310ea
+    namespace: openshift-multus
+    resourceVersion: "247464"
+    uid: 49b812ff-9b6b-4b7d-bead-3b0114f3ecbe
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557175
+    namespace: openshift-multus
+    resourceVersion: "247466"
+    uid: a90abf22-2c07-462c-aa9e-a2e314cf5c79
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:03Z"
+    name: ip-reconciler-27557175.16f22a48470cbcf6
+    namespace: openshift-multus
+    resourceVersion: "247529"
+    uid: 33fe0993-30ee-41d3-b1ad-0efcf6ce6659
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:30:00.173442Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557190-d44lg
+    namespace: openshift-multus
+    resourceVersion: "259139"
+    uid: 4687713b-98b9-4a75-bc69-0a4e8688722e
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557190-d44lg to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: ip-reconciler-27557190-d44lg.16f22b1923d0b0ed
+    namespace: openshift-multus
+    resourceVersion: "259148"
+    uid: bfeaaa71-920b-40fa-bd52-2766c5d3ad84
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557190-d44lg
+    namespace: openshift-multus
+    resourceVersion: "259142"
+    uid: 4687713b-98b9-4a75-bc69-0a4e8688722e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: ip-reconciler-27557190-d44lg.16f22b193b8e20a6
+    namespace: openshift-multus
+    resourceVersion: "259174"
+    uid: ac0c12f3-61e2-44ae-a040-c3aa0a270805
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557190-d44lg
+    namespace: openshift-multus
+    resourceVersion: "259142"
+    uid: 4687713b-98b9-4a75-bc69-0a4e8688722e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: ip-reconciler-27557190-d44lg.16f22b194479b7d5
+    namespace: openshift-multus
+    resourceVersion: "259175"
+    uid: 0178b01d-1c4a-4bcb-98d1-adc957fbe66a
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557190-d44lg
+    namespace: openshift-multus
+    resourceVersion: "259142"
+    uid: 4687713b-98b9-4a75-bc69-0a4e8688722e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: ip-reconciler-27557190-d44lg.16f22b1945c3de0e
+    namespace: openshift-multus
+    resourceVersion: "259176"
+    uid: 160e1137-2092-4308-887c-3c2eaaa939b3
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557190
+    namespace: openshift-multus
+    resourceVersion: "259131"
+    uid: 3c05da12-c11c-47b2-bf9a-9db803439696
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:00Z"
+  message: 'Created pod: ip-reconciler-27557190-d44lg'
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: ip-reconciler-27557190.16f22b1923264eec
+    namespace: openshift-multus
+    resourceVersion: "259144"
+    uid: a91015aa-fee7-42e9-b9f1-e1f1520dd1ea
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557190
+    namespace: openshift-multus
+    resourceVersion: "259143"
+    uid: 3c05da12-c11c-47b2-bf9a-9db803439696
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:03Z"
+    name: ip-reconciler-27557190.16f22b19de33a15f
+    namespace: openshift-multus
+    resourceVersion: "259232"
+    uid: cf5d7a36-6826-4879-848c-3518d428c4cf
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:45:00.166700Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557205-czrk8
+    namespace: openshift-multus
+    resourceVersion: "271040"
+    uid: a6ac5105-4bc5-4e12-a7b7-346ecc4b0c32
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557205-czrk8 to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: ip-reconciler-27557205-czrk8.16f22beaaf97f7ba
+    namespace: openshift-multus
+    resourceVersion: "271046"
+    uid: 22746bd5-81fc-490d-96af-83d6f8beb05c
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557205-czrk8
+    namespace: openshift-multus
+    resourceVersion: "271042"
+    uid: a6ac5105-4bc5-4e12-a7b7-346ecc4b0c32
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: ip-reconciler-27557205-czrk8.16f22beac687d498
+    namespace: openshift-multus
+    resourceVersion: "271066"
+    uid: b0c0b5df-127a-4a9a-aa04-e8bc11f8d8b6
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557205-czrk8
+    namespace: openshift-multus
+    resourceVersion: "271042"
+    uid: a6ac5105-4bc5-4e12-a7b7-346ecc4b0c32
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: ip-reconciler-27557205-czrk8.16f22beacfee4c43
+    namespace: openshift-multus
+    resourceVersion: "271084"
+    uid: afa60abd-393f-4174-8485-a268a32caf3d
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557205-czrk8
+    namespace: openshift-multus
+    resourceVersion: "271042"
+    uid: a6ac5105-4bc5-4e12-a7b7-346ecc4b0c32
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: ip-reconciler-27557205-czrk8.16f22bead13029e6
+    namespace: openshift-multus
+    resourceVersion: "271085"
+    uid: df1e1933-e08e-4d21-ba0b-dcb976692dd1
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557205
+    namespace: openshift-multus
+    resourceVersion: "271033"
+    uid: be70841d-0ee5-49a6-bc0f-a00a220852f9
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:00Z"
+  message: 'Created pod: ip-reconciler-27557205-czrk8'
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: ip-reconciler-27557205.16f22beaaf27be36
+    namespace: openshift-multus
+    resourceVersion: "271043"
+    uid: ea560521-2cca-4fce-bc53-7a7b68b4c9fa
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557205
+    namespace: openshift-multus
+    resourceVersion: "271045"
+    uid: be70841d-0ee5-49a6-bc0f-a00a220852f9
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:03Z"
+    name: ip-reconciler-27557205.16f22beb76f9f0ab
+    namespace: openshift-multus
+    resourceVersion: "271151"
+    uid: 7655384a-ade2-4aca-a26a-a0398ab687f2
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:00:00.254134Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557220-dzbds
+    namespace: openshift-multus
+    resourceVersion: "282845"
+    uid: 3a09a626-1e01-447d-a9a6-08c754aefe7e
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557220-dzbds to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: ip-reconciler-27557220-dzbds.16f22cbc40fc382a
+    namespace: openshift-multus
+    resourceVersion: "282857"
+    uid: f5371c52-69ab-4f1a-b948-3a04ccd5c8ae
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557220-dzbds
+    namespace: openshift-multus
+    resourceVersion: "282852"
+    uid: 3a09a626-1e01-447d-a9a6-08c754aefe7e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: ip-reconciler-27557220-dzbds.16f22cbc56f656e6
+    namespace: openshift-multus
+    resourceVersion: "282872"
+    uid: 23976b01-8e94-48d8-a111-e22d934690a6
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557220-dzbds
+    namespace: openshift-multus
+    resourceVersion: "282852"
+    uid: 3a09a626-1e01-447d-a9a6-08c754aefe7e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: ip-reconciler-27557220-dzbds.16f22cbc5f6f7e0a
+    namespace: openshift-multus
+    resourceVersion: "282875"
+    uid: d3ca1803-4226-491a-8c1f-ae8a3f970bdb
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557220-dzbds
+    namespace: openshift-multus
+    resourceVersion: "282852"
+    uid: 3a09a626-1e01-447d-a9a6-08c754aefe7e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: ip-reconciler-27557220-dzbds.16f22cbc60b4eb6e
+    namespace: openshift-multus
+    resourceVersion: "282876"
+    uid: 444d40d3-ec91-4c83-bf83-d714a8c06a9d
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557220
+    namespace: openshift-multus
+    resourceVersion: "282813"
+    uid: d5a0e15b-f2c3-44b7-bd4a-25c8918eb94b
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: 'Created pod: ip-reconciler-27557220-dzbds'
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: ip-reconciler-27557220.16f22cbc402c44ca
+    namespace: openshift-multus
+    resourceVersion: "282856"
+    uid: 6364cd5c-311f-4036-a8a7-5067993825fc
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557220
+    namespace: openshift-multus
+    resourceVersion: "282850"
+    uid: d5a0e15b-f2c3-44b7-bd4a-25c8918eb94b
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:03Z"
+    name: ip-reconciler-27557220.16f22cbd0d598eb4
+    namespace: openshift-multus
+    resourceVersion: "282959"
+    uid: fd14f78a-13bf-4820-86b2-0c1a564b2f16
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:15:00.167427Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557235-7t2xj
+    namespace: openshift-multus
+    resourceVersion: "295332"
+    uid: 4c762ae2-5645-482d-9d96-870204967774
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557235-7t2xj to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: ip-reconciler-27557235-7t2xj.16f22d8dc7ff615b
+    namespace: openshift-multus
+    resourceVersion: "295339"
+    uid: bed61df9-783f-4e29-b5ec-d1ce6d340d6c
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557235-7t2xj
+    namespace: openshift-multus
+    resourceVersion: "295335"
+    uid: 4c762ae2-5645-482d-9d96-870204967774
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: ip-reconciler-27557235-7t2xj.16f22d8ddf05f8ef
+    namespace: openshift-multus
+    resourceVersion: "295360"
+    uid: 17d92679-b0c2-4a4a-a981-0f61925987f2
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557235-7t2xj
+    namespace: openshift-multus
+    resourceVersion: "295335"
+    uid: 4c762ae2-5645-482d-9d96-870204967774
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: ip-reconciler-27557235-7t2xj.16f22d8de89c7c46
+    namespace: openshift-multus
+    resourceVersion: "295367"
+    uid: eed41ea5-97f4-453c-90ae-de9a5fd3eff3
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557235-7t2xj
+    namespace: openshift-multus
+    resourceVersion: "295335"
+    uid: 4c762ae2-5645-482d-9d96-870204967774
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: ip-reconciler-27557235-7t2xj.16f22d8de9d694e1
+    namespace: openshift-multus
+    resourceVersion: "295368"
+    uid: 980aa3fc-4af5-48a5-9eb0-16fee66b2d47
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557235
+    namespace: openshift-multus
+    resourceVersion: "295325"
+    uid: ef0ab155-66b9-45cd-bd1f-b181772fef9c
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:00Z"
+  message: 'Created pod: ip-reconciler-27557235-7t2xj'
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: ip-reconciler-27557235.16f22d8dc77e1fa9
+    namespace: openshift-multus
+    resourceVersion: "295334"
+    uid: 3cf37edb-da98-4545-8d15-487e2c534f2c
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557235
+    namespace: openshift-multus
+    resourceVersion: "295336"
+    uid: ef0ab155-66b9-45cd-bd1f-b181772fef9c
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:03Z"
+    name: ip-reconciler-27557235.16f22d8ea9c493b4
+    namespace: openshift-multus
+    resourceVersion: "295437"
+    uid: b199347e-a91f-417b-a0c4-8ea9ea7f9523
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:30:00.168965Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557250-8dwqj
+    namespace: openshift-multus
+    resourceVersion: "307102"
+    uid: 45e39794-ac52-4576-8766-e325ddd343a6
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557250-8dwqj to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: ip-reconciler-27557250-8dwqj.16f22e5f5444f504
+    namespace: openshift-multus
+    resourceVersion: "307113"
+    uid: 6d184fa7-39d1-44a0-a842-2ed5d27c2c02
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557250-8dwqj
+    namespace: openshift-multus
+    resourceVersion: "307106"
+    uid: 45e39794-ac52-4576-8766-e325ddd343a6
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: ip-reconciler-27557250-8dwqj.16f22e5f6b8fbf52
+    namespace: openshift-multus
+    resourceVersion: "307137"
+    uid: 18174864-395f-4de5-b116-05e3a9dff344
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557250-8dwqj
+    namespace: openshift-multus
+    resourceVersion: "307106"
+    uid: 45e39794-ac52-4576-8766-e325ddd343a6
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: ip-reconciler-27557250-8dwqj.16f22e5f7610e10d
+    namespace: openshift-multus
+    resourceVersion: "307139"
+    uid: 89675a76-4f85-4716-bf4d-47a151fa59df
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557250-8dwqj
+    namespace: openshift-multus
+    resourceVersion: "307106"
+    uid: 45e39794-ac52-4576-8766-e325ddd343a6
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: ip-reconciler-27557250-8dwqj.16f22e5f774b8b0c
+    namespace: openshift-multus
+    resourceVersion: "307140"
+    uid: b7fcf9b6-c5e1-431f-a20c-17745c759e18
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557250
+    namespace: openshift-multus
+    resourceVersion: "307095"
+    uid: a56bc6eb-2ace-407d-aff4-c4367661f165
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:00Z"
+  message: 'Created pod: ip-reconciler-27557250-8dwqj'
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: ip-reconciler-27557250.16f22e5f5394a627
+    namespace: openshift-multus
+    resourceVersion: "307104"
+    uid: 995e7263-32bc-49c7-b335-a2de9f5bc710
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557250
+    namespace: openshift-multus
+    resourceVersion: "307105"
+    uid: a56bc6eb-2ace-407d-aff4-c4367661f165
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:03Z"
+    name: ip-reconciler-27557250.16f22e60072e5007
+    namespace: openshift-multus
+    resourceVersion: "307183"
+    uid: 54fc9f65-0588-46a6-877a-32fd2eede8ac
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:45:00.168294Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: ip-reconciler-27557265-bhqv6
+    namespace: openshift-multus
+    resourceVersion: "318917"
+    uid: dcd92022-f39d-47f5-a537-6e0609a02a7d
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-multus/ip-reconciler-27557265-bhqv6 to
+    ip-10-0-128-34.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: ip-reconciler-27557265-bhqv6.16f22f30e068ed96
+    namespace: openshift-multus
+    resourceVersion: "318924"
+    uid: dd33be1e-186e-4758-a020-4b8d358da56c
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557265-bhqv6
+    namespace: openshift-multus
+    resourceVersion: "318923"
+    uid: dcd92022-f39d-47f5-a537-6e0609a02a7d
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:00Z"
+  message: Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: ip-reconciler-27557265-bhqv6.16f22f30f6e934c0
+    namespace: openshift-multus
+    resourceVersion: "318941"
+    uid: e4d889e2-1bde-4f28-bf01-fc27efb76ece
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557265-bhqv6
+    namespace: openshift-multus
+    resourceVersion: "318923"
+    uid: dcd92022-f39d-47f5-a537-6e0609a02a7d
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:00Z"
+  message: Created container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: ip-reconciler-27557265-bhqv6.16f22f310034e3e4
+    namespace: openshift-multus
+    resourceVersion: "318944"
+    uid: 45a7a42b-ed27-4197-a932-eca9d4dd2eed
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:00Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{whereabouts}
+    kind: Pod
+    name: ip-reconciler-27557265-bhqv6
+    namespace: openshift-multus
+    resourceVersion: "318923"
+    uid: dcd92022-f39d-47f5-a537-6e0609a02a7d
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:00Z"
+  message: Started container whereabouts
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: ip-reconciler-27557265-bhqv6.16f22f310170a328
+    namespace: openshift-multus
+    resourceVersion: "318945"
+    uid: 1f5ceb6d-75a5-4ef8-b28b-f3885c7aa8e9
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557265
+    namespace: openshift-multus
+    resourceVersion: "318911"
+    uid: f7ba1fb6-01d2-4015-9f74-3dd7daff62a3
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:00Z"
+  message: 'Created pod: ip-reconciler-27557265-bhqv6'
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: ip-reconciler-27557265.16f22f30dfbedbe2
+    namespace: openshift-multus
+    resourceVersion: "318920"
+    uid: 7e6222dc-d73d-4434-9064-20e38305cc72
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: ip-reconciler-27557265
+    namespace: openshift-multus
+    resourceVersion: "318921"
+    uid: f7ba1fb6-01d2-4015-9f74-3dd7daff62a3
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:03Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:03Z"
+    name: ip-reconciler-27557265.16f22f319ea7613a
+    namespace: openshift-multus
+    resourceVersion: "318992"
+    uid: fc549582-49ea-4e38-b157-2b3bd24efd58
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "175425"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: Created job ip-reconciler-27557100
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: ip-reconciler.16f2262fdb8bd0a8
+    namespace: openshift-multus
+    resourceVersion: "187124"
+    uid: 66266d0a-3e57-40ea-86a7-8217f5b3e07d
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:04Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "187112"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:04Z"
+  message: 'Saw completed job: ip-reconciler-27557100, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:04Z"
+    name: ip-reconciler.16f22630c39eebba
+    namespace: openshift-multus
+    resourceVersion: "187286"
+    uid: 60683a38-acef-4aa6-b0df-b22b19b5fc1b
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:04Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "187287"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:04Z"
+  message: Deleted job ip-reconciler-27557100
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:04Z"
+    name: ip-reconciler.16f22630c4a722ea
+    namespace: openshift-multus
+    resourceVersion: "187289"
+    uid: ecef4dca-4ec6-46af-9a38-95a790ce37c2
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "187287"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:00Z"
+  message: Created job ip-reconciler-27557115
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: ip-reconciler.16f2270165031800
+    namespace: openshift-multus
+    resourceVersion: "199595"
+    uid: 41061dfc-c2f5-4c3c-a669-4ce616975592
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "199590"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:03Z"
+  message: 'Saw completed job: ip-reconciler-27557115, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:03Z"
+    name: ip-reconciler.16f22702219bc611
+    namespace: openshift-multus
+    resourceVersion: "199675"
+    uid: b7c9d716-8a92-49b7-bf4b-7f83b698560b
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "199676"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:03Z"
+  message: Deleted job ip-reconciler-27557115
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:03Z"
+    name: ip-reconciler.16f227022288f46c
+    namespace: openshift-multus
+    resourceVersion: "199678"
+    uid: 7ada8e0d-cb19-4728-9f14-1e74a3eebd13
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "199676"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:00Z"
+  message: Created job ip-reconciler-27557130
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: ip-reconciler.16f227d2f12750d9
+    namespace: openshift-multus
+    resourceVersion: "211330"
+    uid: e2221232-4e72-416e-95d4-0752e1120b25
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "211328"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:03Z"
+  message: 'Saw completed job: ip-reconciler-27557130, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:03Z"
+    name: ip-reconciler.16f227d3b7e87621
+    namespace: openshift-multus
+    resourceVersion: "211429"
+    uid: 37ece8d2-92ef-45bc-8d8a-4e9016e7721c
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "211430"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:03Z"
+  message: Deleted job ip-reconciler-27557130
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:03Z"
+    name: ip-reconciler.16f227d3b90a6b4a
+    namespace: openshift-multus
+    resourceVersion: "211432"
+    uid: f488bada-3247-48db-b876-62205a843e3c
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "211430"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:00Z"
+  message: Created job ip-reconciler-27557145
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: ip-reconciler.16f228a47d85928b
+    namespace: openshift-multus
+    resourceVersion: "223236"
+    uid: 37f4a7ab-3bf6-4194-9644-80c0e84502b3
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "223229"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:03Z"
+  message: 'Saw completed job: ip-reconciler-27557145, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:03Z"
+    name: ip-reconciler.16f228a54e3930eb
+    namespace: openshift-multus
+    resourceVersion: "223303"
+    uid: 7fe74956-3728-4ed7-a77e-b79ed24ce94c
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "223304"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:03Z"
+  message: Deleted job ip-reconciler-27557145
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:03Z"
+    name: ip-reconciler.16f228a54f1748df
+    namespace: openshift-multus
+    resourceVersion: "223306"
+    uid: 9bc83a98-f618-471e-9d5e-5debc7b2621a
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "223304"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: Created job ip-reconciler-27557160
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: ip-reconciler.16f229760a9a07dd
+    namespace: openshift-multus
+    resourceVersion: "234956"
+    uid: e69a3984-8a02-466e-9207-0a2835927e96
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "234947"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:03Z"
+  message: 'Saw completed job: ip-reconciler-27557160, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:03Z"
+    name: ip-reconciler.16f22976e6984dd6
+    namespace: openshift-multus
+    resourceVersion: "235122"
+    uid: bd6809aa-9f33-49af-a13f-29641d31a852
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "235123"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:03Z"
+  message: Deleted job ip-reconciler-27557160
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:03Z"
+    name: ip-reconciler.16f22976e773141f
+    namespace: openshift-multus
+    resourceVersion: "235125"
+    uid: f157203b-8706-4b6f-8ae8-5e5c170132da
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "235123"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:00Z"
+  message: Created job ip-reconciler-27557175
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: ip-reconciler.16f22a4795eed7c8
+    namespace: openshift-multus
+    resourceVersion: "247461"
+    uid: 624f480c-88eb-4068-8e1b-e3d8beb2c73e
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "247458"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:03Z"
+  message: 'Saw completed job: ip-reconciler-27557175, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:03Z"
+    name: ip-reconciler.16f22a4847966798
+    namespace: openshift-multus
+    resourceVersion: "247531"
+    uid: b6262fa2-4617-4902-8c24-183a1a1c344a
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "247532"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:03Z"
+  message: Deleted job ip-reconciler-27557175
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:03Z"
+    name: ip-reconciler.16f22a4848828808
+    namespace: openshift-multus
+    resourceVersion: "247534"
+    uid: 65d8fa10-ca2e-4d12-aa94-4993a986e68e
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "247532"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:00Z"
+  message: Created job ip-reconciler-27557190
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: ip-reconciler.16f22b19223da910
+    namespace: openshift-multus
+    resourceVersion: "259147"
+    uid: 7cf598ab-8a5d-4fd5-a9af-d5135fda021b
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "259135"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:03Z"
+  message: 'Saw completed job: ip-reconciler-27557190, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:03Z"
+    name: ip-reconciler.16f22b19deb889e1
+    namespace: openshift-multus
+    resourceVersion: "259234"
+    uid: 100f4737-9288-4df6-b1b3-7bd1fac5a0dc
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "259235"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:03Z"
+  message: Deleted job ip-reconciler-27557190
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:03Z"
+    name: ip-reconciler.16f22b19df8f979d
+    namespace: openshift-multus
+    resourceVersion: "259237"
+    uid: 893d9a3b-0da8-4c0a-9773-ec0f89c3fb19
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "259235"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:00Z"
+  message: Created job ip-reconciler-27557205
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: ip-reconciler.16f22beaae095cf5
+    namespace: openshift-multus
+    resourceVersion: "271038"
+    uid: 5c1fe857-00b5-4736-8083-fc32fc944b93
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "271036"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:03Z"
+  message: 'Saw completed job: ip-reconciler-27557205, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:03Z"
+    name: ip-reconciler.16f22beb77911fab
+    namespace: openshift-multus
+    resourceVersion: "271153"
+    uid: 884bb01a-a46d-4e62-96ba-0ed40e09965f
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "271154"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:03Z"
+  message: Deleted job ip-reconciler-27557205
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:03Z"
+    name: ip-reconciler.16f22beb78a0f699
+    namespace: openshift-multus
+    resourceVersion: "271156"
+    uid: 51d250ff-a193-498b-85b3-82e0b35de1aa
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "271154"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: Created job ip-reconciler-27557220
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: ip-reconciler.16f22cbc3ce5aceb
+    namespace: openshift-multus
+    resourceVersion: "282819"
+    uid: d6db5d35-bfc8-4dfd-9917-d132ad597a46
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "282817"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:03Z"
+  message: 'Saw completed job: ip-reconciler-27557220, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:03Z"
+    name: ip-reconciler.16f22cbd0dd9b35c
+    namespace: openshift-multus
+    resourceVersion: "282962"
+    uid: 119cee76-bb80-43be-b73b-b9dfa5e6fbec
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "282964"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:03Z"
+  message: Deleted job ip-reconciler-27557220
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:03Z"
+    name: ip-reconciler.16f22cbd0ed98d20
+    namespace: openshift-multus
+    resourceVersion: "282968"
+    uid: a64b0f79-dbec-4afe-b74d-0186d31012b1
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "282964"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:00Z"
+  message: Created job ip-reconciler-27557235
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: ip-reconciler.16f22d8dc67515b7
+    namespace: openshift-multus
+    resourceVersion: "295330"
+    uid: cb9dee65-ff1c-4ccc-826e-6a094c8711e9
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "295328"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:03Z"
+  message: 'Saw completed job: ip-reconciler-27557235, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:03Z"
+    name: ip-reconciler.16f22d8eaa505b73
+    namespace: openshift-multus
+    resourceVersion: "295439"
+    uid: 5553011c-18f4-40a7-88c4-e1c8b6acba02
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "295440"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:03Z"
+  message: Deleted job ip-reconciler-27557235
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:03Z"
+    name: ip-reconciler.16f22d8eab55ebdb
+    namespace: openshift-multus
+    resourceVersion: "295442"
+    uid: 842ed6d0-e821-4a47-9a03-90ad4a3d4189
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "295440"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:00Z"
+  message: Created job ip-reconciler-27557250
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: ip-reconciler.16f22e5f52b5da45
+    namespace: openshift-multus
+    resourceVersion: "307103"
+    uid: 0ca9b9d7-7fac-4909-8a8f-82b77754b4e4
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "307097"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:03Z"
+  message: 'Saw completed job: ip-reconciler-27557250, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:03Z"
+    name: ip-reconciler.16f22e6007abb516
+    namespace: openshift-multus
+    resourceVersion: "307185"
+    uid: 81d6cadd-eb5f-4d1e-aa8a-6e865d15d969
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "307186"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:03Z"
+  message: Deleted job ip-reconciler-27557250
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:03Z"
+    name: ip-reconciler.16f22e6008ae53d4
+    namespace: openshift-multus
+    resourceVersion: "307189"
+    uid: e400640e-3eb5-475d-a77a-76367efc51a1
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "307186"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:00Z"
+  message: Created job ip-reconciler-27557265
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: ip-reconciler.16f22f30dedb3f01
+    namespace: openshift-multus
+    resourceVersion: "318915"
+    uid: 0f4cfd91-8b01-4fc5-b070-b5c0dbcdd256
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "318914"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:03Z"
+  message: 'Saw completed job: ip-reconciler-27557265, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:03Z"
+    name: ip-reconciler.16f22f319f458359
+    namespace: openshift-multus
+    resourceVersion: "318994"
+    uid: d8550a0e-7728-4306-bf07-273b5cc8160e
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:03Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: ip-reconciler
+    namespace: openshift-multus
+    resourceVersion: "318995"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:03Z"
+  message: Deleted job ip-reconciler-27557265
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:03Z"
+    name: ip-reconciler.16f22f31a02d20d7
+    namespace: openshift-multus
+    resourceVersion: "318997"
+    uid: f884afac-6370-4b92-8452-df5a525bc45a
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+kind: EventList
+metadata:
+  resourceVersion: "324958"

@@ -1,0 +1,57 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: csi-snapshot-controller
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "63529"
+  uid: dfe9d298-1c8a-4040-9a0a-066224789e60
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:07:39Z"
+    message: All is well
+    reason: AsExpected
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:36:38Z"
+    message: All is well
+    reason: AsExpected
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:08:15Z"
+    message: All is well
+    reason: AsExpected
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:07:43Z"
+    message: All is well
+    reason: AsExpected
+    status: "True"
+    type: Upgradeable
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-cluster-storage-operator
+    resource: namespaces
+  - group: ""
+    name: openshift-cluster-storage-operator
+    resource: namespaces
+  - group: operator.openshift.io
+    name: cluster
+    resource: csisnapshotcontrollers
+  versions:
+  - name: csi-snapshot-controller
+    version: 4.10.13
+  - name: operator
+    version: 4.10.13

@@ -1,0 +1,33 @@
+---
+apiVersion: policy/v1
+items:
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:52Z"
+    generation: 1
+    name: etcd-quorum-guard
+    namespace: openshift-etcd
+    resourceVersion: "72924"
+    uid: deda77f1-8ba1-4ac3-869b-df3c5d7102f3
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        k8s-app: etcd-quorum-guard
+  status:
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:41:06Z"
+      message: ""
+      observedGeneration: 1
+      reason: SufficientPods
+      status: "True"
+      type: DisruptionAllowed
+    currentHealthy: 3
+    desiredHealthy: 2
+    disruptionsAllowed: 1
+    expectedPods: 3
+    observedGeneration: 1
+kind: PodDisruptionBudgetList
+metadata:
+  resourceVersion: "310930"

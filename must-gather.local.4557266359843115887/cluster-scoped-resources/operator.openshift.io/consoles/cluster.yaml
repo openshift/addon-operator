@@ -1,0 +1,170 @@
+---
+apiVersion: operator.openshift.io/v1
+kind: Console
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2022-05-24T18:19:29Z"
+  generation: 2
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "64210"
+  uid: c93a7049-9f38-416e-a7ba-77912fa81d22
+spec:
+  customization:
+    customLogoFile:
+      key: rosa-brand-logo.svg
+      name: rosa-brand-logo
+    customProductName: Red Hat OpenShift Service on AWS
+    documentationBaseURL: https://docs.openshift.com/rosa/
+  logLevel: Normal
+  managementState: Managed
+  operatorLogLevel: Normal
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:19:46Z"
+    status: "False"
+    type: ManagementStateDegraded
+  - lastTransitionTime: "2022-05-24T18:19:46Z"
+    status: "False"
+    type: ResourceSyncControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:29:16Z"
+    status: "False"
+    type: RouteHealthDegraded
+  - lastTransitionTime: "2022-05-24T18:19:47Z"
+    status: "False"
+    type: RouteHealthProgressing
+  - lastTransitionTime: "2022-05-24T18:29:16Z"
+    status: "True"
+    type: RouteHealthAvailable
+  - lastTransitionTime: "2022-05-24T18:19:50Z"
+    status: "False"
+    type: DownloadsDeploymentSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:19:50Z"
+    status: "False"
+    type: DownloadsDeploymentSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:19:54Z"
+    reason: NoUnsupportedConfigOverrides
+    status: "True"
+    type: UnsupportedConfigOverridesUpgradeable
+  - lastTransitionTime: "2022-05-24T18:19:56Z"
+    status: "False"
+    type: CustomRouteSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:19:56Z"
+    status: "False"
+    type: CustomRouteSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:25:34Z"
+    status: "False"
+    type: DefaultRouteSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:19:56Z"
+    status: "False"
+    type: DefaultRouteSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:19:57Z"
+    status: "False"
+    type: ServiceSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:19:57Z"
+    status: "False"
+    type: ServiceSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: SyncLoopRefreshDegraded
+  - lastTransitionTime: "2022-05-24T18:28:50Z"
+    status: "False"
+    type: SyncLoopRefreshProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: ManagedClusterConfigSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: ManagedClusterConfigSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: ConfigMapSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: ConfigMapSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: ServiceCASyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: ServiceCASyncProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: TrustedCASyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: TrustedCASyncProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: CustomLogoSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: CustomLogoSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: OAuthServingCertValidationDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: OAuthServingCertValidationProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: OAuthClientSecretSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: OAuthClientSecretSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: OAuthClientSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: OAuthClientSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: DeploymentSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: DeploymentSyncProgressing
+  - lastTransitionTime: "2022-05-24T18:21:09Z"
+    status: "True"
+    type: DeploymentAvailable
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: ConsoleConfigDegraded
+  - lastTransitionTime: "2022-05-24T18:20:00Z"
+    status: "False"
+    type: ConsolePublicConfigMapDegraded
+  - lastTransitionTime: "2022-05-24T18:20:01Z"
+    status: "False"
+    type: OCDownloadsSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:01Z"
+    status: "False"
+    type: ODODownloadsSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:03Z"
+    status: "False"
+    type: RedirectServiceSyncDegraded
+  - lastTransitionTime: "2022-05-24T18:20:03Z"
+    status: "False"
+    type: RedirectServiceSyncProgressing
+  generations:
+  - group: apps
+    hash: ""
+    lastGeneration: 1
+    name: downloads
+    namespace: openshift-console
+    resource: deployments
+  - group: apps
+    hash: ""
+    lastGeneration: 4
+    name: console
+    namespace: openshift-console
+    resource: deployments
+  observedGeneration: 2
+  readyReplicas: 2

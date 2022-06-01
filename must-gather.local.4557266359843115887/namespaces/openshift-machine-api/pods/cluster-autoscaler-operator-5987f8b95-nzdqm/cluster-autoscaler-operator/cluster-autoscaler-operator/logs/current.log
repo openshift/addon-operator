@@ -1,0 +1,15 @@
+2022-05-24T18:31:59.812425195Z I0524 18:31:59.812308       1 main.go:13] Go Version: go1.17.5
+2022-05-24T18:31:59.812515827Z I0524 18:31:59.812503       1 main.go:14] Go OS/Arch: linux/amd64
+2022-05-24T18:31:59.812541652Z I0524 18:31:59.812532       1 main.go:15] Version: cluster-autoscaler-operator v4.10.0-202204211158.p0.g8bcdccc.assembly.stream-dirty
+2022-05-24T18:32:00.894278397Z W0524 18:32:00.890091       1 leaderelection.go:51] unable to get cluster infrastructure status, using HA cluster values for leader election: infrastructures.config.openshift.io "cluster" is forbidden: User "system:serviceaccount:openshift-machine-api:cluster-autoscaler-operator" cannot get resource "infrastructures" in API group "config.openshift.io" at the cluster scope
+2022-05-24T18:32:01.940452629Z I0524 18:32:01.940401       1 request.go:665] Waited for 1.013162458s due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/velero.io/v1?timeout=32s
+2022-05-24T18:32:08.799390738Z W0524 18:32:08.799322       1 machineautoscaler_controller.go:150] Removing support for unregistered target type: cluster.k8s.io/v1beta1, Kind=MachineDeployment
+2022-05-24T18:32:11.990621366Z I0524 18:32:11.990554       1 request.go:665] Waited for 3.098027089s due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/ocs.openshift.io/v1alpha1?timeout=32s
+2022-05-24T18:32:13.498451461Z W0524 18:32:13.498398       1 machineautoscaler_controller.go:150] Removing support for unregistered target type: cluster.k8s.io/v1beta1, Kind=MachineSet
+2022-05-24T18:32:18.194295082Z W0524 18:32:18.194258       1 machineautoscaler_controller.go:150] Removing support for unregistered target type: machine.openshift.io/v1beta1, Kind=MachineDeployment
+2022-05-24T18:32:18.194571272Z I0524 18:32:18.194558       1 main.go:36] Starting cluster-autoscaler-operator
+2022-05-24T18:32:18.194765946Z I0524 18:32:18.194735       1 leaderelection.go:248] attempting to acquire leader lease openshift-machine-api/cluster-autoscaler-operator-leader...
+2022-05-24T18:34:47.550429651Z I0524 18:34:47.550393       1 leaderelection.go:258] successfully acquired lease openshift-machine-api/cluster-autoscaler-operator-leader
+2022-05-24T18:34:47.557627867Z I0524 18:34:47.557592       1 status.go:386] No ClusterAutoscaler. Reporting available.
+2022-05-24T18:34:47.557683464Z I0524 18:34:47.557673       1 status.go:234] Operator status available: at version 4.10.13
+2022-05-24T18:34:47.658893997Z I0524 18:34:47.658845       1 webhookconfig.go:72] Webhook configuration status: updated

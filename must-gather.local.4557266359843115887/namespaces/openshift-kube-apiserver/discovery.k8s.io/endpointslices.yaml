@@ -1,0 +1,76 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.0.138.197
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: kube-apiserver-ip-10-0-138-197.ec2.internal
+      namespace: openshift-kube-apiserver
+      resourceVersion: "74035"
+      uid: 0dccd712-1214-427c-8b4c-b3939c33301a
+    zone: us-east-1a
+  - addresses:
+    - 10.0.169.205
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: kube-apiserver-ip-10-0-169-205.ec2.internal
+      namespace: openshift-kube-apiserver
+      resourceVersion: "80092"
+      uid: 0e6fbc35-0d25-40cb-964c-9297f8e0f08d
+    zone: us-east-1c
+  - addresses:
+    - 10.0.149.121
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-149-121.ec2.internal
+    targetRef:
+      kind: Pod
+      name: kube-apiserver-ip-10-0-149-121.ec2.internal
+      namespace: openshift-kube-apiserver
+      resourceVersion: "83414"
+      uid: 05e2fde5-6a5e-46e1-b35e-3d889f90244e
+    zone: us-east-1b
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:49:28Z"
+    creationTimestamp: "2022-05-24T18:07:53Z"
+    generateName: apiserver-
+    generation: 49
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: apiserver
+    name: apiserver-jfv5c
+    namespace: openshift-kube-apiserver
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: apiserver
+      uid: 68c847c9-5b31-461d-a879-72d14a18e643
+    resourceVersion: "83416"
+    uid: b268070f-1d68-49e3-96e5-a8ab629effee
+  ports:
+  - name: https
+    port: 6443
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "314220"

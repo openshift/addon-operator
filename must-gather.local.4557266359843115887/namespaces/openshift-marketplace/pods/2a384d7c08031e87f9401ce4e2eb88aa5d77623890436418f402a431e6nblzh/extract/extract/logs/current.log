@@ -1,0 +1,8 @@
+2022-05-24T18:28:01.310486489Z time="2022-05-24T18:28:01Z" level=info msg="Using in-cluster kube client config"
+2022-05-24T18:28:01.320724247Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/backingstores.noobaa.io.crd.yaml
+2022-05-24T18:28:01.322032927Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/bucketclasses.noobaa.io.crd.yaml
+2022-05-24T18:28:01.322723960Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/mcg-operator.clusterserviceversion.yaml
+2022-05-24T18:28:01.324787636Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/namespacestores.noobaa.io.crd.yaml
+2022-05-24T18:28:01.325276927Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/noobaaaccounts.noobaa.io.crd.yaml
+2022-05-24T18:28:01.325673895Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/noobaas.noobaa.io.crd.yaml
+2022-05-24T18:28:01.327822478Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/metadata/annotations.yaml

@@ -1,0 +1,16 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: "2022-05-24T18:09:09Z"
+  name: pod-identity-webhook
+  resourceVersion: "9359"
+  uid: 3d76a32f-7ada-494f-9c0c-72d50a1a2b70
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pod-identity-webhook
+subjects:
+- kind: ServiceAccount
+  name: pod-identity-webhook
+  namespace: openshift-cloud-credential-operator

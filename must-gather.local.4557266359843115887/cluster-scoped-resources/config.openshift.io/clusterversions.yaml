@@ -1,0 +1,68 @@
+---
+apiVersion: config.openshift.io/v1
+items:
+- apiVersion: config.openshift.io/v1
+  kind: ClusterVersion
+  metadata:
+    creationTimestamp: "2022-05-24T18:05:26Z"
+    generation: 2
+    name: version
+    resourceVersion: "81935"
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  spec:
+    channel: stable-4.10
+    clusterID: 3ef9f2d5-498d-4a5e-a004-09e65633e1bb
+  status:
+    availableUpdates: null
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:05:27Z"
+      status: "True"
+      type: RetrievedUpdates
+    - lastTransitionTime: "2022-05-24T18:05:27Z"
+      message: Payload loaded version="4.10.13" image="quay.io/openshift-release-dev/ocp-release@sha256:4f516616baed3cf84585e753359f7ef2153ae139c2e80e0191902fbd073c4143"
+      reason: PayloadLoaded
+      status: "True"
+      type: ReleaseAccepted
+    - lastTransitionTime: "2022-05-24T18:25:21Z"
+      message: Done applying 4.10.13
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2022-05-24T18:25:21Z"
+      status: "False"
+      type: Failing
+    - lastTransitionTime: "2022-05-24T18:25:21Z"
+      message: Cluster version is 4.10.13
+      status: "False"
+      type: Progressing
+    - lastTransitionTime: "2022-05-24T18:26:05Z"
+      message: 'Cluster operator cloud-credential should not be upgraded between minor
+        versions: Upgradeable annotation cloudcredential.openshift.io/upgradeable-to
+        on cloudcredential.operator.openshift.io/cluster object needs updating before
+        upgrade. See Manually Creating IAM documentation for instructions on preparing
+        a cluster for upgrade.'
+      reason: MissingUpgradeableAnnotation
+      status: "False"
+      type: Upgradeable
+    desired:
+      channels:
+      - candidate-4.10
+      - candidate-4.11
+      - eus-4.10
+      - fast-4.10
+      - stable-4.10
+      image: quay.io/openshift-release-dev/ocp-release@sha256:4f516616baed3cf84585e753359f7ef2153ae139c2e80e0191902fbd073c4143
+      url: https://access.redhat.com/errata/RHBA-2022:1690
+      version: 4.10.13
+    history:
+    - completionTime: "2022-05-24T18:25:21Z"
+      image: quay.io/openshift-release-dev/ocp-release@sha256:4f516616baed3cf84585e753359f7ef2153ae139c2e80e0191902fbd073c4143
+      startedTime: "2022-05-24T18:05:27Z"
+      state: Completed
+      verified: false
+      version: 4.10.13
+    observedGeneration: 2
+    versionHash: D3XGRq52lFQ=
+kind: ClusterVersionList
+metadata:
+  continue: ""
+  resourceVersion: "295183"

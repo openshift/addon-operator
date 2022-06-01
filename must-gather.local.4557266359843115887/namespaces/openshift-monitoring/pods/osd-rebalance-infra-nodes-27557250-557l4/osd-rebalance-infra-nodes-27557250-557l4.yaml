@@ -1,0 +1,177 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.4.92"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.4.92"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T23:30:00Z"
+  generateName: osd-rebalance-infra-nodes-27557250-
+  labels:
+    controller-uid: 17e12fb5-15ed-4fbd-882c-31eaaa4ab4c2
+    job-name: osd-rebalance-infra-nodes-27557250
+  name: osd-rebalance-infra-nodes-27557250-557l4
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557250
+    uid: 17e12fb5-15ed-4fbd-882c-31eaaa4ab4c2
+  resourceVersion: "307245"
+  uid: 42de9d24-1055-424e-b38a-1c0ddefb1a5f
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: node-role.kubernetes.io/infra
+            operator: Exists
+        weight: 1
+  containers:
+  - command:
+    - /bin/sh
+    - -c
+    - /etc/config/entrypoint
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    imagePullPolicy: Always
+    name: osd-rebalance-infra-nodes
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/config
+      name: osd-rebalance-infra-nodes
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-lbg5h
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: osd-rebalance-infra-nodes-dockercfg-swnfb
+  nodeName: ip-10-0-148-123.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: osd-rebalance-infra-nodes
+  serviceAccountName: osd-rebalance-infra-nodes
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - configMap:
+      defaultMode: 493
+      name: osd-rebalance-infra-nodes
+    name: osd-rebalance-infra-nodes
+  - name: kube-api-access-lbg5h
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:30:00Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:30:04Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:30:04Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:30:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://87d64b1f8b54be4fea295e619932cdecd1642b4097ce4d8aa85d475e4f61a496
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    imageID: image-registry.openshift-image-registry.svc:5000/openshift/cli@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+    lastState: {}
+    name: osd-rebalance-infra-nodes
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://87d64b1f8b54be4fea295e619932cdecd1642b4097ce4d8aa85d475e4f61a496
+        exitCode: 0
+        finishedAt: "2022-05-24T23:30:03Z"
+        reason: Completed
+        startedAt: "2022-05-24T23:30:02Z"
+  hostIP: 10.0.148.123
+  phase: Succeeded
+  podIP: 10.128.4.92
+  podIPs:
+  - ip: 10.128.4.92
+  qosClass: BestEffort
+  startTime: "2022-05-24T23:30:00Z"

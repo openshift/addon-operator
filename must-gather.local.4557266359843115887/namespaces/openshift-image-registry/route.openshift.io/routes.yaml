@@ -1,0 +1,37 @@
+---
+apiVersion: route.openshift.io/v1
+items:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      imageregistry.openshift.io: "true"
+      imageregistry.operator.openshift.io/checksum: sha256:9ad8062fa1490a315ca448ad2a9e23999fb490a65caa1e44f21ca6e663d95cf0
+      openshift.io/host.generated: "true"
+    creationTimestamp: "2022-05-24T18:25:37Z"
+    name: default-route
+    namespace: openshift-image-registry
+    resourceVersion: "38937"
+    uid: 9b91883a-5ccf-40f2-95cb-dac9289a0b44
+  spec:
+    host: default-route-openshift-image-registry.apps.odf-service.dif5.p1.openshiftapps.com
+    tls:
+      termination: reencrypt
+    to:
+      kind: Service
+      name: image-registry
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:27:49Z"
+        status: "True"
+        type: Admitted
+      host: default-route-openshift-image-registry.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+kind: RouteList
+metadata:
+  resourceVersion: "312092"

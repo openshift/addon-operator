@@ -1,0 +1,327 @@
+---
+apiVersion: batch/v1
+items:
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    generation: 1
+    labels:
+      created-by: image-pruner
+    name: image-pruner-27557100
+    namespace: openshift-image-registry
+    ownerReferences:
+    - apiVersion: batch/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: image-pruner
+      uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+    resourceVersion: "187351"
+    uid: 97fcd727-96a9-4f5e-a69a-b3976a0723db
+  spec:
+    backoffLimit: 0
+    completionMode: NonIndexed
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 97fcd727-96a9-4f5e-a69a-b3976a0723db
+    suspend: false
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 97fcd727-96a9-4f5e-a69a-b3976a0723db
+          job-name: image-pruner-27557100
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - args:
+          - -c
+          - |
+            set -eu
+            "$@" && exit
+            for i in 1 2 3 4 5; do
+              echo "attempt #$i has failed (exit code $?), going to make another attempt..." >&2
+              sleep $(($i * 30))
+              "$@" && break  # this is the last command of the script, so its last failure will be exit code of the script
+            done
+          - arg0
+          - oc
+          - adm
+          - prune
+          - images
+          - --confirm=true
+          - --certificate-authority=/var/run/configmaps/serviceca/service-ca.crt
+          - --keep-tag-revisions=3
+          - --keep-younger-than=24h0m0s
+          - --ignore-invalid-refs=true
+          - --loglevel=1
+          - --prune-registry=true
+          - --registry-url=https://image-registry.openshift-image-registry.svc:5000
+          command:
+          - /bin/sh
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+          imagePullPolicy: IfNotPresent
+          name: image-pruner
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/run/configmaps/serviceca
+            name: serviceca
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        priorityClassName: system-cluster-critical
+        restartPolicy: Never
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: pruner
+        serviceAccountName: pruner
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: serviceca
+          name: serviceca
+  status:
+    completionTime: "2022-05-24T21:00:06Z"
+    conditions:
+    - lastProbeTime: "2022-05-24T21:00:06Z"
+      lastTransitionTime: "2022-05-24T21:00:06Z"
+      status: "True"
+      type: Complete
+    startTime: "2022-05-24T21:00:00Z"
+    succeeded: 1
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    generation: 1
+    labels:
+      created-by: image-pruner
+    name: image-pruner-27557160
+    namespace: openshift-image-registry
+    ownerReferences:
+    - apiVersion: batch/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: image-pruner
+      uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+    resourceVersion: "235186"
+    uid: 0513e62c-4896-495d-91a5-e489ce343d22
+  spec:
+    backoffLimit: 0
+    completionMode: NonIndexed
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 0513e62c-4896-495d-91a5-e489ce343d22
+    suspend: false
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 0513e62c-4896-495d-91a5-e489ce343d22
+          job-name: image-pruner-27557160
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - args:
+          - -c
+          - |
+            set -eu
+            "$@" && exit
+            for i in 1 2 3 4 5; do
+              echo "attempt #$i has failed (exit code $?), going to make another attempt..." >&2
+              sleep $(($i * 30))
+              "$@" && break  # this is the last command of the script, so its last failure will be exit code of the script
+            done
+          - arg0
+          - oc
+          - adm
+          - prune
+          - images
+          - --confirm=true
+          - --certificate-authority=/var/run/configmaps/serviceca/service-ca.crt
+          - --keep-tag-revisions=3
+          - --keep-younger-than=24h0m0s
+          - --ignore-invalid-refs=true
+          - --loglevel=1
+          - --prune-registry=true
+          - --registry-url=https://image-registry.openshift-image-registry.svc:5000
+          command:
+          - /bin/sh
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+          imagePullPolicy: IfNotPresent
+          name: image-pruner
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/run/configmaps/serviceca
+            name: serviceca
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        priorityClassName: system-cluster-critical
+        restartPolicy: Never
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: pruner
+        serviceAccountName: pruner
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: serviceca
+          name: serviceca
+  status:
+    completionTime: "2022-05-24T22:00:06Z"
+    conditions:
+    - lastProbeTime: "2022-05-24T22:00:06Z"
+      lastTransitionTime: "2022-05-24T22:00:06Z"
+      status: "True"
+      type: Complete
+    startTime: "2022-05-24T22:00:00Z"
+    succeeded: 1
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    generation: 1
+    labels:
+      created-by: image-pruner
+    name: image-pruner-27557220
+    namespace: openshift-image-registry
+    ownerReferences:
+    - apiVersion: batch/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: image-pruner
+      uid: eee7ca10-45a6-4f57-af6e-9fa739ddbd96
+    resourceVersion: "283025"
+    uid: 8fd7dc43-51bd-4d67-b89b-7551b681191b
+  spec:
+    backoffLimit: 0
+    completionMode: NonIndexed
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 8fd7dc43-51bd-4d67-b89b-7551b681191b
+    suspend: false
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 8fd7dc43-51bd-4d67-b89b-7551b681191b
+          job-name: image-pruner-27557220
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - args:
+          - -c
+          - |
+            set -eu
+            "$@" && exit
+            for i in 1 2 3 4 5; do
+              echo "attempt #$i has failed (exit code $?), going to make another attempt..." >&2
+              sleep $(($i * 30))
+              "$@" && break  # this is the last command of the script, so its last failure will be exit code of the script
+            done
+          - arg0
+          - oc
+          - adm
+          - prune
+          - images
+          - --confirm=true
+          - --certificate-authority=/var/run/configmaps/serviceca/service-ca.crt
+          - --keep-tag-revisions=3
+          - --keep-younger-than=24h0m0s
+          - --ignore-invalid-refs=true
+          - --loglevel=1
+          - --prune-registry=true
+          - --registry-url=https://image-registry.openshift-image-registry.svc:5000
+          command:
+          - /bin/sh
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+          imagePullPolicy: IfNotPresent
+          name: image-pruner
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/run/configmaps/serviceca
+            name: serviceca
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        priorityClassName: system-cluster-critical
+        restartPolicy: Never
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: pruner
+        serviceAccountName: pruner
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: serviceca
+          name: serviceca
+  status:
+    completionTime: "2022-05-24T23:00:06Z"
+    conditions:
+    - lastProbeTime: "2022-05-24T23:00:06Z"
+      lastTransitionTime: "2022-05-24T23:00:06Z"
+      status: "True"
+      type: Complete
+    startTime: "2022-05-24T23:00:00Z"
+    succeeded: 1
+kind: JobList
+metadata:
+  resourceVersion: "312084"

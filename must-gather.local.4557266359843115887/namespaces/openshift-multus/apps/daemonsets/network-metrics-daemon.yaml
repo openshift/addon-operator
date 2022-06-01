@@ -1,0 +1,125 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+    kubernetes.io/description: |
+      This daemonset launches the network metrics daemon on each node
+    networkoperator.openshift.io/non-critical: ""
+    release.openshift.io/version: 4.10.13
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  generation: 1
+  name: network-metrics-daemon
+  namespace: openshift-multus
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "78670"
+  uid: 01e6ff91-72be-4ade-82fd-aad534fc8bc2
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: network-metrics-daemon
+  template:
+    metadata:
+      annotations:
+        target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+      creationTimestamp: null
+      labels:
+        app: network-metrics-daemon
+        component: network
+        openshift.io/component: network
+        type: infra
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: network.operator.openshift.io/dpu-host
+                operator: DoesNotExist
+              - key: network.operator.openshift.io/dpu
+                operator: DoesNotExist
+      containers:
+      - args:
+        - --node-name
+        - $(NODE_NAME)
+        command:
+        - /usr/bin/network-metrics
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fa14b77345ce258fdb531a52c98abc6a3f5ad6d7aaa82f6aca30ab46d52c75ec
+        imagePullPolicy: IfNotPresent
+        name: network-metrics-daemon
+        resources:
+          requests:
+            cpu: 10m
+            memory: 100Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - args:
+        - --logtostderr
+        - --secure-listen-address=:8443
+        - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+        - --upstream=http://127.0.0.1:9091/
+        - --tls-private-key-file=/etc/metrics/tls.key
+        - --tls-cert-file=/etc/metrics/tls.crt
+        image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+        imagePullPolicy: IfNotPresent
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 10m
+            memory: 20Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /etc/metrics
+          name: metrics-certs
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/os: linux
+      priorityClassName: system-node-critical
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      serviceAccount: metrics-daemon-sa
+      serviceAccountName: metrics-daemon-sa
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - operator: Exists
+      volumes:
+      - name: metrics-certs
+        secret:
+          defaultMode: 420
+          secretName: metrics-daemon-secret
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 33%
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 9
+  desiredNumberScheduled: 9
+  numberAvailable: 9
+  numberMisscheduled: 0
+  numberReady: 9
+  observedGeneration: 1
+  updatedNumberScheduled: 9

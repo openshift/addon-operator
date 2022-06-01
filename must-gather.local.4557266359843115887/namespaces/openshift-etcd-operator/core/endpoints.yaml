@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:32:10Z"
+    creationTimestamp: "2022-05-24T18:05:37Z"
+    labels:
+      app: etcd-operator
+    name: metrics
+    namespace: openshift-etcd-operator
+    resourceVersion: "55503"
+    uid: 44a64ec7-184f-4f81-bb55-9aa269b7b6c7
+  subsets:
+  - addresses:
+    - ip: 10.128.0.44
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: etcd-operator-6565d86cc-jcwp7
+        namespace: openshift-etcd-operator
+        resourceVersion: "55502"
+        uid: 8d0af300-795f-401a-bf23-8edefdb51698
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "310673"

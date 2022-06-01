@@ -1,0 +1,1681 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "8"
+      operator.openshift.io/rvs-hash: wQOQ_kXg9JwJaV4enbPWyfF_AUsmZQ4an-PmfiLjm4vMMDeSoS9pN8jjsU4Fd81QvQp017jX-DLsYpZw_uiCAg
+      operator.openshift.io/spec-hash: 9b1c996768251c23fe9256b3b94a4b848bad5adfac9ecd9050ffe9c6960ac631
+    creationTimestamp: "2022-05-24T18:27:19Z"
+    generation: 4
+    labels:
+      app: oauth-openshift
+      oauth-openshift-anti-affinity: "true"
+      pod-template-hash: 5b546c5495
+    name: oauth-openshift-5b546c5495
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: oauth-openshift
+      uid: a3486c85-0028-47e5-bfa5-f3ae81f63af3
+    resourceVersion: "72651"
+    uid: 341237f9-7ef4-4bd0-8e86-4896cbf48c8e
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        app: oauth-openshift
+        pod-template-hash: 5b546c5495
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/bootstrap-user-exists: "true"
+          operator.openshift.io/rvs-hash: wQOQ_kXg9JwJaV4enbPWyfF_AUsmZQ4an-PmfiLjm4vMMDeSoS9pN8jjsU4Fd81QvQp017jX-DLsYpZw_uiCAg
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: oauth-openshift
+          oauth-openshift-anti-affinity: "true"
+          pod-template-hash: 5b546c5495
+        name: oauth-openshift
+        namespace: openshift-authentication
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: oauth-openshift
+                  oauth-openshift-anti-affinity: "true"
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - |
+            if [ -s /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt ]; then
+                echo "Copying system trust bundle"
+                cp -f /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec oauth-server osinserver \
+            --config=/var/config/system/configmaps/v4-0-config-system-cliconfig/v4-0-config-system-cliconfig \
+            --v=2
+          command:
+          - /bin/bash
+          - -ec
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sleep
+                - "25"
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-openshift
+          ports:
+          - containerPort: 6443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/config/system/secrets/v4-0-config-system-session
+            name: v4-0-config-system-session
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-cliconfig
+            name: v4-0-config-system-cliconfig
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-serving-cert
+            name: v4-0-config-system-serving-cert
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-service-ca
+            name: v4-0-config-system-service-ca
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-router-certs
+            name: v4-0-config-system-router-certs
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-ocp-branding-template
+            name: v4-0-config-system-ocp-branding-template
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-login
+            name: v4-0-config-user-template-login
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-provider-selection
+            name: v4-0-config-user-template-provider-selection
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-error
+            name: v4-0-config-user-template-error
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle
+            name: v4-0-config-system-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: oauth-openshift
+        serviceAccountName: oauth-openshift
+        terminationGracePeriodSeconds: 40
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: v4-0-config-system-session
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-session
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-cliconfig
+          name: v4-0-config-system-cliconfig
+        - name: v4-0-config-system-serving-cert
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-service-ca
+          name: v4-0-config-system-service-ca
+        - name: v4-0-config-system-router-certs
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-router-certs
+        - name: v4-0-config-system-ocp-branding-template
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-ocp-branding-template
+        - name: v4-0-config-user-template-login
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-login
+        - name: v4-0-config-user-template-provider-selection
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-provider-selection
+        - name: v4-0-config-user-template-error
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-error
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-trusted-ca-bundle
+            optional: true
+          name: v4-0-config-system-trusted-ca-bundle
+  status:
+    availableReplicas: 3
+    fullyLabeledReplicas: 3
+    observedGeneration: 4
+    readyReplicas: 3
+    replicas: 3
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "2"
+      operator.openshift.io/rvs-hash: 3zZgjiFhwMbJGe5hcgU7zw-vePsB3PYcRaTHlfn6enyTUCzTC6nqMPzT-CF8yHLAW1xF53rahn7GF12qp6UiAw
+      operator.openshift.io/spec-hash: 67bec6302cc913a5f3a9f708035a922dc1f6cc4d1fc2e0ac89a91cbd84437fb1
+    creationTimestamp: "2022-05-24T18:13:32Z"
+    generation: 7
+    labels:
+      app: oauth-openshift
+      oauth-openshift-anti-affinity: "true"
+      pod-template-hash: 65cdffcdb5
+    name: oauth-openshift-65cdffcdb5
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: oauth-openshift
+      uid: a3486c85-0028-47e5-bfa5-f3ae81f63af3
+    resourceVersion: "22910"
+    uid: f3d2af1e-3a00-4c89-a239-9e834430a695
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: oauth-openshift
+        pod-template-hash: 65cdffcdb5
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/bootstrap-user-exists: "true"
+          operator.openshift.io/rvs-hash: 3zZgjiFhwMbJGe5hcgU7zw-vePsB3PYcRaTHlfn6enyTUCzTC6nqMPzT-CF8yHLAW1xF53rahn7GF12qp6UiAw
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: oauth-openshift
+          oauth-openshift-anti-affinity: "true"
+          pod-template-hash: 65cdffcdb5
+        name: oauth-openshift
+        namespace: openshift-authentication
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: oauth-openshift
+                  oauth-openshift-anti-affinity: "true"
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - |
+            if [ -s /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt ]; then
+                echo "Copying system trust bundle"
+                cp -f /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec oauth-server osinserver \
+            --config=/var/config/system/configmaps/v4-0-config-system-cliconfig/v4-0-config-system-cliconfig \
+            --v=2
+          command:
+          - /bin/bash
+          - -ec
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sleep
+                - "25"
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-openshift
+          ports:
+          - containerPort: 6443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/config/system/secrets/v4-0-config-system-session
+            name: v4-0-config-system-session
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-cliconfig
+            name: v4-0-config-system-cliconfig
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-serving-cert
+            name: v4-0-config-system-serving-cert
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-service-ca
+            name: v4-0-config-system-service-ca
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-router-certs
+            name: v4-0-config-system-router-certs
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-ocp-branding-template
+            name: v4-0-config-system-ocp-branding-template
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-login
+            name: v4-0-config-user-template-login
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-provider-selection
+            name: v4-0-config-user-template-provider-selection
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-error
+            name: v4-0-config-user-template-error
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle
+            name: v4-0-config-system-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: oauth-openshift
+        serviceAccountName: oauth-openshift
+        terminationGracePeriodSeconds: 40
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: v4-0-config-system-session
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-session
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-cliconfig
+          name: v4-0-config-system-cliconfig
+        - name: v4-0-config-system-serving-cert
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-service-ca
+          name: v4-0-config-system-service-ca
+        - name: v4-0-config-system-router-certs
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-router-certs
+        - name: v4-0-config-system-ocp-branding-template
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-ocp-branding-template
+        - name: v4-0-config-user-template-login
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-login
+        - name: v4-0-config-user-template-provider-selection
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-provider-selection
+        - name: v4-0-config-user-template-error
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-error
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-trusted-ca-bundle
+            optional: true
+          name: v4-0-config-system-trusted-ca-bundle
+  status:
+    observedGeneration: 7
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "4"
+      operator.openshift.io/rvs-hash: inlPDp010HZM3wJdSXRdM3XmWvN93pJV1bFt0VzqZB6IrL3Mn0EwQhVCD7C-gyhMBRRXbN8U5jRfbKJzhPazeA
+      operator.openshift.io/spec-hash: 23c55e0db4481f9819f624b285c69d1c963c69501c6d32f7f616ee0959573e2d
+    creationTimestamp: "2022-05-24T18:21:07Z"
+    generation: 7
+    labels:
+      app: oauth-openshift
+      oauth-openshift-anti-affinity: "true"
+      pod-template-hash: 69bbff6f48
+    name: oauth-openshift-69bbff6f48
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: oauth-openshift
+      uid: a3486c85-0028-47e5-bfa5-f3ae81f63af3
+    resourceVersion: "62249"
+    uid: 2508d648-fcc2-46a7-a0e9-e5621f12ce00
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: oauth-openshift
+        pod-template-hash: 69bbff6f48
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/bootstrap-user-exists: "true"
+          operator.openshift.io/rvs-hash: inlPDp010HZM3wJdSXRdM3XmWvN93pJV1bFt0VzqZB6IrL3Mn0EwQhVCD7C-gyhMBRRXbN8U5jRfbKJzhPazeA
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: oauth-openshift
+          oauth-openshift-anti-affinity: "true"
+          pod-template-hash: 69bbff6f48
+        name: oauth-openshift
+        namespace: openshift-authentication
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: oauth-openshift
+                  oauth-openshift-anti-affinity: "true"
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - |
+            if [ -s /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt ]; then
+                echo "Copying system trust bundle"
+                cp -f /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec oauth-server osinserver \
+            --config=/var/config/system/configmaps/v4-0-config-system-cliconfig/v4-0-config-system-cliconfig \
+            --v=2
+          command:
+          - /bin/bash
+          - -ec
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sleep
+                - "25"
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-openshift
+          ports:
+          - containerPort: 6443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/config/system/secrets/v4-0-config-system-session
+            name: v4-0-config-system-session
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-cliconfig
+            name: v4-0-config-system-cliconfig
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-serving-cert
+            name: v4-0-config-system-serving-cert
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-service-ca
+            name: v4-0-config-system-service-ca
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-router-certs
+            name: v4-0-config-system-router-certs
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-ocp-branding-template
+            name: v4-0-config-system-ocp-branding-template
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-login
+            name: v4-0-config-user-template-login
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-provider-selection
+            name: v4-0-config-user-template-provider-selection
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-error
+            name: v4-0-config-user-template-error
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle
+            name: v4-0-config-system-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: oauth-openshift
+        serviceAccountName: oauth-openshift
+        terminationGracePeriodSeconds: 40
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: v4-0-config-system-session
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-session
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-cliconfig
+          name: v4-0-config-system-cliconfig
+        - name: v4-0-config-system-serving-cert
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-service-ca
+          name: v4-0-config-system-service-ca
+        - name: v4-0-config-system-router-certs
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-router-certs
+        - name: v4-0-config-system-ocp-branding-template
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-ocp-branding-template
+        - name: v4-0-config-user-template-login
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-login
+        - name: v4-0-config-user-template-provider-selection
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-provider-selection
+        - name: v4-0-config-user-template-error
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-error
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-trusted-ca-bundle
+            optional: true
+          name: v4-0-config-system-trusted-ca-bundle
+  status:
+    observedGeneration: 7
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "3"
+      operator.openshift.io/rvs-hash: 6kka6CTly4ebO9UkBzcXTQ6krBLS3BozwUIuyb2DdQcOs92NdltYcBFDZsKdlMykzJHLbo_jKr-rqePLYsEpQw
+      operator.openshift.io/spec-hash: 8881bffa51e0a6512c28ee0dc47097445b0a191fc360468f492156f1785b469f
+    creationTimestamp: "2022-05-24T18:15:43Z"
+    generation: 7
+    labels:
+      app: oauth-openshift
+      oauth-openshift-anti-affinity: "true"
+      pod-template-hash: 746f57bd89
+    name: oauth-openshift-746f57bd89
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: oauth-openshift
+      uid: a3486c85-0028-47e5-bfa5-f3ae81f63af3
+    resourceVersion: "26938"
+    uid: 65e8317f-7b2e-415c-bd5f-ae25a44bbe00
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: oauth-openshift
+        pod-template-hash: 746f57bd89
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/bootstrap-user-exists: "true"
+          operator.openshift.io/rvs-hash: 6kka6CTly4ebO9UkBzcXTQ6krBLS3BozwUIuyb2DdQcOs92NdltYcBFDZsKdlMykzJHLbo_jKr-rqePLYsEpQw
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: oauth-openshift
+          oauth-openshift-anti-affinity: "true"
+          pod-template-hash: 746f57bd89
+        name: oauth-openshift
+        namespace: openshift-authentication
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: oauth-openshift
+                  oauth-openshift-anti-affinity: "true"
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - |
+            if [ -s /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt ]; then
+                echo "Copying system trust bundle"
+                cp -f /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec oauth-server osinserver \
+            --config=/var/config/system/configmaps/v4-0-config-system-cliconfig/v4-0-config-system-cliconfig \
+            --v=2
+          command:
+          - /bin/bash
+          - -ec
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sleep
+                - "25"
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-openshift
+          ports:
+          - containerPort: 6443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/config/system/secrets/v4-0-config-system-session
+            name: v4-0-config-system-session
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-cliconfig
+            name: v4-0-config-system-cliconfig
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-serving-cert
+            name: v4-0-config-system-serving-cert
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-service-ca
+            name: v4-0-config-system-service-ca
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-router-certs
+            name: v4-0-config-system-router-certs
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-ocp-branding-template
+            name: v4-0-config-system-ocp-branding-template
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-login
+            name: v4-0-config-user-template-login
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-provider-selection
+            name: v4-0-config-user-template-provider-selection
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-error
+            name: v4-0-config-user-template-error
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle
+            name: v4-0-config-system-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: oauth-openshift
+        serviceAccountName: oauth-openshift
+        terminationGracePeriodSeconds: 40
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: v4-0-config-system-session
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-session
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-cliconfig
+          name: v4-0-config-system-cliconfig
+        - name: v4-0-config-system-serving-cert
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-service-ca
+          name: v4-0-config-system-service-ca
+        - name: v4-0-config-system-router-certs
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-router-certs
+        - name: v4-0-config-system-ocp-branding-template
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-ocp-branding-template
+        - name: v4-0-config-user-template-login
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-login
+        - name: v4-0-config-user-template-provider-selection
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-provider-selection
+        - name: v4-0-config-user-template-error
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-error
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-trusted-ca-bundle
+            optional: true
+          name: v4-0-config-system-trusted-ca-bundle
+  status:
+    observedGeneration: 7
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "1"
+      operator.openshift.io/rvs-hash: yB_wyLhplFmrCHe1C2Z1G-fg8ZKQxyXDbFOCZVGLr_XpVPEUyuDZgrC73QS6yNLSj6GnWD7mvAQLT6uuzX7faQ
+      operator.openshift.io/spec-hash: 1b1d4a1643f44293ca0c02525432ccffa8c5aa725e39eb8e7c0a8a2d1285ef46
+    creationTimestamp: "2022-05-24T18:13:23Z"
+    generation: 4
+    labels:
+      app: oauth-openshift
+      oauth-openshift-anti-affinity: "true"
+      pod-template-hash: 7558df5c96
+    name: oauth-openshift-7558df5c96
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: oauth-openshift
+      uid: a3486c85-0028-47e5-bfa5-f3ae81f63af3
+    resourceVersion: "21604"
+    uid: cb1bef08-b05c-4c6a-b688-1df14fc7bc0e
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: oauth-openshift
+        pod-template-hash: 7558df5c96
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/bootstrap-user-exists: "true"
+          operator.openshift.io/rvs-hash: yB_wyLhplFmrCHe1C2Z1G-fg8ZKQxyXDbFOCZVGLr_XpVPEUyuDZgrC73QS6yNLSj6GnWD7mvAQLT6uuzX7faQ
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: oauth-openshift
+          oauth-openshift-anti-affinity: "true"
+          pod-template-hash: 7558df5c96
+        name: oauth-openshift
+        namespace: openshift-authentication
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: oauth-openshift
+                  oauth-openshift-anti-affinity: "true"
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - |
+            if [ -s /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt ]; then
+                echo "Copying system trust bundle"
+                cp -f /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec oauth-server osinserver \
+            --config=/var/config/system/configmaps/v4-0-config-system-cliconfig/v4-0-config-system-cliconfig \
+            --v=2
+          command:
+          - /bin/bash
+          - -ec
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sleep
+                - "25"
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-openshift
+          ports:
+          - containerPort: 6443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/config/system/secrets/v4-0-config-system-session
+            name: v4-0-config-system-session
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-cliconfig
+            name: v4-0-config-system-cliconfig
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-serving-cert
+            name: v4-0-config-system-serving-cert
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-service-ca
+            name: v4-0-config-system-service-ca
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-router-certs
+            name: v4-0-config-system-router-certs
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-ocp-branding-template
+            name: v4-0-config-system-ocp-branding-template
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-login
+            name: v4-0-config-user-template-login
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-provider-selection
+            name: v4-0-config-user-template-provider-selection
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-error
+            name: v4-0-config-user-template-error
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle
+            name: v4-0-config-system-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: oauth-openshift
+        serviceAccountName: oauth-openshift
+        terminationGracePeriodSeconds: 40
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: v4-0-config-system-session
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-session
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-cliconfig
+          name: v4-0-config-system-cliconfig
+        - name: v4-0-config-system-serving-cert
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-service-ca
+          name: v4-0-config-system-service-ca
+        - name: v4-0-config-system-router-certs
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-router-certs
+        - name: v4-0-config-system-ocp-branding-template
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-ocp-branding-template
+        - name: v4-0-config-user-template-login
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-login
+        - name: v4-0-config-user-template-provider-selection
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-provider-selection
+        - name: v4-0-config-user-template-error
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-error
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-trusted-ca-bundle
+            optional: true
+          name: v4-0-config-system-trusted-ca-bundle
+  status:
+    observedGeneration: 4
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "5"
+      operator.openshift.io/rvs-hash: qNAjrqGRnHKjfqZ_Dy5kfCUo70V1wkwYBa7D8ZNGvuFkVhB7XWGUmq8I7yb0dCSvXM52-yNNec-NLgnGOEX6yg
+      operator.openshift.io/spec-hash: 10470128f9e92d6da18c9b38de3c403aba7052d73d76c8575adcda1e93722473
+    creationTimestamp: "2022-05-24T18:25:44Z"
+    generation: 3
+    labels:
+      app: oauth-openshift
+      oauth-openshift-anti-affinity: "true"
+      pod-template-hash: 7b54c58d9c
+    name: oauth-openshift-7b54c58d9c
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: oauth-openshift
+      uid: a3486c85-0028-47e5-bfa5-f3ae81f63af3
+    resourceVersion: "31398"
+    uid: cc341146-3136-47cc-9a0c-8a7b69cd960a
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: oauth-openshift
+        pod-template-hash: 7b54c58d9c
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/bootstrap-user-exists: "true"
+          operator.openshift.io/rvs-hash: qNAjrqGRnHKjfqZ_Dy5kfCUo70V1wkwYBa7D8ZNGvuFkVhB7XWGUmq8I7yb0dCSvXM52-yNNec-NLgnGOEX6yg
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: oauth-openshift
+          oauth-openshift-anti-affinity: "true"
+          pod-template-hash: 7b54c58d9c
+        name: oauth-openshift
+        namespace: openshift-authentication
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: oauth-openshift
+                  oauth-openshift-anti-affinity: "true"
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - |
+            if [ -s /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt ]; then
+                echo "Copying system trust bundle"
+                cp -f /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec oauth-server osinserver \
+            --config=/var/config/system/configmaps/v4-0-config-system-cliconfig/v4-0-config-system-cliconfig \
+            --v=2
+          command:
+          - /bin/bash
+          - -ec
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sleep
+                - "25"
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-openshift
+          ports:
+          - containerPort: 6443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/config/system/secrets/v4-0-config-system-session
+            name: v4-0-config-system-session
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-cliconfig
+            name: v4-0-config-system-cliconfig
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-serving-cert
+            name: v4-0-config-system-serving-cert
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-service-ca
+            name: v4-0-config-system-service-ca
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-router-certs
+            name: v4-0-config-system-router-certs
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-ocp-branding-template
+            name: v4-0-config-system-ocp-branding-template
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-login
+            name: v4-0-config-user-template-login
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-provider-selection
+            name: v4-0-config-user-template-provider-selection
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-error
+            name: v4-0-config-user-template-error
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle
+            name: v4-0-config-system-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: oauth-openshift
+        serviceAccountName: oauth-openshift
+        terminationGracePeriodSeconds: 40
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: v4-0-config-system-session
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-session
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-cliconfig
+          name: v4-0-config-system-cliconfig
+        - name: v4-0-config-system-serving-cert
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-service-ca
+          name: v4-0-config-system-service-ca
+        - name: v4-0-config-system-router-certs
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-router-certs
+        - name: v4-0-config-system-ocp-branding-template
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-ocp-branding-template
+        - name: v4-0-config-user-template-login
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-login
+        - name: v4-0-config-user-template-provider-selection
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-provider-selection
+        - name: v4-0-config-user-template-error
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-error
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-trusted-ca-bundle
+            optional: true
+          name: v4-0-config-system-trusted-ca-bundle
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "6"
+      operator.openshift.io/rvs-hash: nOYDsPBfwzOndMN1ogTXxUimpcFM-iWdkZvXeYku7VMkw22Jku551XPAHzqnYF9fLo3_Z4EjcFCNTm7wDVIm7w
+      operator.openshift.io/spec-hash: 0a361842a29881759217cb6365b4860cb79d9bd6a359222a349ec22a7d4c5b20
+    creationTimestamp: "2022-05-24T18:25:48Z"
+    generation: 3
+    labels:
+      app: oauth-openshift
+      oauth-openshift-anti-affinity: "true"
+      pod-template-hash: b57d7649f
+    name: oauth-openshift-b57d7649f
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: oauth-openshift
+      uid: a3486c85-0028-47e5-bfa5-f3ae81f63af3
+    resourceVersion: "31721"
+    uid: 7d9d385c-5528-4c69-8a93-1fed9be8d5ba
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: oauth-openshift
+        pod-template-hash: b57d7649f
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/bootstrap-user-exists: "true"
+          operator.openshift.io/rvs-hash: nOYDsPBfwzOndMN1ogTXxUimpcFM-iWdkZvXeYku7VMkw22Jku551XPAHzqnYF9fLo3_Z4EjcFCNTm7wDVIm7w
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: oauth-openshift
+          oauth-openshift-anti-affinity: "true"
+          pod-template-hash: b57d7649f
+        name: oauth-openshift
+        namespace: openshift-authentication
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: oauth-openshift
+                  oauth-openshift-anti-affinity: "true"
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - |
+            if [ -s /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt ]; then
+                echo "Copying system trust bundle"
+                cp -f /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec oauth-server osinserver \
+            --config=/var/config/system/configmaps/v4-0-config-system-cliconfig/v4-0-config-system-cliconfig \
+            --v=2
+          command:
+          - /bin/bash
+          - -ec
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sleep
+                - "25"
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-openshift
+          ports:
+          - containerPort: 6443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/config/system/secrets/v4-0-config-system-session
+            name: v4-0-config-system-session
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-cliconfig
+            name: v4-0-config-system-cliconfig
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-serving-cert
+            name: v4-0-config-system-serving-cert
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-service-ca
+            name: v4-0-config-system-service-ca
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-router-certs
+            name: v4-0-config-system-router-certs
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-ocp-branding-template
+            name: v4-0-config-system-ocp-branding-template
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-login
+            name: v4-0-config-user-template-login
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-provider-selection
+            name: v4-0-config-user-template-provider-selection
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-error
+            name: v4-0-config-user-template-error
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle
+            name: v4-0-config-system-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: oauth-openshift
+        serviceAccountName: oauth-openshift
+        terminationGracePeriodSeconds: 40
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: v4-0-config-system-session
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-session
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-cliconfig
+          name: v4-0-config-system-cliconfig
+        - name: v4-0-config-system-serving-cert
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-service-ca
+          name: v4-0-config-system-service-ca
+        - name: v4-0-config-system-router-certs
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-router-certs
+        - name: v4-0-config-system-ocp-branding-template
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-ocp-branding-template
+        - name: v4-0-config-user-template-login
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-login
+        - name: v4-0-config-user-template-provider-selection
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-provider-selection
+        - name: v4-0-config-user-template-error
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-error
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-trusted-ca-bundle
+            optional: true
+          name: v4-0-config-system-trusted-ca-bundle
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "3"
+      deployment.kubernetes.io/max-replicas: "3"
+      deployment.kubernetes.io/revision: "7"
+      operator.openshift.io/rvs-hash: Ltlyn4IPjsjSBLQ1ud6OqQn1seXRPisyDV54ZaTsfz2ZOKx7TbUefimldmGmLxgpAnOPtSOrNm-5GQklKjNuAQ
+      operator.openshift.io/spec-hash: 8dc6198a19f897dfe410ecd39223dd4821700d086b6c50d0852ab83095261a58
+    creationTimestamp: "2022-05-24T18:25:52Z"
+    generation: 3
+    labels:
+      app: oauth-openshift
+      oauth-openshift-anti-affinity: "true"
+      pod-template-hash: b65fd9d5c
+    name: oauth-openshift-b65fd9d5c
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: oauth-openshift
+      uid: a3486c85-0028-47e5-bfa5-f3ae81f63af3
+    resourceVersion: "36602"
+    uid: 7b6ff2f1-3707-44c4-82ed-9d27d24450a7
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: oauth-openshift
+        pod-template-hash: b65fd9d5c
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/bootstrap-user-exists: "true"
+          operator.openshift.io/rvs-hash: Ltlyn4IPjsjSBLQ1ud6OqQn1seXRPisyDV54ZaTsfz2ZOKx7TbUefimldmGmLxgpAnOPtSOrNm-5GQklKjNuAQ
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app: oauth-openshift
+          oauth-openshift-anti-affinity: "true"
+          pod-template-hash: b65fd9d5c
+        name: oauth-openshift
+        namespace: openshift-authentication
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: oauth-openshift
+                  oauth-openshift-anti-affinity: "true"
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - |
+            if [ -s /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt ]; then
+                echo "Copying system trust bundle"
+                cp -f /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec oauth-server osinserver \
+            --config=/var/config/system/configmaps/v4-0-config-system-cliconfig/v4-0-config-system-cliconfig \
+            --v=2
+          command:
+          - /bin/bash
+          - -ec
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sleep
+                - "25"
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth-openshift
+          ports:
+          - containerPort: 6443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 6443
+              scheme: HTTPS
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          securityContext:
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/config/system/secrets/v4-0-config-system-session
+            name: v4-0-config-system-session
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-cliconfig
+            name: v4-0-config-system-cliconfig
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-serving-cert
+            name: v4-0-config-system-serving-cert
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-service-ca
+            name: v4-0-config-system-service-ca
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-router-certs
+            name: v4-0-config-system-router-certs
+            readOnly: true
+          - mountPath: /var/config/system/secrets/v4-0-config-system-ocp-branding-template
+            name: v4-0-config-system-ocp-branding-template
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-login
+            name: v4-0-config-user-template-login
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-provider-selection
+            name: v4-0-config-user-template-provider-selection
+            readOnly: true
+          - mountPath: /var/config/user/template/secret/v4-0-config-user-template-error
+            name: v4-0-config-user-template-error
+            readOnly: true
+          - mountPath: /var/config/system/configmaps/v4-0-config-system-trusted-ca-bundle
+            name: v4-0-config-system-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: oauth-openshift
+        serviceAccountName: oauth-openshift
+        terminationGracePeriodSeconds: 40
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: v4-0-config-system-session
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-session
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-cliconfig
+          name: v4-0-config-system-cliconfig
+        - name: v4-0-config-system-serving-cert
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-serving-cert
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-service-ca
+          name: v4-0-config-system-service-ca
+        - name: v4-0-config-system-router-certs
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-router-certs
+        - name: v4-0-config-system-ocp-branding-template
+          secret:
+            defaultMode: 420
+            secretName: v4-0-config-system-ocp-branding-template
+        - name: v4-0-config-user-template-login
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-login
+        - name: v4-0-config-user-template-provider-selection
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-provider-selection
+        - name: v4-0-config-user-template-error
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: v4-0-config-user-template-error
+        - configMap:
+            defaultMode: 420
+            name: v4-0-config-system-trusted-ca-bundle
+            optional: true
+          name: v4-0-config-system-trusted-ca-bundle
+  status:
+    observedGeneration: 3
+    replicas: 0
+kind: ReplicaSetList
+metadata:
+  resourceVersion: "296667"

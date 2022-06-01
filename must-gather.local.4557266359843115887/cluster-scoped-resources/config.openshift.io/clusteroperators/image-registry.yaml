@@ -1,0 +1,61 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: image-registry
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "76684"
+  uid: ee2ac5d4-1761-4f77-aba2-191afdd26c62
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:14:04Z"
+    message: |-
+      Available: The registry is ready
+      NodeCADaemonAvailable: The daemon set node-ca has available replicas
+      ImagePrunerAvailable: Pruner CronJob has been created
+    reason: Ready
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:42:58Z"
+    message: 'Progressing: The registry is ready'
+    reason: Ready
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:15:43Z"
+    reason: AsExpected
+    status: "False"
+    type: Degraded
+  extension: null
+  relatedObjects:
+  - group: imageregistry.operator.openshift.io
+    name: cluster
+    resource: configs
+  - group: imageregistry.operator.openshift.io
+    name: cluster
+    resource: imagepruners
+  - group: rbac.authorization.k8s.io
+    name: system:registry
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: registry-registry-role
+    resource: clusterrolebindings
+  - group: rbac.authorization.k8s.io
+    name: openshift-image-registry-pruner
+    resource: clusterrolebindings
+  - group: ""
+    name: openshift-image-registry
+    resource: namespaces
+  versions:
+  - name: operator
+    version: 4.10.13

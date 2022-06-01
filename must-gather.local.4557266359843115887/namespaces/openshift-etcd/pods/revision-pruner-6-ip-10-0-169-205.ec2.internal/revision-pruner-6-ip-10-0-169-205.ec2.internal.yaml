@@ -1,0 +1,155 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.21"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.21"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+  creationTimestamp: "2022-05-24T18:28:47Z"
+  labels:
+    app: pruner
+  name: revision-pruner-6-ip-10-0-169-205.ec2.internal
+  namespace: openshift-etcd
+  ownerReferences:
+  - apiVersion: v1
+    kind: ConfigMap
+    name: revision-status-6
+    uid: fdcdd4fe-5b59-45c9-b30a-4b1b7650b38d
+  resourceVersion: "53401"
+  uid: d411b370-7b6f-46a0-8bd8-7f33483a1b23
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - args:
+    - -v=4
+    - --max-eligible-revision=6
+    - --protected-revisions=2,3,4,5,6
+    - --resource-dir=/etc/kubernetes/static-pod-resources
+    - --cert-dir=etcd-certs
+    - --static-pod-name=etcd-pod
+    command:
+    - cluster-etcd-operator
+    - prune
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f161673930ffcc897e097257b86f2452eccb61aeca0fc95c2989371b796e275d
+    imagePullPolicy: IfNotPresent
+    name: pruner
+    resources:
+      limits:
+        cpu: 150m
+        memory: 200M
+      requests:
+        cpu: 150m
+        memory: 200M
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/kubernetes/
+      name: kubelet-dir
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: installer-sa-dockercfg-hrn65
+  nodeName: ip-10-0-169-205.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    runAsUser: 0
+  serviceAccount: installer-sa
+  serviceAccountName: installer-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/
+      type: ""
+    name: kubelet-dir
+  - name: kube-api-access
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3600
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:16Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:16Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:16Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:16Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://55c2150c75bc1540dbb35c863fcc1aa5a9be1513be128b2f635495106fa1519d
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f161673930ffcc897e097257b86f2452eccb61aeca0fc95c2989371b796e275d
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f161673930ffcc897e097257b86f2452eccb61aeca0fc95c2989371b796e275d
+    lastState: {}
+    name: pruner
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://55c2150c75bc1540dbb35c863fcc1aa5a9be1513be128b2f635495106fa1519d
+        exitCode: 0
+        finishedAt: "2022-05-24T18:31:38Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:31:38Z"
+  hostIP: 10.0.169.205
+  phase: Succeeded
+  podIP: 10.128.0.21
+  podIPs:
+  - ip: 10.128.0.21
+  qosClass: Guaranteed
+  startTime: "2022-05-24T18:31:16Z"

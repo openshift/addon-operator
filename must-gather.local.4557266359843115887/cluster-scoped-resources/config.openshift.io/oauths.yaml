@@ -1,0 +1,36 @@
+apiVersion: config.openshift.io/v1
+items:
+- apiVersion: config.openshift.io/v1
+  kind: OAuth
+  metadata:
+    annotations:
+      include.release.openshift.io/ibm-cloud-managed: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+      release.openshift.io/create-only: "true"
+    creationTimestamp: "2022-05-24T18:06:00Z"
+    finalizers:
+    - finalizers.osd.metrics.exporter.openshift.io
+    generation: 3
+    name: cluster
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "39897"
+    uid: db04314b-bc4c-4c18-bcbb-b2576df1f12b
+  spec:
+    templates:
+      error:
+        name: rosa-oauth-templates-errors
+      login:
+        name: rosa-oauth-templates-login
+      providerSelection:
+        name: rosa-oauth-templates-providers
+    tokenConfig:
+      accessTokenMaxAgeSeconds: 0
+kind: OAuthList
+metadata:
+  continue: ""
+  resourceVersion: "295182"

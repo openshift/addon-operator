@@ -1,0 +1,75 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:11:03Z"
+  involvedObject:
+    kind: Pod
+    name: kube-controller-manager-ip-10-0-169-205.ec2.internal
+    namespace: openshift-kube-controller-manager
+  kind: Event
+  lastTimestamp: "2022-05-24T21:11:03Z"
+  message: created SCC ranges for openshift-build-test-27557111-gmnzb namespace
+  metadata:
+    creationTimestamp: "2022-05-24T21:11:03Z"
+    name: kube-controller-manager-ip-10-0-169-205.ec2.internal.16f226ca47715ac1
+    namespace: openshift-kube-controller-manager
+    resourceVersion: "196350"
+    uid: ea445946-6f9c-4aca-8cf2-3a9d4837beee
+  reason: CreatedSCCRanges
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cluster-policy-controller-namespace-security-allocation-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:11:03Z"
+  involvedObject:
+    kind: Pod
+    name: kube-controller-manager-ip-10-0-169-205.ec2.internal
+    namespace: openshift-kube-controller-manager
+  kind: Event
+  lastTimestamp: "2022-05-24T22:11:03Z"
+  message: created SCC ranges for openshift-build-test-27557171-8rq7d namespace
+  metadata:
+    creationTimestamp: "2022-05-24T22:11:03Z"
+    name: kube-controller-manager-ip-10-0-169-205.ec2.internal.16f22a107fe844c1
+    namespace: openshift-kube-controller-manager
+    resourceVersion: "244259"
+    uid: d57bf605-a0a2-4647-8816-444107715385
+  reason: CreatedSCCRanges
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cluster-policy-controller-namespace-security-allocation-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:11:03Z"
+  involvedObject:
+    kind: Pod
+    name: kube-controller-manager-ip-10-0-169-205.ec2.internal
+    namespace: openshift-kube-controller-manager
+  kind: Event
+  lastTimestamp: "2022-05-24T23:11:03Z"
+  message: created SCC ranges for openshift-build-test-27557231-k7kpt namespace
+  metadata:
+    creationTimestamp: "2022-05-24T23:11:03Z"
+    name: kube-controller-manager-ip-10-0-169-205.ec2.internal.16f22d56a0ec50f3
+    namespace: openshift-kube-controller-manager
+    resourceVersion: "292086"
+    uid: 42c817f3-badd-477e-b40a-895f0f218918
+  reason: CreatedSCCRanges
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cluster-policy-controller-namespace-security-allocation-controller
+  type: Normal
+kind: EventList
+metadata:
+  resourceVersion: "315365"

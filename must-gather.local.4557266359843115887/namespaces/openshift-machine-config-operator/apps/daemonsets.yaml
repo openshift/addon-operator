@@ -1,0 +1,210 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+    creationTimestamp: "2022-05-24T18:07:30Z"
+    generation: 1
+    name: machine-config-daemon
+    namespace: openshift-machine-config-operator
+    resourceVersion: "78506"
+    uid: 62a00b76-73e5-47c7-a4e9-d0483b1c01a2
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        k8s-app: machine-config-daemon
+    template:
+      metadata:
+        annotations:
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          k8s-app: machine-config-daemon
+        name: machine-config-daemon
+      spec:
+        containers:
+        - args:
+          - start
+          command:
+          - /usr/bin/machine-config-daemon
+          env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4c5db15a4600d50b6cb1d28ea8b0741e9940116e45c4bb5c19754a601af47dcf
+          imagePullPolicy: IfNotPresent
+          name: machine-config-daemon
+          resources:
+            requests:
+              cpu: 20m
+              memory: 50Mi
+          securityContext:
+            privileged: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /rootfs
+            name: rootfs
+        - args:
+          - --https-address=:9001
+          - --provider=openshift
+          - --openshift-service-account=machine-config-daemon
+          - --upstream=http://127.0.0.1:8797
+          - --tls-cert=/etc/tls/private/tls.crt
+          - --tls-key=/etc/tls/private/tls.key
+          - --cookie-secret-file=/etc/tls/cookie-secret/cookie-secret
+          - '--openshift-sar={"resource": "namespaces", "verb": "get"}'
+          - '--openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get"}}'
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+          imagePullPolicy: IfNotPresent
+          name: oauth-proxy
+          ports:
+          - containerPort: 9001
+            hostPort: 9001
+            name: metrics
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 20m
+              memory: 50Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: proxy-tls
+          - mountPath: /etc/tls/cookie-secret
+            name: cookie-secret
+        dnsPolicy: ClusterFirst
+        hostNetwork: true
+        hostPID: true
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-node-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: machine-config-daemon
+        serviceAccountName: machine-config-daemon
+        terminationGracePeriodSeconds: 600
+        tolerations:
+        - operator: Exists
+        volumes:
+        - hostPath:
+            path: /
+            type: ""
+          name: rootfs
+        - name: proxy-tls
+          secret:
+            defaultMode: 420
+            secretName: proxy-tls
+        - name: cookie-secret
+          secret:
+            defaultMode: 420
+            secretName: cookie-secret
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 10%
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 9
+    desiredNumberScheduled: 9
+    numberAvailable: 9
+    numberMisscheduled: 0
+    numberReady: 9
+    observedGeneration: 1
+    updatedNumberScheduled: 9
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+    creationTimestamp: "2022-05-24T18:08:12Z"
+    generation: 1
+    name: machine-config-server
+    namespace: openshift-machine-config-operator
+    resourceVersion: "71055"
+    uid: adbfdf0c-7906-488c-9ade-3bdd25299578
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        k8s-app: machine-config-server
+    template:
+      metadata:
+        annotations:
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          k8s-app: machine-config-server
+        name: machine-config-server
+      spec:
+        containers:
+        - args:
+          - start
+          - --apiserver-url=https://api-int.odf-service.dif5.p1.openshiftapps.com:6443
+          command:
+          - /usr/bin/machine-config-server
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4c5db15a4600d50b6cb1d28ea8b0741e9940116e45c4bb5c19754a601af47dcf
+          imagePullPolicy: IfNotPresent
+          name: machine-config-server
+          resources:
+            requests:
+              cpu: 20m
+              memory: 50Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/ssl/mcs
+            name: certs
+          - mountPath: /etc/mcs/bootstrap-token
+            name: node-bootstrap-token
+        dnsPolicy: ClusterFirst
+        hostNetwork: true
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: machine-config-server
+        serviceAccountName: machine-config-server
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/etcd
+          operator: Exists
+        volumes:
+        - name: node-bootstrap-token
+          secret:
+            defaultMode: 420
+            secretName: node-bootstrapper-token
+        - name: certs
+          secret:
+            defaultMode: 420
+            secretName: machine-config-server-tls
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 3
+    desiredNumberScheduled: 3
+    numberAvailable: 3
+    numberMisscheduled: 0
+    numberReady: 3
+    observedGeneration: 1
+    updatedNumberScheduled: 3
+kind: DaemonSetList
+metadata:
+  resourceVersion: "319627"

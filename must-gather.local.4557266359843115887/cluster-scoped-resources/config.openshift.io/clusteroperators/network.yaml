@@ -1,0 +1,379 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    network.operator.openshift.io/last-seen-state: '{"DaemonsetStates":[],"DeploymentStates":[]}'
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: network
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "79521"
+  uid: f51b44d7-1d6c-492b-a663-c21e13132eba
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    status: "False"
+    type: ManagementStateDegraded
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    status: "True"
+    type: Upgradeable
+  - lastTransitionTime: "2022-05-24T18:44:56Z"
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:07:38Z"
+    status: "True"
+    type: Available
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: applied-cluster
+    namespace: openshift-network-operator
+    resource: configmaps
+  - group: apiextensions.k8s.io
+    name: cloudprivateipconfigs.cloud.network.openshift.io
+    resource: customresourcedefinitions
+  - group: ""
+    name: cloud-network-config-controller
+    namespace: openshift-cloud-network-config-controller
+    resource: serviceaccounts
+  - group: rbac.authorization.k8s.io
+    name: cloud-network-config-controller
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: cloud-network-config-controller
+    namespace: openshift-cloud-network-config-controller
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: cloud-network-config-controller
+    resource: clusterrolebindings
+  - group: rbac.authorization.k8s.io
+    name: cloud-network-config-controller-rb
+    namespace: openshift-cloud-network-config-controller
+    resource: rolebindings
+  - group: ""
+    name: kube-cloud-config
+    namespace: openshift-cloud-network-config-controller
+    resource: configmaps
+  - group: ""
+    name: trusted-ca
+    namespace: openshift-cloud-network-config-controller
+    resource: configmaps
+  - group: apps
+    name: cloud-network-config-controller
+    namespace: openshift-cloud-network-config-controller
+    resource: deployments
+  - group: apiextensions.k8s.io
+    name: network-attachment-definitions.k8s.cni.cncf.io
+    resource: customresourcedefinitions
+  - group: apiextensions.k8s.io
+    name: ippools.whereabouts.cni.cncf.io
+    resource: customresourcedefinitions
+  - group: apiextensions.k8s.io
+    name: overlappingrangeipreservations.whereabouts.cni.cncf.io
+    resource: customresourcedefinitions
+  - group: ""
+    name: openshift-multus
+    resource: namespaces
+  - group: rbac.authorization.k8s.io
+    name: multus
+    resource: clusterroles
+  - group: ""
+    name: multus
+    namespace: openshift-multus
+    resource: serviceaccounts
+  - group: rbac.authorization.k8s.io
+    name: multus
+    resource: clusterrolebindings
+  - group: rbac.authorization.k8s.io
+    name: multus-whereabouts
+    resource: clusterrolebindings
+  - group: rbac.authorization.k8s.io
+    name: multus-whereabouts
+    namespace: openshift-multus
+    resource: rolebindings
+  - group: rbac.authorization.k8s.io
+    name: whereabouts-cni
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: whereabouts-cni
+    namespace: openshift-multus
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: net-attach-def-project
+    resource: clusterroles
+  - group: ""
+    name: cni-binary-copy-script
+    namespace: openshift-multus
+    resource: configmaps
+  - group: apps
+    name: multus
+    namespace: openshift-multus
+    resource: daemonsets
+  - group: apps
+    name: multus-additional-cni-plugins
+    namespace: openshift-multus
+    resource: daemonsets
+  - group: batch
+    name: ip-reconciler
+    namespace: openshift-multus
+    resource: cronjobs
+  - group: ""
+    name: metrics-daemon-sa
+    namespace: openshift-multus
+    resource: serviceaccounts
+  - group: rbac.authorization.k8s.io
+    name: metrics-daemon-role
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: metrics-daemon-sa-rolebinding
+    resource: clusterrolebindings
+  - group: apps
+    name: network-metrics-daemon
+    namespace: openshift-multus
+    resource: daemonsets
+  - group: monitoring.coreos.com
+    name: monitor-network
+    namespace: openshift-multus
+    resource: servicemonitors
+  - group: ""
+    name: network-metrics-service
+    namespace: openshift-multus
+    resource: services
+  - group: rbac.authorization.k8s.io
+    name: prometheus-k8s
+    namespace: openshift-multus
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: prometheus-k8s
+    namespace: openshift-multus
+    resource: rolebindings
+  - group: ""
+    name: multus-admission-controller
+    namespace: openshift-multus
+    resource: services
+  - group: rbac.authorization.k8s.io
+    name: multus-admission-controller-webhook
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: multus-admission-controller-webhook
+    resource: clusterrolebindings
+  - group: admissionregistration.k8s.io
+    name: multus.openshift.io
+    resource: validatingwebhookconfigurations
+  - group: apps
+    name: multus-admission-controller
+    namespace: openshift-multus
+    resource: daemonsets
+  - group: monitoring.coreos.com
+    name: monitor-multus-admission-controller
+    namespace: openshift-multus
+    resource: servicemonitors
+  - group: rbac.authorization.k8s.io
+    name: prometheus-k8s
+    namespace: openshift-multus
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: prometheus-k8s
+    namespace: openshift-multus
+    resource: rolebindings
+  - group: monitoring.coreos.com
+    name: prometheus-k8s-rules
+    namespace: openshift-multus
+    resource: prometheusrules
+  - group: ""
+    name: openshift-sdn
+    resource: namespaces
+  - group: apiextensions.k8s.io
+    name: clusternetworks.network.openshift.io
+    resource: customresourcedefinitions
+  - group: apiextensions.k8s.io
+    name: hostsubnets.network.openshift.io
+    resource: customresourcedefinitions
+  - group: apiextensions.k8s.io
+    name: netnamespaces.network.openshift.io
+    resource: customresourcedefinitions
+  - group: apiextensions.k8s.io
+    name: egressnetworkpolicies.network.openshift.io
+    resource: customresourcedefinitions
+  - group: rbac.authorization.k8s.io
+    name: openshift-sdn
+    resource: clusterroles
+  - group: ""
+    name: sdn
+    namespace: openshift-sdn
+    resource: serviceaccounts
+  - group: rbac.authorization.k8s.io
+    name: openshift-sdn
+    resource: clusterrolebindings
+  - group: ""
+    name: sdn-controller
+    namespace: openshift-sdn
+    resource: serviceaccounts
+  - group: rbac.authorization.k8s.io
+    name: openshift-sdn-controller
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: openshift-sdn-controller
+    resource: clusterrolebindings
+  - group: rbac.authorization.k8s.io
+    name: openshift-sdn-controller-leaderelection
+    namespace: openshift-sdn
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: openshift-sdn-controller-leaderelection
+    namespace: openshift-sdn
+    resource: rolebindings
+  - group: network.openshift.io
+    name: default
+    resource: clusternetworks
+  - group: flowcontrol.apiserver.k8s.io
+    name: openshift-sdn
+    resource: flowschemas
+  - group: monitoring.coreos.com
+    name: networking-rules
+    namespace: openshift-sdn
+    resource: prometheusrules
+  - group: ""
+    name: openshift-network-features
+    namespace: openshift-config-managed
+    resource: configmaps
+  - group: apps
+    name: sdn-controller
+    namespace: openshift-sdn
+    resource: daemonsets
+  - group: monitoring.coreos.com
+    name: monitor-sdn
+    namespace: openshift-sdn
+    resource: servicemonitors
+  - group: ""
+    name: sdn
+    namespace: openshift-sdn
+    resource: services
+  - group: monitoring.coreos.com
+    name: monitor-sdn-controller
+    namespace: openshift-sdn
+    resource: servicemonitors
+  - group: ""
+    name: sdn-controller
+    namespace: openshift-sdn
+    resource: services
+  - group: rbac.authorization.k8s.io
+    name: prometheus-k8s
+    namespace: openshift-sdn
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: prometheus-k8s
+    namespace: openshift-sdn
+    resource: rolebindings
+  - group: ""
+    name: openshift-host-network
+    resource: namespaces
+  - group: ""
+    name: host-network-namespace-quotas
+    namespace: openshift-host-network
+    resource: resourcequotas
+  - group: ""
+    name: sdn-config
+    namespace: openshift-sdn
+    resource: configmaps
+  - group: apps
+    name: sdn
+    namespace: openshift-sdn
+    resource: daemonsets
+  - group: ""
+    name: openshift-network-diagnostics
+    resource: namespaces
+  - group: ""
+    name: network-diagnostics
+    namespace: openshift-network-diagnostics
+    resource: serviceaccounts
+  - group: rbac.authorization.k8s.io
+    name: network-diagnostics
+    namespace: openshift-network-diagnostics
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: network-diagnostics
+    namespace: openshift-network-diagnostics
+    resource: rolebindings
+  - group: rbac.authorization.k8s.io
+    name: network-diagnostics
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: network-diagnostics
+    resource: clusterrolebindings
+  - group: rbac.authorization.k8s.io
+    name: network-diagnostics
+    namespace: kube-system
+    resource: rolebindings
+  - group: apps
+    name: network-check-source
+    namespace: openshift-network-diagnostics
+    resource: deployments
+  - group: ""
+    name: network-check-source
+    namespace: openshift-network-diagnostics
+    resource: services
+  - group: monitoring.coreos.com
+    name: network-check-source
+    namespace: openshift-network-diagnostics
+    resource: servicemonitors
+  - group: rbac.authorization.k8s.io
+    name: prometheus-k8s
+    namespace: openshift-network-diagnostics
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: prometheus-k8s
+    namespace: openshift-network-diagnostics
+    resource: rolebindings
+  - group: apps
+    name: network-check-target
+    namespace: openshift-network-diagnostics
+    resource: daemonsets
+  - group: ""
+    name: network-check-target
+    namespace: openshift-network-diagnostics
+    resource: services
+  - group: rbac.authorization.k8s.io
+    name: openshift-network-public-role
+    namespace: openshift-config-managed
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: openshift-network-public-role-binding
+    namespace: openshift-config-managed
+    resource: rolebindings
+  - group: ""
+    name: openshift-network-operator
+    resource: namespaces
+  - group: operator.openshift.io
+    name: cluster
+    resource: networks
+  - group: networking.k8s.io
+    name: ""
+    resource: NetworkPolicy
+  - group: k8s.ovn.org
+    name: ""
+    resource: EgressFirewall
+  - group: k8s.ovn.org
+    name: ""
+    resource: EgressIP
+  - group: cloud.network.openshift.io
+    name: ""
+    resource: CloudPrivateIPConfig
+  - group: ""
+    name: openshift-cloud-network-config-controller
+    resource: namespaces
+  versions:
+  - name: operator
+    version: 4.10.13

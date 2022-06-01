@@ -1,0 +1,225 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.28"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.28"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:36:39Z"
+  generateName: marketplace-operator-7749b7db8d-
+  labels:
+    name: marketplace-operator
+    pod-template-hash: 7749b7db8d
+  name: marketplace-operator-7749b7db8d-jj2jq
+  namespace: openshift-marketplace
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: marketplace-operator-7749b7db8d
+    uid: 17d09330-2522-4161-b9c6-e3486a77b339
+  resourceVersion: "64330"
+  uid: bb4c527a-b27b-41ee-a246-212fbeffc5b9
+spec:
+  containers:
+  - args:
+    - -defaultsDir=/defaults
+    - -clusterOperatorName=marketplace
+    - -tls-cert
+    - /var/run/secrets/serving-cert/tls.crt
+    - -tls-key
+    - /var/run/secrets/serving-cert/tls.key
+    command:
+    - marketplace-operator
+    env:
+    - name: WATCH_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: OPERATOR_NAME
+      value: marketplace-operator
+    - name: RELEASE_VERSION
+      value: 4.10.13
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6c0f162fbd0daf43d8a4f580c764221f35b9e60fd05cc5fcdcf4ac1708484f94
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 8080
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: marketplace-operator
+    ports:
+    - containerPort: 60000
+      name: metrics
+      protocol: TCP
+    - containerPort: 8080
+      name: healthz
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: 8080
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000190000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/pki/ca-trust/extracted/pem/
+      name: marketplace-trusted-ca
+    - mountPath: /var/run/secrets/serving-cert
+      name: marketplace-operator-metrics
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-h5f6z
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: marketplace-operator-dockercfg-bcb7t
+  nodeName: ip-10-0-138-197.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000190000
+    seLinuxOptions:
+      level: s0:c14,c4
+  serviceAccount: marketplace-operator
+  serviceAccountName: marketplace-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: ca-bundle.crt
+        path: tls-ca-bundle.pem
+      name: marketplace-trusted-ca
+      optional: true
+    name: marketplace-trusted-ca
+  - name: marketplace-operator-metrics
+    secret:
+      defaultMode: 420
+      secretName: marketplace-operator-metrics
+  - name: kube-api-access-h5f6z
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:40Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:37:00Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:37:00Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:39Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://d4a7f1f8e81e22bb5cbb7d29f8a0c5dd513635024da8724c715f74d93f24e604
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6c0f162fbd0daf43d8a4f580c764221f35b9e60fd05cc5fcdcf4ac1708484f94
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6c0f162fbd0daf43d8a4f580c764221f35b9e60fd05cc5fcdcf4ac1708484f94
+    lastState: {}
+    name: marketplace-operator
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:36:46Z"
+  hostIP: 10.0.138.197
+  phase: Running
+  podIP: 10.130.0.28
+  podIPs:
+  - ip: 10.130.0.28
+  qosClass: Burstable
+  startTime: "2022-05-24T18:36:40Z"

@@ -1,0 +1,409 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.2.11"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.2.11"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:34:57Z"
+  generateName: telemeter-client-7589ddc4df-
+  labels:
+    app.kubernetes.io/component: telemetry-metrics-collector
+    app.kubernetes.io/managed-by: cluster-monitoring-operator
+    app.kubernetes.io/name: telemeter-client
+    app.kubernetes.io/part-of: openshift-monitoring
+    pod-template-hash: 7589ddc4df
+  name: telemeter-client-7589ddc4df-t55z2
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: telemeter-client-7589ddc4df
+    uid: b8496268-de30-42b8-a7c4-6ab06236877c
+  resourceVersion: "60513"
+  uid: 7fe7c7c8-50c0-4bbe-805d-a0d8775c838c
+spec:
+  containers:
+  - command:
+    - /usr/bin/telemeter-client
+    - --id=$(ID)
+    - --from=$(FROM)
+    - --from-ca-file=/etc/serving-certs-ca-bundle/service-ca.crt
+    - --from-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+    - --to=$(TO)
+    - --to-token-file=/etc/telemeter/token
+    - --listen=localhost:8080
+    - --anonymize-salt-file=/etc/telemeter/salt
+    - --anonymize-labels=$(ANONYMIZE_LABELS)
+    - --match={__name__=~"cluster:usage:.*"}
+    - --match={__name__="count:up0"}
+    - --match={__name__="count:up1"}
+    - --match={__name__="cluster_version"}
+    - --match={__name__="cluster_version_available_updates"}
+    - --match={__name__="cluster_operator_up"}
+    - --match={__name__="cluster_operator_conditions"}
+    - --match={__name__="cluster_version_payload"}
+    - --match={__name__="cluster_installer"}
+    - --match={__name__="cluster_infrastructure_provider"}
+    - --match={__name__="cluster_feature_set"}
+    - --match={__name__="instance:etcd_object_counts:sum"}
+    - --match={__name__="ALERTS",alertstate="firing"}
+    - --match={__name__="code:apiserver_request_total:rate:sum"}
+    - --match={__name__="cluster:capacity_cpu_cores:sum"}
+    - --match={__name__="cluster:capacity_memory_bytes:sum"}
+    - --match={__name__="cluster:cpu_usage_cores:sum"}
+    - --match={__name__="cluster:memory_usage_bytes:sum"}
+    - --match={__name__="openshift:cpu_usage_cores:sum"}
+    - --match={__name__="openshift:memory_usage_bytes:sum"}
+    - --match={__name__="workload:cpu_usage_cores:sum"}
+    - --match={__name__="workload:memory_usage_bytes:sum"}
+    - --match={__name__="cluster:virt_platform_nodes:sum"}
+    - --match={__name__="cluster:node_instance_type_count:sum"}
+    - --match={__name__="cnv:vmi_status_running:count"}
+    - --match={__name__="cluster:vmi_request_cpu_cores:sum"}
+    - --match={__name__="node_role_os_version_machine:cpu_capacity_cores:sum"}
+    - --match={__name__="node_role_os_version_machine:cpu_capacity_sockets:sum"}
+    - --match={__name__="subscription_sync_total"}
+    - --match={__name__="olm_resolution_duration_seconds"}
+    - --match={__name__="csv_succeeded"}
+    - --match={__name__="csv_abnormal"}
+    - --match={__name__="cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum"}
+    - --match={__name__="cluster:kubelet_volume_stats_used_bytes:provisioner:sum"}
+    - --match={__name__="ceph_cluster_total_bytes"}
+    - --match={__name__="ceph_cluster_total_used_raw_bytes"}
+    - --match={__name__="ceph_health_status"}
+    - --match={__name__="job:ceph_osd_metadata:count"}
+    - --match={__name__="job:kube_pv:count"}
+    - --match={__name__="job:ceph_pools_iops:total"}
+    - --match={__name__="job:ceph_pools_iops_bytes:total"}
+    - --match={__name__="job:ceph_versions_running:count"}
+    - --match={__name__="job:noobaa_total_unhealthy_buckets:sum"}
+    - --match={__name__="job:noobaa_bucket_count:sum"}
+    - --match={__name__="job:noobaa_total_object_count:sum"}
+    - --match={__name__="noobaa_accounts_num"}
+    - --match={__name__="noobaa_total_usage"}
+    - --match={__name__="console_url"}
+    - --match={__name__="cluster:network_attachment_definition_instances:max"}
+    - --match={__name__="cluster:network_attachment_definition_enabled_instance_up:max"}
+    - --match={__name__="cluster:ingress_controller_aws_nlb_active:sum"}
+    - --match={__name__="insightsclient_request_send_total"}
+    - --match={__name__="cam_app_workload_migrations"}
+    - --match={__name__="cluster:apiserver_current_inflight_requests:sum:max_over_time:2m"}
+    - --match={__name__="cluster:alertmanager_integrations:max"}
+    - --match={__name__="cluster:telemetry_selected_series:count"}
+    - --match={__name__="openshift:prometheus_tsdb_head_series:sum"}
+    - --match={__name__="openshift:prometheus_tsdb_head_samples_appended_total:sum"}
+    - --match={__name__="monitoring:container_memory_working_set_bytes:sum"}
+    - --match={__name__="namespace_job:scrape_series_added:topk3_sum1h"}
+    - --match={__name__="namespace_job:scrape_samples_post_metric_relabeling:topk3"}
+    - --match={__name__="monitoring:haproxy_server_http_responses_total:sum"}
+    - --match={__name__="rhmi_status"}
+    - --match={__name__="cluster_legacy_scheduler_policy"}
+    - --match={__name__="cluster_master_schedulable"}
+    - --match={__name__="che_workspace_status"}
+    - --match={__name__="che_workspace_started_total"}
+    - --match={__name__="che_workspace_failure_total"}
+    - --match={__name__="che_workspace_start_time_seconds_sum"}
+    - --match={__name__="che_workspace_start_time_seconds_count"}
+    - --match={__name__="cco_credentials_mode"}
+    - --match={__name__="cluster:kube_persistentvolume_plugin_type_counts:sum"}
+    - --match={__name__="visual_web_terminal_sessions_total"}
+    - --match={__name__="acm_managed_cluster_info"}
+    - --match={__name__="cluster:vsphere_vcenter_info:sum"}
+    - --match={__name__="cluster:vsphere_esxi_version_total:sum"}
+    - --match={__name__="cluster:vsphere_node_hw_version_total:sum"}
+    - --match={__name__="openshift:build_by_strategy:sum"}
+    - --match={__name__="rhods_aggregate_availability"}
+    - --match={__name__="rhods_total_users"}
+    - --match={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
+    - --match={__name__="instance:etcd_mvcc_db_total_size_in_bytes:sum"}
+    - --match={__name__="instance:etcd_network_peer_round_trip_time_seconds:histogram_quantile",quantile="0.99"}
+    - --match={__name__="instance:etcd_mvcc_db_total_size_in_use_in_bytes:sum"}
+    - --match={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
+    - --match={__name__="jaeger_operator_instances_storage_types"}
+    - --match={__name__="jaeger_operator_instances_strategies"}
+    - --match={__name__="jaeger_operator_instances_agent_strategies"}
+    - --match={__name__="appsvcs:cores_by_product:sum"}
+    - --match={__name__="nto_custom_profiles:count"}
+    - --match={__name__="openshift_csi_share_configmap"}
+    - --match={__name__="openshift_csi_share_secret"}
+    - --match={__name__="openshift_csi_share_mount_failures_total"}
+    - --match={__name__="openshift_csi_share_mount_requests_total"}
+    - --limit-bytes=5242880
+    env:
+    - name: ANONYMIZE_LABELS
+    - name: FROM
+      value: https://prometheus-k8s.openshift-monitoring.svc:9091
+    - name: ID
+      value: 3ef9f2d5-498d-4a5e-a004-09e65633e1bb
+    - name: TO
+      value: https://infogw.api.openshift.com
+    - name: HTTP_PROXY
+    - name: HTTPS_PROXY
+    - name: NO_PROXY
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3cd352ab6f82a1f5f762b6283f9644e653d37dcdbab27e1fae3d5a82a76d2a9f
+    imagePullPolicy: IfNotPresent
+    name: telemeter-client
+    ports:
+    - containerPort: 8080
+      name: http
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 40Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/serving-certs-ca-bundle
+      name: serving-certs-ca-bundle
+    - mountPath: /etc/telemeter
+      name: secret-telemeter-client
+    - mountPath: /etc/pki/ca-trust/extracted/pem/
+      name: telemeter-trusted-ca-bundle
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-rkwxq
+      readOnly: true
+  - args:
+    - --reload-url=http://localhost:8080/-/reload
+    - --watched-dir=/etc/serving-certs-ca-bundle
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+    imagePullPolicy: IfNotPresent
+    name: reload
+    resources:
+      requests:
+        cpu: 1m
+        memory: 10Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/serving-certs-ca-bundle
+      name: serving-certs-ca-bundle
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-rkwxq
+      readOnly: true
+  - args:
+    - --secure-listen-address=:8443
+    - --upstream=http://127.0.0.1:8080/
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - --config-file=/etc/kube-rbac-policy/config.yaml
+    - --client-ca-file=/etc/tls/client/client-ca.crt
+    - --tls-min-version=VersionTLS12
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/tls/private
+      name: telemeter-client-tls
+    - mountPath: /etc/kube-rbac-policy
+      name: secret-telemeter-client-kube-rbac-proxy-config
+      readOnly: true
+    - mountPath: /etc/tls/client
+      name: metrics-client-ca
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-rkwxq
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: telemeter-client-dockercfg-tz9lv
+  nodeName: ip-10-0-166-35.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/infra: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: telemeter-client
+  serviceAccountName: telemeter-client
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: telemeter-client-serving-certs-ca-bundle
+    name: serving-certs-ca-bundle
+  - name: secret-telemeter-client
+    secret:
+      defaultMode: 420
+      secretName: telemeter-client
+  - name: telemeter-client-tls
+    secret:
+      defaultMode: 420
+      secretName: telemeter-client-tls
+  - name: secret-telemeter-client-kube-rbac-proxy-config
+    secret:
+      defaultMode: 420
+      secretName: telemeter-client-kube-rbac-proxy-config
+  - configMap:
+      defaultMode: 420
+      name: metrics-client-ca
+    name: metrics-client-ca
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: ca-bundle.crt
+        path: tls-ca-bundle.pem
+      name: telemeter-trusted-ca-bundle-2rsonso43rc5p
+      optional: true
+    name: telemeter-trusted-ca-bundle
+  - name: kube-api-access-rkwxq
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:57Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:35:03Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:35:03Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:57Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://54bdc0d369ea9140e8c8d260564048a63e6664d1fb6a7acac2d2eb4e58b57cad
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:35:03Z"
+  - containerID: cri-o://f73e416bcb45c0009f192a65e11fefe79858950784cd99375372150d87710d19
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+    lastState: {}
+    name: reload
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:35:02Z"
+  - containerID: cri-o://5d83df643bc6310dd3f53e8122e8cd23dc198439585d7a2b22bce258aa44087d
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3cd352ab6f82a1f5f762b6283f9644e653d37dcdbab27e1fae3d5a82a76d2a9f
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3cd352ab6f82a1f5f762b6283f9644e653d37dcdbab27e1fae3d5a82a76d2a9f
+    lastState: {}
+    name: telemeter-client
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:35:02Z"
+  hostIP: 10.0.166.35
+  phase: Running
+  podIP: 10.131.2.11
+  podIPs:
+  - ip: 10.131.2.11
+  qosClass: Burstable
+  startTime: "2022-05-24T18:34:57Z"

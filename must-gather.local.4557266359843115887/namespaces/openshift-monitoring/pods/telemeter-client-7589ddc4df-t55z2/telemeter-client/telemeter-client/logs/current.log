@@ -1,0 +1,9 @@
+2022-05-24T18:35:02.401985578Z level=info caller=main.go:97 ts=2022-05-24T18:35:02.401920014Z msg="telemeter client initialized"
+2022-05-24T18:35:02.402259150Z level=warn caller=forwarder.go:133 ts=2022-05-24T18:35:02.402238357Z component=forwarder msg="not anonymizing any labels"
+2022-05-24T18:35:02.425869990Z level=info caller=main.go:292 ts=2022-05-24T18:35:02.425809288Z msg="starting telemeter-client" from=https://prometheus-k8s.openshift-monitoring.svc:9091 to=https://infogw.api.openshift.com listen=localhost:8080
+2022-05-24T18:35:04.814941486Z level=warn caller=forwarder.go:133 ts=2022-05-24T18:35:04.814883625Z component=forwarder msg="not anonymizing any labels"
+2022-05-24T19:34:25.662219674Z level=error caller=forwarder.go:271 ts=2022-05-24T19:34:25.662154022Z component=forwarder/worker msg="unable to forward results" err="gateway server reported unexpected error code: 502: failed to forward request\n"
+2022-05-24T19:53:50.149878234Z level=error caller=forwarder.go:271 ts=2022-05-24T19:53:50.149816828Z component=forwarder/worker msg="unable to forward results" err="gateway server reported unexpected error code: 502: failed to forward request\n"
+2022-05-24T20:31:13.856336867Z level=error caller=forwarder.go:271 ts=2022-05-24T20:31:13.855953264Z component=forwarder/worker msg="unable to forward results" err="gateway server reported unexpected error code: 502: failed to forward request\n"
+2022-05-24T20:32:23.299228900Z level=error caller=forwarder.go:271 ts=2022-05-24T20:32:23.299175328Z component=forwarder/worker msg="unable to forward results" err="gateway server reported unexpected error code: 502: failed to forward request\n"
+2022-05-24T20:33:33.364876802Z level=error caller=forwarder.go:271 ts=2022-05-24T20:33:33.364813089Z component=forwarder/worker msg="unable to forward results" err="Post \"https://infogw.api.openshift.com/upload\": net/http: TLS handshake timeout"

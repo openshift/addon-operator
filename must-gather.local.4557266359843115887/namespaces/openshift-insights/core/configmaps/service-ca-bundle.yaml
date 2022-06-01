@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+data:
+  service-ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDUTCCAjmgAwIBAgIIQZrxiXiPOoYwDQYJKoZIhvcNAQELBQAwNjE0MDIGA1UE
+    Awwrb3BlbnNoaWZ0LXNlcnZpY2Utc2VydmluZy1zaWduZXJAMTY1MzQxNTY2MjAe
+    Fw0yMjA1MjQxODA3NDFaFw0yNDA3MjIxODA3NDJaMDYxNDAyBgNVBAMMK29wZW5z
+    aGlmdC1zZXJ2aWNlLXNlcnZpbmctc2lnbmVyQDE2NTM0MTU2NjIwggEiMA0GCSqG
+    SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDetmL87oMhj0wEuFhthJTJ66WZzU8HPXlz
+    hn/I4gNXxE37ctAAxpb77OPawZAOeZNuiac+3PujhxMfyWJwtWx3jzqfOa1qCz+3
+    ZT2t/6XbhR8Ad1A+LjAd6FM1YQADJ5uHrnKMhFjnWGsLA17MezZNpfETj9YHrZmj
+    O6KMxQ2KN4a/JG3LsQ8YgUbpmoxaxcjWUjIT+1gtU9txW677+UgO/tgqrhG18b0w
+    /0vaVQMv8WF/ZNjTuoncCa0+Nr6C4tOo84lT7viaJTL+QhUwLaOxHqvP3KEOTO45
+    WnRszRu+2if1nM3XCAHAsnsNHp3d6oLMyuosm1/ZF82xF0FzaqAXAgMBAAGjYzBh
+    MA4GA1UdDwEB/wQEAwICpDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBRy8veS
+    PVLa9sdRIrn11Z9JJ5Vd0zAfBgNVHSMEGDAWgBRy8veSPVLa9sdRIrn11Z9JJ5Vd
+    0zANBgkqhkiG9w0BAQsFAAOCAQEAQSRJ2413KVPJ6Zf6kJ5JMU8BZ4vJZC2NRI1J
+    ZMHPzCRYPIS5ggI9mUcXg/M2Bv8y1j3EnuCI4DVsnfrUMvPj4Brga8OD+bop5CYp
+    Hjdcdn1txCQFE49OnO9PdWIYTHvBdAMFb9cgfl4r9gYbMBIkbDEiv7cyaOQ/Krb6
+    UELgwDWaX/Loh1f2waU2AAOXXNzsxpu6NpBcXpzkM/PYjvAPYdf0V9ow/Ub9RXDV
+    cqoxX2rb64SDgOJNSmRTS8CXuvMBqXCgSXAqFdtPpztGHtMYGfSGpP5K9P3WnrNg
+    dKMUuqbSu///kGv7VKcx95YACrQAB6dzZbtlkxOmoPvj5nVq3w==
+    -----END CERTIFICATE-----
+kind: ConfigMap
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    release.openshift.io/create-only: "true"
+    service.beta.openshift.io/inject-cabundle: "true"
+  creationTimestamp: "2022-05-24T18:06:14Z"
+  name: service-ca-bundle
+  namespace: openshift-insights
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "5804"
+  uid: 1fb8a69b-3cb2-4078-84c5-4f9c6f02c880

@@ -1,0 +1,72 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:55Z"
+    creationTimestamp: "2022-05-24T18:19:47Z"
+    labels:
+      app: console
+    name: console
+    namespace: openshift-console
+    resourceVersion: "64201"
+    uid: d3cdef1d-1149-471c-9580-81430b71b01c
+  subsets:
+  - addresses:
+    - ip: 10.128.0.38
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: console-6c7cfdb6c6-6w9gn
+        namespace: openshift-console
+        resourceVersion: "55857"
+        uid: de18d1b7-5e05-444e-baff-823dbe83cdc8
+    - ip: 10.130.0.26
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: console-6c7cfdb6c6-xd9bp
+        namespace: openshift-console
+        resourceVersion: "64197"
+        uid: 745486af-26e3-4bb1-ad93-c04aba72763a
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:19:47Z"
+    creationTimestamp: "2022-05-24T18:19:47Z"
+    name: downloads
+    namespace: openshift-console
+    resourceVersion: "76378"
+    uid: 1d1ef7ca-21d1-4aeb-905e-8835eefb5348
+  subsets:
+  - addresses:
+    - ip: 10.128.2.9
+      nodeName: ip-10-0-164-190.ec2.internal
+      targetRef:
+        kind: Pod
+        name: downloads-76c8fbd97c-f8kgn
+        namespace: openshift-console
+        resourceVersion: "70401"
+        uid: 0f7b3d9a-6170-4e93-8836-60eeea6b38e0
+    - ip: 10.131.0.46
+      nodeName: ip-10-0-128-34.ec2.internal
+      targetRef:
+        kind: Pod
+        name: downloads-76c8fbd97c-25z4z
+        namespace: openshift-console
+        resourceVersion: "75880"
+        uid: e7d3b9b9-d1df-4fb7-96f2-f1d2032b1b32
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "309294"

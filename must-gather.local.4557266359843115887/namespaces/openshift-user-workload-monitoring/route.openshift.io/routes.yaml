@@ -1,0 +1,39 @@
+---
+apiVersion: route.openshift.io/v1
+items:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: "2022-05-24T18:28:13Z"
+    name: thanos-ruler
+    namespace: openshift-user-workload-monitoring
+    resourceVersion: "40535"
+    uid: bf781f2c-2c5c-46db-881a-6b1ed3867468
+  spec:
+    host: thanos-ruler-openshift-user-workload-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+    path: /api
+    port:
+      targetPort: web
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: thanos-ruler
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: "2022-05-24T18:28:13Z"
+        status: "True"
+        type: Admitted
+      host: thanos-ruler-openshift-user-workload-monitoring.apps.odf-service.dif5.p1.openshiftapps.com
+      routerCanonicalHostname: router-default.apps.odf-service.dif5.p1.openshiftapps.com
+      routerName: default
+      wildcardPolicy: None
+kind: RouteList
+metadata:
+  resourceVersion: "322670"

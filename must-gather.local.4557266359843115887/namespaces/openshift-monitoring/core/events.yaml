@@ -1,0 +1,3603 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  count: 44
+  eventTime: null
+  firstTimestamp: "2022-05-24T18:42:40Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-cluster-ready}
+    kind: Pod
+    name: osd-cluster-ready-726v4
+    namespace: openshift-monitoring
+    resourceVersion: "75432"
+    uid: 5de9fbd6-76c4-4583-9686-0328d6beb4ea
+  kind: Event
+  lastTimestamp: "2022-05-24T22:02:36Z"
+  message: Container image "quay.io/app-sre/osd-cluster-ready@sha256:c5064d58b8697f9793f7cd7b169393f3c078d40650613660520a51fab75e8716"
+    already present on machine
+  metadata:
+    creationTimestamp: "2022-05-24T22:02:36Z"
+    name: osd-cluster-ready-726v4.16f21eb1511a9bf4
+    namespace: openshift-monitoring
+    resourceVersion: "237257"
+    uid: efc56191-8d16-468e-87d8-234ac875a8cc
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1401
+  eventTime: null
+  firstTimestamp: "2022-05-24T18:42:41Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-cluster-ready}
+    kind: Pod
+    name: osd-cluster-ready-726v4
+    namespace: openshift-monitoring
+    resourceVersion: "75432"
+    uid: 5de9fbd6-76c4-4583-9686-0328d6beb4ea
+  kind: Event
+  lastTimestamp: "2022-05-24T23:47:37Z"
+  message: Back-off restarting failed container
+  metadata:
+    creationTimestamp: "2022-05-24T18:42:41Z"
+    name: osd-cluster-ready-726v4.16f21eb1aaf1aff6
+    namespace: openshift-monitoring
+    resourceVersion: "321036"
+    uid: 3359d932-3cc0-4f73-9e0b-66dda94ea01b
+  reason: BackOff
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-128-34.ec2.internal
+  type: Warning
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:00:00.247927Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557100-knkgt
+    namespace: openshift-monitoring
+    resourceVersion: "187138"
+    uid: 89e77d67-07a5-4d1d-8268-bd8854c3a3dc
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557100-knkgt
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: osd-rebalance-infra-nodes-27557100-knkgt.16f2262fdf2c450a
+    namespace: openshift-monitoring
+    resourceVersion: "187150"
+    uid: 7e70f389-ff12-407c-897e-eb3026dd3038
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:01Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557100-knkgt
+    namespace: openshift-monitoring
+    resourceVersion: "187155"
+    uid: 89e77d67-07a5-4d1d-8268-bd8854c3a3dc
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:01Z"
+  message: Add eth0 [10.128.4.51/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:01Z"
+    name: osd-rebalance-infra-nodes-27557100-knkgt.16f2263047091493
+    namespace: openshift-monitoring
+    resourceVersion: "187182"
+    uid: f73f300c-92e9-41e2-9ba9-4d905a5e819b
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557100-knkgt
+    namespace: openshift-monitoring
+    resourceVersion: "187146"
+    uid: 89e77d67-07a5-4d1d-8268-bd8854c3a3dc
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:02Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:02Z"
+    name: osd-rebalance-infra-nodes-27557100-knkgt.16f2263048dd5b69
+    namespace: openshift-monitoring
+    resourceVersion: "187184"
+    uid: 3d0c8f28-5de4-431c-8944-afae8e58a378
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557100-knkgt
+    namespace: openshift-monitoring
+    resourceVersion: "187146"
+    uid: 89e77d67-07a5-4d1d-8268-bd8854c3a3dc
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 353.143104ms
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:02Z"
+    name: osd-rebalance-infra-nodes-27557100-knkgt.16f226305dea1a4d
+    namespace: openshift-monitoring
+    resourceVersion: "187193"
+    uid: d5f76ddb-702f-4101-92a5-d336575087d5
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557100-knkgt
+    namespace: openshift-monitoring
+    resourceVersion: "187146"
+    uid: 89e77d67-07a5-4d1d-8268-bd8854c3a3dc
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:02Z"
+    name: osd-rebalance-infra-nodes-27557100-knkgt.16f226306f1ea66c
+    namespace: openshift-monitoring
+    resourceVersion: "187212"
+    uid: a2dc3089-296e-40e2-b65e-d46aa100282d
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557100-knkgt
+    namespace: openshift-monitoring
+    resourceVersion: "187146"
+    uid: 89e77d67-07a5-4d1d-8268-bd8854c3a3dc
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:02Z"
+    name: osd-rebalance-infra-nodes-27557100-knkgt.16f22630720ad22e
+    namespace: openshift-monitoring
+    resourceVersion: "187215"
+    uid: f20ebdbf-ec88-4877-b7bc-fa61c5fef373
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557100
+    namespace: openshift-monitoring
+    resourceVersion: "187107"
+    uid: 9532cfeb-ad59-4ac7-ae4f-1f3c30806693
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557100-knkgt'
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: osd-rebalance-infra-nodes-27557100.16f2262fde7c669b
+    namespace: openshift-monitoring
+    resourceVersion: "187152"
+    uid: 0f004a8f-4272-4908-a9fd-70a2768a8b56
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557100
+    namespace: openshift-monitoring
+    resourceVersion: "187145"
+    uid: 9532cfeb-ad59-4ac7-ae4f-1f3c30806693
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:06Z"
+    name: osd-rebalance-infra-nodes-27557100.16f226316a9d96ad
+    namespace: openshift-monitoring
+    resourceVersion: "187362"
+    uid: 91ce7c78-2404-419e-a1b1-77be5e96a4a1
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:15:00.185095Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557115-hhhbx
+    namespace: openshift-monitoring
+    resourceVersion: "199604"
+    uid: 36c435bb-9305-4cc0-b1d4-e46e83795b94
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557115-hhhbx
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: osd-rebalance-infra-nodes-27557115-hhhbx.16f22701679bb269
+    namespace: openshift-monitoring
+    resourceVersion: "199611"
+    uid: 7e376f0a-b3c7-4e0e-94bc-04d009089233
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:01Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557115-hhhbx
+    namespace: openshift-monitoring
+    resourceVersion: "199614"
+    uid: 36c435bb-9305-4cc0-b1d4-e46e83795b94
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:01Z"
+  message: Add eth0 [10.128.4.57/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:01Z"
+    name: osd-rebalance-infra-nodes-27557115-hhhbx.16f22701d0b7f6f4
+    namespace: openshift-monitoring
+    resourceVersion: "199640"
+    uid: 59aa573b-f15e-49a9-beb6-d808a0931949
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:01Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557115-hhhbx
+    namespace: openshift-monitoring
+    resourceVersion: "199608"
+    uid: 36c435bb-9305-4cc0-b1d4-e46e83795b94
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:01Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:01Z"
+    name: osd-rebalance-infra-nodes-27557115-hhhbx.16f22701d286e6b3
+    namespace: openshift-monitoring
+    resourceVersion: "199642"
+    uid: e2a35991-70d0-4311-b54e-15cc43719122
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557115-hhhbx
+    namespace: openshift-monitoring
+    resourceVersion: "199608"
+    uid: 36c435bb-9305-4cc0-b1d4-e46e83795b94
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 143.771885ms
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:02Z"
+    name: osd-rebalance-infra-nodes-27557115-hhhbx.16f22701db18f63a
+    namespace: openshift-monitoring
+    resourceVersion: "199649"
+    uid: 3da86ea3-ff53-46ce-987e-1db2c8bd62e0
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557115-hhhbx
+    namespace: openshift-monitoring
+    resourceVersion: "199608"
+    uid: 36c435bb-9305-4cc0-b1d4-e46e83795b94
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:02Z"
+    name: osd-rebalance-infra-nodes-27557115-hhhbx.16f22701e2bef324
+    namespace: openshift-monitoring
+    resourceVersion: "199651"
+    uid: 1ee3ea33-97a3-4bbd-8b92-e6fcf021f210
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557115-hhhbx
+    namespace: openshift-monitoring
+    resourceVersion: "199608"
+    uid: 36c435bb-9305-4cc0-b1d4-e46e83795b94
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:02Z"
+    name: osd-rebalance-infra-nodes-27557115-hhhbx.16f22701e424bab6
+    namespace: openshift-monitoring
+    resourceVersion: "199654"
+    uid: 0bf1460b-3c28-4eec-9958-92bd3c1fad12
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557115
+    namespace: openshift-monitoring
+    resourceVersion: "199587"
+    uid: 461347f7-f23d-45af-b5a6-1e0ec4e3da9f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557115-hhhbx'
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: osd-rebalance-infra-nodes-27557115.16f22701670813e1
+    namespace: openshift-monitoring
+    resourceVersion: "199609"
+    uid: ffc845cb-0fda-420b-b8a3-cb6f20eb41e8
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:05Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557115
+    namespace: openshift-monitoring
+    resourceVersion: "199607"
+    uid: 461347f7-f23d-45af-b5a6-1e0ec4e3da9f
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:05Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:05Z"
+    name: osd-rebalance-infra-nodes-27557115.16f22702bbe73211
+    namespace: openshift-monitoring
+    resourceVersion: "199717"
+    uid: 7dc1cc4c-0d94-469b-9924-dd5d3b917eab
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:30:00.187279Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557130-skb79
+    namespace: openshift-monitoring
+    resourceVersion: "211341"
+    uid: 52d89108-c9ae-49b4-a3e9-131d4a01bc05
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557130-skb79
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: osd-rebalance-infra-nodes-27557130-skb79.16f227d2f3eb2951
+    namespace: openshift-monitoring
+    resourceVersion: "211351"
+    uid: 50928366-f42d-411e-99c4-09473cb956d6
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:01Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557130-skb79
+    namespace: openshift-monitoring
+    resourceVersion: "211357"
+    uid: 52d89108-c9ae-49b4-a3e9-131d4a01bc05
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:01Z"
+  message: Add eth0 [10.128.4.60/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:01Z"
+    name: osd-rebalance-infra-nodes-27557130-skb79.16f227d34c306c39
+    namespace: openshift-monitoring
+    resourceVersion: "211391"
+    uid: eec31dd4-e3fb-4deb-86fa-8fb840383770
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:01Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557130-skb79
+    namespace: openshift-monitoring
+    resourceVersion: "211348"
+    uid: 52d89108-c9ae-49b4-a3e9-131d4a01bc05
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:01Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:01Z"
+    name: osd-rebalance-infra-nodes-27557130-skb79.16f227d34dfea6b9
+    namespace: openshift-monitoring
+    resourceVersion: "211393"
+    uid: 25abcc92-fe6c-4e7b-9e9f-d238b6386481
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:01Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557130-skb79
+    namespace: openshift-monitoring
+    resourceVersion: "211348"
+    uid: 52d89108-c9ae-49b4-a3e9-131d4a01bc05
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:01Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 142.149236ms
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:01Z"
+    name: osd-rebalance-infra-nodes-27557130-skb79.16f227d35677fb51
+    namespace: openshift-monitoring
+    resourceVersion: "211399"
+    uid: 7e6865c0-76f7-48f6-a7c3-9145d5cc7115
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557130-skb79
+    namespace: openshift-monitoring
+    resourceVersion: "211348"
+    uid: 52d89108-c9ae-49b4-a3e9-131d4a01bc05
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:02Z"
+    name: osd-rebalance-infra-nodes-27557130-skb79.16f227d362c823d4
+    namespace: openshift-monitoring
+    resourceVersion: "211406"
+    uid: bd68ab0c-5db1-499e-986f-7e967a4a6478
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557130-skb79
+    namespace: openshift-monitoring
+    resourceVersion: "211348"
+    uid: 52d89108-c9ae-49b4-a3e9-131d4a01bc05
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:02Z"
+    name: osd-rebalance-infra-nodes-27557130-skb79.16f227d364956305
+    namespace: openshift-monitoring
+    resourceVersion: "211407"
+    uid: ffeec095-4554-46f4-9889-33c5e4bf2294
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557130
+    namespace: openshift-monitoring
+    resourceVersion: "211325"
+    uid: dec8bec9-8993-45d9-aeb4-4ad1a30934ea
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557130-skb79'
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: osd-rebalance-infra-nodes-27557130.16f227d2f352793a
+    namespace: openshift-monitoring
+    resourceVersion: "211354"
+    uid: 5370f9e5-44e2-4bce-8e8e-0c6372fbe5ef
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:05Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557130
+    namespace: openshift-monitoring
+    resourceVersion: "211349"
+    uid: dec8bec9-8993-45d9-aeb4-4ad1a30934ea
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:05Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:05Z"
+    name: osd-rebalance-infra-nodes-27557130.16f227d44dab62cc
+    namespace: openshift-monitoring
+    resourceVersion: "211493"
+    uid: 1bc085bb-ef53-4d71-8ccc-16bccffede27
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T21:45:00.186575Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557145-478hb
+    namespace: openshift-monitoring
+    resourceVersion: "223237"
+    uid: 20a3ab8a-a633-4911-bc2d-fe77ed1a764e
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557145-478hb
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: osd-rebalance-infra-nodes-27557145-478hb.16f228a4800e9775
+    namespace: openshift-monitoring
+    resourceVersion: "223249"
+    uid: 6150ca56-1e2a-4aed-8d55-7732e6daba5a
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557145-478hb
+    namespace: openshift-monitoring
+    resourceVersion: "223251"
+    uid: 20a3ab8a-a633-4911-bc2d-fe77ed1a764e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:02Z"
+  message: Add eth0 [10.128.4.64/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:02Z"
+    name: osd-rebalance-infra-nodes-27557145-478hb.16f228a4fc27073e
+    namespace: openshift-monitoring
+    resourceVersion: "223279"
+    uid: 91aad30c-bb42-4860-aeb6-467aa3fc6a3c
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557145-478hb
+    namespace: openshift-monitoring
+    resourceVersion: "223243"
+    uid: 20a3ab8a-a633-4911-bc2d-fe77ed1a764e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:02Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:02Z"
+    name: osd-rebalance-infra-nodes-27557145-478hb.16f228a4fde96711
+    namespace: openshift-monitoring
+    resourceVersion: "223281"
+    uid: 24bf27f4-3a0a-4dad-a61e-87ab4f45a645
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557145-478hb
+    namespace: openshift-monitoring
+    resourceVersion: "223243"
+    uid: 20a3ab8a-a633-4911-bc2d-fe77ed1a764e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 253.943742ms
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:02Z"
+    name: osd-rebalance-infra-nodes-27557145-478hb.16f228a50d0c9dbb
+    namespace: openshift-monitoring
+    resourceVersion: "223288"
+    uid: d3278384-0397-4a9a-ab0c-78ad39696509
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557145-478hb
+    namespace: openshift-monitoring
+    resourceVersion: "223243"
+    uid: 20a3ab8a-a633-4911-bc2d-fe77ed1a764e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:02Z"
+    name: osd-rebalance-infra-nodes-27557145-478hb.16f228a5156629eb
+    namespace: openshift-monitoring
+    resourceVersion: "223290"
+    uid: a3d2b5fc-177a-4de2-a454-dfa51e525ef2
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557145-478hb
+    namespace: openshift-monitoring
+    resourceVersion: "223243"
+    uid: 20a3ab8a-a633-4911-bc2d-fe77ed1a764e
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:02Z"
+    name: osd-rebalance-infra-nodes-27557145-478hb.16f228a5168c0967
+    namespace: openshift-monitoring
+    resourceVersion: "223291"
+    uid: 39ec4a33-111b-4ec1-847b-b958ecdf92e0
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557145
+    namespace: openshift-monitoring
+    resourceVersion: "223225"
+    uid: e4c802ec-6be4-4248-8561-e20ea4b7db17
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557145-478hb'
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: osd-rebalance-infra-nodes-27557145.16f228a47f50a447
+    namespace: openshift-monitoring
+    resourceVersion: "223240"
+    uid: 2d9c0370-cc85-4fa5-8ad5-30543221404c
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557145
+    namespace: openshift-monitoring
+    resourceVersion: "223241"
+    uid: e4c802ec-6be4-4248-8561-e20ea4b7db17
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:06Z"
+    name: osd-rebalance-infra-nodes-27557145.16f228a5de3159da
+    namespace: openshift-monitoring
+    resourceVersion: "223350"
+    uid: aaa08d5f-077b-475c-8916-ef446ac74d0d
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:00:00.270817Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557160-5vbqb
+    namespace: openshift-monitoring
+    resourceVersion: "234999"
+    uid: e0877763-50b0-4c02-9fad-d28fbc2494a4
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557160-5vbqb
+    to ip-10-0-166-35.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: osd-rebalance-infra-nodes-27557160-5vbqb.16f2297611422c32
+    namespace: openshift-monitoring
+    resourceVersion: "235008"
+    uid: 76b17929-2339-4d56-b864-7a98ef2fa3b9
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557160-5vbqb
+    namespace: openshift-monitoring
+    resourceVersion: "235010"
+    uid: e0877763-50b0-4c02-9fad-d28fbc2494a4
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:02Z"
+  message: Add eth0 [10.131.2.32/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:02Z"
+    name: osd-rebalance-infra-nodes-27557160-5vbqb.16f2297695dcec0c
+    namespace: openshift-monitoring
+    resourceVersion: "235078"
+    uid: b2836b07-f5ce-49d5-af5d-f73fbee68a94
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557160-5vbqb
+    namespace: openshift-monitoring
+    resourceVersion: "235005"
+    uid: e0877763-50b0-4c02-9fad-d28fbc2494a4
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:02Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:02Z"
+    name: osd-rebalance-infra-nodes-27557160-5vbqb.16f22976979087b3
+    namespace: openshift-monitoring
+    resourceVersion: "235080"
+    uid: 2b470c54-9a66-45e1-b06a-8b19fac3ea7d
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-166-35.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557160-5vbqb
+    namespace: openshift-monitoring
+    resourceVersion: "235005"
+    uid: e0877763-50b0-4c02-9fad-d28fbc2494a4
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 149.055278ms
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:02Z"
+    name: osd-rebalance-infra-nodes-27557160-5vbqb.16f22976a0735a0a
+    namespace: openshift-monitoring
+    resourceVersion: "235088"
+    uid: 59fc4bc5-aa93-41de-b554-6736721347a1
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-166-35.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557160-5vbqb
+    namespace: openshift-monitoring
+    resourceVersion: "235005"
+    uid: e0877763-50b0-4c02-9fad-d28fbc2494a4
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:02Z"
+    name: osd-rebalance-infra-nodes-27557160-5vbqb.16f22976a883503e
+    namespace: openshift-monitoring
+    resourceVersion: "235091"
+    uid: 501875d5-98b1-43f3-b390-032c71197d9f
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-166-35.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557160-5vbqb
+    namespace: openshift-monitoring
+    resourceVersion: "235005"
+    uid: e0877763-50b0-4c02-9fad-d28fbc2494a4
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:02Z"
+    name: osd-rebalance-infra-nodes-27557160-5vbqb.16f22976aa6f822b
+    namespace: openshift-monitoring
+    resourceVersion: "235093"
+    uid: af965a36-9863-417c-a81f-7dd9f3c16ba2
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-166-35.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557160
+    namespace: openshift-monitoring
+    resourceVersion: "234974"
+    uid: 82030c91-f6c1-479a-b416-d04d34f58d91
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557160-5vbqb'
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: osd-rebalance-infra-nodes-27557160.16f22976109ae38a
+    namespace: openshift-monitoring
+    resourceVersion: "235004"
+    uid: e6c9e414-37d0-437e-b60f-b00741be0c76
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557160
+    namespace: openshift-monitoring
+    resourceVersion: "235006"
+    uid: 82030c91-f6c1-479a-b416-d04d34f58d91
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:06Z"
+    name: osd-rebalance-infra-nodes-27557160.16f22977a1a2d3ef
+    namespace: openshift-monitoring
+    resourceVersion: "235205"
+    uid: e97733e8-4fb1-46c0-85a3-b0f16690e938
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:15:00.188796Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557175-r2cxq
+    namespace: openshift-monitoring
+    resourceVersion: "247468"
+    uid: 36c15f38-e338-4ffd-b1f8-c2bf4071e613
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557175-r2cxq
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: osd-rebalance-infra-nodes-27557175-r2cxq.16f22a47988cc8c3
+    namespace: openshift-monitoring
+    resourceVersion: "247477"
+    uid: ca27d7f0-baa6-4147-8a9a-c6119d8d1550
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:01Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557175-r2cxq
+    namespace: openshift-monitoring
+    resourceVersion: "247479"
+    uid: 36c15f38-e338-4ffd-b1f8-c2bf4071e613
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:01Z"
+  message: Add eth0 [10.128.4.73/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:01Z"
+    name: osd-rebalance-infra-nodes-27557175-r2cxq.16f22a47fbcc26f9
+    namespace: openshift-monitoring
+    resourceVersion: "247506"
+    uid: 15c1a06a-75c1-4ac3-9120-a612df3a8005
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:01Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557175-r2cxq
+    namespace: openshift-monitoring
+    resourceVersion: "247471"
+    uid: 36c15f38-e338-4ffd-b1f8-c2bf4071e613
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:01Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:01Z"
+    name: osd-rebalance-infra-nodes-27557175-r2cxq.16f22a47fd9077ff
+    namespace: openshift-monitoring
+    resourceVersion: "247508"
+    uid: 5ef7390a-1b3a-40e8-9166-624a19b153a6
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557175-r2cxq
+    namespace: openshift-monitoring
+    resourceVersion: "247471"
+    uid: 36c15f38-e338-4ffd-b1f8-c2bf4071e613
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 232.692742ms
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:02Z"
+    name: osd-rebalance-infra-nodes-27557175-r2cxq.16f22a480b6f4f60
+    namespace: openshift-monitoring
+    resourceVersion: "247512"
+    uid: 3cbf4363-0ebb-4d88-ba55-cef3d7c6c124
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557175-r2cxq
+    namespace: openshift-monitoring
+    resourceVersion: "247471"
+    uid: 36c15f38-e338-4ffd-b1f8-c2bf4071e613
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:02Z"
+    name: osd-rebalance-infra-nodes-27557175-r2cxq.16f22a481349baad
+    namespace: openshift-monitoring
+    resourceVersion: "247514"
+    uid: e3b43335-d543-4759-8648-ef7e05fa1913
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557175-r2cxq
+    namespace: openshift-monitoring
+    resourceVersion: "247471"
+    uid: 36c15f38-e338-4ffd-b1f8-c2bf4071e613
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:02Z"
+    name: osd-rebalance-infra-nodes-27557175-r2cxq.16f22a481480b5ab
+    namespace: openshift-monitoring
+    resourceVersion: "247515"
+    uid: 0b996f69-66e0-47bd-9650-7fc92d962b5c
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557175
+    namespace: openshift-monitoring
+    resourceVersion: "247455"
+    uid: 2dfa0fd6-eb41-45d9-8559-e5536b1657cf
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557175-r2cxq'
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: osd-rebalance-infra-nodes-27557175.16f22a479801f4e9
+    namespace: openshift-monitoring
+    resourceVersion: "247476"
+    uid: fef26c93-34e4-4f63-93a8-e7a78d612592
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557175
+    namespace: openshift-monitoring
+    resourceVersion: "247475"
+    uid: 2dfa0fd6-eb41-45d9-8559-e5536b1657cf
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:06Z"
+    name: osd-rebalance-infra-nodes-27557175.16f22a48fe60fc61
+    namespace: openshift-monitoring
+    resourceVersion: "247595"
+    uid: 4901e58c-2988-4d4c-8015-b15757256dff
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:30:00.203067Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557190-lxnwn
+    namespace: openshift-monitoring
+    resourceVersion: "259151"
+    uid: e5e14455-3fde-4f8e-b650-73be8fa1ac7f
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557190-lxnwn
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: osd-rebalance-infra-nodes-27557190-lxnwn.16f22b192594b450
+    namespace: openshift-monitoring
+    resourceVersion: "259160"
+    uid: b22f64d7-2fb2-4505-8a25-665e5b62a7e8
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557190-lxnwn
+    namespace: openshift-monitoring
+    resourceVersion: "259165"
+    uid: e5e14455-3fde-4f8e-b650-73be8fa1ac7f
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:02Z"
+  message: Add eth0 [10.128.4.75/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:02Z"
+    name: osd-rebalance-infra-nodes-27557190-lxnwn.16f22b19b9e0b7d9
+    namespace: openshift-monitoring
+    resourceVersion: "259211"
+    uid: 66841427-b718-40b3-9f49-53606e8d9447
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557190-lxnwn
+    namespace: openshift-monitoring
+    resourceVersion: "259154"
+    uid: e5e14455-3fde-4f8e-b650-73be8fa1ac7f
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:02Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:02Z"
+    name: osd-rebalance-infra-nodes-27557190-lxnwn.16f22b19bd656c17
+    namespace: openshift-monitoring
+    resourceVersion: "259213"
+    uid: 885aea6b-2e38-446e-8652-921f53da40e4
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557190-lxnwn
+    namespace: openshift-monitoring
+    resourceVersion: "259154"
+    uid: e5e14455-3fde-4f8e-b650-73be8fa1ac7f
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 204.560688ms
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:02Z"
+    name: osd-rebalance-infra-nodes-27557190-lxnwn.16f22b19c9971a78
+    namespace: openshift-monitoring
+    resourceVersion: "259220"
+    uid: b7c839e8-edac-47af-b176-6d2103574d12
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:03Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557190-lxnwn
+    namespace: openshift-monitoring
+    resourceVersion: "259154"
+    uid: e5e14455-3fde-4f8e-b650-73be8fa1ac7f
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:03Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:03Z"
+    name: osd-rebalance-infra-nodes-27557190-lxnwn.16f22b19d0a86bef
+    namespace: openshift-monitoring
+    resourceVersion: "259221"
+    uid: a8a2b0f6-2126-487c-8679-731109c20f75
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:03Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557190-lxnwn
+    namespace: openshift-monitoring
+    resourceVersion: "259154"
+    uid: e5e14455-3fde-4f8e-b650-73be8fa1ac7f
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:03Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:03Z"
+    name: osd-rebalance-infra-nodes-27557190-lxnwn.16f22b19d3a83955
+    namespace: openshift-monitoring
+    resourceVersion: "259222"
+    uid: 8eb2976a-5628-4306-b98d-039713876c5b
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557190
+    namespace: openshift-monitoring
+    resourceVersion: "259130"
+    uid: aad32852-33ea-4c0a-b3d0-8d8a5c8c4b8a
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557190-lxnwn'
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: osd-rebalance-infra-nodes-27557190.16f22b1924f26fe7
+    namespace: openshift-monitoring
+    resourceVersion: "259164"
+    uid: 4c42eee6-f7f4-4743-bb79-98ab93d9cb7c
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:07Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557190
+    namespace: openshift-monitoring
+    resourceVersion: "259159"
+    uid: aad32852-33ea-4c0a-b3d0-8d8a5c8c4b8a
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:07Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:07Z"
+    name: osd-rebalance-infra-nodes-27557190.16f22b1ac816c9cf
+    namespace: openshift-monitoring
+    resourceVersion: "259302"
+    uid: 9b8922f2-6021-4ce4-bebd-dbfa639ed60d
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T22:45:00.202530Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557205-h4tgd
+    namespace: openshift-monitoring
+    resourceVersion: "271047"
+    uid: fc6182e4-49ae-4751-a99b-030aa12ea964
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557205-h4tgd
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: osd-rebalance-infra-nodes-27557205-h4tgd.16f22beab1baa62e
+    namespace: openshift-monitoring
+    resourceVersion: "271057"
+    uid: 71fdafb5-207f-4fd8-89f5-d31cd1f723e1
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557205-h4tgd
+    namespace: openshift-monitoring
+    resourceVersion: "271059"
+    uid: fc6182e4-49ae-4751-a99b-030aa12ea964
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:02Z"
+  message: Add eth0 [10.128.4.80/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:02Z"
+    name: osd-rebalance-infra-nodes-27557205-h4tgd.16f22beb384e9c1f
+    namespace: openshift-monitoring
+    resourceVersion: "271128"
+    uid: 8cac5476-adac-4963-8f57-e15a86feee57
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557205-h4tgd
+    namespace: openshift-monitoring
+    resourceVersion: "271054"
+    uid: fc6182e4-49ae-4751-a99b-030aa12ea964
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:02Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:02Z"
+    name: osd-rebalance-infra-nodes-27557205-h4tgd.16f22beb3a1b673d
+    namespace: openshift-monitoring
+    resourceVersion: "271130"
+    uid: 7df94a68-0a30-47ab-b516-5d3a41b9670d
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557205-h4tgd
+    namespace: openshift-monitoring
+    resourceVersion: "271054"
+    uid: fc6182e4-49ae-4751-a99b-030aa12ea964
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 213.533099ms
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:02Z"
+    name: osd-rebalance-infra-nodes-27557205-h4tgd.16f22beb46d5e2fb
+    namespace: openshift-monitoring
+    resourceVersion: "271134"
+    uid: bd07deb3-8695-43f7-a1c9-43b0807948ad
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557205-h4tgd
+    namespace: openshift-monitoring
+    resourceVersion: "271054"
+    uid: fc6182e4-49ae-4751-a99b-030aa12ea964
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:02Z"
+    name: osd-rebalance-infra-nodes-27557205-h4tgd.16f22beb4f60ec39
+    namespace: openshift-monitoring
+    resourceVersion: "271135"
+    uid: 50af70bb-059e-4402-b738-4e40b8d44ae0
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557205-h4tgd
+    namespace: openshift-monitoring
+    resourceVersion: "271054"
+    uid: fc6182e4-49ae-4751-a99b-030aa12ea964
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:02Z"
+    name: osd-rebalance-infra-nodes-27557205-h4tgd.16f22beb507f7ad2
+    namespace: openshift-monitoring
+    resourceVersion: "271136"
+    uid: 5f826f11-e6b9-451c-bd0d-016078798b54
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557205
+    namespace: openshift-monitoring
+    resourceVersion: "271035"
+    uid: 3dda75fa-b682-49cf-bf83-90fc0dcd502a
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557205-h4tgd'
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: osd-rebalance-infra-nodes-27557205.16f22beab0a329fa
+    namespace: openshift-monitoring
+    resourceVersion: "271056"
+    uid: 8fec2e61-303c-477a-ba96-6d6e6d5a07d5
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557205
+    namespace: openshift-monitoring
+    resourceVersion: "271050"
+    uid: 3dda75fa-b682-49cf-bf83-90fc0dcd502a
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:06Z"
+    name: osd-rebalance-infra-nodes-27557205.16f22bec1b9da25b
+    namespace: openshift-monitoring
+    resourceVersion: "271200"
+    uid: dac6eb26-a163-4d85-bd25-e999e5b6bbdc
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:00:00.277459Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557220-hvmvc
+    namespace: openshift-monitoring
+    resourceVersion: "282860"
+    uid: b1243d91-4495-455e-9504-a16715d10f66
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557220-hvmvc
+    to ip-10-0-166-35.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: osd-rebalance-infra-nodes-27557220-hvmvc.16f22cbc42602a7e
+    namespace: openshift-monitoring
+    resourceVersion: "282867"
+    uid: 8bb9cd10-a03b-49ca-9307-beb453a57835
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557220-hvmvc
+    namespace: openshift-monitoring
+    resourceVersion: "282868"
+    uid: b1243d91-4495-455e-9504-a16715d10f66
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:02Z"
+  message: Add eth0 [10.131.2.35/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:02Z"
+    name: osd-rebalance-infra-nodes-27557220-hvmvc.16f22cbcd28a1661
+    namespace: openshift-monitoring
+    resourceVersion: "282925"
+    uid: 635677cd-c508-492b-84c8-881dd35f4cb8
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557220-hvmvc
+    namespace: openshift-monitoring
+    resourceVersion: "282862"
+    uid: b1243d91-4495-455e-9504-a16715d10f66
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:02Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:02Z"
+    name: osd-rebalance-infra-nodes-27557220-hvmvc.16f22cbcd5d31343
+    namespace: openshift-monitoring
+    resourceVersion: "282929"
+    uid: f64eac7d-808d-4caa-aaba-8dae02023467
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-166-35.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557220-hvmvc
+    namespace: openshift-monitoring
+    resourceVersion: "282862"
+    uid: b1243d91-4495-455e-9504-a16715d10f66
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 84.785538ms
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:02Z"
+    name: osd-rebalance-infra-nodes-27557220-hvmvc.16f22cbcdae10949
+    namespace: openshift-monitoring
+    resourceVersion: "282935"
+    uid: 04a21904-501b-417c-9a60-35a0780ccf71
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-166-35.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:03Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557220-hvmvc
+    namespace: openshift-monitoring
+    resourceVersion: "282862"
+    uid: b1243d91-4495-455e-9504-a16715d10f66
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:03Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:03Z"
+    name: osd-rebalance-infra-nodes-27557220-hvmvc.16f22cbce4bc1245
+    namespace: openshift-monitoring
+    resourceVersion: "282940"
+    uid: 6be2469d-a0b0-44eb-8bcd-dc06c6dea965
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-166-35.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:03Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557220-hvmvc
+    namespace: openshift-monitoring
+    resourceVersion: "282862"
+    uid: b1243d91-4495-455e-9504-a16715d10f66
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:03Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:03Z"
+    name: osd-rebalance-infra-nodes-27557220-hvmvc.16f22cbce65a1f83
+    namespace: openshift-monitoring
+    resourceVersion: "282941"
+    uid: 2b75a62b-f632-4dfe-b820-adfb2e6494c2
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-166-35.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557220
+    namespace: openshift-monitoring
+    resourceVersion: "282814"
+    uid: d217fe51-1e75-46e3-93b0-21cc090aafc3
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557220-hvmvc'
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: osd-rebalance-infra-nodes-27557220.16f22cbc41e5165f
+    namespace: openshift-monitoring
+    resourceVersion: "282864"
+    uid: 23d9de37-5d15-4a16-9a22-8676275b8a17
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:07Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557220
+    namespace: openshift-monitoring
+    resourceVersion: "282863"
+    uid: d217fe51-1e75-46e3-93b0-21cc090aafc3
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:07Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:07Z"
+    name: osd-rebalance-infra-nodes-27557220.16f22cbddbf52b5a
+    namespace: openshift-monitoring
+    resourceVersion: "283068"
+    uid: da0893fe-e0c0-4d46-80db-c51d39dc0b6e
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:15:00.196725Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557235-z6v2w
+    namespace: openshift-monitoring
+    resourceVersion: "295342"
+    uid: aafb146e-294a-4c36-97be-4deba3d30cbf
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557235-z6v2w
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: osd-rebalance-infra-nodes-27557235-z6v2w.16f22d8dc9be67c7
+    namespace: openshift-monitoring
+    resourceVersion: "295351"
+    uid: c96e8b25-2ae3-43d0-a75c-86b95d125c23
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:01Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557235-z6v2w
+    namespace: openshift-monitoring
+    resourceVersion: "295353"
+    uid: aafb146e-294a-4c36-97be-4deba3d30cbf
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:01Z"
+  message: Add eth0 [10.128.4.89/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:01Z"
+    name: osd-rebalance-infra-nodes-27557235-z6v2w.16f22d8e2f9776cd
+    namespace: openshift-monitoring
+    resourceVersion: "295383"
+    uid: 9846711f-77b5-4188-95f0-62fb4bca79e8
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:01Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557235-z6v2w
+    namespace: openshift-monitoring
+    resourceVersion: "295348"
+    uid: aafb146e-294a-4c36-97be-4deba3d30cbf
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:01Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:01Z"
+    name: osd-rebalance-infra-nodes-27557235-z6v2w.16f22d8e316ae247
+    namespace: openshift-monitoring
+    resourceVersion: "295386"
+    uid: b62cc2b3-37dd-42aa-a3ba-64d837983ec4
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557235-z6v2w
+    namespace: openshift-monitoring
+    resourceVersion: "295348"
+    uid: aafb146e-294a-4c36-97be-4deba3d30cbf
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 154.044671ms
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:02Z"
+    name: osd-rebalance-infra-nodes-27557235-z6v2w.16f22d8e3a99b6d6
+    namespace: openshift-monitoring
+    resourceVersion: "295389"
+    uid: 3079824d-105b-4320-8b3e-766ebd26d8f0
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557235-z6v2w
+    namespace: openshift-monitoring
+    resourceVersion: "295348"
+    uid: aafb146e-294a-4c36-97be-4deba3d30cbf
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:02Z"
+    name: osd-rebalance-infra-nodes-27557235-z6v2w.16f22d8e420e658a
+    namespace: openshift-monitoring
+    resourceVersion: "295390"
+    uid: ae5f7f1a-d9f3-4a31-bbde-2ec17f29cc60
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557235-z6v2w
+    namespace: openshift-monitoring
+    resourceVersion: "295348"
+    uid: aafb146e-294a-4c36-97be-4deba3d30cbf
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:02Z"
+    name: osd-rebalance-infra-nodes-27557235-z6v2w.16f22d8e433abc4d
+    namespace: openshift-monitoring
+    resourceVersion: "295391"
+    uid: d835dcc9-9fc9-4f71-817d-e8097f9adf52
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557235
+    namespace: openshift-monitoring
+    resourceVersion: "295327"
+    uid: 965a462d-c1b4-4987-974a-4cd94c2b88ab
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557235-z6v2w'
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: osd-rebalance-infra-nodes-27557235.16f22d8dc90eeba3
+    namespace: openshift-monitoring
+    resourceVersion: "295346"
+    uid: aecabd0b-248f-4ed2-af71-cfa3f0873597
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557235
+    namespace: openshift-monitoring
+    resourceVersion: "295347"
+    uid: 965a462d-c1b4-4987-974a-4cd94c2b88ab
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:06Z"
+    name: osd-rebalance-infra-nodes-27557235.16f22d8f3ef5f512
+    namespace: openshift-monitoring
+    resourceVersion: "295477"
+    uid: 00b5f2c9-7378-4f9c-9842-05482067108d
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:30:00.191134Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557250-557l4
+    namespace: openshift-monitoring
+    resourceVersion: "307111"
+    uid: 42de9d24-1055-424e-b38a-1c0ddefb1a5f
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557250-557l4
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: osd-rebalance-infra-nodes-27557250-557l4.16f22e5f5597371e
+    namespace: openshift-monitoring
+    resourceVersion: "307124"
+    uid: db7c0358-0a6f-4d9a-ac01-27224ece6f20
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557250-557l4
+    namespace: openshift-monitoring
+    resourceVersion: "307129"
+    uid: 42de9d24-1055-424e-b38a-1c0ddefb1a5f
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:02Z"
+  message: Add eth0 [10.128.4.92/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:02Z"
+    name: osd-rebalance-infra-nodes-27557250-557l4.16f22e5fc5423ff2
+    namespace: openshift-monitoring
+    resourceVersion: "307157"
+    uid: edab9766-8b69-48de-bca0-8aeac3a9a878
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557250-557l4
+    namespace: openshift-monitoring
+    resourceVersion: "307119"
+    uid: 42de9d24-1055-424e-b38a-1c0ddefb1a5f
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:02Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:02Z"
+    name: osd-rebalance-infra-nodes-27557250-557l4.16f22e5fc73b7d15
+    namespace: openshift-monitoring
+    resourceVersion: "307159"
+    uid: 968f7aa0-108d-471c-87dd-2e49a7c4093d
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557250-557l4
+    namespace: openshift-monitoring
+    resourceVersion: "307119"
+    uid: 42de9d24-1055-424e-b38a-1c0ddefb1a5f
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 238.610017ms
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:02Z"
+    name: osd-rebalance-infra-nodes-27557250-557l4.16f22e5fd574be69
+    namespace: openshift-monitoring
+    resourceVersion: "307167"
+    uid: 95a7af1c-d284-4a59-aa12-c557148c8cbc
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557250-557l4
+    namespace: openshift-monitoring
+    resourceVersion: "307119"
+    uid: 42de9d24-1055-424e-b38a-1c0ddefb1a5f
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:02Z"
+    name: osd-rebalance-infra-nodes-27557250-557l4.16f22e5fde485115
+    namespace: openshift-monitoring
+    resourceVersion: "307175"
+    uid: f667b3c2-dabc-4b4f-8d3f-e34d593e7290
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557250-557l4
+    namespace: openshift-monitoring
+    resourceVersion: "307119"
+    uid: 42de9d24-1055-424e-b38a-1c0ddefb1a5f
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:02Z"
+    name: osd-rebalance-infra-nodes-27557250-557l4.16f22e5fdfcb3511
+    namespace: openshift-monitoring
+    resourceVersion: "307176"
+    uid: f6adc961-9e4a-473f-8702-b7206aa85932
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557250
+    namespace: openshift-monitoring
+    resourceVersion: "307094"
+    uid: 17e12fb5-15ed-4fbd-882c-31eaaa4ab4c2
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557250-557l4'
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: osd-rebalance-infra-nodes-27557250.16f22e5f54da8c19
+    namespace: openshift-monitoring
+    resourceVersion: "307125"
+    uid: 52cd6b86-2e8c-4e14-b7e8-03b1e713a578
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557250
+    namespace: openshift-monitoring
+    resourceVersion: "307117"
+    uid: 17e12fb5-15ed-4fbd-882c-31eaaa4ab4c2
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:06Z"
+    name: osd-rebalance-infra-nodes-27557250.16f22e60cca07b54
+    namespace: openshift-monitoring
+    resourceVersion: "307246"
+    uid: 5586e1e4-fa8d-4799-9982-cd8ac380571e
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- action: Binding
+  apiVersion: v1
+  eventTime: "2022-05-24T23:45:00.198458Z"
+  firstTimestamp: null
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557265-q26vk
+    namespace: openshift-monitoring
+    resourceVersion: "318926"
+    uid: cf42eab9-a670-48a8-9b5d-ae7a04159a62
+  kind: Event
+  lastTimestamp: null
+  message: Successfully assigned openshift-monitoring/osd-rebalance-infra-nodes-27557265-q26vk
+    to ip-10-0-148-123.ec2.internal
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: osd-rebalance-infra-nodes-27557265-q26vk.16f22f30e23525bc
+    namespace: openshift-monitoring
+    resourceVersion: "318935"
+    uid: eb1195a7-1477-49a9-8fca-d3c706651894
+  reason: Scheduled
+  reportingComponent: default-scheduler
+  reportingInstance: default-scheduler-ip-10-0-138-197
+  source: {}
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557265-q26vk
+    namespace: openshift-monitoring
+    resourceVersion: "318937"
+    uid: cf42eab9-a670-48a8-9b5d-ae7a04159a62
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:02Z"
+  message: Add eth0 [10.128.4.96/23] from openshift-sdn
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:02Z"
+    name: osd-rebalance-infra-nodes-27557265-q26vk.16f22f316316483e
+    namespace: openshift-monitoring
+    resourceVersion: "318975"
+    uid: 29a6ea29-6f59-41d2-8df4-caccc3afc69f
+  reason: AddedInterface
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: multus
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557265-q26vk
+    namespace: openshift-monitoring
+    resourceVersion: "318932"
+    uid: cf42eab9-a670-48a8-9b5d-ae7a04159a62
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:02Z"
+  message: Pulling image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:02Z"
+    name: osd-rebalance-infra-nodes-27557265-q26vk.16f22f31657839bd
+    namespace: openshift-monitoring
+    resourceVersion: "318977"
+    uid: 5fe3655d-dbd3-4cdb-9de0-0dd04e2bea7a
+  reason: Pulling
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557265-q26vk
+    namespace: openshift-monitoring
+    resourceVersion: "318932"
+    uid: cf42eab9-a670-48a8-9b5d-ae7a04159a62
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:02Z"
+  message: Successfully pulled image "image-registry.openshift-image-registry.svc:5000/openshift/cli:latest"
+    in 200.358209ms
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:02Z"
+    name: osd-rebalance-infra-nodes-27557265-q26vk.16f22f317169d68d
+    namespace: openshift-monitoring
+    resourceVersion: "318980"
+    uid: f1a68e58-3fab-49ba-b83c-8a51ae3184cc
+  reason: Pulled
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557265-q26vk
+    namespace: openshift-monitoring
+    resourceVersion: "318932"
+    uid: cf42eab9-a670-48a8-9b5d-ae7a04159a62
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:02Z"
+  message: Created container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:02Z"
+    name: osd-rebalance-infra-nodes-27557265-q26vk.16f22f3179b7089a
+    namespace: openshift-monitoring
+    resourceVersion: "318981"
+    uid: aa0202ba-0225-4d21-8f41-cde4f4842753
+  reason: Created
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:02Z"
+  involvedObject:
+    apiVersion: v1
+    fieldPath: spec.containers{osd-rebalance-infra-nodes}
+    kind: Pod
+    name: osd-rebalance-infra-nodes-27557265-q26vk
+    namespace: openshift-monitoring
+    resourceVersion: "318932"
+    uid: cf42eab9-a670-48a8-9b5d-ae7a04159a62
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:02Z"
+  message: Started container osd-rebalance-infra-nodes
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:02Z"
+    name: osd-rebalance-infra-nodes-27557265-q26vk.16f22f317af45599
+    namespace: openshift-monitoring
+    resourceVersion: "318982"
+    uid: 5cb4c484-79a3-4d6b-affc-e58e456c6300
+  reason: Started
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: kubelet
+    host: ip-10-0-148-123.ec2.internal
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557265
+    namespace: openshift-monitoring
+    resourceVersion: "318912"
+    uid: f9ba7886-508f-41c8-b683-872a8ad003f3
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:00Z"
+  message: 'Created pod: osd-rebalance-infra-nodes-27557265-q26vk'
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: osd-rebalance-infra-nodes-27557265.16f22f30e167f2f7
+    namespace: openshift-monitoring
+    resourceVersion: "318934"
+    uid: 521a0ce3-2466-4277-acca-69c677359294
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: Job
+    name: osd-rebalance-infra-nodes-27557265
+    namespace: openshift-monitoring
+    resourceVersion: "318931"
+    uid: f9ba7886-508f-41c8-b683-872a8ad003f3
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:06Z"
+  message: Job completed
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:06Z"
+    name: osd-rebalance-infra-nodes-27557265.16f22f325b2753c3
+    namespace: openshift-monitoring
+    resourceVersion: "319053"
+    uid: aa675a1f-e798-4371-ba1e-3029b05d6b8c
+  reason: Completed
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: job-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "175466"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557100
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:00Z"
+    name: osd-rebalance-infra-nodes.16f2262fdc12d666
+    namespace: openshift-monitoring
+    resourceVersion: "187131"
+    uid: eb724bbe-1a22-401a-acc3-2bb9107265f4
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "187121"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:06Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557100, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:06Z"
+    name: osd-rebalance-infra-nodes.16f226316b26bd24
+    namespace: openshift-monitoring
+    resourceVersion: "187365"
+    uid: df9e1acf-8573-4823-b32e-1a9842928196
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "187366"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:00:06Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557055
+  metadata:
+    creationTimestamp: "2022-05-24T21:00:06Z"
+    name: osd-rebalance-infra-nodes.16f226316c4b538d
+    namespace: openshift-monitoring
+    resourceVersion: "187369"
+    uid: e8df5997-7cf5-4553-b2f7-800f8665a230
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "187371"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557115
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:00Z"
+    name: osd-rebalance-infra-nodes.16f227016500c86b
+    namespace: openshift-monitoring
+    resourceVersion: "199593"
+    uid: 0cbf904d-981f-41bd-b3b8-861b954b7ca2
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:05Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "199592"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:05Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557115, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:05Z"
+    name: osd-rebalance-infra-nodes.16f22702bc718650
+    namespace: openshift-monitoring
+    resourceVersion: "199719"
+    uid: 7eabfa39-387c-4f59-b226-ee1b954b19a6
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:15:05Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "199720"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:15:05Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557070
+  metadata:
+    creationTimestamp: "2022-05-24T21:15:05Z"
+    name: osd-rebalance-infra-nodes.16f22702bd4e606b
+    namespace: openshift-monitoring
+    resourceVersion: "199722"
+    uid: 920a8af5-c650-46c1-9b8a-c102d550a309
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "199724"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557130
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:00Z"
+    name: osd-rebalance-infra-nodes.16f227d2f128188f
+    namespace: openshift-monitoring
+    resourceVersion: "211334"
+    uid: eb488a7b-5149-4199-981b-8a9c85b46d7b
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:05Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "211332"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:05Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557130, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:05Z"
+    name: osd-rebalance-infra-nodes.16f227d44e28ec96
+    namespace: openshift-monitoring
+    resourceVersion: "211495"
+    uid: 4707bdef-764d-41a1-89b6-4686ff22e17a
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:30:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "211496"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:30:06Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557085
+  metadata:
+    creationTimestamp: "2022-05-24T21:30:06Z"
+    name: osd-rebalance-infra-nodes.16f227d44f412eed
+    namespace: openshift-monitoring
+    resourceVersion: "211498"
+    uid: fc99f019-744e-4dc8-9660-30fc8bbf3911
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "211500"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557145
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:00Z"
+    name: osd-rebalance-infra-nodes.16f228a47d7c86b3
+    namespace: openshift-monitoring
+    resourceVersion: "223230"
+    uid: d50a092b-02a3-4952-8f21-9bea7f8a467d
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "223228"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:06Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557145, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:06Z"
+    name: osd-rebalance-infra-nodes.16f228a5deb42a9c
+    namespace: openshift-monitoring
+    resourceVersion: "223352"
+    uid: 83fb6507-06a6-4a82-8025-78c111b50459
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T21:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "223353"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T21:45:06Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557100
+  metadata:
+    creationTimestamp: "2022-05-24T21:45:06Z"
+    name: osd-rebalance-infra-nodes.16f228a5dfa0cdef
+    namespace: openshift-monitoring
+    resourceVersion: "223355"
+    uid: ba02c118-56ef-46cb-b35c-81c1ecb73ddc
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "223357"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557160
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:00Z"
+    name: osd-rebalance-infra-nodes.16f229760dfbfc10
+    namespace: openshift-monitoring
+    resourceVersion: "234993"
+    uid: 03fcd5e8-5ab6-4b7c-91e3-9d13f4765b7f
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "234985"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:06Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557160, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:06Z"
+    name: osd-rebalance-infra-nodes.16f22977a2176463
+    namespace: openshift-monitoring
+    resourceVersion: "235208"
+    uid: 873fd716-f97e-4025-b6bf-eefe44e33c9f
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:00:07Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "235207"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:00:07Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557115
+  metadata:
+    creationTimestamp: "2022-05-24T22:00:07Z"
+    name: osd-rebalance-infra-nodes.16f22977a33a4b99
+    namespace: openshift-monitoring
+    resourceVersion: "235216"
+    uid: 206f4aa7-f872-45f8-ad71-a9b51a446260
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "235217"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557175
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:00Z"
+    name: osd-rebalance-infra-nodes.16f22a4795e9c57c
+    namespace: openshift-monitoring
+    resourceVersion: "247457"
+    uid: b5961c7e-234e-438e-a6e1-991053619130
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "247460"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:06Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557175, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:06Z"
+    name: osd-rebalance-infra-nodes.16f22a48fee590de
+    namespace: openshift-monitoring
+    resourceVersion: "247597"
+    uid: d320641e-c39c-4124-8845-cc79675f08d7
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:15:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "247598"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:15:06Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557130
+  metadata:
+    creationTimestamp: "2022-05-24T22:15:06Z"
+    name: osd-rebalance-infra-nodes.16f22a48ffed1208
+    namespace: openshift-monitoring
+    resourceVersion: "247600"
+    uid: 036c567c-4fff-4e6a-9a46-ece00cdeedb3
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "247602"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557190
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:00Z"
+    name: osd-rebalance-infra-nodes.16f22b19222c032f
+    namespace: openshift-monitoring
+    resourceVersion: "259140"
+    uid: 3b643110-ac5e-47ae-987f-049eebbca7f7
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:07Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "259136"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:07Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557190, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:07Z"
+    name: osd-rebalance-infra-nodes.16f22b1ac8b4e6ab
+    namespace: openshift-monitoring
+    resourceVersion: "259305"
+    uid: 8155cd72-78f7-457b-aec5-24b64b14802b
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:30:07Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "259308"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:30:07Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557145
+  metadata:
+    creationTimestamp: "2022-05-24T22:30:07Z"
+    name: osd-rebalance-infra-nodes.16f22b1ac9dc1645
+    namespace: openshift-monitoring
+    resourceVersion: "259313"
+    uid: bdd16b0e-0fdd-401c-a6be-66823ddd11d1
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "259317"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557205
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:00Z"
+    name: osd-rebalance-infra-nodes.16f22beaae3daf4d
+    namespace: openshift-monitoring
+    resourceVersion: "271044"
+    uid: 3b11eb7b-5dd0-4195-a965-7f87d9a0b022
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "271039"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:06Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557205, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:06Z"
+    name: osd-rebalance-infra-nodes.16f22bec1c1e45a3
+    namespace: openshift-monitoring
+    resourceVersion: "271202"
+    uid: 79a816a5-0a67-4c49-b9da-b6a2217385e8
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T22:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "271203"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T22:45:06Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557160
+  metadata:
+    creationTimestamp: "2022-05-24T22:45:06Z"
+    name: osd-rebalance-infra-nodes.16f22bec1d38993e
+    namespace: openshift-monitoring
+    resourceVersion: "271205"
+    uid: d6c6acc5-177f-4615-8dbb-93f2eb6ffaa8
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "271207"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557220
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:00Z"
+    name: osd-rebalance-infra-nodes.16f22cbc3cf49ca5
+    namespace: openshift-monitoring
+    resourceVersion: "282823"
+    uid: 4b89c0cc-7661-4bb6-adb4-052813ed6f8d
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:07Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "282818"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:07Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557220, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:07Z"
+    name: osd-rebalance-infra-nodes.16f22cbddc705d44
+    namespace: openshift-monitoring
+    resourceVersion: "283071"
+    uid: 59627478-bd2f-4947-a5d2-94dd763ac14c
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:00:07Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "283072"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:00:07Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557175
+  metadata:
+    creationTimestamp: "2022-05-24T23:00:07Z"
+    name: osd-rebalance-infra-nodes.16f22cbddd5aecc2
+    namespace: openshift-monitoring
+    resourceVersion: "283074"
+    uid: c7651452-cbd2-471b-bca0-6eac54260f86
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "283076"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557235
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    name: osd-rebalance-infra-nodes.16f22d8dc6a98b98
+    namespace: openshift-monitoring
+    resourceVersion: "295337"
+    uid: 70cf7e75-d5c2-48ea-ad4c-0d49d13adfa0
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "295331"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:06Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557235, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:06Z"
+    name: osd-rebalance-infra-nodes.16f22d8f3f69bbd1
+    namespace: openshift-monitoring
+    resourceVersion: "295480"
+    uid: e25000f4-7b93-4666-b218-ae1514817c83
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:15:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "295481"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:15:06Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557190
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:06Z"
+    name: osd-rebalance-infra-nodes.16f22d8f406502c5
+    namespace: openshift-monitoring
+    resourceVersion: "295485"
+    uid: 782d8667-8d5c-47e2-9f11-607d48211a3a
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "295488"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557250
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    name: osd-rebalance-infra-nodes.16f22e5f52b897fa
+    namespace: openshift-monitoring
+    resourceVersion: "307107"
+    uid: 9e09ee5d-4cc1-407b-9e1b-1a52f72539cb
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "307101"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:06Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557250, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:06Z"
+    name: osd-rebalance-infra-nodes.16f22e60cd58f15b
+    namespace: openshift-monitoring
+    resourceVersion: "307248"
+    uid: e000d446-ff05-4f02-aa1d-629c2bac40aa
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:30:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "307249"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:30:06Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557205
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:06Z"
+    name: osd-rebalance-infra-nodes.16f22e60ce677d04
+    namespace: openshift-monitoring
+    resourceVersion: "307251"
+    uid: 25337cbc-08fc-4a1d-8a34-6433028fea1e
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:00Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "307254"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:00Z"
+  message: Created job osd-rebalance-infra-nodes-27557265
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    name: osd-rebalance-infra-nodes.16f22f30df13ab46
+    namespace: openshift-monitoring
+    resourceVersion: "318918"
+    uid: 569e0a3d-00b0-457f-a2bf-dd41f4eb53d9
+  reason: SuccessfulCreate
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "318916"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:06Z"
+  message: 'Saw completed job: osd-rebalance-infra-nodes-27557265, status: Complete'
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:06Z"
+    name: osd-rebalance-infra-nodes.16f22f325b9f8878
+    namespace: openshift-monitoring
+    resourceVersion: "319055"
+    uid: 9c2338e3-b6b2-482a-a301-8f5f931c9b87
+  reason: SawCompletedJob
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+- apiVersion: v1
+  count: 1
+  eventTime: null
+  firstTimestamp: "2022-05-24T23:45:06Z"
+  involvedObject:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "319056"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  kind: Event
+  lastTimestamp: "2022-05-24T23:45:06Z"
+  message: Deleted job osd-rebalance-infra-nodes-27557220
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:06Z"
+    name: osd-rebalance-infra-nodes.16f22f325c87adce
+    namespace: openshift-monitoring
+    resourceVersion: "319058"
+    uid: a8065a69-b918-46ea-ac06-de74141a1d12
+  reason: SuccessfulDelete
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: cronjob-controller
+  type: Normal
+kind: EventList
+metadata:
+  resourceVersion: "322435"

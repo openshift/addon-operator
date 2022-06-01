@@ -1,0 +1,78 @@
+---
+apiVersion: batch/v1
+items:
+- apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    creationTimestamp: "2022-05-24T18:06:57Z"
+    generation: 1
+    labels:
+      app: whereabouts
+      tier: node
+    name: ip-reconciler
+    namespace: openshift-multus
+    ownerReferences:
+    - apiVersion: operator.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Network
+      name: cluster
+      uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+    resourceVersion: "318995"
+    uid: 49276022-d6d8-4c93-8cd7-08f21306845e
+  spec:
+    concurrencyPolicy: Replace
+    failedJobsHistoryLimit: 1
+    jobTemplate:
+      metadata:
+        creationTimestamp: null
+      spec:
+        backoffLimit: 0
+        template:
+          metadata:
+            creationTimestamp: null
+          spec:
+            containers:
+            - command:
+              - /ip-reconciler
+              - -log-level=verbose
+              env:
+              - name: KUBERNETES_SERVICE_PORT
+                value: "6443"
+              - name: KUBERNETES_SERVICE_HOST
+                value: api-int.odf-service.dif5.p1.openshiftapps.com
+              image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:45ae41437fa1f4e104af7c55d44e5013bbb8d3b1e66da930e2019391d3f6bfb4
+              imagePullPolicy: IfNotPresent
+              name: whereabouts
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 25Mi
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+              - mountPath: /host/etc/cni/net.d
+                name: cni-net-dir
+            dnsPolicy: ClusterFirst
+            hostNetwork: true
+            priorityClassName: system-cluster-critical
+            restartPolicy: Never
+            schedulerName: default-scheduler
+            securityContext: {}
+            serviceAccount: multus
+            serviceAccountName: multus
+            terminationGracePeriodSeconds: 30
+            volumes:
+            - hostPath:
+                path: /etc/kubernetes/cni/net.d
+                type: ""
+              name: cni-net-dir
+        ttlSecondsAfterFinished: 900
+    schedule: '*/15 * * * *'
+    successfulJobsHistoryLimit: 0
+    suspend: false
+  status:
+    lastScheduleTime: "2022-05-24T23:45:00Z"
+kind: CronJobList
+metadata:
+  resourceVersion: "324957"

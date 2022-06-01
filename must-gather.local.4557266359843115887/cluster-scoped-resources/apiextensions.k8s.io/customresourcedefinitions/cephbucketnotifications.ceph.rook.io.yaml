@@ -1,0 +1,134 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: (devel)
+    operatorframework.io/installed-alongside-c569578e83a47937: openshift-storage/ocs-operator.v4.10.0
+  creationTimestamp: "2022-05-24T18:28:17Z"
+  generation: 1
+  labels:
+    operators.coreos.com/ocs-operator.openshift-storage: ""
+  name: cephbucketnotifications.ceph.rook.io
+  resourceVersion: "50990"
+  uid: f6b39b7f-d8cc-4a92-a2b9-203ad40a49ba
+spec:
+  conversion:
+    strategy: None
+  group: ceph.rook.io
+  names:
+    kind: CephBucketNotification
+    listKind: CephBucketNotificationList
+    plural: cephbucketnotifications
+    singular: cephbucketnotification
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              events:
+                items:
+                  enum:
+                  - s3:ObjectCreated:*
+                  - s3:ObjectCreated:Put
+                  - s3:ObjectCreated:Post
+                  - s3:ObjectCreated:Copy
+                  - s3:ObjectCreated:CompleteMultipartUpload
+                  - s3:ObjectRemoved:*
+                  - s3:ObjectRemoved:Delete
+                  - s3:ObjectRemoved:DeleteMarkerCreated
+                  type: string
+                type: array
+              filter:
+                properties:
+                  keyFilters:
+                    items:
+                      properties:
+                        name:
+                          enum:
+                          - prefix
+                          - suffix
+                          - regex
+                          type: string
+                        value:
+                          type: string
+                      required:
+                      - name
+                      - value
+                      type: object
+                    type: array
+                  metadataFilters:
+                    items:
+                      properties:
+                        name:
+                          minLength: 1
+                          type: string
+                        value:
+                          type: string
+                      required:
+                      - name
+                      - value
+                      type: object
+                    type: array
+                  tagFilters:
+                    items:
+                      properties:
+                        name:
+                          minLength: 1
+                          type: string
+                        value:
+                          type: string
+                      required:
+                      - name
+                      - value
+                      type: object
+                    type: array
+                type: object
+              topic:
+                minLength: 1
+                type: string
+            required:
+            - topic
+            type: object
+          status:
+            properties:
+              phase:
+                type: string
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        required:
+        - metadata
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: CephBucketNotification
+    listKind: CephBucketNotificationList
+    plural: cephbucketnotifications
+    singular: cephbucketnotification
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:28:17Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2022-05-24T18:28:17Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1

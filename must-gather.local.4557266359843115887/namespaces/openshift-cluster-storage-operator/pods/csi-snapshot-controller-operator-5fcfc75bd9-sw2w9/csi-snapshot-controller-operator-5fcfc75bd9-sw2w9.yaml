@@ -1,0 +1,183 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.50"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.50"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: anyuid
+  creationTimestamp: "2022-05-24T18:32:00Z"
+  generateName: csi-snapshot-controller-operator-5fcfc75bd9-
+  labels:
+    app: csi-snapshot-controller-operator
+    pod-template-hash: 5fcfc75bd9
+  name: csi-snapshot-controller-operator-5fcfc75bd9-sw2w9
+  namespace: openshift-cluster-storage-operator
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: csi-snapshot-controller-operator-5fcfc75bd9
+    uid: 9b0faaa6-1faa-4223-9218-fbe3f98bff41
+  resourceVersion: "55572"
+  uid: 42d23f85-144e-488a-b9a3-546a4e006b48
+spec:
+  containers:
+  - args:
+    - start
+    - -v
+    - "5"
+    - --config=/var/run/configmaps/config/operator-config.yaml
+    env:
+    - name: OPERAND_IMAGE
+      value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cfecfae9863d07b24afe606caf62db29e27174d9c2697af14f86b89053193a2c
+    - name: WEBHOOK_IMAGE
+      value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29bdee6180d7b4c2ce1471a49ca2469c4da30e65a15fbb10da2af4a46de521b0
+    - name: OPERATOR_IMAGE_VERSION
+      value: 4.10.13
+    - name: OPERAND_IMAGE_VERSION
+      value: 4.10.13
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d61574eb883e5c6dd355c58affc9eee0ac5caf3361f5da5893290253c9b3c5b5
+    imagePullPolicy: IfNotPresent
+    name: csi-snapshot-controller-operator
+    resources:
+      requests:
+        cpu: 10m
+        memory: 65Mi
+    securityContext:
+      capabilities:
+        drop:
+        - MKNOD
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /var/run/configmaps/config
+      name: config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-j8rvv
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: csi-snapshot-controller-operator-dockercfg-r6nps
+  nodeName: ip-10-0-169-205.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 10400
+    runAsGroup: 10400
+    runAsUser: 10400
+    seLinuxOptions:
+      level: s0:c12,c9
+  serviceAccount: csi-snapshot-controller-operator
+  serviceAccountName: csi-snapshot-controller-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 440
+      name: csi-snapshot-controller-operator-config
+    name: config
+  - name: kube-api-access-j8rvv
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:01Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:11Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:11Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://113da25cf0bcfdd2ad48d28b77a69f000c0ba1cdb4472e353a8c84e498b19dda
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d61574eb883e5c6dd355c58affc9eee0ac5caf3361f5da5893290253c9b3c5b5
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d61574eb883e5c6dd355c58affc9eee0ac5caf3361f5da5893290253c9b3c5b5
+    lastState: {}
+    name: csi-snapshot-controller-operator
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:10Z"
+  hostIP: 10.0.169.205
+  phase: Running
+  podIP: 10.128.0.50
+  podIPs:
+  - ip: 10.128.0.50
+  qosClass: Burstable
+  startTime: "2022-05-24T18:32:01Z"

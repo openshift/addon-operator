@@ -1,0 +1,47 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.73
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: kube-storage-version-migrator-operator-7df6f78c-l5xwk
+      namespace: openshift-kube-storage-version-migrator-operator
+      resourceVersion: "63733"
+      uid: 4b117b7f-9d45-46eb-beb8-09e1f386a0f3
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:05:50Z"
+    generateName: metrics-
+    generation: 14
+    labels:
+      app: kube-storage-version-migrator-operator
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: metrics
+    name: metrics-r575j
+    namespace: openshift-kube-storage-version-migrator-operator
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: metrics
+      uid: e38d9e7b-cc45-4507-aea1-887cd92abab7
+    resourceVersion: "63798"
+    uid: 00b9adc4-e453-4f15-9293-8cf409abcb92
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "317748"

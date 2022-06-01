@@ -1,0 +1,234 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.0.169.205
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-fwmj8
+      namespace: openshift-sdn
+      resourceVersion: "53168"
+      uid: 23ce3f39-cbcd-4288-beea-8b78fb0a7304
+    zone: us-east-1c
+  - addresses:
+    - 10.0.149.121
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-149-121.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-26p6q
+      namespace: openshift-sdn
+      resourceVersion: "71415"
+      uid: ecc8735c-94c4-48c5-897d-8105e1d597e0
+    zone: us-east-1b
+  - addresses:
+    - 10.0.138.197
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-2f447
+      namespace: openshift-sdn
+      resourceVersion: "61601"
+      uid: c086781c-9350-4b02-863a-3b592e247f34
+    zone: us-east-1a
+  - addresses:
+    - 10.0.128.34
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-5m8hv
+      namespace: openshift-sdn
+      resourceVersion: "37716"
+      uid: c848a092-e673-4648-9936-44f44cc8c000
+    zone: us-east-1a
+  - addresses:
+    - 10.0.164.190
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-v8jp5
+      namespace: openshift-sdn
+      resourceVersion: "69854"
+      uid: 70506fed-13b0-4631-bd10-5fed12109745
+    zone: us-east-1c
+  - addresses:
+    - 10.0.145.179
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-145-179.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-7s5qn
+      namespace: openshift-sdn
+      resourceVersion: "78696"
+      uid: 504a7c69-363f-4aa4-bbfa-44cd7da37a7b
+    zone: us-east-1b
+  - addresses:
+    - 10.0.140.240
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-140-240.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-ctt2v
+      namespace: openshift-sdn
+      resourceVersion: "67427"
+      uid: 9c0c7136-f2cf-43f3-aeb3-82b9ba9fa5d0
+    zone: us-east-1a
+  - addresses:
+    - 10.0.166.35
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-166-35.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-k6cjf
+      namespace: openshift-sdn
+      resourceVersion: "56632"
+      uid: 3856c578-2463-4037-9914-704a28d4f084
+    zone: us-east-1c
+  - addresses:
+    - 10.0.148.123
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-148-123.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-t4jcw
+      namespace: openshift-sdn
+      resourceVersion: "74676"
+      uid: 927118e3-1692-41f4-9bd4-e7af5805a2b5
+    zone: us-east-1b
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:21Z"
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    generateName: sdn-
+    generation: 38
+    labels:
+      app: sdn
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: sdn
+      service.kubernetes.io/headless: ""
+    name: sdn-6n42g
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: sdn
+      uid: 37847fd7-50b6-40cc-b25d-e87f26e7b183
+    resourceVersion: "78698"
+    uid: 44954afb-236a-4cc8-858c-b67db0a8bf6f
+  ports:
+  - name: metrics
+    port: 9101
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.0.169.205
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-controller-pqwj6
+      namespace: openshift-sdn
+      resourceVersion: "52842"
+      uid: 0aafd61c-ad82-4214-af63-ef065a558860
+    zone: us-east-1c
+  - addresses:
+    - 10.0.149.121
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-149-121.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-controller-7qjhd
+      namespace: openshift-sdn
+      resourceVersion: "70977"
+      uid: c4dec300-5aaa-47f1-9f5d-997036df19cd
+    zone: us-east-1b
+  - addresses:
+    - 10.0.138.197
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: sdn-controller-l8dcw
+      namespace: openshift-sdn
+      resourceVersion: "61432"
+      uid: b458aeab-0927-4735-8224-145ed3a7ecb1
+    zone: us-east-1a
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:40:31Z"
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    generateName: sdn-controller-
+    generation: 11
+    labels:
+      app: sdn-controller
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: sdn-controller
+      service.kubernetes.io/headless: ""
+    name: sdn-controller-t9m7s
+    namespace: openshift-sdn
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: sdn-controller
+      uid: bf9485af-0989-4b26-8c8e-8b71e490233f
+    resourceVersion: "70979"
+    uid: 83863c3d-286c-45ec-a8ae-fd4b27f7aa77
+  ports:
+  - name: controller-metrics
+    port: 9106
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "328192"

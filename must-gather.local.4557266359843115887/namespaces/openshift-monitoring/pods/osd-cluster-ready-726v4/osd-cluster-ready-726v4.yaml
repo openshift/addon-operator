@@ -1,0 +1,162 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.0.47"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.0.47"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:42:31Z"
+  generateName: osd-cluster-ready-
+  labels:
+    controller-uid: 4730ac38-ba20-437f-88c4-85794e648bd2
+    job-name: osd-cluster-ready
+    managed.openshift.io/version: v0.1.81-33838ec
+  name: osd-cluster-ready-726v4
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: osd-cluster-ready
+    uid: 4730ac38-ba20-437f-88c4-85794e648bd2
+  resourceVersion: "318815"
+  uid: 5de9fbd6-76c4-4583-9686-0328d6beb4ea
+spec:
+  containers:
+  - command:
+    - /root/main
+    image: quay.io/app-sre/osd-cluster-ready@sha256:c5064d58b8697f9793f7cd7b169393f3c078d40650613660520a51fab75e8716
+    imagePullPolicy: IfNotPresent
+    name: osd-cluster-ready
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-cqkwf
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: osd-cluster-ready-dockercfg-85rhv
+  nodeName: ip-10-0-128-34.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: OnFailure
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: osd-cluster-ready
+  serviceAccountName: osd-cluster-ready
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-cqkwf
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:31Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:44:40Z"
+    message: 'containers with unready status: [osd-cluster-ready]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:44:40Z"
+    message: 'containers with unready status: [osd-cluster-ready]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:31Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://8a0e314b3663c7e1770c81c93ca739945a0778d29c7489ae1dff055bdcbb344e
+    image: quay.io/app-sre/osd-cluster-ready@sha256:c5064d58b8697f9793f7cd7b169393f3c078d40650613660520a51fab75e8716
+    imageID: quay.io/app-sre/osd-cluster-ready@sha256:c5064d58b8697f9793f7cd7b169393f3c078d40650613660520a51fab75e8716
+    lastState:
+      terminated:
+        containerID: cri-o://8a0e314b3663c7e1770c81c93ca739945a0778d29c7489ae1dff055bdcbb344e
+        exitCode: 1
+        finishedAt: "2022-05-24T23:44:39Z"
+        reason: Error
+        startedAt: "2022-05-24T23:44:38Z"
+    name: osd-cluster-ready
+    ready: false
+    restartCount: 64
+    started: false
+    state:
+      waiting:
+        message: back-off 5m0s restarting failed container=osd-cluster-ready pod=osd-cluster-ready-726v4_openshift-monitoring(5de9fbd6-76c4-4583-9686-0328d6beb4ea)
+        reason: CrashLoopBackOff
+  hostIP: 10.0.128.34
+  phase: Running
+  podIP: 10.131.0.47
+  podIPs:
+  - ip: 10.131.0.47
+  qosClass: BestEffort
+  startTime: "2022-05-24T18:42:31Z"

@@ -1,0 +1,13 @@
+2022-05-24T18:32:43.665455275Z level=info ts=2022-05-24T18:32:43.665384729Z caller=sidecar.go:106 msg="no supported bucket was configured, uploads will be disabled"
+2022-05-24T18:32:43.665669616Z level=info ts=2022-05-24T18:32:43.66561441Z caller=options.go:31 protocol=gRPC msg="enabling server side TLS"
+2022-05-24T18:32:43.665794459Z level=info ts=2022-05-24T18:32:43.665774059Z caller=options.go:61 protocol=gRPC msg="server TLS client verification enabled"
+2022-05-24T18:32:43.666348762Z level=info ts=2022-05-24T18:32:43.666312227Z caller=sidecar.go:326 msg="starting sidecar"
+2022-05-24T18:32:43.667090281Z level=info ts=2022-05-24T18:32:43.667036645Z caller=intrumentation.go:60 msg="changing probe status" status=healthy
+2022-05-24T18:32:43.667216576Z level=info ts=2022-05-24T18:32:43.667197637Z caller=http.go:63 service=http/server component=sidecar msg="listening for requests and metrics" address=127.0.0.1:10902
+2022-05-24T18:32:43.667413368Z ts=2022-05-24T18:32:43.667377222Z caller=log.go:168 service=http/server component=sidecar level=info msg="TLS is disabled." http2=false
+2022-05-24T18:32:43.667924015Z level=info ts=2022-05-24T18:32:43.667165677Z caller=reloader.go:197 component=reloader msg="nothing to be watched"
+2022-05-24T18:32:43.668136692Z level=info ts=2022-05-24T18:32:43.667544265Z caller=intrumentation.go:48 msg="changing probe status" status=ready
+2022-05-24T18:32:43.668326792Z level=info ts=2022-05-24T18:32:43.668279348Z caller=grpc.go:127 service=gRPC/server component=sidecar msg="listening for serving gRPC" address=0.0.0.0:10901
+2022-05-24T18:32:43.668696222Z level=info ts=2022-05-24T18:32:43.668666699Z caller=sidecar.go:166 msg="successfully loaded prometheus version"
+2022-05-24T18:32:43.743357029Z level=info ts=2022-05-24T18:32:43.74329056Z caller=sidecar.go:188 msg="successfully loaded prometheus external labels" external_labels="{prometheus=\"openshift-monitoring/k8s\", prometheus_replica=\"prometheus-k8s-0\"}"
+2022-05-24T18:32:43.743357029Z level=info ts=2022-05-24T18:32:43.743342085Z caller=intrumentation.go:48 msg="changing probe status" status=ready

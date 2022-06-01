@@ -1,0 +1,3 @@
+2022-05-24T18:36:33.442384564Z I0524 18:36:33.442289       1 certwatcher.go:129] Updated current TLS certificate
+2022-05-24T18:36:33.442478841Z Starting webhook server
+2022-05-24T18:36:33.442549601Z I0524 18:36:33.442527       1 webhook.go:182] Starting certificate watcher

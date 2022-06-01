@@ -1,0 +1,6 @@
+2022-05-24T18:36:48.328416850Z I0524 18:36:48.328275       1 request.go:665] Waited for 1.046821301s due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/certificates.k8s.io/v1?timeout=32s
+2022-05-24T18:36:50.431373550Z I0524 18:36:50.431343       1 deleg.go:130] controller-runtime/metrics "msg"="metrics server is starting to listen"  "addr"=":8080"
+2022-05-24T18:36:50.442671480Z I0524 18:36:50.442639       1 webhook.go:103] WebhookDependenciesReady: everything ready for webhooks
+2022-05-24T18:36:50.445491659Z I0524 18:36:50.445462       1 clusteroperator.go:215] "new CO status" reason=UnsupportedPlatform processMessage="" message="Nothing to do on this Platform"
+2022-05-24T18:36:50.455018034Z I0524 18:36:50.454990       1 main.go:130] starting manager
+2022-05-24T18:36:50.455165064Z I0524 18:36:50.455149       1 internal.go:383]  "msg"="starting metrics server"  "path"="/metrics"

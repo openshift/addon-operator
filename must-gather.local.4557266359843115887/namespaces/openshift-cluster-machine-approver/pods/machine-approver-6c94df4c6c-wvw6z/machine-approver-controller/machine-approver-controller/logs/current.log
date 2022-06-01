@@ -1,0 +1,12 @@
+2022-05-24T18:36:35.465175239Z W0524 18:36:35.465044       1 client_config.go:617] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+2022-05-24T18:36:35.465360667Z W0524 18:36:35.465346       1 client_config.go:617] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+2022-05-24T18:36:35.566299953Z I0524 18:36:35.566222       1 main.go:106] setting up manager
+2022-05-24T18:36:35.605566405Z I0524 18:36:35.605531       1 main.go:122] registering components
+2022-05-24T18:36:35.605566405Z I0524 18:36:35.605555       1 main.go:124] setting up scheme
+2022-05-24T18:36:35.605903942Z I0524 18:36:35.605884       1 main.go:159] setting up controllers
+2022-05-24T18:36:35.605950140Z I0524 18:36:35.605916       1 config.go:33] using default as failed to load config /var/run/configmaps/config/config.yaml: open /var/run/configmaps/config/config.yaml: no such file or directory
+2022-05-24T18:36:35.605950140Z I0524 18:36:35.605936       1 config.go:23] machine approver config: {NodeClientCert:{Disabled:false}}
+2022-05-24T18:36:35.607746047Z I0524 18:36:35.607703       1 main.go:182] starting the cmd
+2022-05-24T18:36:35.607963044Z I0524 18:36:35.607934       1 leaderelection.go:248] attempting to acquire leader lease openshift-cluster-machine-approver/cluster-machine-approver-leader...
+2022-05-24T18:36:35.746892212Z I0524 18:36:35.746843       1 leaderelection.go:258] successfully acquired lease openshift-cluster-machine-approver/cluster-machine-approver-leader
+2022-05-24T18:36:35.747329217Z I0524 18:36:35.747299       1 status.go:97] Starting cluster operator status controller

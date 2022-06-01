@@ -1,0 +1,58 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    imageregistry.operator.openshift.io/checksum: sha256:693052fe8cd7138d0dbe6186d2d1dc6e308cb8a3063856ddf6fde9c61b28b8bb
+  creationTimestamp: "2022-05-24T18:13:28Z"
+  name: system:registry
+  resourceVersion: "19288"
+  uid: c471d7b9-fbe8-4b84-b4af-72c5ef1f01ed
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - limitranges
+  - resourcequotas
+  verbs:
+  - list
+- apiGroups:
+  - image.openshift.io
+  resources:
+  - imagestreamimages
+  - imagestreams/layers
+  - imagestreams/secrets
+  verbs:
+  - get
+- apiGroups:
+  - image.openshift.io
+  resources:
+  - imagestreams
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - image.openshift.io
+  resources:
+  - imagestreamtags
+  verbs:
+  - delete
+- apiGroups:
+  - image.openshift.io
+  resources:
+  - images
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - image.openshift.io
+  resources:
+  - imagestreammappings
+  verbs:
+  - create
+- apiGroups:
+  - operator.openshift.io
+  resources:
+  - imagecontentsourcepolicies
+  verbs:
+  - list

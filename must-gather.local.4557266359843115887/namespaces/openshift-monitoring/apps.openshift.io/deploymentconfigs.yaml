@@ -1,0 +1,370 @@
+---
+apiVersion: apps.openshift.io/v1
+items:
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","metadata":{"annotations":{},"labels":{"hive.openshift.io/managed":"true","name":"sre-ebs-iops-reporter"},"name":"sre-ebs-iops-reporter","namespace":"openshift-monitoring"},"spec":{"paused":false,"replicas":1,"selector":{"name":"sre-ebs-iops-reporter"},"strategy":{"type":"Recreate"},"template":{"metadata":{"labels":{"name":"sre-ebs-iops-reporter"},"name":"sre-ebs-iops-reporter"},"spec":{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"preference":{"matchExpressions":[{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]},"weight":1}]}},"containers":[{"command":["/bin/sh","/monitor/start.sh"],"env":[{"name":"AWS_SHARED_CREDENTIALS_FILE","value":"/secrets/aws/credentials.ini"},{"name":"AWS_CONFIG_FILE","value":"/secrets/aws/config.ini"},{"name":"PYTHONPATH","value":"/openshift-python/packages:/support/packages"}],"image":"quay.io/app-sre/managed-prometheus-exporter-base:latest","imagePullPolicy":"IfNotPresent","livenessProbe":{"failureThreshold":2,"httpGet":{"path":"/","port":8080},"initialDelaySeconds":420,"periodSeconds":360,"timeoutSeconds":240},"name":"main","ports":[{"containerPort":8080,"protocol":"TCP"}],"readinessProbe":{"httpGet":{"path":"/","port":8080},"initialDelaySeconds":3,"timeoutSeconds":240},"volumeMounts":[{"mountPath":"/monitor","name":"monitor-volume","readOnly":true},{"mountPath":"/config","name":"envfiles","readOnly":true},{"mountPath":"/secrets","name":"secrets","readOnly":true},{"mountPath":"/etc/pki/ca-trust/extracted/pem","name":"trusted-ca-bundle","readOnly":true}],"workingDir":"/monitor"}],"dnsPolicy":"ClusterFirst","initContainers":[{"command":["/usr/local/bin/init.py","-r","/secrets/aws/config.ini","-a","/rawsecrets/aws_access_key_id","-A","/rawsecrets/aws_secret_access_key","-o","/secrets/aws/credentials.ini","-c","/config/env/CLUSTERID"],"image":"quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest","name":"setupcreds","volumeMounts":[{"mountPath":"/rawsecrets","name":"awsrawcreds","readOnly":true},{"mountPath":"/secrets","name":"secrets"},{"mountPath":"/config","name":"envfiles"},{"mountPath":"/etc/pki/ca-trust/extracted/pem","name":"trusted-ca-bundle","readOnly":true}]}],"restartPolicy":"Always","serviceAccountName":"sre-ebs-iops-reporter","tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","operator":"Exists"}],"volumes":[{"name":"awsrawcreds","secret":{"secretName":"sre-ebs-iops-reporter-aws-credentials"}},{"emptyDir":{},"name":"secrets"},{"emptyDir":{},"name":"envfiles"},{"configMap":{"name":"sre-ebs-iops-reporter-code"},"name":"monitor-volume"},{"configMap":{"defaultMode":420,"items":[{"key":"ca-bundle.crt","path":"tls-ca-bundle.pem"}],"name":"sre-ebs-iops-reporter-trusted-ca-bundle"},"name":"trusted-ca-bundle"}]}},"triggers":[{"type":"ConfigChange"}]}}
+    creationTimestamp: "2022-05-24T18:25:34Z"
+    generation: 1
+    labels:
+      hive.openshift.io/managed: "true"
+      name: sre-ebs-iops-reporter
+    name: sre-ebs-iops-reporter
+    namespace: openshift-monitoring
+    resourceVersion: "61756"
+    uid: 8ca1cea1-061d-4c5f-adcc-bffea1cb594f
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      name: sre-ebs-iops-reporter
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: sre-ebs-iops-reporter
+        name: sre-ebs-iops-reporter
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - command:
+          - /bin/sh
+          - /monitor/start.sh
+          env:
+          - name: AWS_SHARED_CREDENTIALS_FILE
+            value: /secrets/aws/credentials.ini
+          - name: AWS_CONFIG_FILE
+            value: /secrets/aws/config.ini
+          - name: PYTHONPATH
+            value: /openshift-python/packages:/support/packages
+          image: quay.io/app-sre/managed-prometheus-exporter-base:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 420
+            periodSeconds: 360
+            successThreshold: 1
+            timeoutSeconds: 240
+          name: main
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 240
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /monitor
+            name: monitor-volume
+            readOnly: true
+          - mountPath: /config
+            name: envfiles
+            readOnly: true
+          - mountPath: /secrets
+            name: secrets
+            readOnly: true
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca-bundle
+            readOnly: true
+          workingDir: /monitor
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - /usr/local/bin/init.py
+          - -r
+          - /secrets/aws/config.ini
+          - -a
+          - /rawsecrets/aws_access_key_id
+          - -A
+          - /rawsecrets/aws_secret_access_key
+          - -o
+          - /secrets/aws/credentials.ini
+          - -c
+          - /config/env/CLUSTERID
+          image: quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest
+          imagePullPolicy: Always
+          name: setupcreds
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /rawsecrets
+            name: awsrawcreds
+            readOnly: true
+          - mountPath: /secrets
+            name: secrets
+          - mountPath: /config
+            name: envfiles
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca-bundle
+            readOnly: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: sre-ebs-iops-reporter
+        serviceAccountName: sre-ebs-iops-reporter
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - name: awsrawcreds
+          secret:
+            defaultMode: 420
+            secretName: sre-ebs-iops-reporter-aws-credentials
+        - emptyDir: {}
+          name: secrets
+        - emptyDir: {}
+          name: envfiles
+        - configMap:
+            defaultMode: 420
+            name: sre-ebs-iops-reporter-code
+          name: monitor-volume
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+            name: sre-ebs-iops-reporter-trusted-ca-bundle
+          name: trusted-ca-bundle
+    test: false
+    triggers:
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:25:34Z"
+      lastUpdateTime: "2022-05-24T18:25:34Z"
+      message: Deployment config does not have minimum availability.
+      status: "False"
+      type: Available
+    - lastTransitionTime: "2022-05-24T18:36:04Z"
+      lastUpdateTime: "2022-05-24T18:36:04Z"
+      message: replication controller "sre-ebs-iops-reporter-1" has failed progressing
+      reason: ProgressDeadlineExceeded
+      status: "False"
+      type: Progressing
+    details:
+      causes:
+      - type: ConfigChange
+      message: config change
+    latestVersion: 1
+    observedGeneration: 1
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","metadata":{"annotations":{},"labels":{"hive.openshift.io/managed":"true","name":"sre-stuck-ebs-vols"},"name":"sre-stuck-ebs-vols","namespace":"openshift-monitoring"},"spec":{"paused":false,"replicas":1,"selector":{"name":"sre-stuck-ebs-vols"},"strategy":{"type":"Recreate"},"template":{"metadata":{"labels":{"name":"sre-stuck-ebs-vols"},"name":"sre-stuck-ebs-vols"},"spec":{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"preference":{"matchExpressions":[{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]},"weight":1}]}},"containers":[{"command":["/bin/sh","/monitor/start.sh"],"env":[{"name":"AWS_SHARED_CREDENTIALS_FILE","value":"/secrets/aws/credentials.ini"},{"name":"AWS_CONFIG_FILE","value":"/secrets/aws/config.ini"},{"name":"PYTHONPATH","value":"/openshift-python/packages:/support/packages"}],"image":"quay.io/app-sre/managed-prometheus-exporter-base:latest","imagePullPolicy":"IfNotPresent","livenessProbe":{"failureThreshold":2,"httpGet":{"path":"/","port":8080},"initialDelaySeconds":420,"periodSeconds":360,"timeoutSeconds":240},"name":"main","ports":[{"containerPort":8080,"protocol":"TCP"}],"readinessProbe":{"httpGet":{"path":"/","port":8080},"initialDelaySeconds":3,"timeoutSeconds":240},"volumeMounts":[{"mountPath":"/monitor","name":"monitor-volume","readOnly":true},{"mountPath":"/config","name":"envfiles","readOnly":true},{"mountPath":"/secrets","name":"secrets","readOnly":true},{"mountPath":"/etc/pki/ca-trust/extracted/pem","name":"trusted-ca-bundle","readOnly":true}],"workingDir":"/monitor"}],"dnsPolicy":"ClusterFirst","initContainers":[{"command":["/usr/local/bin/init.py","-r","/secrets/aws/config.ini","-a","/rawsecrets/aws_access_key_id","-A","/rawsecrets/aws_secret_access_key","-o","/secrets/aws/credentials.ini","-c","/config/env/CLUSTERID"],"image":"quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest","name":"setupcreds","volumeMounts":[{"mountPath":"/rawsecrets","name":"awsrawcreds","readOnly":true},{"mountPath":"/secrets","name":"secrets"},{"mountPath":"/config","name":"envfiles"},{"mountPath":"/etc/pki/ca-trust/extracted/pem","name":"trusted-ca-bundle","readOnly":true}]}],"restartPolicy":"Always","serviceAccountName":"sre-stuck-ebs-vols","tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","operator":"Exists"}],"volumes":[{"name":"awsrawcreds","secret":{"secretName":"sre-stuck-ebs-vols-aws-credentials"}},{"emptyDir":{},"name":"secrets"},{"emptyDir":{},"name":"envfiles"},{"configMap":{"name":"sre-stuck-ebs-vols-code"},"name":"monitor-volume"},{"configMap":{"defaultMode":420,"items":[{"key":"ca-bundle.crt","path":"tls-ca-bundle.pem"}],"name":"sre-stuck-ebs-vols-trusted-ca-bundle"},"name":"trusted-ca-bundle"}]}},"triggers":[{"type":"ConfigChange"}]}}
+    creationTimestamp: "2022-05-24T18:25:35Z"
+    generation: 1
+    labels:
+      hive.openshift.io/managed: "true"
+      name: sre-stuck-ebs-vols
+    name: sre-stuck-ebs-vols
+    namespace: openshift-monitoring
+    resourceVersion: "61749"
+    uid: f4e2d54c-0706-480f-be2b-6c25b080fb42
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      name: sre-stuck-ebs-vols
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: sre-stuck-ebs-vols
+        name: sre-stuck-ebs-vols
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - command:
+          - /bin/sh
+          - /monitor/start.sh
+          env:
+          - name: AWS_SHARED_CREDENTIALS_FILE
+            value: /secrets/aws/credentials.ini
+          - name: AWS_CONFIG_FILE
+            value: /secrets/aws/config.ini
+          - name: PYTHONPATH
+            value: /openshift-python/packages:/support/packages
+          image: quay.io/app-sre/managed-prometheus-exporter-base:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 420
+            periodSeconds: 360
+            successThreshold: 1
+            timeoutSeconds: 240
+          name: main
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 240
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /monitor
+            name: monitor-volume
+            readOnly: true
+          - mountPath: /config
+            name: envfiles
+            readOnly: true
+          - mountPath: /secrets
+            name: secrets
+            readOnly: true
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca-bundle
+            readOnly: true
+          workingDir: /monitor
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - command:
+          - /usr/local/bin/init.py
+          - -r
+          - /secrets/aws/config.ini
+          - -a
+          - /rawsecrets/aws_access_key_id
+          - -A
+          - /rawsecrets/aws_secret_access_key
+          - -o
+          - /secrets/aws/credentials.ini
+          - -c
+          - /config/env/CLUSTERID
+          image: quay.io/app-sre/managed-prometheus-exporter-initcontainer:latest
+          imagePullPolicy: Always
+          name: setupcreds
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /rawsecrets
+            name: awsrawcreds
+            readOnly: true
+          - mountPath: /secrets
+            name: secrets
+          - mountPath: /config
+            name: envfiles
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca-bundle
+            readOnly: true
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: sre-stuck-ebs-vols
+        serviceAccountName: sre-stuck-ebs-vols
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - name: awsrawcreds
+          secret:
+            defaultMode: 420
+            secretName: sre-stuck-ebs-vols-aws-credentials
+        - emptyDir: {}
+          name: secrets
+        - emptyDir: {}
+          name: envfiles
+        - configMap:
+            defaultMode: 420
+            name: sre-stuck-ebs-vols-code
+          name: monitor-volume
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+            name: sre-stuck-ebs-vols-trusted-ca-bundle
+          name: trusted-ca-bundle
+    test: false
+    triggers:
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:25:35Z"
+      lastUpdateTime: "2022-05-24T18:25:35Z"
+      message: Deployment config does not have minimum availability.
+      status: "False"
+      type: Available
+    - lastTransitionTime: "2022-05-24T18:36:04Z"
+      lastUpdateTime: "2022-05-24T18:36:04Z"
+      message: replication controller "sre-stuck-ebs-vols-1" has failed progressing
+      reason: ProgressDeadlineExceeded
+      status: "False"
+      type: Progressing
+    details:
+      causes:
+      - type: ConfigChange
+      message: config change
+    latestVersion: 1
+    observedGeneration: 1
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+kind: DeploymentConfigList
+metadata:
+  resourceVersion: "322405"

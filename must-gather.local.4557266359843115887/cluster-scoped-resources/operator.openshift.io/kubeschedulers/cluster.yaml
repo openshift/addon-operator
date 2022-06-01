@@ -1,0 +1,116 @@
+---
+apiVersion: operator.openshift.io/v1
+kind: KubeScheduler
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    release.openshift.io/create-only: "true"
+  creationTimestamp: "2022-05-24T18:05:34Z"
+  generation: 2
+  name: cluster
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "78565"
+  uid: 4133e342-4d6e-4a53-8a5b-7189c835afdd
+spec:
+  logLevel: Normal
+  managementState: Managed
+  observedConfig:
+    servingInfo:
+      cipherSuites:
+      - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+      - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      minTLSVersion: VersionTLS12
+  operatorLogLevel: Normal
+  unsupportedConfigOverrides: null
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:40:25Z"
+    message: All master nodes are ready
+    reason: MasterNodesReady
+    status: "False"
+    type: NodeControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:41Z"
+    reason: NoUnsupportedConfigOverrides
+    status: "True"
+    type: UnsupportedConfigOverridesUpgradeable
+  - lastTransitionTime: "2022-05-24T18:09:45Z"
+    status: "False"
+    type: InstallerControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:11:34Z"
+    message: 3 nodes are active; 3 nodes are at revision 11
+    status: "True"
+    type: StaticPodsAvailable
+  - lastTransitionTime: "2022-05-24T18:44:16Z"
+    message: 3 nodes are at revision 11
+    reason: AllNodesAtLatestRevision
+    status: "False"
+    type: NodeInstallerProgressing
+  - lastTransitionTime: "2022-05-24T18:37:44Z"
+    status: "False"
+    type: NodeInstallerDegraded
+  - lastTransitionTime: "2022-05-24T18:16:40Z"
+    reason: AsExpected
+    status: "False"
+    type: GuardControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:42Z"
+    reason: AsExpected
+    status: "False"
+    type: MissingStaticPodControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:42Z"
+    status: "False"
+    type: ConfigObservationDegraded
+  - lastTransitionTime: "2022-05-24T18:07:43Z"
+    status: "False"
+    type: InstallerPodPendingDegraded
+  - lastTransitionTime: "2022-05-24T18:07:43Z"
+    status: "False"
+    type: InstallerPodContainerWaitingDegraded
+  - lastTransitionTime: "2022-05-24T18:07:43Z"
+    status: "False"
+    type: InstallerPodNetworkingDegraded
+  - lastTransitionTime: "2022-05-24T18:07:43Z"
+    status: "False"
+    type: ResourceSyncControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:13:16Z"
+    status: "False"
+    type: RevisionControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:44Z"
+    reason: AsExpected
+    status: "False"
+    type: BackingResourceControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:07:45Z"
+    status: "False"
+    type: StaticPodsDegraded
+  - lastTransitionTime: "2022-05-24T18:07:53Z"
+    reason: AsExpected
+    status: "False"
+    type: KubeControllerManagerStaticResourcesDegraded
+  - lastTransitionTime: "2022-05-24T18:15:31Z"
+    status: "False"
+    type: TargetConfigControllerDegraded
+  latestAvailableRevision: 11
+  latestAvailableRevisionReason: ""
+  nodeStatuses:
+  - currentRevision: 11
+    nodeName: ip-10-0-149-121.ec2.internal
+  - currentRevision: 11
+    lastFailedCount: 1
+    lastFailedReason: InstallerFailed
+    lastFailedRevision: 10
+    lastFailedRevisionErrors:
+    - 'installer: The container could not be located when the pod was terminated'
+    lastFailedTime: "2022-05-24T18:35:53Z"
+    nodeName: ip-10-0-138-197.ec2.internal
+  - currentRevision: 11
+    nodeName: ip-10-0-169-205.ec2.internal
+  readyReplicas: 0

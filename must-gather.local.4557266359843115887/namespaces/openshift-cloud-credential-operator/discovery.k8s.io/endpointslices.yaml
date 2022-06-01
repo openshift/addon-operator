@@ -1,0 +1,88 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.130.0.21
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: cloud-credential-operator-5787655c8b-bm4ww
+      namespace: openshift-cloud-credential-operator
+      resourceVersion: "63257"
+      uid: 08bbbc46-f2f7-4de1-8263-525582d84090
+    zone: us-east-1a
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:35Z"
+    creationTimestamp: "2022-05-24T18:05:51Z"
+    generateName: cco-metrics-
+    generation: 11
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: cco-metrics
+    name: cco-metrics-84hj9
+    namespace: openshift-cloud-credential-operator
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: cco-metrics
+      uid: ea109007-fb56-453f-9b41-a39c3275b4b7
+    resourceVersion: "63259"
+    uid: 1f1a529d-2f38-4ba0-9250-c1a6af4a22f3
+  ports:
+  - name: metrics
+    port: 8443
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.47
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: pod-identity-webhook-69cbddcdd6-2wfbf
+      namespace: openshift-cloud-credential-operator
+      resourceVersion: "55537"
+      uid: 52519ecd-aeda-4a74-9d18-e6d12ad16850
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:09:09Z"
+    generateName: pod-identity-webhook-
+    generation: 7
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: pod-identity-webhook
+    name: pod-identity-webhook-846q5
+    namespace: openshift-cloud-credential-operator
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: pod-identity-webhook
+      uid: 16733240-e6bf-4ba8-b89f-452d65eb5fcb
+    resourceVersion: "56606"
+    uid: 88fa75df-0c66-4bf9-9b39-bf15d98a20d8
+  ports:
+  - name: ""
+    port: 6443
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "300289"

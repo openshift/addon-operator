@@ -1,0 +1,71 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    exclude.release.openshift.io/internal-openshift-hosted: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: machine-api
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "13151"
+  uid: 6c2f9ed8-97be-46fb-be9c-9327dc808e23
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:12:05Z"
+    reason: AsExpected
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:08:35Z"
+    reason: AsExpected
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:12:05Z"
+    message: 'Cluster Machine API Operator is available at operator: 4.10.13'
+    reason: AsExpected
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:08:35Z"
+    status: "True"
+    type: Upgradeable
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-machine-api
+    resource: namespaces
+  - group: machine.openshift.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: machines
+  - group: machine.openshift.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: machinesets
+  - group: machine.openshift.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: machinehealthchecks
+  - group: rbac.authorization.k8s.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: roles
+  - group: rbac.authorization.k8s.io
+    name: machine-api-operator
+    resource: clusterroles
+  - group: rbac.authorization.k8s.io
+    name: machine-api-controllers
+    resource: clusterroles
+  - group: metal3.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: baremetalhosts
+  versions:
+  - name: operator
+    version: 4.10.13

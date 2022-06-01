@@ -1,0 +1,8 @@
+2022-05-24T18:34:59.415894795Z I0524 18:34:59.415798       1 adapter.go:108] successfully using in-cluster auth
+2022-05-24T18:35:01.632593003Z I0524 18:35:01.632549       1 request.go:665] Waited for 1.140922543s due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/autoscaling/v2beta1?timeout=32s
+2022-05-24T18:35:11.632613954Z I0524 18:35:11.632570       1 request.go:665] Waited for 11.140300238s due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/network.openshift.io/v1?timeout=32s
+2022-05-24T18:35:18.221725203Z I0524 18:35:18.221664       1 dynamic_cafile_content.go:155] "Starting controller" name="request-header::/etc/tls/private/requestheader-client-ca-file"
+2022-05-24T18:35:18.221806327Z I0524 18:35:18.221692       1 dynamic_cafile_content.go:155] "Starting controller" name="client-ca-bundle::/etc/tls/private/client-ca-file"
+2022-05-24T18:35:18.221903346Z I0524 18:35:18.221883       1 dynamic_serving_content.go:129] "Starting controller" name="serving-cert::/etc/tls/private/tls.crt::/etc/tls/private/tls.key"
+2022-05-24T18:35:18.222267243Z I0524 18:35:18.222244       1 secure_serving.go:256] Serving securely on [::]:6443
+2022-05-24T18:35:18.222286214Z I0524 18:35:18.222272       1 tlsconfig.go:240] "Starting DynamicServingCertificateController"

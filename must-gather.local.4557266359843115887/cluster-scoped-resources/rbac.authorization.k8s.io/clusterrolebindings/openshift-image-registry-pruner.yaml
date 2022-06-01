@@ -1,0 +1,18 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    imageregistry.operator.openshift.io/checksum: sha256:9c18924fae4eab4651205fc268268a67bd4b9025164b242656ab8e009955b634
+  creationTimestamp: "2022-05-24T18:08:35Z"
+  name: openshift-image-registry-pruner
+  resourceVersion: "7664"
+  uid: 7ad0ef2e-e2b5-4f35-8fbb-25c0c3b741ec
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:image-pruner
+subjects:
+- kind: ServiceAccount
+  name: pruner
+  namespace: openshift-image-registry

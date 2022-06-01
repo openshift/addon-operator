@@ -1,0 +1,23 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: "2022-05-24T18:06:58Z"
+  name: openshift-sdn
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "2798"
+  uid: 0c5b69c1-2bff-4c35-83ff-53bbf6e9bcac
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: openshift-sdn
+subjects:
+- kind: ServiceAccount
+  name: sdn
+  namespace: openshift-sdn

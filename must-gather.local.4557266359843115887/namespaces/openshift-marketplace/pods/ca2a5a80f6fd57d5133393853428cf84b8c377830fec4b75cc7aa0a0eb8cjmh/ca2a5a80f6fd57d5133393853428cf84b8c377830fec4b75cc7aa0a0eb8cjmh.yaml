@@ -1,0 +1,268 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.0.13"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.0.13"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:27:51Z"
+  generateName: ca2a5a80f6fd57d5133393853428cf84b8c377830fec4b75cc7aa0a0eb27b57-
+  labels:
+    controller-uid: 4ab0fe28-fa1a-4610-b2e4-8891951ddd82
+    job-name: ca2a5a80f6fd57d5133393853428cf84b8c377830fec4b75cc7aa0a0eb27b57
+  name: ca2a5a80f6fd57d5133393853428cf84b8c377830fec4b75cc7aa0a0eb8cjmh
+  namespace: openshift-marketplace
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: ca2a5a80f6fd57d5133393853428cf84b8c377830fec4b75cc7aa0a0eb27b57
+    uid: 4ab0fe28-fa1a-4610-b2e4-8891951ddd82
+  resourceVersion: "40068"
+  uid: 0f3670f1-e0c3-4b22-9ef6-756450922286
+spec:
+  containers:
+  - command:
+    - opm
+    - alpha
+    - bundle
+    - extract
+    - -m
+    - /bundle/
+    - -n
+    - openshift-marketplace
+    - -c
+    - ca2a5a80f6fd57d5133393853428cf84b8c377830fec4b75cc7aa0a0eb27b57
+    - -z
+    env:
+    - name: CONTAINER_IMAGE
+      value: registry.redhat.io/odf4/odf-operator-bundle@sha256:dc4d9a53dea5573e3020ad5d1ea1018705b6be25294c722d29f57bd90564c58c
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a553ba018b3e7bfffbd62351508858735fd15f4b0084ab541d87c4d52c7b8882
+    imagePullPolicy: IfNotPresent
+    name: extract
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000190000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /bundle
+      name: bundle
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-z6zmm
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: default-dockercfg-l72tt
+  initContainers:
+  - command:
+    - /bin/cp
+    - -Rv
+    - /bin/cpb
+    - /util/cpb
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9f0db534e1a3648e3041d2e2df985ddac14f652d10161d61a51b2a6e49d765ac
+    imagePullPolicy: IfNotPresent
+    name: util
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000190000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /util
+      name: util
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-z6zmm
+      readOnly: true
+  - command:
+    - /util/cpb
+    - /bundle
+    image: registry.redhat.io/odf4/odf-operator-bundle@sha256:dc4d9a53dea5573e3020ad5d1ea1018705b6be25294c722d29f57bd90564c58c
+    imagePullPolicy: Always
+    name: pull
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000190000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /bundle
+      name: bundle
+    - mountPath: /util
+      name: util
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-z6zmm
+      readOnly: true
+  nodeName: ip-10-0-128-34.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000190000
+    seLinuxOptions:
+      level: s0:c14,c4
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir: {}
+    name: bundle
+  - emptyDir: {}
+    name: util
+  - name: kube-api-access-z6zmm
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:27:57Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:27:51Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:27:51Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:27:51Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://59ea8c479a54c4c855a0e659721df3d70c6f68edde4ef4ea3f94ae79ecd06fa0
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a553ba018b3e7bfffbd62351508858735fd15f4b0084ab541d87c4d52c7b8882
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a553ba018b3e7bfffbd62351508858735fd15f4b0084ab541d87c4d52c7b8882
+    lastState: {}
+    name: extract
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://59ea8c479a54c4c855a0e659721df3d70c6f68edde4ef4ea3f94ae79ecd06fa0
+        exitCode: 0
+        finishedAt: "2022-05-24T18:28:01Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:28:01Z"
+  hostIP: 10.0.128.34
+  initContainerStatuses:
+  - containerID: cri-o://821da7882d4eede46099d797484aaffb76492cfc3885b73110e3c98af46a7970
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9f0db534e1a3648e3041d2e2df985ddac14f652d10161d61a51b2a6e49d765ac
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9f0db534e1a3648e3041d2e2df985ddac14f652d10161d61a51b2a6e49d765ac
+    lastState: {}
+    name: util
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: cri-o://821da7882d4eede46099d797484aaffb76492cfc3885b73110e3c98af46a7970
+        exitCode: 0
+        finishedAt: "2022-05-24T18:27:53Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:27:52Z"
+  - containerID: cri-o://99a8624c11b98067fdee7768bb51fb515c8aefbd89949d1dba8ecdf5ed7cfdb3
+    image: registry.redhat.io/odf4/odf-operator-bundle@sha256:dc4d9a53dea5573e3020ad5d1ea1018705b6be25294c722d29f57bd90564c58c
+    imageID: registry.redhat.io/odf4/odf-operator-bundle@sha256:dc4d9a53dea5573e3020ad5d1ea1018705b6be25294c722d29f57bd90564c58c
+    lastState: {}
+    name: pull
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: cri-o://99a8624c11b98067fdee7768bb51fb515c8aefbd89949d1dba8ecdf5ed7cfdb3
+        exitCode: 0
+        finishedAt: "2022-05-24T18:27:57Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:27:57Z"
+  phase: Succeeded
+  podIP: 10.131.0.13
+  podIPs:
+  - ip: 10.131.0.13
+  qosClass: Burstable
+  startTime: "2022-05-24T18:27:51Z"

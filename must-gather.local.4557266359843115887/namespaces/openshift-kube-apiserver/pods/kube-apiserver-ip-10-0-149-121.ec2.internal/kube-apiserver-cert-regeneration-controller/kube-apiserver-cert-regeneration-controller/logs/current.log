@@ -1,0 +1,6 @@
+2022-05-24T18:49:11.303382122Z W0524 18:49:11.303298       1 cmd.go:213] Using insecure, self-signed certificates
+2022-05-24T18:49:11.303482854Z I0524 18:49:11.303467       1 crypto.go:601] Generating new CA for cert-regeneration-controller-signer@1653418151 cert, and key in /tmp/serving-cert-2555395005/serving-signer.crt, /tmp/serving-cert-2555395005/serving-signer.key
+2022-05-24T18:49:11.530418747Z I0524 18:49:11.530380       1 observer_polling.go:159] Starting file observer
+2022-05-24T18:49:13.311240029Z W0524 18:49:13.310622       1 builder.go:230] unable to get owner reference (falling back to namespace): pods is forbidden: User "system:serviceaccount:openshift-kube-apiserver:localhost-recovery-client" cannot list resource "pods" in API group "" in the namespace "openshift-kube-apiserver"
+2022-05-24T18:49:13.311405414Z I0524 18:49:13.311387       1 builder.go:262] cert-regeneration-controller version 4.10.0-202204211158.p0.g78da169.assembly.stream-78da169-78da169541f6a2d13b1e2cdba9fd0564f6fc1e3a
+2022-05-24T18:49:18.334521459Z I0524 18:49:18.334465       1 leaderelection.go:248] attempting to acquire leader lease openshift-kube-apiserver/cert-regeneration-controller-lock...

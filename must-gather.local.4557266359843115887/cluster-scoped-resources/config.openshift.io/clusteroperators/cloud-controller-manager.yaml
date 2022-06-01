@@ -1,0 +1,72 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    exclude.release.openshift.io/internal-openshift-hosted: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: cloud-controller-manager
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "294520"
+  uid: e9f90b77-0c4a-46b6-9c5e-d21481de9d0b
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    message: Trusted CA Bundle Controller works as expected
+    reason: AsExpected
+    status: "True"
+    type: TrustedCABundleControllerControllerAvailable
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    message: Trusted CA Bundle Controller works as expected
+    reason: AsExpected
+    status: "False"
+    type: TrustedCABundleControllerControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    message: Cloud Config Controller works as expected
+    reason: AsExpected
+    status: "True"
+    type: CloudConfigControllerAvailable
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    message: Cloud Config Controller works as expected
+    reason: AsExpected
+    status: "False"
+    type: CloudConfigControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    message: Cluster Cloud Controller Manager Operator is available at 4.10.13
+    reason: AsExpected
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    reason: AsExpected
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    reason: AsExpected
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:06:55Z"
+    reason: AsExpected
+    status: "True"
+    type: Upgradeable
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-cloud-controller-manager-operator
+    resource: namespaces
+  - group: config.openshift.io
+    name: cloud-controller-manager
+    resource: clusteroperators
+  - group: ""
+    name: openshift-cloud-controller-manager
+    resource: namespaces
+  versions:
+  - name: operator
+    version: 4.10.13

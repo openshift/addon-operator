@@ -1,0 +1,186 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.93"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.93"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+  creationTimestamp: "2022-05-24T18:32:30Z"
+  labels:
+    app: installer
+  name: installer-10-ip-10-0-138-197.ec2.internal
+  namespace: openshift-kube-scheduler
+  ownerReferences:
+  - apiVersion: v1
+    kind: ConfigMap
+    name: revision-status-10
+    uid: 76a3fe5f-88f6-4958-9492-babbde19b4cf
+  resourceVersion: "61370"
+  uid: 5ca2c99c-2336-4035-8005-905bcb6b729b
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - args:
+    - -v=2
+    - --revision=10
+    - --namespace=openshift-kube-scheduler
+    - --pod=kube-scheduler-pod
+    - --resource-dir=/etc/kubernetes/static-pod-resources
+    - --pod-manifest-dir=/etc/kubernetes/manifests
+    - --configmaps=kube-scheduler-pod
+    - --configmaps=config
+    - --configmaps=serviceaccount-ca
+    - --optional-configmaps=policy-configmap
+    - --configmaps=scheduler-kubeconfig
+    - --configmaps=kube-scheduler-cert-syncer-kubeconfig
+    - --optional-secrets=serving-cert
+    - --secrets=localhost-recovery-client-token
+    - --cert-dir=/etc/kubernetes/static-pod-resources/kube-scheduler-certs
+    - --cert-secrets=kube-scheduler-client-cert-key
+    command:
+    - cluster-kube-scheduler-operator
+    - installer
+    env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94
+    imagePullPolicy: IfNotPresent
+    name: installer
+    resources:
+      limits:
+        cpu: 150m
+        memory: 200M
+      requests:
+        cpu: 150m
+        memory: 200M
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/kubernetes/
+      name: kubelet-dir
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access
+      readOnly: true
+    - mountPath: /var/lock
+      name: var-lock
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: installer-sa-dockercfg-btkv8
+  nodeName: ip-10-0-138-197.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    runAsUser: 0
+  serviceAccount: installer-sa
+  serviceAccountName: installer-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/
+      type: ""
+    name: kubelet-dir
+  - hostPath:
+      path: /var/lock
+      type: ""
+    name: var-lock
+  - name: kube-api-access
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3600
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:30Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:33:34Z"
+    message: 'containers with unready status: [installer]'
+    reason: ContainersNotReady
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:35:51Z"
+    message: 'containers with unready status: [installer]'
+    reason: ContainersNotReady
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:30Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ff31026f624c40e37d5b647cb68699f61d51e9f22580ee777d10ed4a1f867f94
+    imageID: ""
+    lastState:
+      terminated:
+        exitCode: 137
+        finishedAt: null
+        message: The container could not be located when the pod was deleted.  The
+          container used to be Running
+        reason: ContainerStatusUnknown
+        startedAt: null
+    name: installer
+    ready: false
+    restartCount: 1
+    started: false
+    state:
+      terminated:
+        exitCode: 137
+        finishedAt: null
+        message: The container could not be located when the pod was terminated
+        reason: ContainerStatusUnknown
+        startedAt: null
+  hostIP: 10.0.138.197
+  phase: Failed
+  qosClass: Guaranteed
+  startTime: "2022-05-24T18:32:30Z"

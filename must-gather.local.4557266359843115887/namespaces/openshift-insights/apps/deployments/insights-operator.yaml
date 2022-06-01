@@ -1,0 +1,140 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    config.openshift.io/inject-proxy: insights-operator
+    deployment.kubernetes.io/revision: "1"
+    exclude.release.openshift.io/internal-openshift-hosted: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:06:17Z"
+  generation: 1
+  name: insights-operator
+  namespace: openshift-insights
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "63892"
+  uid: 46f1573b-4a85-40b2-a325-b0cc2703e9ba
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: insights-operator
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+      creationTimestamp: null
+      labels:
+        app: insights-operator
+    spec:
+      containers:
+      - args:
+        - start
+        - -v=4
+        - --config=/etc/insights-operator/server.yaml
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: RELEASE_VERSION
+          value: 4.10.13
+        image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2a4cb017a138e211eba6b9c0724b12533ca504a257bb182f30a8a24b31ebcb43
+        imagePullPolicy: IfNotPresent
+        name: insights-operator
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 10m
+            memory: 30Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /var/lib/insights-operator
+          name: snapshots
+        - mountPath: /var/run/configmaps/trusted-ca-bundle
+          name: trusted-ca-bundle
+          readOnly: true
+        - mountPath: /var/run/configmaps/service-ca-bundle
+          name: service-ca-bundle
+          readOnly: true
+        - mountPath: /var/run/secrets/serving-cert
+          name: serving-cert
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+        node-role.kubernetes.io/master: ""
+      priorityClassName: system-cluster-critical
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: operator
+      serviceAccountName: operator
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 900
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 900
+      volumes:
+      - emptyDir: {}
+        name: snapshots
+      - configMap:
+          defaultMode: 420
+          name: trusted-ca-bundle
+          optional: true
+        name: trusted-ca-bundle
+      - configMap:
+          defaultMode: 420
+          name: service-ca-bundle
+          optional: true
+        name: service-ca-bundle
+      - name: serving-cert
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: openshift-insights-serving-cert
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:06:17Z"
+    lastUpdateTime: "2022-05-24T18:07:39Z"
+    message: ReplicaSet "insights-operator-5d5b6d5998" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:36:44Z"
+    lastUpdateTime: "2022-05-24T18:36:44Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

@@ -1,0 +1,122 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.131.0.7
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: ingress-canary-pdsms
+      namespace: openshift-ingress-canary
+      resourceVersion: "37737"
+      uid: 1d5b80be-0c47-4b15-bf94-29d5f8cc2557
+    zone: us-east-1a
+  - addresses:
+    - 10.131.2.6
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-166-35.ec2.internal
+    targetRef:
+      kind: Pod
+      name: ingress-canary-wgsvd
+      namespace: openshift-ingress-canary
+      resourceVersion: "56489"
+      uid: af1b504b-c295-40ec-87a1-ccd35f71675d
+    zone: us-east-1c
+  - addresses:
+    - 10.130.2.5
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-140-240.ec2.internal
+    targetRef:
+      kind: Pod
+      name: ingress-canary-p2mb7
+      namespace: openshift-ingress-canary
+      resourceVersion: "67335"
+      uid: 92af3cc8-7fed-46bf-9b65-8e3619bfda1a
+    zone: us-east-1a
+  - addresses:
+    - 10.128.2.6
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: ingress-canary-7g79x
+      namespace: openshift-ingress-canary
+      resourceVersion: "69783"
+      uid: f5834302-1315-496b-bc6f-408acdaf43bd
+    zone: us-east-1c
+  - addresses:
+    - 10.128.4.2
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-148-123.ec2.internal
+    targetRef:
+      kind: Pod
+      name: ingress-canary-tpk7x
+      namespace: openshift-ingress-canary
+      resourceVersion: "74651"
+      uid: 03c1973e-d1ef-442c-bb2d-769ff055aced
+    zone: us-east-1b
+  - addresses:
+    - 10.129.2.5
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-145-179.ec2.internal
+    targetRef:
+      kind: Pod
+      name: ingress-canary-mvn6j
+      namespace: openshift-ingress-canary
+      resourceVersion: "78663"
+      uid: ee669ddb-fb38-40c5-974c-a01baf3981c2
+    zone: us-east-1b
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:20Z"
+    creationTimestamp: "2022-05-24T18:13:03Z"
+    generateName: ingress-canary-
+    generation: 23
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      ingress.openshift.io/canary: canary_controller
+      kubernetes.io/service-name: ingress-canary
+    name: ingress-canary-nj54h
+    namespace: openshift-ingress-canary
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: ingress-canary
+      uid: 9331cd95-650e-40b5-888b-a3bfb3b3d721
+    resourceVersion: "78665"
+    uid: f6da3711-e243-48b7-8342-1301583ddb85
+  ports:
+  - name: 8888-tcp
+    port: 8888
+    protocol: TCP
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "312944"

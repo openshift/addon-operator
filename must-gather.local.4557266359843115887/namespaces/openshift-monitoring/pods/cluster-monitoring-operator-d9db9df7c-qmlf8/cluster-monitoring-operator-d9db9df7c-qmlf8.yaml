@@ -1,0 +1,242 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.27"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.130.0.27"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:36:40Z"
+  generateName: cluster-monitoring-operator-d9db9df7c-
+  labels:
+    app: cluster-monitoring-operator
+    app.kubernetes.io/name: cluster-monitoring-operator
+    pod-template-hash: d9db9df7c
+  name: cluster-monitoring-operator-d9db9df7c-qmlf8
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: cluster-monitoring-operator-d9db9df7c
+    uid: 002361d0-e9a3-4085-b178-d2e038158cb2
+  resourceVersion: "63978"
+  uid: 64d901d8-db08-49e5-a74a-e8a30ed41eb2
+spec:
+  containers:
+  - args:
+    - --logtostderr
+    - --secure-listen-address=:8443
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    - --upstream=http://127.0.0.1:8080/
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/tls/private
+      name: cluster-monitoring-operator-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-ddgj5
+      readOnly: true
+  - args:
+    - -namespace=openshift-monitoring
+    - -namespace-user-workload=openshift-user-workload-monitoring
+    - -configmap=cluster-monitoring-config
+    - -release-version=$(RELEASE_VERSION)
+    - -logtostderr=true
+    - -v=2
+    - -images=prometheus-operator=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+    - -images=prometheus-config-reloader=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+    - -images=configmap-reloader=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:29383a4e84dc026ecc9d313b83b8eef1280674a42e4447f5cf3b6f045a3a4f10
+    - -images=prometheus=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:727fe0f3dcdad60f8beee58590b33815345e12d86f9526af81b45de17fb28f59
+    - -images=alertmanager=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:21780af60acd852880a5b19eb1d3597e83fd2d4e3854c48f7763f04100756a36
+    - -images=grafana=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:39594b0dd96744cb8fa31cf0485f7bee06159dc08e489edbacba3b3062efbb68
+    - -images=oauth-proxy=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+    - -images=node-exporter=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:957a2dc20cc01a3f2fbaa836927aa6833699322657915846e9a84c191fa25bb7
+    - -images=kube-state-metrics=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3b2f92612cf6a35edaade46270a961653eb53152a1217fa74be685ac3cfa8b71
+    - -images=openshift-state-metrics=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:e52032d4e2993366d3b3e6fc81837b2cd79f1a8be5638b9cf409a9aa7547495a
+    - -images=kube-rbac-proxy=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    - -images=telemeter-client=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:3cd352ab6f82a1f5f762b6283f9644e653d37dcdbab27e1fae3d5a82a76d2a9f
+    - -images=prom-label-proxy=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5c3e8963d0e5dbce2e30dc0341c7453c30a42395622905b718a8fe9974da41ab
+    - -images=k8s-prometheus-adapter=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:750e142e941a9b9e1822c52bc671d01ebcb5bf479b42fab978b76c44b17685b5
+    - -images=thanos=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+    env:
+    - name: RELEASE_VERSION
+      value: 4.10.13
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5ae10a5aa60a664893a010afadb0d02833826980d0148f22497fc947c1fb142e
+    imagePullPolicy: IfNotPresent
+    name: cluster-monitoring-operator
+    resources:
+      requests:
+        cpu: 10m
+        memory: 75Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/cluster-monitoring-operator/telemetry
+      name: telemetry-config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-ddgj5
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: cluster-monitoring-operator-dockercfg-fcb7z
+  nodeName: ip-10-0-138-197.ec2.internal
+  nodeSelector:
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: cluster-monitoring-operator
+  serviceAccountName: cluster-monitoring-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: telemetry-config
+    name: telemetry-config
+  - name: cluster-monitoring-operator-tls
+    secret:
+      defaultMode: 420
+      secretName: cluster-monitoring-operator-tls
+  - name: kube-api-access-ddgj5
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:40Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:46Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:46Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:36:40Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://2b636a24d95bfd8e3bafacdc1c48f8e419b36fe6cb4decd1bcf8586f2e4171dd
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5ae10a5aa60a664893a010afadb0d02833826980d0148f22497fc947c1fb142e
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5ae10a5aa60a664893a010afadb0d02833826980d0148f22497fc947c1fb142e
+    lastState: {}
+    name: cluster-monitoring-operator
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:36:46Z"
+  - containerID: cri-o://b59e112b8ea3834a82eabf10743bcf76acda41d3dc3f93841d8999fa40830cfb
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:36:43Z"
+  hostIP: 10.0.138.197
+  phase: Running
+  podIP: 10.130.0.27
+  podIPs:
+  - ip: 10.130.0.27
+  qosClass: Burstable
+  startTime: "2022-05-24T18:36:40Z"

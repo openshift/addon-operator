@@ -1,0 +1,4 @@
+2022-05-24T18:36:11.125242011Z I0524 18:36:11.125118       1 main.go:181] Valid token audiences: 
+2022-05-24T18:36:11.125317635Z I0524 18:36:11.125285       1 main.go:305] Reading certificate files
+2022-05-24T18:36:11.125552175Z I0524 18:36:11.125531       1 main.go:339] Starting TCP socket on :8443
+2022-05-24T18:36:11.126401345Z I0524 18:36:11.126369       1 main.go:346] Listening securely on :8443

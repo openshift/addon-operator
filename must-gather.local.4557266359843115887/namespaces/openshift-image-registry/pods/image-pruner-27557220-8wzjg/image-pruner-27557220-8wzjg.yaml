@@ -1,0 +1,205 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.4.84"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.4.84"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T23:00:00Z"
+  generateName: image-pruner-27557220-
+  labels:
+    controller-uid: 8fd7dc43-51bd-4d67-b89b-7551b681191b
+    job-name: image-pruner-27557220
+  name: image-pruner-27557220-8wzjg
+  namespace: openshift-image-registry
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: image-pruner-27557220
+    uid: 8fd7dc43-51bd-4d67-b89b-7551b681191b
+  resourceVersion: "283021"
+  uid: b86a6245-1d36-4e46-ab94-418c75723d4e
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: node-role.kubernetes.io/infra
+            operator: Exists
+        weight: 1
+  containers:
+  - args:
+    - -c
+    - |
+      set -eu
+      "$@" && exit
+      for i in 1 2 3 4 5; do
+        echo "attempt #$i has failed (exit code $?), going to make another attempt..." >&2
+        sleep $(($i * 30))
+        "$@" && break  # this is the last command of the script, so its last failure will be exit code of the script
+      done
+    - arg0
+    - oc
+    - adm
+    - prune
+    - images
+    - --confirm=true
+    - --certificate-authority=/var/run/configmaps/serviceca/service-ca.crt
+    - --keep-tag-revisions=3
+    - --keep-younger-than=24h0m0s
+    - --ignore-invalid-refs=true
+    - --loglevel=1
+    - --prune-registry=true
+    - --registry-url=https://image-registry.openshift-image-registry.svc:5000
+    command:
+    - /bin/sh
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+    imagePullPolicy: IfNotPresent
+    name: image-pruner
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000310000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /var/run/configmaps/serviceca
+      name: serviceca
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-jpvsb
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: pruner-dockercfg-46nbf
+  nodeName: ip-10-0-148-123.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Never
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000310000
+    seLinuxOptions:
+      level: s0:c18,c2
+  serviceAccount: pruner
+  serviceAccountName: pruner
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: serviceca
+    name: serviceca
+  - name: kube-api-access-jpvsb
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:00:00Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:00:04Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:00:04Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T23:00:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://cacd82015f74bbb08e68a6a0598f0ca605c4caa50e83ca617bd321d935d8b118
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    imageID: image-registry.openshift-image-registry.svc:5000/openshift/cli@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+    lastState: {}
+    name: image-pruner
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: cri-o://cacd82015f74bbb08e68a6a0598f0ca605c4caa50e83ca617bd321d935d8b118
+        exitCode: 0
+        finishedAt: "2022-05-24T23:00:04Z"
+        reason: Completed
+        startedAt: "2022-05-24T23:00:02Z"
+  hostIP: 10.0.148.123
+  phase: Succeeded
+  podIP: 10.128.4.84
+  podIPs:
+  - ip: 10.128.4.84
+  qosClass: Burstable
+  startTime: "2022-05-24T23:00:00Z"

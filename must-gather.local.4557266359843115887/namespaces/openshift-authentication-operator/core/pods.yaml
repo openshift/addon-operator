@@ -1,0 +1,225 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.64"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.64"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: anyuid
+    creationTimestamp: "2022-05-24T18:36:30Z"
+    generateName: authentication-operator-5785d7c487-
+    labels:
+      app: authentication-operator
+      pod-template-hash: 5785d7c487
+    name: authentication-operator-5785d7c487-5z5nf
+    namespace: openshift-authentication-operator
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: authentication-operator-5785d7c487
+      uid: d8cae511-5036-4b86-a8e4-90dd8a16ceec
+    resourceVersion: "62974"
+    uid: ae2a6596-190f-4d1f-b9bc-2327739ee5fc
+  spec:
+    containers:
+    - args:
+      - |
+        if [ -s /var/run/configmaps/trusted-ca-bundle/ca-bundle.crt ]; then
+            echo "Copying system trust bundle"
+            cp -f /var/run/configmaps/trusted-ca-bundle/ca-bundle.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+        fi
+        exec authentication-operator operator --config=/var/run/configmaps/config/operator-config.yaml --v=2 --terminate-on-files=/var/run/configmaps/trusted-ca-bundle/ca-bundle.crt
+      command:
+      - /bin/bash
+      - -ec
+      env:
+      - name: IMAGE_OAUTH_SERVER
+        value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:9971a93be34246ba519cb8e1f8a4f4e547f348e5b7e5f86abc05d7bccc7c3f50
+      - name: IMAGE_OAUTH_APISERVER
+        value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:98d37ed61e064e98c5743f2c45b9706b89ded21c49ba939beb3f0ae32e24826c
+      - name: OPERATOR_IMAGE_VERSION
+        value: 4.10.13
+      - name: OPERAND_OAUTH_SERVER_IMAGE_VERSION
+        value: 4.10.13_openshift
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4881e23ae85f77421b66ef756e301229a2b117081c87e0b1efd60b8e749b0104
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: healthz
+          port: 8443
+          scheme: HTTPS
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: authentication-operator
+      resources:
+        requests:
+          cpu: 20m
+          memory: 200Mi
+      securityContext:
+        capabilities:
+          drop:
+          - MKNOD
+        readOnlyRootFilesystem: false
+        runAsUser: 0
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/configmaps/config
+        name: config
+      - mountPath: /var/run/secrets/serving-cert
+        name: serving-cert
+      - mountPath: /var/run/configmaps/trusted-ca-bundle
+        name: trusted-ca-bundle
+        readOnly: true
+      - mountPath: /var/run/configmaps/service-ca-bundle
+        name: service-ca-bundle
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-z6gxp
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: authentication-operator-dockercfg-mdvfp
+    nodeName: ip-10-0-169-205.ec2.internal
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seLinuxOptions:
+        level: s0:c16,c0
+    serviceAccount: authentication-operator
+    serviceAccountName: authentication-operator
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 440
+        name: authentication-operator-config
+      name: config
+    - configMap:
+        defaultMode: 420
+        name: trusted-ca-bundle
+        optional: true
+      name: trusted-ca-bundle
+    - name: serving-cert
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: serving-cert
+    - configMap:
+        defaultMode: 420
+        name: service-ca-bundle
+        optional: true
+      name: service-ca-bundle
+    - name: kube-api-access-z6gxp
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:30Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:33Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:33Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:30Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://b5cd9872442fcc5529d7ef7af0c9ac47bd2023ab6f3e1b0a1bd64e021855231f
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4881e23ae85f77421b66ef756e301229a2b117081c87e0b1efd60b8e749b0104
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:4881e23ae85f77421b66ef756e301229a2b117081c87e0b1efd60b8e749b0104
+      lastState: {}
+      name: authentication-operator
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:36:33Z"
+    hostIP: 10.0.169.205
+    phase: Running
+    podIP: 10.128.0.64
+    podIPs:
+    - ip: 10.128.0.64
+    qosClass: Burstable
+    startTime: "2022-05-24T18:36:30Z"
+kind: PodList
+metadata:
+  resourceVersion: "296880"

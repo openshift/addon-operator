@@ -1,0 +1,10 @@
+2022-05-24T18:29:27.182449525Z time="2022-05-24T18:29:27Z" level=info msg="Using in-cluster kube client config"
+2022-05-24T18:29:27.259313351Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/manifests/csi-addons-controller-manager-metrics-service_v1_service.yaml
+2022-05-24T18:29:27.259574663Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/manifests/csi-addons-manager-config_v1_configmap.yaml
+2022-05-24T18:29:27.260044612Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/manifests/csi-addons-metrics-reader_rbac.authorization.k8s.io_v1_clusterrole.yaml
+2022-05-24T18:29:27.260146330Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/manifests/csiaddons.openshift.io_csiaddonsnodes.yaml
+2022-05-24T18:29:27.260685745Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/manifests/csiaddons.openshift.io_networkfences.yaml
+2022-05-24T18:29:27.261844871Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/manifests/csiaddons.openshift.io_reclaimspacecronjobs.yaml
+2022-05-24T18:29:27.262343924Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/manifests/csiaddons.openshift.io_reclaimspacejobs.yaml
+2022-05-24T18:29:27.262749188Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/manifests/odf-csi-addons-operator.clusterserviceversion.yaml
+2022-05-24T18:29:27.263132940Z time="2022-05-24T18:29:27Z" level=info msg="Reading file" file=/bundle/metadata/annotations.yaml

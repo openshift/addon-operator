@@ -1,0 +1,114 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+      operator.openshift.io/spec-hash: 0d52de4f4f171c55924946883443d3ab624c5601c1c126723638ab8a4712305b
+    creationTimestamp: "2022-05-24T18:13:28Z"
+    generation: 1
+    name: node-ca
+    namespace: openshift-image-registry
+    resourceVersion: "78525"
+    uid: 8a3836ec-db14-4566-b629-3e59862b08bf
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        name: node-ca
+    template:
+      metadata:
+        annotations:
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          name: node-ca
+      spec:
+        containers:
+        - command:
+          - /bin/sh
+          - -c
+          - |
+            trap 'jobs -p | xargs -r kill; echo shutting down node-ca; exit 0' TERM
+            while [ true ];
+            do
+              for f in $(ls /tmp/serviceca); do
+                  echo $f
+                  ca_file_path="/tmp/serviceca/${f}"
+                  f=$(echo $f | sed  -r 's/(.*)\.\./\1:/')
+                  reg_dir_path="/etc/docker/certs.d/${f}"
+                  if [ -e "${reg_dir_path}" ]; then
+                      cp -u $ca_file_path $reg_dir_path/ca.crt
+                  else
+                      mkdir $reg_dir_path
+                      cp $ca_file_path $reg_dir_path/ca.crt
+                  fi
+              done
+              for d in $(ls /etc/docker/certs.d); do
+                  echo $d
+                  dp=$(echo $d | sed  -r 's/(.*):/\1\.\./')
+                  reg_conf_path="/tmp/serviceca/${dp}"
+                  if [ ! -e "${reg_conf_path}" ]; then
+                      rm -rf /etc/docker/certs.d/$d
+                  fi
+              done
+              sleep 60 & wait ${!}
+            done
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8901f71be47872f0346e8461f3f78f7e84fa6d8affabf70ef1e428442cce9c35
+          imagePullPolicy: IfNotPresent
+          name: node-ca
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+          securityContext:
+            privileged: true
+            runAsGroup: 0
+            runAsUser: 1001
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp/serviceca
+            name: serviceca
+          - mountPath: /etc/docker/certs.d
+            name: host
+        dnsPolicy: ClusterFirst
+        hostNetwork: true
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: node-ca
+        serviceAccountName: node-ca
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - operator: Exists
+        volumes:
+        - hostPath:
+            path: /etc/docker/certs.d
+            type: ""
+          name: host
+        - configMap:
+            defaultMode: 420
+            name: image-registry-certificates
+          name: serviceca
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 10%
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 9
+    desiredNumberScheduled: 9
+    numberAvailable: 9
+    numberMisscheduled: 0
+    numberReady: 9
+    observedGeneration: 1
+    updatedNumberScheduled: 9
+kind: DaemonSetList
+metadata:
+  resourceVersion: "312078"

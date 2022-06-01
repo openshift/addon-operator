@@ -1,0 +1,66 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: ingress
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "20381"
+  uid: 71048b75-7f00-4eda-88e4-c43de110e00c
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:13:47Z"
+    message: The "default" ingress controller reports Available=True.
+    reason: IngressAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:13:47Z"
+    message: desired and current number of IngressControllers are equal
+    reason: AsExpected
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:13:47Z"
+    message: The "default" ingress controller reports Degraded=False.
+    reason: IngressNotDegraded
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:08:52Z"
+    reason: IngressControllersUpgradeable
+    status: "True"
+    type: Upgradeable
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-ingress-operator
+    resource: namespaces
+  - group: operator.openshift.io
+    name: ""
+    namespace: openshift-ingress-operator
+    resource: IngressController
+  - group: ingress.operator.openshift.io
+    name: ""
+    namespace: openshift-ingress-operator
+    resource: DNSRecord
+  - group: ""
+    name: openshift-ingress
+    resource: namespaces
+  - group: ""
+    name: openshift-ingress-canary
+    resource: namespaces
+  versions:
+  - name: operator
+    version: 4.10.13
+  - name: ingress-controller
+    version: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a18d11de075fc9b11409f4bc4864bc73023d1510b0bb62b78f156d9a8819386e
+  - name: canary-server
+    version: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e

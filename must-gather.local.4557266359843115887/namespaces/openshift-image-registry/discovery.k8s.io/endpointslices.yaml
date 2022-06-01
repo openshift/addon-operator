@@ -1,0 +1,103 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.131.2.22
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-166-35.ec2.internal
+    targetRef:
+      kind: Pod
+      name: image-registry-6cf9b659bc-9vfp2
+      namespace: openshift-image-registry
+      resourceVersion: "75656"
+      uid: 5b4c37d9-c856-4521-8cc8-db1d0b317177
+    zone: us-east-1c
+  - addresses:
+    - 10.128.4.13
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-148-123.ec2.internal
+    targetRef:
+      kind: Pod
+      name: image-registry-6cf9b659bc-6wmz4
+      namespace: openshift-image-registry
+      resourceVersion: "76658"
+      uid: 6a1ef3f1-a32f-4dae-b806-30b2e3ddd4f5
+    zone: us-east-1b
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:28Z"
+    generateName: image-registry-
+    generation: 42
+    labels:
+      docker-registry: default
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: image-registry
+    name: image-registry-78gzp
+    namespace: openshift-image-registry
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: image-registry
+      uid: 5714443d-71f6-468d-ba43-8337c27a2755
+    resourceVersion: "76854"
+    uid: 27f677af-1626-45dc-8239-25455657ed65
+  ports:
+  - name: 5000-tcp
+    port: 5000
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.75
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: cluster-image-registry-operator-f4545974d-w8nrs
+      namespace: openshift-image-registry
+      resourceVersion: "63824"
+      uid: 361c7a2f-ae75-4380-b24c-68884fa126d3
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:06:16Z"
+    generateName: image-registry-operator-
+    generation: 12
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: image-registry-operator
+      name: image-registry-operator
+      service.kubernetes.io/headless: ""
+    name: image-registry-operator-wvxjn
+    namespace: openshift-image-registry
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: image-registry-operator
+      uid: dd552347-8a91-4cf3-a198-75cb59098d6a
+    resourceVersion: "63882"
+    uid: 4cd95191-200b-4e9b-9532-e2cb44ce2b38
+  ports:
+  - name: ""
+    port: 60000
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "312097"

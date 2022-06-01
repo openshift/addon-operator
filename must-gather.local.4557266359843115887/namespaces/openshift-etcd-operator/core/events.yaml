@@ -1,0 +1,124 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  count: 3
+  eventTime: null
+  firstTimestamp: "2022-05-24T18:36:34Z"
+  involvedObject:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: etcd-operator
+    namespace: openshift-etcd-operator
+    uid: f9580b51-c8f5-4a7c-8a00-03375aa02683
+  kind: Event
+  lastTimestamp: "2022-05-24T20:37:25Z"
+  message: 'Status for clusteroperator/etcd changed: Degraded message changed from
+    "NodeControllerDegraded: All master nodes are ready\nEtcdMembersDegraded: No unhealthy
+    members found" to "ClusterMemberControllerDegraded: could not get list of unhealthy
+    members: could not get member list rpc error: code = Canceled desc = grpc: the
+    client connection is closing\nNodeControllerDegraded: All master nodes are ready\nEtcdMembersDegraded:
+    No unhealthy members found"'
+  metadata:
+    creationTimestamp: "2022-05-24T18:36:34Z"
+    name: etcd-operator.16f21e5c3f2ec9ca
+    namespace: openshift-etcd-operator
+    resourceVersion: "169406"
+    uid: 676a6a95-2ac8-48ea-b9a5-8054121d6338
+  reason: OperatorStatusChanged
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: openshift-cluster-etcd-operator-status-controller-statussyncer_etcd
+  type: Normal
+- apiVersion: v1
+  count: 2
+  eventTime: null
+  firstTimestamp: "2022-05-24T18:36:34Z"
+  involvedObject:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: etcd-operator
+    namespace: openshift-etcd-operator
+    uid: f9580b51-c8f5-4a7c-8a00-03375aa02683
+  kind: Event
+  lastTimestamp: "2022-05-24T20:37:25Z"
+  message: 'Status for clusteroperator/etcd changed: Degraded message changed from
+    "ClusterMemberControllerDegraded: could not get list of unhealthy members: could
+    not get member list rpc error: code = Canceled desc = grpc: the client connection
+    is closing\nNodeControllerDegraded: All master nodes are ready\nEtcdMembersDegraded:
+    No unhealthy members found" to "NodeControllerDegraded: All master nodes are ready\nEtcdMembersDegraded:
+    No unhealthy members found"'
+  metadata:
+    creationTimestamp: "2022-05-24T18:36:34Z"
+    name: etcd-operator.16f21e5c4d8b8659
+    namespace: openshift-etcd-operator
+    resourceVersion: "169409"
+    uid: 53a0bd4d-7fe2-4194-8074-0c682c45f933
+  reason: OperatorStatusChanged
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: openshift-cluster-etcd-operator-status-controller-statussyncer_etcd
+  type: Normal
+- apiVersion: v1
+  count: 3
+  eventTime: null
+  firstTimestamp: "2022-05-24T18:36:53Z"
+  involvedObject:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: etcd-operator
+    namespace: openshift-etcd-operator
+    uid: f9580b51-c8f5-4a7c-8a00-03375aa02683
+  kind: Event
+  lastTimestamp: "2022-05-24T22:14:58Z"
+  message: 'Status for clusteroperator/etcd changed: Degraded message changed from
+    "NodeControllerDegraded: All master nodes are ready\nEtcdMembersDegraded: No unhealthy
+    members found" to "NodeControllerDegraded: All master nodes are ready\nEtcdEndpointsDegraded:
+    could not get member health: rpc error: code = Canceled desc = grpc: the client
+    connection is closing\nEtcdMembersDegraded: No unhealthy members found"'
+  metadata:
+    creationTimestamp: "2022-05-24T22:14:58Z"
+    name: etcd-operator.16f21e608db2cc00
+    namespace: openshift-etcd-operator
+    resourceVersion: "247433"
+    uid: 53060d98-52bc-44fd-938b-a37188a9d683
+  reason: OperatorStatusChanged
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: openshift-cluster-etcd-operator-status-controller-statussyncer_etcd
+  type: Normal
+- apiVersion: v1
+  count: 3
+  eventTime: null
+  firstTimestamp: "2022-05-24T18:36:53Z"
+  involvedObject:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: etcd-operator
+    namespace: openshift-etcd-operator
+    uid: f9580b51-c8f5-4a7c-8a00-03375aa02683
+  kind: Event
+  lastTimestamp: "2022-05-24T22:14:58Z"
+  message: 'Status for clusteroperator/etcd changed: Degraded message changed from
+    "NodeControllerDegraded: All master nodes are ready\nEtcdEndpointsDegraded: could
+    not get member health: rpc error: code = Canceled desc = grpc: the client connection
+    is closing\nEtcdMembersDegraded: No unhealthy members found" to "NodeControllerDegraded:
+    All master nodes are ready\nEtcdMembersDegraded: No unhealthy members found"'
+  metadata:
+    creationTimestamp: "2022-05-24T22:14:58Z"
+    name: etcd-operator.16f21e60924322a0
+    namespace: openshift-etcd-operator
+    resourceVersion: "247436"
+    uid: fe486141-4283-4536-8ed8-ddb0c8774c6c
+  reason: OperatorStatusChanged
+  reportingComponent: ""
+  reportingInstance: ""
+  source:
+    component: openshift-cluster-etcd-operator-status-controller-statussyncer_etcd
+  type: Normal
+kind: EventList
+metadata:
+  resourceVersion: "310673"

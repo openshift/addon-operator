@@ -1,0 +1,3268 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.130.0.7"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.130.0.7"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+    creationTimestamp: "2022-05-24T18:08:40Z"
+    generateName: dns-default-
+    labels:
+      controller-revision-hash: 7649df6488
+      dns.operator.openshift.io/daemonset-dns: default
+      pod-template-generation: "1"
+    name: dns-default-6972g
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: dns-default
+      uid: 2506942e-8a5d-4746-b652-998f429f15b9
+    resourceVersion: "62048"
+    uid: 3bed196b-b093-4379-b72b-ceee4b713792
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-138-197.ec2.internal
+    containers:
+    - args:
+      - -conf
+      - /etc/coredns/Corefile
+      command:
+      - coredns
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: dns
+      ports:
+      - containerPort: 5353
+        name: dns
+        protocol: UDP
+      - containerPort: 5353
+        name: dns-tcp
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /ready
+          port: 8181
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 3
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        requests:
+          cpu: 50m
+          memory: 70Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/coredns
+        name: config-volume
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-4lc9z
+        readOnly: true
+    - args:
+      - --logtostderr
+      - --secure-listen-address=:9154
+      - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+      - --upstream=http://127.0.0.1:9153/
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9154
+        name: metrics
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 40Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: metrics-tls
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-4lc9z
+        readOnly: true
+    dnsPolicy: Default
+    enableServiceLinks: true
+    nodeName: ip-10-0-138-197.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: dns
+    serviceAccountName: dns
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: Corefile
+          path: Corefile
+        name: dns-default
+      name: config-volume
+    - name: metrics-tls
+      secret:
+        defaultMode: 420
+        secretName: dns-default-metrics-tls
+    - name: kube-api-access-4lc9z
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:13Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:13Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://d3b845379764a447e1e2ddfaefd162cb57565cb9460c5106658c657dcef57101
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      lastState: {}
+      name: dns
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:36:02Z"
+    - containerID: cri-o://3bb75ce4cf6614aaa1a1d228472a1140b9cb8f04cead88dc1537e98ead01cce9
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:36:02Z"
+    hostIP: 10.0.138.197
+    phase: Running
+    podIP: 10.130.0.7
+    podIPs:
+    - ip: 10.130.0.7
+    qosClass: Burstable
+    startTime: "2022-05-24T18:08:40Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.5"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.5"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+    creationTimestamp: "2022-05-24T18:13:01Z"
+    generateName: dns-default-
+    labels:
+      controller-revision-hash: 7649df6488
+      dns.operator.openshift.io/daemonset-dns: default
+      pod-template-generation: "1"
+    name: dns-default-fbb4s
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: dns-default
+      uid: 2506942e-8a5d-4746-b652-998f429f15b9
+    resourceVersion: "38871"
+    uid: 56ddb50b-992b-4371-a9c1-8d3252547008
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-128-34.ec2.internal
+    containers:
+    - args:
+      - -conf
+      - /etc/coredns/Corefile
+      command:
+      - coredns
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: dns
+      ports:
+      - containerPort: 5353
+        name: dns
+        protocol: UDP
+      - containerPort: 5353
+        name: dns-tcp
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /ready
+          port: 8181
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 3
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        requests:
+          cpu: 50m
+          memory: 70Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/coredns
+        name: config-volume
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-6mf59
+        readOnly: true
+    - args:
+      - --logtostderr
+      - --secure-listen-address=:9154
+      - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+      - --upstream=http://127.0.0.1:9153/
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9154
+        name: metrics
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 40Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: metrics-tls
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-6mf59
+        readOnly: true
+    dnsPolicy: Default
+    enableServiceLinks: true
+    nodeName: ip-10-0-128-34.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: dns
+    serviceAccountName: dns
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: Corefile
+          path: Corefile
+        name: dns-default
+      name: config-volume
+    - name: metrics-tls
+      secret:
+        defaultMode: 420
+        secretName: dns-default-metrics-tls
+    - name: kube-api-access-6mf59
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:13:01Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:47Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:47Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:13:01Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://605830adfdf37ee1e3200344944aa69e6c94563885440014618a3f180c862f7c
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      lastState: {}
+      name: dns
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:27:35Z"
+    - containerID: cri-o://a714bcdfb7b0366fd1152ec74c2d627e92e6fe1f0c876cba8bb8effe52cc7d08
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:27:35Z"
+    hostIP: 10.0.128.34
+    phase: Running
+    podIP: 10.131.0.5
+    podIPs:
+    - ip: 10.131.0.5
+    qosClass: Burstable
+    startTime: "2022-05-24T18:13:01Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.2.7"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.2.7"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+    creationTimestamp: "2022-05-24T18:16:19Z"
+    generateName: dns-default-
+    labels:
+      controller-revision-hash: 7649df6488
+      dns.operator.openshift.io/daemonset-dns: default
+      pod-template-generation: "1"
+    name: dns-default-sh4np
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: dns-default
+      uid: 2506942e-8a5d-4746-b652-998f429f15b9
+    resourceVersion: "78990"
+    uid: cd6e3b13-b885-496c-8244-aae3f945cda0
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-145-179.ec2.internal
+    containers:
+    - args:
+      - -conf
+      - /etc/coredns/Corefile
+      command:
+      - coredns
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: dns
+      ports:
+      - containerPort: 5353
+        name: dns
+        protocol: UDP
+      - containerPort: 5353
+        name: dns-tcp
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /ready
+          port: 8181
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 3
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        requests:
+          cpu: 50m
+          memory: 70Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/coredns
+        name: config-volume
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-k2r8s
+        readOnly: true
+    - args:
+      - --logtostderr
+      - --secure-listen-address=:9154
+      - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+      - --upstream=http://127.0.0.1:9153/
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9154
+        name: metrics
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 40Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: metrics-tls
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-k2r8s
+        readOnly: true
+    dnsPolicy: Default
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: dns-dockercfg-zjdv8
+    nodeName: ip-10-0-145-179.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: dns
+    serviceAccountName: dns
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: Corefile
+          path: Corefile
+        name: dns-default
+      name: config-volume
+    - name: metrics-tls
+      secret:
+        defaultMode: 420
+        secretName: dns-default-metrics-tls
+    - name: kube-api-access-k2r8s
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:16:19Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:44:29Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:44:29Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:16:19Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://5b4b68c4f4cad6b499bbe65a2d478fc00107cf0cbf492aa3c802c5c84c27c98c
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      lastState: {}
+      name: dns
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:44:19Z"
+    - containerID: cri-o://44a8ff800ac8f1e7e6e5808dcb23fdbee01149118982964affc11fc693812c1b
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:44:20Z"
+    hostIP: 10.0.145.179
+    phase: Running
+    podIP: 10.129.2.7
+    podIPs:
+    - ip: 10.129.2.7
+    qosClass: Burstable
+    startTime: "2022-05-24T18:16:19Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.4"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.4"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+    creationTimestamp: "2022-05-24T18:13:01Z"
+    generateName: dns-default-
+    labels:
+      controller-revision-hash: 7649df6488
+      dns.operator.openshift.io/daemonset-dns: default
+      pod-template-generation: "1"
+    name: dns-default-slcnk
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: dns-default
+      uid: 2506942e-8a5d-4746-b652-998f429f15b9
+    resourceVersion: "70286"
+    uid: c50a434f-6ce1-434e-adf7-d44ff7a87bce
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-164-190.ec2.internal
+    containers:
+    - args:
+      - -conf
+      - /etc/coredns/Corefile
+      command:
+      - coredns
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: dns
+      ports:
+      - containerPort: 5353
+        name: dns
+        protocol: UDP
+      - containerPort: 5353
+        name: dns-tcp
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /ready
+          port: 8181
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 3
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        requests:
+          cpu: 50m
+          memory: 70Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/coredns
+        name: config-volume
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-pc5ws
+        readOnly: true
+    - args:
+      - --logtostderr
+      - --secure-listen-address=:9154
+      - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+      - --upstream=http://127.0.0.1:9153/
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9154
+        name: metrics
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 40Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: metrics-tls
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-pc5ws
+        readOnly: true
+    dnsPolicy: Default
+    enableServiceLinks: true
+    nodeName: ip-10-0-164-190.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: dns
+    serviceAccountName: dns
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: Corefile
+          path: Corefile
+        name: dns-default
+      name: config-volume
+    - name: metrics-tls
+      secret:
+        defaultMode: 420
+        secretName: dns-default-metrics-tls
+    - name: kube-api-access-pc5ws
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:13:01Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:16Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:16Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:13:01Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://c1c776f9269bd9dcb4d1fe7cce410b39e3f6af797acc0710b376a9ffa4385000
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      lastState: {}
+      name: dns
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:05Z"
+    - containerID: cri-o://16c8b972f87f2dd7f1d630903c40b8da45091cca697727a5e0c0d0368ea9009e
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:05Z"
+    hostIP: 10.0.164.190
+    phase: Running
+    podIP: 10.128.2.4
+    podIPs:
+    - ip: 10.128.2.4
+    qosClass: Burstable
+    startTime: "2022-05-24T18:13:01Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.0.15"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.0.15"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+    creationTimestamp: "2022-05-24T18:08:40Z"
+    generateName: dns-default-
+    labels:
+      controller-revision-hash: 7649df6488
+      dns.operator.openshift.io/daemonset-dns: default
+      pod-template-generation: "1"
+    name: dns-default-t6scz
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: dns-default
+      uid: 2506942e-8a5d-4746-b652-998f429f15b9
+    resourceVersion: "72566"
+    uid: a41c61cd-f08c-4470-95dc-0faf9ecf167d
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-149-121.ec2.internal
+    containers:
+    - args:
+      - -conf
+      - /etc/coredns/Corefile
+      command:
+      - coredns
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: dns
+      ports:
+      - containerPort: 5353
+        name: dns
+        protocol: UDP
+      - containerPort: 5353
+        name: dns-tcp
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /ready
+          port: 8181
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 3
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        requests:
+          cpu: 50m
+          memory: 70Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/coredns
+        name: config-volume
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-vhg5c
+        readOnly: true
+    - args:
+      - --logtostderr
+      - --secure-listen-address=:9154
+      - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+      - --upstream=http://127.0.0.1:9153/
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9154
+        name: metrics
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 40Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: metrics-tls
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-vhg5c
+        readOnly: true
+    dnsPolicy: Default
+    enableServiceLinks: true
+    nodeName: ip-10-0-149-121.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: dns
+    serviceAccountName: dns
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: Corefile
+          path: Corefile
+        name: dns-default
+      name: config-volume
+    - name: metrics-tls
+      secret:
+        defaultMode: 420
+        secretName: dns-default-metrics-tls
+    - name: kube-api-access-vhg5c
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:41:00Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:41:00Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://c9b537d01e28bf3411a366f91a87c800a036d8a814707043401e48d4fdc728bc
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      lastState: {}
+      name: dns
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:48Z"
+    - containerID: cri-o://80dfadba4f64594728df1b41345e53f046126e0f8231b2c6a19db080fede1f2e
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:49Z"
+    hostIP: 10.0.149.121
+    phase: Running
+    podIP: 10.129.0.15
+    podIPs:
+    - ip: 10.129.0.15
+    qosClass: Burstable
+    startTime: "2022-05-24T18:08:40Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.8"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.8"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+    creationTimestamp: "2022-05-24T18:08:40Z"
+    generateName: dns-default-
+    labels:
+      controller-revision-hash: 7649df6488
+      dns.operator.openshift.io/daemonset-dns: default
+      pod-template-generation: "1"
+    name: dns-default-wvsg9
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: dns-default
+      uid: 2506942e-8a5d-4746-b652-998f429f15b9
+    resourceVersion: "53519"
+    uid: 0d23a1ba-1024-429d-a074-7df84070b873
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-169-205.ec2.internal
+    containers:
+    - args:
+      - -conf
+      - /etc/coredns/Corefile
+      command:
+      - coredns
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      name: dns
+      ports:
+      - containerPort: 5353
+        name: dns
+        protocol: UDP
+      - containerPort: 5353
+        name: dns-tcp
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /ready
+          port: 8181
+          scheme: HTTP
+        initialDelaySeconds: 10
+        periodSeconds: 3
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        requests:
+          cpu: 50m
+          memory: 70Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/coredns
+        name: config-volume
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-ghdbc
+        readOnly: true
+    - args:
+      - --logtostderr
+      - --secure-listen-address=:9154
+      - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+      - --upstream=http://127.0.0.1:9153/
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9154
+        name: metrics
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 10m
+          memory: 40Mi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: metrics-tls
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-ghdbc
+        readOnly: true
+    dnsPolicy: Default
+    enableServiceLinks: true
+    nodeName: ip-10-0-169-205.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: dns
+    serviceAccountName: dns
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: Corefile
+          path: Corefile
+        name: dns-default
+      name: config-volume
+    - name: metrics-tls
+      secret:
+        defaultMode: 420
+        secretName: dns-default-metrics-tls
+    - name: kube-api-access-ghdbc
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:43Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:43Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://754d7f74b718721fb98b2a213b74f2fc9a38a0e481c8c8bdadbf41b19cb2e41e
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+      lastState: {}
+      name: dns
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:31:32Z"
+    - containerID: cri-o://a5fba066ca22c657ea7a2c85cfc3c06e1c187050980db5c3a41211f9fb7b49bf
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:31:32Z"
+    hostIP: 10.0.169.205
+    phase: Running
+    podIP: 10.128.0.8
+    podIPs:
+    - ip: 10.128.0.8
+    qosClass: Burstable
+    startTime: "2022-05-24T18:08:40Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:08:40Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-f5j4l
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "52787"
+    uid: fc9a6f05-63ec-411e-83d3-e0fb3083a100
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-169-205.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-hzzr2
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    nodeName: ip-10-0-169-205.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-hzzr2
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:22Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:22Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://db85fbf66cb3744d3578fe0a2ed72f40ae8fb487711daf93a2d8c5743c23ca63
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:31:21Z"
+    hostIP: 10.0.169.205
+    phase: Running
+    podIP: 10.0.169.205
+    podIPs:
+    - ip: 10.0.169.205
+    qosClass: Burstable
+    startTime: "2022-05-24T18:08:40Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:39Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-fl6td
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "67077"
+    uid: e72753f4-f35f-4771-ad42-911caf921af0
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-140-240.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-skhzh
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    imagePullSecrets:
+    - name: node-resolver-dockercfg-9dt94
+    nodeName: ip-10-0-140-240.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-skhzh
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:39Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:38:31Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:38:31Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:39Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://afdaa6ab535158865efd078c7e50ffeb51a3ff1fb075789a6221fabda25e0177
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:38:31Z"
+    hostIP: 10.0.140.240
+    phase: Running
+    podIP: 10.0.140.240
+    podIPs:
+    - ip: 10.0.140.240
+    qosClass: Burstable
+    startTime: "2022-05-24T18:27:39Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:27:57Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-hcb28
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "56174"
+    uid: da747bb7-b2aa-489b-b013-10d9c7732048
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-166-35.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2qbs4
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    imagePullSecrets:
+    - name: node-resolver-dockercfg-9dt94
+    nodeName: ip-10-0-166-35.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-2qbs4
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:58Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:23Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:23Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:57Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://567575049bf8bfd98451376c9992b8434236ddb88ffcc3fd40e6992809169d50
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:32:22Z"
+    hostIP: 10.0.166.35
+    phase: Running
+    podIP: 10.0.166.35
+    podIPs:
+    - ip: 10.0.166.35
+    qosClass: Burstable
+    startTime: "2022-05-24T18:27:58Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:08:40Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-nl7kp
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "71061"
+    uid: bee49b1f-6f87-47c9-b2db-924a1a66d7d2
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-149-121.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-dfscl
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    nodeName: ip-10-0-149-121.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-dfscl
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:32Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:32Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://d0158aabf83c0d5a68c8e656e92194fc88063d8679c2236a418fc6eaf9fa976e
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:31Z"
+    hostIP: 10.0.149.121
+    phase: Running
+    podIP: 10.0.149.121
+    podIPs:
+    - ip: 10.0.149.121
+    qosClass: Burstable
+    startTime: "2022-05-24T18:08:40Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:12:06Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-ntrck
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "69656"
+    uid: aa9c3579-cb16-454c-97e1-a837bbc3492d
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-164-190.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2nmrf
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    nodeName: ip-10-0-164-190.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-2nmrf
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:12:06Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:02Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:02Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:12:06Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://c25a7c8f037f689ea078513eca8a3c7376bb801510200318fe7914e907e503cd
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:01Z"
+    hostIP: 10.0.164.190
+    phase: Running
+    podIP: 10.0.164.190
+    podIPs:
+    - ip: 10.0.164.190
+    qosClass: Burstable
+    startTime: "2022-05-24T18:12:06Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:08:40Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-phlz7
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "61510"
+    uid: ba76de61-881c-4e68-9e4a-8f0634b0b8a9
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-138-197.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-4bvht
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    nodeName: ip-10-0-138-197.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-4bvht
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:35:58Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:35:58Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:08:40Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://857352dde11aaa9cb97e474ee9bfda804e29d759217956da8c1b8f0dc13823a1
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:35:57Z"
+    hostIP: 10.0.138.197
+    phase: Running
+    podIP: 10.0.138.197
+    podIPs:
+    - ip: 10.0.138.197
+    qosClass: Burstable
+    startTime: "2022-05-24T18:08:40Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:12:06Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-qzlcd
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "37337"
+    uid: c431fc23-fe34-4f06-9c49-609660924401
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-128-34.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-84gx5
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    nodeName: ip-10-0-128-34.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-84gx5
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:12:06Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:30Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:27:30Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:12:06Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://6acc3d70eddf7e7df8116863c59a280fea5007bb1919963f66605619fa017f99
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:27:30Z"
+    hostIP: 10.0.128.34
+    phase: Running
+    podIP: 10.0.128.34
+    podIPs:
+    - ip: 10.0.128.34
+    qosClass: Burstable
+    startTime: "2022-05-24T18:12:06Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:15:39Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-srmrz
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "78516"
+    uid: 35ccd131-7b0f-49ab-9a1e-bffb3cdff25a
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-145-179.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-qjm5m
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    imagePullSecrets:
+    - name: node-resolver-dockercfg-9dt94
+    nodeName: ip-10-0-145-179.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-qjm5m
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:15:42Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:44:15Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:44:15Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:15:39Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://f3e668782160773101046e7419bf939cfb8d28f1add8721e5704f72a302c8b09
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:44:14Z"
+    hostIP: 10.0.145.179
+    phase: Running
+    podIP: 10.0.145.179
+    podIPs:
+    - ip: 10.0.145.179
+    qosClass: Burstable
+    startTime: "2022-05-24T18:15:42Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-05-24T18:28:11Z"
+    generateName: node-resolver-
+    labels:
+      controller-revision-hash: 74ddd4c7bf
+      dns.operator.openshift.io/daemonset-node-resolver: ""
+      pod-template-generation: "1"
+    name: node-resolver-wvg8g
+    namespace: openshift-dns
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: node-resolver
+      uid: 5c7de9d0-6112-4b2c-b19d-25616e667710
+    resourceVersion: "74503"
+    uid: 0df88504-ff69-478a-9b85-5def38998110
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-148-123.ec2.internal
+    containers:
+    - command:
+      - /bin/bash
+      - -c
+      - |
+        #!/bin/bash
+        set -uo pipefail
+
+        trap 'jobs -p | xargs kill || true; wait; exit 0' TERM
+
+        OPENSHIFT_MARKER="openshift-generated-node-resolver"
+        HOSTS_FILE="/etc/hosts"
+        TEMP_FILE="/etc/hosts.tmp"
+
+        IFS=', ' read -r -a services <<< "${SERVICES}"
+
+        # Make a temporary file with the old hosts file's attributes.
+        cp -f --attributes-only "${HOSTS_FILE}" "${TEMP_FILE}"
+
+        while true; do
+          declare -A svc_ips
+          for svc in "${services[@]}"; do
+            # Fetch service IP from cluster dns if present. We make several tries
+            # to do it: IPv4, IPv6, IPv4 over TCP and IPv6 over TCP. The two last ones
+            # are for deployments with Kuryr on older OpenStack (OSP13) - those do not
+            # support UDP loadbalancers and require reaching DNS through TCP.
+            cmds=('dig -t A @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t A +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"'
+                  'dig -t AAAA +tcp +retry=0 @"${NAMESERVER}" +short "${svc}.${CLUSTER_DOMAIN}"|grep -v "^;"')
+            for i in ${!cmds[*]}
+            do
+              ips=($(eval "${cmds[i]}"))
+              if [[ "$?" -eq 0 && "${#ips[@]}" -ne 0 ]]; then
+                svc_ips["${svc}"]="${ips[@]}"
+                break
+              fi
+            done
+          done
+
+          # Update /etc/hosts only if we get valid service IPs
+          # We will not update /etc/hosts when there is coredns service outage or api unavailability
+          # Stale entries could exist in /etc/hosts if the service is deleted
+          if [[ -n "${svc_ips[*]-}" ]]; then
+            # Build a new hosts file from /etc/hosts with our custom entries filtered out
+            grep -v "# ${OPENSHIFT_MARKER}" "${HOSTS_FILE}" > "${TEMP_FILE}"
+
+            # Append resolver entries for services
+            for svc in "${!svc_ips[@]}"; do
+              for ip in ${svc_ips[${svc}]}; do
+                echo "${ip} ${svc} ${svc}.${CLUSTER_DOMAIN} # ${OPENSHIFT_MARKER}" >> "${TEMP_FILE}"
+              done
+            done
+
+            # TODO: Update /etc/hosts atomically to avoid any inconsistent behavior
+            # Replace /etc/hosts with our modified version if needed
+            cmp "${TEMP_FILE}" "${HOSTS_FILE}" || cp -f "${TEMP_FILE}" "${HOSTS_FILE}"
+            # TEMP_FILE is not removed to avoid file create/delete and attributes copy churn
+          fi
+          sleep 60 & wait
+          unset svc_ips
+        done
+      env:
+      - name: SERVICES
+        value: image-registry.openshift-image-registry.svc
+      - name: NAMESERVER
+        value: 172.30.0.10
+      - name: CLUSTER_DOMAIN
+        value: cluster.local
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imagePullPolicy: IfNotPresent
+      name: dns-node-resolver
+      resources:
+        requests:
+          cpu: 5m
+          memory: 21Mi
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/hosts
+        name: hosts-file
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-tl9q5
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostNetwork: true
+    imagePullSecrets:
+    - name: node-resolver-dockercfg-9dt94
+    nodeName: ip-10-0-148-123.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: node-resolver
+    serviceAccountName: node-resolver
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - operator: Exists
+    volumes:
+    - hostPath:
+        path: /etc/hosts
+        type: File
+      name: hosts-file
+    - name: kube-api-access-tl9q5
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:12Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:05Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:05Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:11Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://3abce6ce75f9014bfbe7c988cbb8973bc351344776ebd4b5990659627bdbe5c5
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+      lastState: {}
+      name: dns-node-resolver
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:05Z"
+    hostIP: 10.0.148.123
+    phase: Running
+    podIP: 10.0.148.123
+    podIPs:
+    - ip: 10.0.148.123
+    qosClass: Burstable
+    startTime: "2022-05-24T18:28:12Z"
+kind: PodList
+metadata:
+  resourceVersion: "310262"

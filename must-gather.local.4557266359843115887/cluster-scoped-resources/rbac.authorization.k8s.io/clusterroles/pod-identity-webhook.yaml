@@ -1,0 +1,17 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: "2022-05-24T18:09:09Z"
+  name: pod-identity-webhook
+  resourceVersion: "9352"
+  uid: cdd6b725-2e1d-4b05-abb3-a445fbf5b185
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - get
+  - watch
+  - list

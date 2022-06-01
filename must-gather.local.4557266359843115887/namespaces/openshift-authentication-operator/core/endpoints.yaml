@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:33Z"
+    creationTimestamp: "2022-05-24T18:05:41Z"
+    labels:
+      app: authentication-operator
+    name: metrics
+    namespace: openshift-authentication-operator
+    resourceVersion: "62979"
+    uid: 0c133290-28b3-43a4-8e36-5c768e195d20
+  subsets:
+  - addresses:
+    - ip: 10.128.0.64
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: authentication-operator-5785d7c487-5z5nf
+        namespace: openshift-authentication-operator
+        resourceVersion: "62974"
+        uid: ae2a6596-190f-4d1f-b9bc-2327739ee5fc
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "296894"

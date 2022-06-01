@@ -1,0 +1,8 @@
+2022-05-24T18:35:05.394317204Z 2022/05/24 18:35:05 provider.go:129: Defaulting client-id to system:serviceaccount:openshift-monitoring:grafana
+2022-05-24T18:35:05.394448114Z 2022/05/24 18:35:05 provider.go:134: Defaulting client-secret to service account token /var/run/secrets/kubernetes.io/serviceaccount/token
+2022-05-24T18:35:05.395962488Z 2022/05/24 18:35:05 provider.go:358: Delegation of authentication and authorization to OpenShift is enabled for bearer tokens and client certificates.
+2022-05-24T18:35:06.473411308Z 2022/05/24 18:35:06 oauthproxy.go:203: mapping path "/" => upstream "http://localhost:3001/"
+2022-05-24T18:35:06.473411308Z 2022/05/24 18:35:06 oauthproxy.go:230: OAuthProxy configured for  Client ID: system:serviceaccount:openshift-monitoring:grafana
+2022-05-24T18:35:06.473453777Z 2022/05/24 18:35:06 oauthproxy.go:240: Cookie settings: name:_oauth_proxy secure(https):true httponly:true expiry:168h0m0s domain:<default> samesite: refresh:disabled
+2022-05-24T18:35:06.474130927Z I0524 18:35:06.474101       1 dynamic_serving_content.go:130] Starting serving::/etc/tls/private/tls.crt::/etc/tls/private/tls.key
+2022-05-24T18:35:06.474164566Z 2022/05/24 18:35:06 http.go:107: HTTPS: listening on [::]:3000

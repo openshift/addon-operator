@@ -1,0 +1,123 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.6.1
+    operatorframework.io/installed-alongside-c3201a2854445a48: openshift-route-monitor-operator/route-monitor-operator.v0.1.408-c2256a2
+  creationTimestamp: "2022-05-24T18:27:23Z"
+  generation: 1
+  labels:
+    operators.coreos.com/route-monitor-operator.openshift-route-monitor-operator: ""
+  name: routemonitors.monitoring.openshift.io
+  resourceVersion: "37329"
+  uid: 47ebf1b9-9e4c-4507-968a-017a05c8c1a9
+spec:
+  conversion:
+    strategy: None
+  group: monitoring.openshift.io
+  names:
+    kind: RouteMonitor
+    listKind: RouteMonitorList
+    plural: routemonitors
+    singular: routemonitor
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: RouteMonitor is the Schema for the routemonitors API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: RouteMonitorSpec defines the desired state of RouteMonitor
+            properties:
+              route:
+                description: RouteMonitorSpec references the obsered Route resource
+                properties:
+                  name:
+                    description: Name is the name of the Route
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of the Route
+                    type: string
+                type: object
+              slo:
+                description: SloSpec defines what is the percentage
+                properties:
+                  targetAvailabilityPercent:
+                    description: TargetAvailabilityPercent defines the percent number
+                      to be used
+                    type: string
+                required:
+                - targetAvailabilityPercent
+                type: object
+            type: object
+          status:
+            description: RouteMonitorStatus defines the observed state of RouteMonitor
+            properties:
+              errorStatus:
+                type: string
+              prometheusRuleRef:
+                description: NamespacedName contains the name of a object and its
+                  namespace
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+              routeURL:
+                description: RouteURL is the url extracted from the Route resource
+                type: string
+              serviceMonitorRef:
+                description: NamespacedName contains the name of a object and its
+                  namespace
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: RouteMonitor
+    listKind: RouteMonitorList
+    plural: routemonitors
+    singular: routemonitor
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:27:23Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2022-05-24T18:27:23Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1alpha1

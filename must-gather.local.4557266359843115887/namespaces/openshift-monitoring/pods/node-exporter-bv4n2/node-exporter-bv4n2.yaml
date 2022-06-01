@@ -1,0 +1,282 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubectl.kubernetes.io/default-container: node-exporter
+    openshift.io/scc: node-exporter
+  creationTimestamp: "2022-05-24T18:13:01Z"
+  generateName: node-exporter-
+  labels:
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/managed-by: cluster-monitoring-operator
+    app.kubernetes.io/name: node-exporter
+    app.kubernetes.io/part-of: openshift-monitoring
+    app.kubernetes.io/version: 1.3.1
+    controller-revision-hash: 68d496cfbd
+    pod-template-generation: "1"
+  name: node-exporter-bv4n2
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: node-exporter
+    uid: e8272b26-830f-410c-8fb6-22e0b2292a4d
+  resourceVersion: "69691"
+  uid: 847c4846-499a-4a85-9c43-c89aaa138d3a
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ip-10-0-164-190.ec2.internal
+  containers:
+  - args:
+    - --web.listen-address=127.0.0.1:9100
+    - --path.sysfs=/host/sys
+    - --path.rootfs=/host/root
+    - --no-collector.wifi
+    - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run/k3s/containerd/.+|var/lib/docker/.+|var/lib/kubelet/pods/.+)($|/)
+    - --collector.netclass.ignored-devices=^(veth.*|[a-f0-9]{15})$
+    - --collector.netdev.device-exclude=^(veth.*|[a-f0-9]{15})$
+    - --collector.cpu.info
+    - --collector.textfile.directory=/var/node_exporter/textfile
+    - --no-collector.cpufreq
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:957a2dc20cc01a3f2fbaa836927aa6833699322657915846e9a84c191fa25bb7
+    imagePullPolicy: IfNotPresent
+    name: node-exporter
+    resources:
+      requests:
+        cpu: 8m
+        memory: 32Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /host/sys
+      mountPropagation: HostToContainer
+      name: sys
+      readOnly: true
+    - mountPath: /host/root
+      mountPropagation: HostToContainer
+      name: root
+      readOnly: true
+    - mountPath: /var/node_exporter/textfile
+      name: node-exporter-textfile
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-bf7rq
+      readOnly: true
+    workingDir: /var/node_exporter/textfile
+  - args:
+    - --logtostderr
+    - --secure-listen-address=[$(IP)]:9100
+    - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - --upstream=http://127.0.0.1:9100/
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --client-ca-file=/etc/tls/client/client-ca.crt
+    - --config-file=/etc/kube-rbac-policy/config.yaml
+    - --tls-min-version=VersionTLS12
+    env:
+    - name: IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 9100
+      hostPort: 9100
+      name: https
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 15Mi
+    securityContext:
+      runAsGroup: 65532
+      runAsNonRoot: true
+      runAsUser: 65532
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/tls/private
+      name: node-exporter-tls
+    - mountPath: /etc/tls/client
+      name: metrics-client-ca
+    - mountPath: /etc/kube-rbac-policy
+      name: node-exporter-kube-rbac-proxy-config
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-bf7rq
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  hostPID: true
+  initContainers:
+  - command:
+    - /bin/sh
+    - -c
+    - '[[ ! -d /node_exporter/collectors/init ]] || find /node_exporter/collectors/init
+      -perm /111 -type f -exec {} \;'
+    env:
+    - name: TMPDIR
+      value: /tmp
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:957a2dc20cc01a3f2fbaa836927aa6833699322657915846e9a84c191fa25bb7
+    imagePullPolicy: IfNotPresent
+    name: init-textfile
+    resources:
+      requests:
+        cpu: 1m
+        memory: 1Mi
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /var/node_exporter/textfile
+      name: node-exporter-textfile
+    - mountPath: /var/log/wtmp
+      name: node-exporter-wtmp
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-bf7rq
+      readOnly: true
+    workingDir: /var/node_exporter/textfile
+  nodeName: ip-10-0-164-190.ec2.internal
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: node-exporter
+  serviceAccountName: node-exporter
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - hostPath:
+      path: /sys
+      type: ""
+    name: sys
+  - hostPath:
+      path: /
+      type: ""
+    name: root
+  - emptyDir: {}
+    name: node-exporter-textfile
+  - name: node-exporter-tls
+    secret:
+      defaultMode: 420
+      secretName: node-exporter-tls
+  - hostPath:
+      path: /var/log/wtmp
+      type: File
+    name: node-exporter-wtmp
+  - configMap:
+      defaultMode: 420
+      name: metrics-client-ca
+    name: metrics-client-ca
+  - name: node-exporter-kube-rbac-proxy-config
+    secret:
+      defaultMode: 420
+      secretName: node-exporter-kube-rbac-proxy-config
+  - name: kube-api-access-bf7rq
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:13:03Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:40:03Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:40:03Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:13:01Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://62d14ef43a09b1f3f5977bdae04d8201ed6b976586360f6b4f1e67e38db036e8
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:40:02Z"
+  - containerID: cri-o://5d07b137950383beae96c5e541dd63de2efdd1ad1333a4588d087b1495398c7d
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:957a2dc20cc01a3f2fbaa836927aa6833699322657915846e9a84c191fa25bb7
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:957a2dc20cc01a3f2fbaa836927aa6833699322657915846e9a84c191fa25bb7
+    lastState: {}
+    name: node-exporter
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:40:02Z"
+  hostIP: 10.0.164.190
+  initContainerStatuses:
+  - containerID: cri-o://fbe6e9d405a486475dbc3138001691088eb5f22f449ca8b026af46aaab7afb2b
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:957a2dc20cc01a3f2fbaa836927aa6833699322657915846e9a84c191fa25bb7
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:957a2dc20cc01a3f2fbaa836927aa6833699322657915846e9a84c191fa25bb7
+    lastState: {}
+    name: init-textfile
+    ready: true
+    restartCount: 1
+    state:
+      terminated:
+        containerID: cri-o://fbe6e9d405a486475dbc3138001691088eb5f22f449ca8b026af46aaab7afb2b
+        exitCode: 0
+        finishedAt: "2022-05-24T18:40:01Z"
+        reason: Completed
+        startedAt: "2022-05-24T18:40:01Z"
+  phase: Running
+  podIP: 10.0.164.190
+  podIPs:
+  - ip: 10.0.164.190
+  qosClass: Burstable
+  startTime: "2022-05-24T18:13:01Z"

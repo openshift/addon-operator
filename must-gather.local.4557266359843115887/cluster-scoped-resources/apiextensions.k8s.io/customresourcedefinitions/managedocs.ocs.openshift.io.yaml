@@ -1,0 +1,116 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+    operatorframework.io/installed-alongside-9c831eeaaa5737d0: openshift-storage/ocs-osd-deployer.v2.0.1
+  creationTimestamp: "2022-05-24T18:28:35Z"
+  generation: 1
+  labels:
+    operators.coreos.com/ocs-osd-deployer.openshift-storage: ""
+  name: managedocs.ocs.openshift.io
+  resourceVersion: "52336"
+  uid: 8310e8a4-55fb-4f85-8958-2e465b294b68
+spec:
+  conversion:
+    strategy: None
+  group: ocs.openshift.io
+  names:
+    kind: ManagedOCS
+    listKind: ManagedOCSList
+    plural: managedocs
+    shortNames:
+    - mocs
+    singular: managedocs
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ManagedOCS is the Schema for the managedocs API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ManagedOCSSpec defines the desired state of ManagedOCS
+            properties:
+              reconcileStrategy:
+                description: ReconcileStrategy represent the action the deployer should
+                  take whenever a recncile event occures
+                type: string
+            type: object
+          status:
+            description: ManagedOCSStatus defines the observed state of ManagedOCS
+            properties:
+              components:
+                properties:
+                  alertmanager:
+                    properties:
+                      state:
+                        type: string
+                    required:
+                    - state
+                    type: object
+                  prometheus:
+                    properties:
+                      state:
+                        type: string
+                    required:
+                    - state
+                    type: object
+                  storageCluster:
+                    properties:
+                      state:
+                        type: string
+                    required:
+                    - state
+                    type: object
+                required:
+                - alertmanager
+                - prometheus
+                - storageCluster
+                type: object
+              reconcileStrategy:
+                description: ReconcileStrategy represent the action the deployer should
+                  take whenever a recncile event occures
+                type: string
+            required:
+            - components
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ManagedOCS
+    listKind: ManagedOCSList
+    plural: managedocs
+    shortNames:
+    - mocs
+    singular: managedocs
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:28:35Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2022-05-24T18:28:35Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1alpha1

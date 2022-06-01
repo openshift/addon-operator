@@ -1,0 +1,623 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      prometheus-operator-input-hash: "10706930242725220502"
+    creationTimestamp: "2022-05-24T18:28:17Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: prometheus
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 2.32.1
+      operator.prometheus.io/name: user-workload
+      operator.prometheus.io/shard: "0"
+    name: prometheus-user-workload
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: monitoring.coreos.com/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Prometheus
+      name: user-workload
+      uid: 45f01a52-a5df-4313-ade1-18c012e0b1a9
+    resourceVersion: "76423"
+    uid: a0a6e915-0774-4317-bbe7-f049e7965385
+  spec:
+    podManagementPolicy: Parallel
+    replicas: 2
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: user-workload
+        app.kubernetes.io/managed-by: prometheus-operator
+        app.kubernetes.io/name: prometheus
+        operator.prometheus.io/name: user-workload
+        operator.prometheus.io/shard: "0"
+        prometheus: user-workload
+    serviceName: prometheus-operated
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/default-container: prometheus
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: prometheus
+          app.kubernetes.io/instance: user-workload
+          app.kubernetes.io/managed-by: prometheus-operator
+          app.kubernetes.io/name: prometheus
+          app.kubernetes.io/part-of: openshift-monitoring
+          app.kubernetes.io/version: 2.32.1
+          operator.prometheus.io/name: user-workload
+          operator.prometheus.io/shard: "0"
+          prometheus: user-workload
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: prometheus
+                  app.kubernetes.io/instance: user-workload
+                  app.kubernetes.io/name: prometheus
+                  app.kubernetes.io/part-of: openshift-monitoring
+              namespaces:
+              - openshift-user-workload-monitoring
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - --web.console.templates=/etc/prometheus/consoles
+          - --web.console.libraries=/etc/prometheus/console_libraries
+          - --config.file=/etc/prometheus/config_out/prometheus.env.yaml
+          - --storage.tsdb.path=/prometheus
+          - --storage.tsdb.retention.time=24h
+          - --web.enable-lifecycle
+          - --web.route-prefix=/
+          - --web.listen-address=127.0.0.1:9090
+          - --web.config.file=/etc/prometheus/web_config/web-config.yaml
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:727fe0f3dcdad60f8beee58590b33815345e12d86f9526af81b45de17fb28f59
+          imagePullPolicy: IfNotPresent
+          name: prometheus
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - if [ -x "$(command -v curl)" ]; then exec curl http://localhost:9090/-/ready;
+                elif [ -x "$(command -v wget)" ]; then exec wget -q -O /dev/null http://localhost:9090/-/ready;
+                else exit 1; fi
+            failureThreshold: 3
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 6m
+              memory: 30Mi
+          startupProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - if [ -x "$(command -v curl)" ]; then exec curl http://localhost:9090/-/ready;
+                elif [ -x "$(command -v wget)" ]; then exec wget -q -O /dev/null http://localhost:9090/-/ready;
+                else exit 1; fi
+            failureThreshold: 60
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/prometheus/config_out
+            name: config-out
+            readOnly: true
+          - mountPath: /etc/prometheus/certs
+            name: tls-assets
+            readOnly: true
+          - mountPath: /prometheus
+            name: prometheus-user-workload-db
+          - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+            name: prometheus-user-workload-rulefiles-0
+          - mountPath: /etc/prometheus/web_config/web-config.yaml
+            name: web-config
+            readOnly: true
+            subPath: web-config.yaml
+          - mountPath: /etc/prometheus/secrets/prometheus-user-workload-tls
+            name: secret-prometheus-user-workload-tls
+            readOnly: true
+          - mountPath: /etc/prometheus/secrets/prometheus-user-workload-thanos-sidecar-tls
+            name: secret-prometheus-user-workload-thanos-sidecar-tls
+            readOnly: true
+          - mountPath: /etc/prometheus/secrets/kube-rbac-proxy
+            name: secret-kube-rbac-proxy
+            readOnly: true
+          - mountPath: /etc/prometheus/configmaps/serving-certs-ca-bundle
+            name: configmap-serving-certs-ca-bundle
+            readOnly: true
+          - mountPath: /etc/prometheus/configmaps/metrics-client-ca
+            name: configmap-metrics-client-ca
+            readOnly: true
+        - args:
+          - --listen-address=localhost:8080
+          - --reload-url=http://localhost:9090/-/reload
+          - --config-file=/etc/prometheus/config/prometheus.yaml.gz
+          - --config-envsubst-file=/etc/prometheus/config_out/prometheus.env.yaml
+          - --watched-dir=/etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+          command:
+          - /bin/prometheus-config-reloader
+          env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: SHARD
+            value: "0"
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+          imagePullPolicy: IfNotPresent
+          name: config-reloader
+          resources:
+            requests:
+              cpu: 1m
+              memory: 10Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/prometheus/config
+            name: config
+          - mountPath: /etc/prometheus/config_out
+            name: config-out
+          - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+            name: prometheus-user-workload-rulefiles-0
+        - args:
+          - sidecar
+          - --prometheus.url=http://localhost:9090/
+          - --tsdb.path=/prometheus
+          - --http-address=127.0.0.1:10902
+          - --grpc-server-tls-cert=/etc/tls/grpc/server.crt
+          - --grpc-server-tls-key=/etc/tls/grpc/server.key
+          - --grpc-server-tls-client-ca=/etc/tls/grpc/ca.crt
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+          imagePullPolicy: IfNotPresent
+          name: thanos-sidecar
+          ports:
+          - containerPort: 10902
+            name: http
+            protocol: TCP
+          - containerPort: 10901
+            name: grpc
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 1m
+              memory: 17Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/tls/grpc
+            name: secret-grpc-tls
+        - args:
+          - --secure-listen-address=0.0.0.0:9091
+          - --upstream=http://127.0.0.1:9090
+          - --allow-paths=/metrics
+          - --config-file=/etc/kube-rbac-proxy/config.yaml
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --client-ca-file=/etc/tls/client/client-ca.crt
+          - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+          - --tls-min-version=VersionTLS12
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy
+          ports:
+          - containerPort: 9091
+            name: metrics
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 1m
+              memory: 10Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: secret-prometheus-user-workload-tls
+          - mountPath: /etc/tls/client
+            name: configmap-metrics-client-ca
+            readOnly: true
+          - mountPath: /etc/kube-rbac-proxy
+            name: secret-kube-rbac-proxy
+        - args:
+          - --secure-listen-address=[$(POD_IP)]:10902
+          - --upstream=http://127.0.0.1:10902
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --client-ca-file=/etc/tls/client/client-ca.crt
+          - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+          - --allow-paths=/metrics
+          - --config-file=/etc/kube-rbac-proxy/config.yaml
+          - --logtostderr=true
+          - --tls-min-version=VersionTLS12
+          env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy-thanos
+          ports:
+          - containerPort: 10902
+            name: thanos-proxy
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 1m
+              memory: 10Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: secret-prometheus-user-workload-thanos-sidecar-tls
+          - mountPath: /etc/tls/client
+            name: configmap-metrics-client-ca
+            readOnly: true
+          - mountPath: /etc/kube-rbac-proxy
+            name: secret-kube-rbac-proxy
+        dnsPolicy: ClusterFirst
+        initContainers:
+        - args:
+          - --watch-interval=0
+          - --listen-address=:8080
+          - --config-file=/etc/prometheus/config/prometheus.yaml.gz
+          - --config-envsubst-file=/etc/prometheus/config_out/prometheus.env.yaml
+          - --watched-dir=/etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+          command:
+          - /bin/prometheus-config-reloader
+          env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: SHARD
+            value: "0"
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+          imagePullPolicy: IfNotPresent
+          name: init-config-reloader
+          ports:
+          - containerPort: 8080
+            name: reloader-web
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/prometheus/config
+            name: config
+          - mountPath: /etc/prometheus/config_out
+            name: config-out
+          - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+            name: prometheus-user-workload-rulefiles-0
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: openshift-user-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: prometheus-user-workload
+        serviceAccountName: prometheus-user-workload
+        terminationGracePeriodSeconds: 600
+        volumes:
+        - name: config
+          secret:
+            defaultMode: 420
+            secretName: prometheus-user-workload
+        - name: tls-assets
+          projected:
+            defaultMode: 420
+            sources:
+            - secret:
+                name: prometheus-user-workload-tls-assets-0
+        - emptyDir: {}
+          name: config-out
+        - configMap:
+            defaultMode: 420
+            name: prometheus-user-workload-rulefiles-0
+          name: prometheus-user-workload-rulefiles-0
+        - name: web-config
+          secret:
+            defaultMode: 420
+            secretName: prometheus-user-workload-web-config
+        - name: secret-prometheus-user-workload-tls
+          secret:
+            defaultMode: 420
+            secretName: prometheus-user-workload-tls
+        - name: secret-prometheus-user-workload-thanos-sidecar-tls
+          secret:
+            defaultMode: 420
+            secretName: prometheus-user-workload-thanos-sidecar-tls
+        - name: secret-kube-rbac-proxy
+          secret:
+            defaultMode: 420
+            secretName: kube-rbac-proxy
+        - configMap:
+            defaultMode: 420
+            name: serving-certs-ca-bundle
+          name: configmap-serving-certs-ca-bundle
+        - configMap:
+            defaultMode: 420
+            name: metrics-client-ca
+          name: configmap-metrics-client-ca
+        - emptyDir: {}
+          name: prometheus-user-workload-db
+        - name: secret-grpc-tls
+          secret:
+            defaultMode: 420
+            secretName: prometheus-user-workload-grpc-tls-bbs2h7k8eiaor
+    updateStrategy:
+      type: RollingUpdate
+  status:
+    availableReplicas: 2
+    collisionCount: 0
+    currentReplicas: 2
+    currentRevision: prometheus-user-workload-7676bd644
+    observedGeneration: 1
+    readyReplicas: 2
+    replicas: 2
+    updateRevision: prometheus-user-workload-7676bd644
+    updatedReplicas: 2
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      prometheus-operator-input-hash: "12244378116805763292"
+    creationTimestamp: "2022-05-24T18:28:20Z"
+    generation: 1
+    labels:
+      thanosRulerName: user-workload
+    name: thanos-ruler-user-workload
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: monitoring.coreos.com/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ThanosRuler
+      name: user-workload
+      uid: 21adae21-b433-48d3-8872-99954e45c36c
+    resourceVersion: "77999"
+    uid: 5ef1ff9e-0e2b-4fc2-9ca5-086623aca4f9
+  spec:
+    podManagementPolicy: Parallel
+    replicas: 2
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: user-workload
+        app.kubernetes.io/managed-by: prometheus-operator
+        app.kubernetes.io/name: thanos-ruler
+        thanos-ruler: user-workload
+    serviceName: ""
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/default-container: thanos-ruler
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/instance: user-workload
+          app.kubernetes.io/managed-by: prometheus-operator
+          app.kubernetes.io/name: thanos-ruler
+          thanos-ruler: user-workload
+      spec:
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: thanos-ruler
+                  thanos-ruler: user-workload
+              namespaces:
+              - openshift-user-workload-monitoring
+              topologyKey: kubernetes.io/hostname
+        containers:
+        - args:
+          - rule
+          - --data-dir=/thanos/data
+          - --eval-interval=15s
+          - --tsdb.retention=24h
+          - --label=thanos_ruler_replica="$(POD_NAME)"
+          - --alert.label-drop=thanos_ruler_replica
+          - --http-address=localhost:10902
+          - --query.config=$(QUERY_CONFIG)
+          - --rule-file=/etc/thanos/rules/*/*.yaml
+          - --alertmanagers.config=$(ALERTMANAGERS_CONFIG)
+          - --grpc-server-tls-cert=/etc/tls/grpc/server.crt
+          - --grpc-server-tls-key=/etc/tls/grpc/server.key
+          - --grpc-server-tls-client-ca=/etc/tls/grpc/ca.crt
+          - --alert.query-url=https://thanos-querier-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com/api
+          env:
+          - name: ALERTMANAGER_CONFIG_SECRET_VERSION
+            value: a907238a35fa8e8dc847dbdee411825f
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: QUERY_CONFIG
+            valueFrom:
+              secretKeyRef:
+                key: query.yaml
+                name: thanos-ruler-query-config
+          - name: ALERTMANAGERS_CONFIG
+            valueFrom:
+              secretKeyRef:
+                key: alertmanagers.yaml
+                name: thanos-ruler-alertmanagers-config
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+          imagePullPolicy: IfNotPresent
+          name: thanos-ruler
+          ports:
+          - containerPort: 10901
+            name: grpc
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 1m
+              memory: 21Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: secret-thanos-ruler-tls
+          - mountPath: /etc/tls/grpc
+            name: secret-grpc-tls
+          - mountPath: /etc/prometheus/configmaps/serving-certs-ca-bundle
+            name: serving-certs-ca-bundle
+          - mountPath: /thanos/data
+            name: thanos-ruler-user-workload-data
+          - mountPath: /etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+            name: thanos-ruler-user-workload-rulefiles-0
+        - args:
+          - --listen-address=localhost:8080
+          - --reload-url=http://localhost:10902/-/reload
+          - --watched-dir=/etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+          command:
+          - /bin/prometheus-config-reloader
+          env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: SHARD
+            value: "-1"
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+          imagePullPolicy: IfNotPresent
+          name: config-reloader
+          resources:
+            requests:
+              cpu: 1m
+              memory: 10Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+            name: thanos-ruler-user-workload-rulefiles-0
+        - args:
+          - -provider=openshift
+          - -https-address=:9091
+          - -http-address=
+          - -email-domain=*
+          - -upstream=http://localhost:10902
+          - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get"}}'
+          - -tls-cert=/etc/tls/private/tls.crt
+          - -tls-key=/etc/tls/private/tls.key
+          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+          - -cookie-secret-file=/etc/proxy/secrets/session_secret
+          - -openshift-service-account=thanos-ruler
+          - -openshift-ca=/etc/pki/tls/cert.pem
+          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          env:
+          - name: HTTP_PROXY
+          - name: HTTPS_PROXY
+          - name: NO_PROXY
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+          imagePullPolicy: IfNotPresent
+          name: thanos-ruler-proxy
+          ports:
+          - containerPort: 9091
+            name: web
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 1m
+              memory: 12Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: secret-thanos-ruler-tls
+          - mountPath: /etc/proxy/secrets
+            name: secret-thanos-ruler-oauth-cookie
+          - mountPath: /etc/pki/ca-trust/extracted/pem/
+            name: thanos-ruler-trusted-ca-bundle
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        priorityClassName: openshift-user-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: thanos-ruler
+        serviceAccountName: thanos-ruler
+        terminationGracePeriodSeconds: 120
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: thanos-ruler-user-workload-rulefiles-0
+          name: thanos-ruler-user-workload-rulefiles-0
+        - emptyDir: {}
+          name: thanos-ruler-user-workload-data
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: serving-certs-ca-bundle
+          name: serving-certs-ca-bundle
+        - name: secret-thanos-ruler-tls
+          secret:
+            defaultMode: 420
+            secretName: thanos-ruler-tls
+        - name: secret-thanos-ruler-oauth-cookie
+          secret:
+            defaultMode: 420
+            secretName: thanos-ruler-oauth-cookie
+        - name: secret-thanos-ruler-oauth-htpasswd
+          secret:
+            defaultMode: 420
+            secretName: thanos-ruler-oauth-htpasswd
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+            name: thanos-ruler-trusted-ca-bundle-2rsonso43rc5p
+            optional: true
+          name: thanos-ruler-trusted-ca-bundle
+        - name: secret-grpc-tls
+          secret:
+            defaultMode: 420
+            secretName: thanos-ruler-grpc-tls-bbs2h7k8eiaor
+    updateStrategy:
+      type: RollingUpdate
+  status:
+    availableReplicas: 2
+    collisionCount: 0
+    currentReplicas: 2
+    currentRevision: thanos-ruler-user-workload-789c5d7bf
+    observedGeneration: 1
+    readyReplicas: 2
+    replicas: 2
+    updateRevision: thanos-ruler-user-workload-789c5d7bf
+    updatedReplicas: 2
+kind: StatefulSetList
+metadata:
+  resourceVersion: "322666"

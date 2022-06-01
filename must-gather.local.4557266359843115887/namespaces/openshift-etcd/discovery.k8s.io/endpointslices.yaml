@@ -1,0 +1,80 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.0.149.121
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-149-121.ec2.internal
+    targetRef:
+      kind: Pod
+      name: etcd-ip-10-0-149-121.ec2.internal
+      namespace: openshift-etcd
+      resourceVersion: "71978"
+      uid: 4092870d-f1be-4cbe-9f70-6d6a68716974
+    zone: us-east-1b
+  - addresses:
+    - 10.0.138.197
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: etcd-ip-10-0-138-197.ec2.internal
+      namespace: openshift-etcd
+      resourceVersion: "62032"
+      uid: af2cf7eb-5584-47eb-9b48-54e4a0663a7a
+    zone: us-east-1a
+  - addresses:
+    - 10.0.169.205
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: etcd-ip-10-0-169-205.ec2.internal
+      namespace: openshift-etcd
+      resourceVersion: "53131"
+      uid: bf742fbd-3ebc-4cdf-85c2-b0aed58cf02d
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:40:48Z"
+    creationTimestamp: "2022-05-24T18:05:33Z"
+    generateName: etcd-
+    generation: 52
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      k8s-app: etcd
+      kubernetes.io/service-name: etcd
+    name: etcd-4k27c
+    namespace: openshift-etcd
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: etcd
+      uid: 0bae29a9-e38a-489f-9dc9-fef9e2b9ab0f
+    resourceVersion: "71979"
+    uid: 2572104e-0a95-441d-87e7-862188d31f7e
+  ports:
+  - name: etcd
+    port: 2379
+    protocol: TCP
+  - name: etcd-metrics
+    port: 9979
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "310930"

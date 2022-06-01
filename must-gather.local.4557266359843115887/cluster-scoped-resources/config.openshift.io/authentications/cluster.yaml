@@ -1,0 +1,20 @@
+---
+apiVersion: config.openshift.io/v1
+kind: Authentication
+metadata:
+  creationTimestamp: "2022-05-24T18:05:44Z"
+  generation: 2
+  name: cluster
+  resourceVersion: "19062"
+  uid: 44dc1957-7b65-45c2-8ed0-2016a7b28a79
+spec:
+  oauthMetadata:
+    name: ""
+  serviceAccountIssuer: https://rh-oidc.s3.us-east-1.amazonaws.com/1sdcrj3pmooemv6apkbt2v41v18s45kb
+  type: ""
+  webhookTokenAuthenticator:
+    kubeConfig:
+      name: webhook-authentication-integrated-oauth
+status:
+  integratedOAuthMetadata:
+    name: oauth-openshift

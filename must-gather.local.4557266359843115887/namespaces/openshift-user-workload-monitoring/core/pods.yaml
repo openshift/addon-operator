@@ -1,0 +1,2116 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.37"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.37"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      kubectl.kubernetes.io/default-container: prometheus-operator
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:31:55Z"
+    generateName: prometheus-operator-6c5df8b7cc-
+    labels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/managed-by: cluster-monitoring-operator
+      app.kubernetes.io/name: prometheus-operator
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 0.53.1
+      pod-template-hash: 6c5df8b7cc
+    name: prometheus-operator-6c5df8b7cc-6bmpc
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: prometheus-operator-6c5df8b7cc
+      uid: 709f8fc8-f4aa-44e8-9baf-5bcc462d0fcd
+    resourceVersion: "54517"
+    uid: 35373b4f-02b5-4cb0-82e6-550872ed5301
+  spec:
+    containers:
+    - args:
+      - --prometheus-config-reloader=quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      - --prometheus-instance-namespaces=openshift-user-workload-monitoring
+      - --alertmanager-instance-namespaces=openshift-user-workload-monitoring
+      - --thanos-ruler-instance-namespaces=openshift-user-workload-monitoring
+      - --config-reloader-cpu-limit=0
+      - --config-reloader-memory-limit=0
+      - --web.tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      - --web.tls-min-version=VersionTLS12
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+      imagePullPolicy: IfNotPresent
+      name: prometheus-operator
+      ports:
+      - containerPort: 8080
+        name: http
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 17Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000430000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2jcs9
+        readOnly: true
+    - args:
+      - --logtostderr
+      - --secure-listen-address=:8443
+      - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      - --upstream=http://127.0.0.1:8080/
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      - --config-file=/etc/kube-rbac-policy/config.yaml
+      - --tls-min-version=VersionTLS12
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 8443
+        name: https
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000430000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: prometheus-operator-user-workload-tls
+      - mountPath: /etc/kube-rbac-policy
+        name: prometheus-operator-uwm-kube-rbac-proxy-config
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2jcs9
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: prometheus-operator-dockercfg-crf9t
+    nodeName: ip-10-0-169-205.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+      node-role.kubernetes.io/master: ""
+    preemptionPolicy: PreemptLowerPriority
+    priority: 1000000000
+    priorityClassName: openshift-user-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000430000
+      seLinuxOptions:
+        level: s0:c21,c5
+    serviceAccount: prometheus-operator
+    serviceAccountName: prometheus-operator
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: prometheus-operator-user-workload-tls
+      secret:
+        defaultMode: 420
+        secretName: prometheus-operator-user-workload-tls
+    - name: prometheus-operator-uwm-kube-rbac-proxy-config
+      secret:
+        defaultMode: 420
+        secretName: prometheus-operator-uwm-kube-rbac-proxy-config
+    - name: kube-api-access-2jcs9
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:56Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:00Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:00Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:56Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://e9f0c982298707bcc7b9b6d4cd9813d683a0fd338020da9f7ef944f11c15b284
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:32:00Z"
+    - containerID: cri-o://8359e2ef2fccc67b879e4bc900ec7fb517c35442c4da4e752ebf70a93e667e25
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:6332f67ddb8aaba08639689ea91e5a0075e07dbfaea704a8a2b4cb7645281136
+      lastState: {}
+      name: prometheus-operator
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:32:00Z"
+    hostIP: 10.0.169.205
+    phase: Running
+    podIP: 10.128.0.37
+    podIPs:
+    - ip: 10.128.0.37
+    qosClass: Burstable
+    startTime: "2022-05-24T18:31:56Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.17"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.17"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      kubectl.kubernetes.io/default-container: prometheus
+      openshift.io/scc: nonroot
+    creationTimestamp: "2022-05-24T18:28:17Z"
+    generateName: prometheus-user-workload-
+    labels:
+      app.kubernetes.io/component: prometheus
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 2.32.1
+      controller-revision-hash: prometheus-user-workload-7676bd644
+      operator.prometheus.io/name: user-workload
+      operator.prometheus.io/shard: "0"
+      prometheus: user-workload
+      statefulset.kubernetes.io/pod-name: prometheus-user-workload-0
+    name: prometheus-user-workload-0
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: prometheus-user-workload
+      uid: a0a6e915-0774-4317-bbe7-f049e7965385
+    resourceVersion: "42992"
+    uid: 4fafbb4b-1735-49ba-ade7-ed98020449e8
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: prometheus
+              app.kubernetes.io/instance: user-workload
+              app.kubernetes.io/name: prometheus
+              app.kubernetes.io/part-of: openshift-monitoring
+          namespaces:
+          - openshift-user-workload-monitoring
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - args:
+      - --web.console.templates=/etc/prometheus/consoles
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --config.file=/etc/prometheus/config_out/prometheus.env.yaml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=24h
+      - --web.enable-lifecycle
+      - --web.route-prefix=/
+      - --web.listen-address=127.0.0.1:9090
+      - --web.config.file=/etc/prometheus/web_config/web-config.yaml
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:727fe0f3dcdad60f8beee58590b33815345e12d86f9526af81b45de17fb28f59
+      imagePullPolicy: IfNotPresent
+      name: prometheus
+      readinessProbe:
+        exec:
+          command:
+          - sh
+          - -c
+          - if [ -x "$(command -v curl)" ]; then exec curl http://localhost:9090/-/ready;
+            elif [ -x "$(command -v wget)" ]; then exec wget -q -O /dev/null http://localhost:9090/-/ready;
+            else exit 1; fi
+        failureThreshold: 3
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        requests:
+          cpu: 6m
+          memory: 30Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      startupProbe:
+        exec:
+          command:
+          - sh
+          - -c
+          - if [ -x "$(command -v curl)" ]; then exec curl http://localhost:9090/-/ready;
+            elif [ -x "$(command -v wget)" ]; then exec wget -q -O /dev/null http://localhost:9090/-/ready;
+            else exit 1; fi
+        failureThreshold: 60
+        periodSeconds: 15
+        successThreshold: 1
+        timeoutSeconds: 3
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/prometheus/config_out
+        name: config-out
+        readOnly: true
+      - mountPath: /etc/prometheus/certs
+        name: tls-assets
+        readOnly: true
+      - mountPath: /prometheus
+        name: prometheus-user-workload-db
+      - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+        name: prometheus-user-workload-rulefiles-0
+      - mountPath: /etc/prometheus/web_config/web-config.yaml
+        name: web-config
+        readOnly: true
+        subPath: web-config.yaml
+      - mountPath: /etc/prometheus/secrets/prometheus-user-workload-tls
+        name: secret-prometheus-user-workload-tls
+        readOnly: true
+      - mountPath: /etc/prometheus/secrets/prometheus-user-workload-thanos-sidecar-tls
+        name: secret-prometheus-user-workload-thanos-sidecar-tls
+        readOnly: true
+      - mountPath: /etc/prometheus/secrets/kube-rbac-proxy
+        name: secret-kube-rbac-proxy
+        readOnly: true
+      - mountPath: /etc/prometheus/configmaps/serving-certs-ca-bundle
+        name: configmap-serving-certs-ca-bundle
+        readOnly: true
+      - mountPath: /etc/prometheus/configmaps/metrics-client-ca
+        name: configmap-metrics-client-ca
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-97phw
+        readOnly: true
+    - args:
+      - --listen-address=localhost:8080
+      - --reload-url=http://localhost:9090/-/reload
+      - --config-file=/etc/prometheus/config/prometheus.yaml.gz
+      - --config-envsubst-file=/etc/prometheus/config_out/prometheus.env.yaml
+      - --watched-dir=/etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+      command:
+      - /bin/prometheus-config-reloader
+      env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SHARD
+        value: "0"
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imagePullPolicy: IfNotPresent
+      name: config-reloader
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/prometheus/config
+        name: config
+      - mountPath: /etc/prometheus/config_out
+        name: config-out
+      - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+        name: prometheus-user-workload-rulefiles-0
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-97phw
+        readOnly: true
+    - args:
+      - sidecar
+      - --prometheus.url=http://localhost:9090/
+      - --tsdb.path=/prometheus
+      - --http-address=127.0.0.1:10902
+      - --grpc-server-tls-cert=/etc/tls/grpc/server.crt
+      - --grpc-server-tls-key=/etc/tls/grpc/server.key
+      - --grpc-server-tls-client-ca=/etc/tls/grpc/ca.crt
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      imagePullPolicy: IfNotPresent
+      name: thanos-sidecar
+      ports:
+      - containerPort: 10902
+        name: http
+        protocol: TCP
+      - containerPort: 10901
+        name: grpc
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 17Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/grpc
+        name: secret-grpc-tls
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-97phw
+        readOnly: true
+    - args:
+      - --secure-listen-address=0.0.0.0:9091
+      - --upstream=http://127.0.0.1:9090
+      - --allow-paths=/metrics
+      - --config-file=/etc/kube-rbac-proxy/config.yaml
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      - --client-ca-file=/etc/tls/client/client-ca.crt
+      - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      - --tls-min-version=VersionTLS12
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9091
+        name: metrics
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-prometheus-user-workload-tls
+      - mountPath: /etc/tls/client
+        name: configmap-metrics-client-ca
+        readOnly: true
+      - mountPath: /etc/kube-rbac-proxy
+        name: secret-kube-rbac-proxy
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-97phw
+        readOnly: true
+    - args:
+      - --secure-listen-address=[$(POD_IP)]:10902
+      - --upstream=http://127.0.0.1:10902
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      - --client-ca-file=/etc/tls/client/client-ca.crt
+      - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      - --allow-paths=/metrics
+      - --config-file=/etc/kube-rbac-proxy/config.yaml
+      - --logtostderr=true
+      - --tls-min-version=VersionTLS12
+      env:
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy-thanos
+      ports:
+      - containerPort: 10902
+        name: thanos-proxy
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-prometheus-user-workload-thanos-sidecar-tls
+      - mountPath: /etc/tls/client
+        name: configmap-metrics-client-ca
+        readOnly: true
+      - mountPath: /etc/kube-rbac-proxy
+        name: secret-kube-rbac-proxy
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-97phw
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: prometheus-user-workload-0
+    imagePullSecrets:
+    - name: prometheus-user-workload-dockercfg-rhczw
+    initContainers:
+    - args:
+      - --watch-interval=0
+      - --listen-address=:8080
+      - --config-file=/etc/prometheus/config/prometheus.yaml.gz
+      - --config-envsubst-file=/etc/prometheus/config_out/prometheus.env.yaml
+      - --watched-dir=/etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+      command:
+      - /bin/prometheus-config-reloader
+      env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SHARD
+        value: "0"
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imagePullPolicy: IfNotPresent
+      name: init-config-reloader
+      ports:
+      - containerPort: 8080
+        name: reloader-web
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 100m
+          memory: 50Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/prometheus/config
+        name: config
+      - mountPath: /etc/prometheus/config_out
+        name: config-out
+      - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+        name: prometheus-user-workload-rulefiles-0
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-97phw
+        readOnly: true
+    nodeName: ip-10-0-128-34.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 1000000000
+    priorityClassName: openshift-user-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+      seLinuxOptions:
+        level: s0:c21,c5
+    serviceAccount: prometheus-user-workload
+    serviceAccountName: prometheus-user-workload
+    subdomain: prometheus-operated
+    terminationGracePeriodSeconds: 600
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: config
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload
+    - name: tls-assets
+      projected:
+        defaultMode: 420
+        sources:
+        - secret:
+            name: prometheus-user-workload-tls-assets-0
+    - emptyDir: {}
+      name: config-out
+    - configMap:
+        defaultMode: 420
+        name: prometheus-user-workload-rulefiles-0
+      name: prometheus-user-workload-rulefiles-0
+    - name: web-config
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload-web-config
+    - name: secret-prometheus-user-workload-tls
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload-tls
+    - name: secret-prometheus-user-workload-thanos-sidecar-tls
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload-thanos-sidecar-tls
+    - name: secret-kube-rbac-proxy
+      secret:
+        defaultMode: 420
+        secretName: kube-rbac-proxy
+    - configMap:
+        defaultMode: 420
+        name: serving-certs-ca-bundle
+      name: configmap-serving-certs-ca-bundle
+    - configMap:
+        defaultMode: 420
+        name: metrics-client-ca
+      name: configmap-metrics-client-ca
+    - emptyDir: {}
+      name: prometheus-user-workload-db
+    - name: secret-grpc-tls
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload-grpc-tls-bbs2h7k8eiaor
+    - name: kube-api-access-97phw
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:20Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:33Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:33Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:18Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://12e536cd3e9ae69d8f85397da96dfd698c5fe23528fe5e1ced854491bee7c6fe
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      lastState: {}
+      name: config-reloader
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:28:21Z"
+    - containerID: cri-o://0ca562195078affeb121e47743fc466ece9cfab4851e586e90def4576e01f187
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:28:21Z"
+    - containerID: cri-o://ed80cb3b3158a168d61a21468a5f2e4a58db4ec49618072c25206e537d3b8910
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy-thanos
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:28:21Z"
+    - containerID: cri-o://be5119508b4c31ec243b9c4f317e045f38f8b79fa4f002c11a3dae78ffc4b76e
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:727fe0f3dcdad60f8beee58590b33815345e12d86f9526af81b45de17fb28f59
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:727fe0f3dcdad60f8beee58590b33815345e12d86f9526af81b45de17fb28f59
+      lastState: {}
+      name: prometheus
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:28:20Z"
+    - containerID: cri-o://e76009f400b4cfd770634fb6ff5e382c6956612d652bdc76a99c114aa0fcbbe0
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      lastState: {}
+      name: thanos-sidecar
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:28:21Z"
+    hostIP: 10.0.128.34
+    initContainerStatuses:
+    - containerID: cri-o://502601ccf05caef781e9a803cf4cddb4d814223db806fdf07a6fd61aa9598f7d
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      lastState: {}
+      name: init-config-reloader
+      ready: true
+      restartCount: 0
+      state:
+        terminated:
+          containerID: cri-o://502601ccf05caef781e9a803cf4cddb4d814223db806fdf07a6fd61aa9598f7d
+          exitCode: 0
+          finishedAt: "2022-05-24T18:28:20Z"
+          reason: Completed
+          startedAt: "2022-05-24T18:28:20Z"
+    phase: Running
+    podIP: 10.131.0.17
+    podIPs:
+    - ip: 10.131.0.17
+    qosClass: Burstable
+    startTime: "2022-05-24T18:28:18Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.17"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.17"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      kubectl.kubernetes.io/default-container: prometheus
+      openshift.io/scc: nonroot
+    creationTimestamp: "2022-05-24T18:42:32Z"
+    generateName: prometheus-user-workload-
+    labels:
+      app.kubernetes.io/component: prometheus
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: openshift-monitoring
+      app.kubernetes.io/version: 2.32.1
+      controller-revision-hash: prometheus-user-workload-7676bd644
+      operator.prometheus.io/name: user-workload
+      operator.prometheus.io/shard: "0"
+      prometheus: user-workload
+      statefulset.kubernetes.io/pod-name: prometheus-user-workload-1
+    name: prometheus-user-workload-1
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: prometheus-user-workload
+      uid: a0a6e915-0774-4317-bbe7-f049e7965385
+    resourceVersion: "76229"
+    uid: 0cfc3a99-7e4e-4f7d-a5f9-7e1ef20db3a7
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: prometheus
+              app.kubernetes.io/instance: user-workload
+              app.kubernetes.io/name: prometheus
+              app.kubernetes.io/part-of: openshift-monitoring
+          namespaces:
+          - openshift-user-workload-monitoring
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - args:
+      - --web.console.templates=/etc/prometheus/consoles
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --config.file=/etc/prometheus/config_out/prometheus.env.yaml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=24h
+      - --web.enable-lifecycle
+      - --web.route-prefix=/
+      - --web.listen-address=127.0.0.1:9090
+      - --web.config.file=/etc/prometheus/web_config/web-config.yaml
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:727fe0f3dcdad60f8beee58590b33815345e12d86f9526af81b45de17fb28f59
+      imagePullPolicy: IfNotPresent
+      name: prometheus
+      readinessProbe:
+        exec:
+          command:
+          - sh
+          - -c
+          - if [ -x "$(command -v curl)" ]; then exec curl http://localhost:9090/-/ready;
+            elif [ -x "$(command -v wget)" ]; then exec wget -q -O /dev/null http://localhost:9090/-/ready;
+            else exit 1; fi
+        failureThreshold: 3
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        requests:
+          cpu: 6m
+          memory: 30Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      startupProbe:
+        exec:
+          command:
+          - sh
+          - -c
+          - if [ -x "$(command -v curl)" ]; then exec curl http://localhost:9090/-/ready;
+            elif [ -x "$(command -v wget)" ]; then exec wget -q -O /dev/null http://localhost:9090/-/ready;
+            else exit 1; fi
+        failureThreshold: 60
+        periodSeconds: 15
+        successThreshold: 1
+        timeoutSeconds: 3
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/prometheus/config_out
+        name: config-out
+        readOnly: true
+      - mountPath: /etc/prometheus/certs
+        name: tls-assets
+        readOnly: true
+      - mountPath: /prometheus
+        name: prometheus-user-workload-db
+      - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+        name: prometheus-user-workload-rulefiles-0
+      - mountPath: /etc/prometheus/web_config/web-config.yaml
+        name: web-config
+        readOnly: true
+        subPath: web-config.yaml
+      - mountPath: /etc/prometheus/secrets/prometheus-user-workload-tls
+        name: secret-prometheus-user-workload-tls
+        readOnly: true
+      - mountPath: /etc/prometheus/secrets/prometheus-user-workload-thanos-sidecar-tls
+        name: secret-prometheus-user-workload-thanos-sidecar-tls
+        readOnly: true
+      - mountPath: /etc/prometheus/secrets/kube-rbac-proxy
+        name: secret-kube-rbac-proxy
+        readOnly: true
+      - mountPath: /etc/prometheus/configmaps/serving-certs-ca-bundle
+        name: configmap-serving-certs-ca-bundle
+        readOnly: true
+      - mountPath: /etc/prometheus/configmaps/metrics-client-ca
+        name: configmap-metrics-client-ca
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fhvwq
+        readOnly: true
+    - args:
+      - --listen-address=localhost:8080
+      - --reload-url=http://localhost:9090/-/reload
+      - --config-file=/etc/prometheus/config/prometheus.yaml.gz
+      - --config-envsubst-file=/etc/prometheus/config_out/prometheus.env.yaml
+      - --watched-dir=/etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+      command:
+      - /bin/prometheus-config-reloader
+      env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SHARD
+        value: "0"
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imagePullPolicy: IfNotPresent
+      name: config-reloader
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/prometheus/config
+        name: config
+      - mountPath: /etc/prometheus/config_out
+        name: config-out
+      - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+        name: prometheus-user-workload-rulefiles-0
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fhvwq
+        readOnly: true
+    - args:
+      - sidecar
+      - --prometheus.url=http://localhost:9090/
+      - --tsdb.path=/prometheus
+      - --http-address=127.0.0.1:10902
+      - --grpc-server-tls-cert=/etc/tls/grpc/server.crt
+      - --grpc-server-tls-key=/etc/tls/grpc/server.key
+      - --grpc-server-tls-client-ca=/etc/tls/grpc/ca.crt
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      imagePullPolicy: IfNotPresent
+      name: thanos-sidecar
+      ports:
+      - containerPort: 10902
+        name: http
+        protocol: TCP
+      - containerPort: 10901
+        name: grpc
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 17Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/grpc
+        name: secret-grpc-tls
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fhvwq
+        readOnly: true
+    - args:
+      - --secure-listen-address=0.0.0.0:9091
+      - --upstream=http://127.0.0.1:9090
+      - --allow-paths=/metrics
+      - --config-file=/etc/kube-rbac-proxy/config.yaml
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      - --client-ca-file=/etc/tls/client/client-ca.crt
+      - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      - --tls-min-version=VersionTLS12
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy
+      ports:
+      - containerPort: 9091
+        name: metrics
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-prometheus-user-workload-tls
+      - mountPath: /etc/tls/client
+        name: configmap-metrics-client-ca
+        readOnly: true
+      - mountPath: /etc/kube-rbac-proxy
+        name: secret-kube-rbac-proxy
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fhvwq
+        readOnly: true
+    - args:
+      - --secure-listen-address=[$(POD_IP)]:10902
+      - --upstream=http://127.0.0.1:10902
+      - --tls-cert-file=/etc/tls/private/tls.crt
+      - --tls-private-key-file=/etc/tls/private/tls.key
+      - --client-ca-file=/etc/tls/client/client-ca.crt
+      - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      - --allow-paths=/metrics
+      - --config-file=/etc/kube-rbac-proxy/config.yaml
+      - --logtostderr=true
+      - --tls-min-version=VersionTLS12
+      env:
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imagePullPolicy: IfNotPresent
+      name: kube-rbac-proxy-thanos
+      ports:
+      - containerPort: 10902
+        name: thanos-proxy
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-prometheus-user-workload-thanos-sidecar-tls
+      - mountPath: /etc/tls/client
+        name: configmap-metrics-client-ca
+        readOnly: true
+      - mountPath: /etc/kube-rbac-proxy
+        name: secret-kube-rbac-proxy
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fhvwq
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: prometheus-user-workload-1
+    imagePullSecrets:
+    - name: prometheus-user-workload-dockercfg-rhczw
+    initContainers:
+    - args:
+      - --watch-interval=0
+      - --listen-address=:8080
+      - --config-file=/etc/prometheus/config/prometheus.yaml.gz
+      - --config-envsubst-file=/etc/prometheus/config_out/prometheus.env.yaml
+      - --watched-dir=/etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+      command:
+      - /bin/prometheus-config-reloader
+      env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SHARD
+        value: "0"
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imagePullPolicy: IfNotPresent
+      name: init-config-reloader
+      ports:
+      - containerPort: 8080
+        name: reloader-web
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 100m
+          memory: 50Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/prometheus/config
+        name: config
+      - mountPath: /etc/prometheus/config_out
+        name: config-out
+      - mountPath: /etc/prometheus/rules/prometheus-user-workload-rulefiles-0
+        name: prometheus-user-workload-rulefiles-0
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fhvwq
+        readOnly: true
+    nodeName: ip-10-0-164-190.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 1000000000
+    priorityClassName: openshift-user-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+      seLinuxOptions:
+        level: s0:c21,c5
+    serviceAccount: prometheus-user-workload
+    serviceAccountName: prometheus-user-workload
+    subdomain: prometheus-operated
+    terminationGracePeriodSeconds: 600
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: config
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload
+    - name: tls-assets
+      projected:
+        defaultMode: 420
+        sources:
+        - secret:
+            name: prometheus-user-workload-tls-assets-0
+    - emptyDir: {}
+      name: config-out
+    - configMap:
+        defaultMode: 420
+        name: prometheus-user-workload-rulefiles-0
+      name: prometheus-user-workload-rulefiles-0
+    - name: web-config
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload-web-config
+    - name: secret-prometheus-user-workload-tls
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload-tls
+    - name: secret-prometheus-user-workload-thanos-sidecar-tls
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload-thanos-sidecar-tls
+    - name: secret-kube-rbac-proxy
+      secret:
+        defaultMode: 420
+        secretName: kube-rbac-proxy
+    - configMap:
+        defaultMode: 420
+        name: serving-certs-ca-bundle
+      name: configmap-serving-certs-ca-bundle
+    - configMap:
+        defaultMode: 420
+        name: metrics-client-ca
+      name: configmap-metrics-client-ca
+    - emptyDir: {}
+      name: prometheus-user-workload-db
+    - name: secret-grpc-tls
+      secret:
+        defaultMode: 420
+        secretName: prometheus-user-workload-grpc-tls-bbs2h7k8eiaor
+    - name: kube-api-access-fhvwq
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:34Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:47Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:47Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:32Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://09e1637a8bd98e069efc0a9354248cacefcdd2c791d0891b6648e0b8900d901b
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      lastState: {}
+      name: config-reloader
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:34Z"
+    - containerID: cri-o://2b1232f15a1bb9de5ca3a59d5ec041b038eca8615586212015fb6f0d4343851b
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:35Z"
+    - containerID: cri-o://d44124d8bf71a43865d084659b1dd6ff622e36ae1d6027388220762a2a82a1a2
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+      lastState: {}
+      name: kube-rbac-proxy-thanos
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:35Z"
+    - containerID: cri-o://16ac939b43e37137edd0477eddfc6f21b18e242e5af3c683ab9973b2062be525
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:727fe0f3dcdad60f8beee58590b33815345e12d86f9526af81b45de17fb28f59
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:727fe0f3dcdad60f8beee58590b33815345e12d86f9526af81b45de17fb28f59
+      lastState: {}
+      name: prometheus
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:34Z"
+    - containerID: cri-o://9385df63e4cb2dc7c7b91f77bc2bc9dc7e38fa1d27d4c69efe290ff2e4a5cd33
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      lastState: {}
+      name: thanos-sidecar
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:34Z"
+    hostIP: 10.0.164.190
+    initContainerStatuses:
+    - containerID: cri-o://a2fe0ef59f7561dce082dc2d60ebda6c083d676146ac40fcb97db6c28fe1422e
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      lastState: {}
+      name: init-config-reloader
+      ready: true
+      restartCount: 0
+      state:
+        terminated:
+          containerID: cri-o://a2fe0ef59f7561dce082dc2d60ebda6c083d676146ac40fcb97db6c28fe1422e
+          exitCode: 0
+          finishedAt: "2022-05-24T18:42:34Z"
+          reason: Completed
+          startedAt: "2022-05-24T18:42:34Z"
+    phase: Running
+    podIP: 10.128.2.17
+    podIPs:
+    - ip: 10.128.2.17
+    qosClass: Burstable
+    startTime: "2022-05-24T18:42:32Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.19"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.19"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      kubectl.kubernetes.io/default-container: thanos-ruler
+      openshift.io/scc: nonroot
+    creationTimestamp: "2022-05-24T18:28:20Z"
+    generateName: thanos-ruler-user-workload-
+    labels:
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: thanos-ruler
+      controller-revision-hash: thanos-ruler-user-workload-789c5d7bf
+      statefulset.kubernetes.io/pod-name: thanos-ruler-user-workload-0
+      thanos-ruler: user-workload
+    name: thanos-ruler-user-workload-0
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: thanos-ruler-user-workload
+      uid: 5ef1ff9e-0e2b-4fc2-9ca5-086623aca4f9
+    resourceVersion: "67531"
+    uid: b66c4bba-9287-49bc-833d-161808c1f2fa
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: thanos-ruler
+              thanos-ruler: user-workload
+          namespaces:
+          - openshift-user-workload-monitoring
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - args:
+      - rule
+      - --data-dir=/thanos/data
+      - --eval-interval=15s
+      - --tsdb.retention=24h
+      - --label=thanos_ruler_replica="$(POD_NAME)"
+      - --alert.label-drop=thanos_ruler_replica
+      - --http-address=localhost:10902
+      - --query.config=$(QUERY_CONFIG)
+      - --rule-file=/etc/thanos/rules/*/*.yaml
+      - --alertmanagers.config=$(ALERTMANAGERS_CONFIG)
+      - --grpc-server-tls-cert=/etc/tls/grpc/server.crt
+      - --grpc-server-tls-key=/etc/tls/grpc/server.key
+      - --grpc-server-tls-client-ca=/etc/tls/grpc/ca.crt
+      - --alert.query-url=https://thanos-querier-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com/api
+      env:
+      - name: ALERTMANAGER_CONFIG_SECRET_VERSION
+        value: a907238a35fa8e8dc847dbdee411825f
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: QUERY_CONFIG
+        valueFrom:
+          secretKeyRef:
+            key: query.yaml
+            name: thanos-ruler-query-config
+      - name: ALERTMANAGERS_CONFIG
+        valueFrom:
+          secretKeyRef:
+            key: alertmanagers.yaml
+            name: thanos-ruler-alertmanagers-config
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      imagePullPolicy: IfNotPresent
+      name: thanos-ruler
+      ports:
+      - containerPort: 10901
+        name: grpc
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 21Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-thanos-ruler-tls
+      - mountPath: /etc/tls/grpc
+        name: secret-grpc-tls
+      - mountPath: /etc/prometheus/configmaps/serving-certs-ca-bundle
+        name: serving-certs-ca-bundle
+      - mountPath: /thanos/data
+        name: thanos-ruler-user-workload-data
+      - mountPath: /etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+        name: thanos-ruler-user-workload-rulefiles-0
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-qd2n9
+        readOnly: true
+    - args:
+      - --listen-address=localhost:8080
+      - --reload-url=http://localhost:10902/-/reload
+      - --watched-dir=/etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+      command:
+      - /bin/prometheus-config-reloader
+      env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SHARD
+        value: "-1"
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imagePullPolicy: IfNotPresent
+      name: config-reloader
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+        name: thanos-ruler-user-workload-rulefiles-0
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-qd2n9
+        readOnly: true
+    - args:
+      - -provider=openshift
+      - -https-address=:9091
+      - -http-address=
+      - -email-domain=*
+      - -upstream=http://localhost:10902
+      - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+      - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get"}}'
+      - -tls-cert=/etc/tls/private/tls.crt
+      - -tls-key=/etc/tls/private/tls.key
+      - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+      - -cookie-secret-file=/etc/proxy/secrets/session_secret
+      - -openshift-service-account=thanos-ruler
+      - -openshift-ca=/etc/pki/tls/cert.pem
+      - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      env:
+      - name: HTTP_PROXY
+      - name: HTTPS_PROXY
+      - name: NO_PROXY
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+      imagePullPolicy: IfNotPresent
+      name: thanos-ruler-proxy
+      ports:
+      - containerPort: 9091
+        name: web
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 12Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-thanos-ruler-tls
+      - mountPath: /etc/proxy/secrets
+        name: secret-thanos-ruler-oauth-cookie
+      - mountPath: /etc/pki/ca-trust/extracted/pem/
+        name: thanos-ruler-trusted-ca-bundle
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-qd2n9
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: thanos-ruler-user-workload-0
+    imagePullSecrets:
+    - name: thanos-ruler-dockercfg-rhqxp
+    nodeName: ip-10-0-128-34.ec2.internal
+    preemptionPolicy: PreemptLowerPriority
+    priority: 1000000000
+    priorityClassName: openshift-user-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+      seLinuxOptions:
+        level: s0:c21,c5
+    serviceAccount: thanos-ruler
+    serviceAccountName: thanos-ruler
+    terminationGracePeriodSeconds: 120
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: thanos-ruler-user-workload-rulefiles-0
+      name: thanos-ruler-user-workload-rulefiles-0
+    - emptyDir: {}
+      name: thanos-ruler-user-workload-data
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: service-ca.crt
+          path: service-ca.crt
+        name: serving-certs-ca-bundle
+      name: serving-certs-ca-bundle
+    - name: secret-thanos-ruler-tls
+      secret:
+        defaultMode: 420
+        secretName: thanos-ruler-tls
+    - name: secret-thanos-ruler-oauth-cookie
+      secret:
+        defaultMode: 420
+        secretName: thanos-ruler-oauth-cookie
+    - name: secret-thanos-ruler-oauth-htpasswd
+      secret:
+        defaultMode: 420
+        secretName: thanos-ruler-oauth-htpasswd
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: thanos-ruler-trusted-ca-bundle-2rsonso43rc5p
+        optional: true
+      name: thanos-ruler-trusted-ca-bundle
+    - name: secret-grpc-tls
+      secret:
+        defaultMode: 420
+        secretName: thanos-ruler-grpc-tls-bbs2h7k8eiaor
+    - name: kube-api-access-qd2n9
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:21Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:38:43Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:38:43Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:28:20Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://0c47757a91f4a8ea84a53280d2746b58f355b0ca823881ae4d9a8b438da66a1c
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      lastState: {}
+      name: config-reloader
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:28:25Z"
+    - containerID: cri-o://b0dd608a23e4e316c12cda687f378b003b62e27ecabf9197305c38728e820147
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      lastState:
+        terminated:
+          containerID: cri-o://84622a7133014c8e2c3ede638c6de0fed0a0cc260596da2e8d11379bd3217792
+          exitCode: 1
+          finishedAt: "2022-05-24T18:38:28Z"
+          message: |
+            toring.svc\": could not resolve \"_web._tcp.alertmanager-operated.openshift-monitoring.svc\": all servers responded with errors to at least one search domain. Errs ;could not resolve _web._tcp.alertmanager-operated.openshift-monitoring.svc.cluster.local.: no servers returned a viable answer. Errs ;resolution against server 172.30.0.10 for _web._tcp.alertmanager-operated.openshift-monitoring.svc.cluster.local.: exchange: read udp 10.131.0.19:42475->172.30.0.10:53: read: connection refused"
+            level=info ts=2022-05-24T18:38:28.9657019Z caller=intrumentation.go:66 component=rules msg="changing probe status" status=not-healthy reason="lookup SRV records \"_web._tcp.alertmanager-operated.openshift-monitoring.svc\": could not resolve \"_web._tcp.alertmanager-operated.openshift-monitoring.svc\": all servers responded with errors to at least one search domain. Errs ;could not resolve _web._tcp.alertmanager-operated.openshift-monitoring.svc.cluster.local.: no servers returned a viable answer. Errs ;resolution against server 172.30.0.10 for _web._tcp.alertmanager-operated.openshift-monitoring.svc.cluster.local.: exchange: read udp 10.131.0.19:42475->172.30.0.10:53: read: connection refused"
+            level=error ts=2022-05-24T18:38:28.965839098Z caller=main.go:157 err="lookup SRV records \"_web._tcp.alertmanager-operated.openshift-monitoring.svc\": could not resolve \"_web._tcp.alertmanager-operated.openshift-monitoring.svc\": all servers responded with errors to at least one search domain. Errs ;could not resolve _web._tcp.alertmanager-operated.openshift-monitoring.svc.cluster.local.: no servers returned a viable answer. Errs ;resolution against server 172.30.0.10 for _web._tcp.alertmanager-operated.openshift-monitoring.svc.cluster.local.: exchange: read udp 10.131.0.19:42475->172.30.0.10:53: read: connection refused\nrule command failed\nmain.main\n\t/go/src/github.com/improbable-eng/thanos/cmd/thanos/main.go:157\nruntime.main\n\t/usr/lib/golang/src/runtime/proc.go:255\nruntime.goexit\n\t/usr/lib/golang/src/runtime/asm_amd64.s:1581"
+          reason: Error
+          startedAt: "2022-05-24T18:38:28Z"
+      name: thanos-ruler
+      ready: true
+      restartCount: 3
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:38:42Z"
+    - containerID: cri-o://aec245cbb969ca9d5e8e5ce26758ec2dcad6c27f0faeb2cd1fc1adce7194f9c9
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+      lastState: {}
+      name: thanos-ruler-proxy
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:28:25Z"
+    hostIP: 10.0.128.34
+    phase: Running
+    podIP: 10.131.0.19
+    podIPs:
+    - ip: 10.131.0.19
+    qosClass: Burstable
+    startTime: "2022-05-24T18:28:21Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.15"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.15"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      kubectl.kubernetes.io/default-container: thanos-ruler
+      openshift.io/scc: nonroot
+    creationTimestamp: "2022-05-24T18:42:31Z"
+    generateName: thanos-ruler-user-workload-
+    labels:
+      app.kubernetes.io/instance: user-workload
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: thanos-ruler
+      controller-revision-hash: thanos-ruler-user-workload-789c5d7bf
+      statefulset.kubernetes.io/pod-name: thanos-ruler-user-workload-1
+      thanos-ruler: user-workload
+    name: thanos-ruler-user-workload-1
+    namespace: openshift-user-workload-monitoring
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: StatefulSet
+      name: thanos-ruler-user-workload
+      uid: 5ef1ff9e-0e2b-4fc2-9ca5-086623aca4f9
+    resourceVersion: "77995"
+    uid: 3210092f-04da-4b74-8bb6-aa12ce0cd96c
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: thanos-ruler
+              thanos-ruler: user-workload
+          namespaces:
+          - openshift-user-workload-monitoring
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - args:
+      - rule
+      - --data-dir=/thanos/data
+      - --eval-interval=15s
+      - --tsdb.retention=24h
+      - --label=thanos_ruler_replica="$(POD_NAME)"
+      - --alert.label-drop=thanos_ruler_replica
+      - --http-address=localhost:10902
+      - --query.config=$(QUERY_CONFIG)
+      - --rule-file=/etc/thanos/rules/*/*.yaml
+      - --alertmanagers.config=$(ALERTMANAGERS_CONFIG)
+      - --grpc-server-tls-cert=/etc/tls/grpc/server.crt
+      - --grpc-server-tls-key=/etc/tls/grpc/server.key
+      - --grpc-server-tls-client-ca=/etc/tls/grpc/ca.crt
+      - --alert.query-url=https://thanos-querier-openshift-monitoring.apps.odf-service.dif5.p1.openshiftapps.com/api
+      env:
+      - name: ALERTMANAGER_CONFIG_SECRET_VERSION
+        value: a907238a35fa8e8dc847dbdee411825f
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: QUERY_CONFIG
+        valueFrom:
+          secretKeyRef:
+            key: query.yaml
+            name: thanos-ruler-query-config
+      - name: ALERTMANAGERS_CONFIG
+        valueFrom:
+          secretKeyRef:
+            key: alertmanagers.yaml
+            name: thanos-ruler-alertmanagers-config
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      imagePullPolicy: IfNotPresent
+      name: thanos-ruler
+      ports:
+      - containerPort: 10901
+        name: grpc
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 21Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-thanos-ruler-tls
+      - mountPath: /etc/tls/grpc
+        name: secret-grpc-tls
+      - mountPath: /etc/prometheus/configmaps/serving-certs-ca-bundle
+        name: serving-certs-ca-bundle
+      - mountPath: /thanos/data
+        name: thanos-ruler-user-workload-data
+      - mountPath: /etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+        name: thanos-ruler-user-workload-rulefiles-0
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fgbwz
+        readOnly: true
+    - args:
+      - --listen-address=localhost:8080
+      - --reload-url=http://localhost:10902/-/reload
+      - --watched-dir=/etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+      command:
+      - /bin/prometheus-config-reloader
+      env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: SHARD
+        value: "-1"
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imagePullPolicy: IfNotPresent
+      name: config-reloader
+      resources:
+        requests:
+          cpu: 1m
+          memory: 10Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/thanos/rules/thanos-ruler-user-workload-rulefiles-0
+        name: thanos-ruler-user-workload-rulefiles-0
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fgbwz
+        readOnly: true
+    - args:
+      - -provider=openshift
+      - -https-address=:9091
+      - -http-address=
+      - -email-domain=*
+      - -upstream=http://localhost:10902
+      - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+      - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get"}}'
+      - -tls-cert=/etc/tls/private/tls.crt
+      - -tls-key=/etc/tls/private/tls.key
+      - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+      - -cookie-secret-file=/etc/proxy/secrets/session_secret
+      - -openshift-service-account=thanos-ruler
+      - -openshift-ca=/etc/pki/tls/cert.pem
+      - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      env:
+      - name: HTTP_PROXY
+      - name: HTTPS_PROXY
+      - name: NO_PROXY
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+      imagePullPolicy: IfNotPresent
+      name: thanos-ruler-proxy
+      ports:
+      - containerPort: 9091
+        name: web
+        protocol: TCP
+      resources:
+        requests:
+          cpu: 1m
+          memory: 12Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: secret-thanos-ruler-tls
+      - mountPath: /etc/proxy/secrets
+        name: secret-thanos-ruler-oauth-cookie
+      - mountPath: /etc/pki/ca-trust/extracted/pem/
+        name: thanos-ruler-trusted-ca-bundle
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fgbwz
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    hostname: thanos-ruler-user-workload-1
+    imagePullSecrets:
+    - name: thanos-ruler-dockercfg-rhqxp
+    nodeName: ip-10-0-164-190.ec2.internal
+    preemptionPolicy: PreemptLowerPriority
+    priority: 1000000000
+    priorityClassName: openshift-user-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+      seLinuxOptions:
+        level: s0:c21,c5
+    serviceAccount: thanos-ruler
+    serviceAccountName: thanos-ruler
+    terminationGracePeriodSeconds: 120
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - configMap:
+        defaultMode: 420
+        name: thanos-ruler-user-workload-rulefiles-0
+      name: thanos-ruler-user-workload-rulefiles-0
+    - emptyDir: {}
+      name: thanos-ruler-user-workload-data
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: service-ca.crt
+          path: service-ca.crt
+        name: serving-certs-ca-bundle
+      name: serving-certs-ca-bundle
+    - name: secret-thanos-ruler-tls
+      secret:
+        defaultMode: 420
+        secretName: thanos-ruler-tls
+    - name: secret-thanos-ruler-oauth-cookie
+      secret:
+        defaultMode: 420
+        secretName: thanos-ruler-oauth-cookie
+    - name: secret-thanos-ruler-oauth-htpasswd
+      secret:
+        defaultMode: 420
+        secretName: thanos-ruler-oauth-htpasswd
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: thanos-ruler-trusted-ca-bundle-2rsonso43rc5p
+        optional: true
+      name: thanos-ruler-trusted-ca-bundle
+    - name: secret-grpc-tls
+      secret:
+        defaultMode: 420
+        secretName: thanos-ruler-grpc-tls-bbs2h7k8eiaor
+    - name: kube-api-access-fgbwz
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:31Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:43:50Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:43:50Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:31Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://725eaf5866786808ffa98cac4f62e880b9f87ad91d20e9a2554c7dfb96a202db
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b5d406a68f3fb45008977ea6f4d1cda50c8a878cf0055c11308b1785d5a06023
+      lastState: {}
+      name: config-reloader
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:33Z"
+    - containerID: cri-o://a4259bea8d7937cf3603428d0f603c1abe6ccf590a6c1b191d6ead2643c8aec6
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a5a316dec56c12072bd11525534dc01cad163fd44766be4e1fb3406796e662d
+      lastState:
+        terminated:
+          containerID: cri-o://45b77d58b3ace03c12eda0f6723d2b7370e31dd92e5f6e7e4e439147372da7ec
+          exitCode: 1
+          finishedAt: "2022-05-24T18:43:34Z"
+          message: |
+            ed with errors to at least one search domain. Errs ;could not resolve alertmanager-main-0.alertmanager-operated.openshift-monitoring.svc.cluster.local.: no servers returned a viable answer. Errs ;resolution against server 172.30.0.10 for alertmanager-main-0.alertmanager-operated.openshift-monitoring.svc.cluster.local.: exchange: read udp 10.128.2.15:54873->172.30.0.10:53: read: connection refused"
+            level=info ts=2022-05-24T18:43:34.843619666Z caller=intrumentation.go:66 component=rules msg="changing probe status" status=not-healthy reason="lookup IP addresses \"_web._tcp.alertmanager-operated.openshift-monitoring.svc\": could not resolve \"alertmanager-main-0.alertmanager-operated.openshift-monitoring.svc.cluster.local.\": all servers responded with errors to at least one search domain. Errs ;could not resolve alertmanager-main-0.alertmanager-operated.openshift-monitoring.svc.cluster.local.: no servers returned a viable answer. Errs ;resolution against server 172.30.0.10 for alertmanager-main-0.alertmanager-operated.openshift-monitoring.svc.cluster.local.: exchange: read udp 10.128.2.15:54873->172.30.0.10:53: read: connection refused"
+            level=error ts=2022-05-24T18:43:34.84367727Z caller=main.go:157 err="lookup IP addresses \"_web._tcp.alertmanager-operated.openshift-monitoring.svc\": could not resolve \"alertmanager-main-0.alertmanager-operated.openshift-monitoring.svc.cluster.local.\": all servers responded with errors to at least one search domain. Errs ;could not resolve alertmanager-main-0.alertmanager-operated.openshift-monitoring.svc.cluster.local.: no servers returned a viable answer. Errs ;resolution against server 172.30.0.10 for alertmanager-main-0.alertmanager-operated.openshift-monitoring.svc.cluster.local.: exchange: read udp 10.128.2.15:54873->172.30.0.10:53: read: connection refused\nrule command failed\nmain.main\n\t/go/src/github.com/improbable-eng/thanos/cmd/thanos/main.go:157\nruntime.main\n\t/usr/lib/golang/src/runtime/proc.go:255\nruntime.goexit\n\t/usr/lib/golang/src/runtime/asm_amd64.s:1581"
+          reason: Error
+          startedAt: "2022-05-24T18:43:34Z"
+      name: thanos-ruler
+      ready: true
+      restartCount: 2
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:43:50Z"
+    - containerID: cri-o://e223afd79ce65a099b4e00319eaf5e4ecfa6f8556403c27c8535fe5064336a39
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+      lastState: {}
+      name: thanos-ruler-proxy
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:34Z"
+    hostIP: 10.0.164.190
+    phase: Running
+    podIP: 10.128.2.15
+    podIPs:
+    - ip: 10.128.2.15
+    qosClass: Burstable
+    startTime: "2022-05-24T18:42:31Z"
+kind: PodList
+metadata:
+  resourceVersion: "322654"

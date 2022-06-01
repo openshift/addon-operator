@@ -1,0 +1,134 @@
+---
+apiVersion: imageregistry.operator.openshift.io/v1
+kind: Config
+metadata:
+  creationTimestamp: "2022-05-24T18:13:27Z"
+  finalizers:
+  - imageregistry.operator.openshift.io/finalizer
+  generation: 3
+  name: cluster
+  resourceVersion: "76682"
+  uid: 0b01cd22-6ccf-4b3c-81e2-aa66962737d1
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: node-role.kubernetes.io/infra
+            operator: Exists
+        weight: 1
+  defaultRoute: true
+  httpSecret: 089145993e6168f7a9bb7cca40f99e2f584659e2e26f2f68e253aa01e99ed25fac63f387f380705a7c0f2832eca4d6e16b8f84fd3b11dadba6a00e020b6b95a8
+  logLevel: Normal
+  managementState: Managed
+  observedConfig: null
+  operatorLogLevel: Normal
+  proxy: {}
+  replicas: 2
+  requests:
+    read:
+      maxWaitInQueue: 0s
+    write:
+      maxWaitInQueue: 0s
+  rolloutStrategy: RollingUpdate
+  storage:
+    managementState: Managed
+    s3:
+      bucket: odf-service-c778b-image-registry-us-east-1-yymogfebmstunxgrhhj
+      encrypt: true
+      region: us-east-1
+      virtualHostedStyle: false
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  unsupportedConfigOverrides: null
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:13:28Z"
+    reason: S3 Bucket Exists
+    status: "True"
+    type: StorageExists
+  - lastTransitionTime: "2022-05-24T18:13:28Z"
+    message: Public access to the S3 bucket and its contents have been successfully
+      blocked.
+    reason: Public Access Block Successful
+    status: "True"
+    type: StoragePublicAccessBlocked
+  - lastTransitionTime: "2022-05-24T18:13:28Z"
+    message: Tags were successfully applied to the S3 bucket
+    reason: Tagging Successful
+    status: "True"
+    type: StorageTagged
+  - lastTransitionTime: "2022-05-24T18:13:28Z"
+    message: Default AES256 encryption was successfully enabled on the S3 bucket
+    reason: Encryption Successful
+    status: "True"
+    type: StorageEncrypted
+  - lastTransitionTime: "2022-05-24T18:13:28Z"
+    message: Default cleanup of incomplete multipart uploads after one (1) day was
+      successfully enabled
+    reason: Enable Cleanup Successful
+    status: "True"
+    type: StorageIncompleteUploadCleanupEnabled
+  - lastTransitionTime: "2022-05-24T18:14:04Z"
+    message: The registry is ready
+    reason: Ready
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:42:58Z"
+    message: The registry is ready
+    reason: Ready
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:15:43Z"
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:13:29Z"
+    status: "False"
+    type: Removed
+  - lastTransitionTime: "2022-05-24T18:13:32Z"
+    message: The daemon set node-ca has available replicas
+    reason: AsExpected
+    status: "True"
+    type: NodeCADaemonAvailable
+  - lastTransitionTime: "2022-05-24T18:13:29Z"
+    reason: AsExpected
+    status: "False"
+    type: NodeCADaemonControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:13:29Z"
+    reason: AsExpected
+    status: "False"
+    type: ImageRegistryCertificatesControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:13:29Z"
+    reason: AsExpected
+    status: "False"
+    type: ImageConfigControllerDegraded
+  - lastTransitionTime: "2022-05-24T18:17:09Z"
+    reason: AsExpected
+    status: "False"
+    type: AzureStackCloudControllerDegraded
+  generations:
+  - group: apps
+    hash: ""
+    lastGeneration: 4
+    name: image-registry
+    namespace: openshift-image-registry
+    resource: deployments
+  - group: apps
+    hash: ""
+    lastGeneration: 0
+    name: node-ca
+    namespace: openshift-image-registry
+    resource: daemonsets
+  observedGeneration: 3
+  readyReplicas: 2
+  storage:
+    managementState: Managed
+    s3:
+      bucket: odf-service-c778b-image-registry-us-east-1-yymogfebmstunxgrhhj
+      encrypt: true
+      region: us-east-1
+      virtualHostedStyle: false
+  storageManaged: true

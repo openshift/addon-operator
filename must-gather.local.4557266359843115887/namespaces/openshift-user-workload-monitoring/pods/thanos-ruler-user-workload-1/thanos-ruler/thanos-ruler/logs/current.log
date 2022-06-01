@@ -1,0 +1,24 @@
+2022-05-24T18:43:50.235646496Z ts=2022-05-24T18:43:50.235588444Z caller=log.go:168 component=tsdb level=info msg="Replaying on-disk memory mappable chunks if any"
+2022-05-24T18:43:50.235646496Z ts=2022-05-24T18:43:50.235622369Z caller=log.go:168 component=tsdb level=info msg="On-disk memory mappable chunks replay completed" duration=1.492µs
+2022-05-24T18:43:50.235646496Z ts=2022-05-24T18:43:50.235629793Z caller=log.go:168 component=tsdb level=info msg="Replaying WAL, this may take a while"
+2022-05-24T18:43:50.236502515Z ts=2022-05-24T18:43:50.236471882Z caller=log.go:168 component=tsdb level=info msg="WAL segment loaded" segment=0 maxSegment=2
+2022-05-24T18:43:50.236670970Z ts=2022-05-24T18:43:50.236650761Z caller=log.go:168 component=tsdb level=info msg="WAL segment loaded" segment=1 maxSegment=2
+2022-05-24T18:43:50.236850295Z ts=2022-05-24T18:43:50.236809979Z caller=log.go:168 component=tsdb level=info msg="WAL segment loaded" segment=2 maxSegment=2
+2022-05-24T18:43:50.236875839Z ts=2022-05-24T18:43:50.236854028Z caller=log.go:168 component=tsdb level=info msg="WAL replay completed" checkpoint_replay_duration=37.429µs wal_replay_duration=1.175091ms total_replay_duration=1.226345ms
+2022-05-24T18:43:50.237783962Z level=info ts=2022-05-24T18:43:50.237753013Z caller=rule.go:658 msg="a leftover lockfile found and removed"
+2022-05-24T18:43:50.238644278Z level=info ts=2022-05-24T18:43:50.238605665Z caller=options.go:31 component=rules protocol=gRPC msg="enabling server side TLS"
+2022-05-24T18:43:50.238708678Z level=info ts=2022-05-24T18:43:50.23868917Z caller=options.go:61 component=rules protocol=gRPC msg="server TLS client verification enabled"
+2022-05-24T18:43:50.240588685Z level=info ts=2022-05-24T18:43:50.240543295Z caller=rule.go:640 component=rules msg="no supported bucket was configured, uploads will be disabled"
+2022-05-24T18:43:50.240588685Z level=info ts=2022-05-24T18:43:50.24057055Z caller=rule.go:643 component=rules msg="starting rule node"
+2022-05-24T18:43:50.240773984Z level=info ts=2022-05-24T18:43:50.240729199Z caller=rule.go:811 component=rules msg="reload rule files" numFiles=2
+2022-05-24T18:43:50.240830843Z level=info ts=2022-05-24T18:43:50.24076049Z caller=intrumentation.go:48 component=rules msg="changing probe status" status=ready
+2022-05-24T18:43:50.241040651Z level=info ts=2022-05-24T18:43:50.241003468Z caller=grpc.go:127 component=rules service=gRPC/server component=rule msg="listening for serving gRPC" address=0.0.0.0:10901
+2022-05-24T18:43:50.241195590Z level=info ts=2022-05-24T18:43:50.241054741Z caller=intrumentation.go:60 component=rules msg="changing probe status" status=healthy
+2022-05-24T18:43:50.241250177Z level=info ts=2022-05-24T18:43:50.241216289Z caller=http.go:63 component=rules service=http/server component=rule msg="listening for requests and metrics" address=localhost:10902
+2022-05-24T18:43:50.242870373Z ts=2022-05-24T18:43:50.242641986Z caller=log.go:168 component=rules service=http/server component=rule level=info msg="TLS is disabled." http2=false
+2022-05-24T21:42:45.172679369Z ts=2022-05-24T21:42:45.172620743Z caller=log.go:168 component=tsdb level=info msg="write block" mint=1653417762981 maxt=1653422400000 ulid=01G3W0BD4Z3DEZXKBWX6QT4VN0 duration=20.815379ms
+2022-05-24T21:42:45.173673165Z ts=2022-05-24T21:42:45.173641864Z caller=log.go:168 component=tsdb level=info msg="Head GC completed" duration=799.626µs
+2022-05-24T23:00:09.743577670Z ts=2022-05-24T23:00:09.743518314Z caller=log.go:168 component=tsdb level=info msg="write block" mint=1653422400143 maxt=1653429600000 ulid=01G3W4S4VPAQWBF8E8K29P66E4 duration=24.850599ms
+2022-05-24T23:00:09.744479173Z ts=2022-05-24T23:00:09.744449938Z caller=log.go:168 component=tsdb level=info msg="Head GC completed" duration=712.835µs
+2022-05-24T23:00:09.747794719Z ts=2022-05-24T23:00:09.747766231Z caller=log.go:168 component=tsdb level=info msg="Creating checkpoint" from_segment=0 to_segment=1 mint=1653429600000
+2022-05-24T23:00:09.751346075Z ts=2022-05-24T23:00:09.751316966Z caller=log.go:168 component=tsdb level=info msg="WAL checkpoint complete" first=0 last=1 duration=3.627677ms

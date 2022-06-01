@@ -1,0 +1,77 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.31
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: oauth-openshift-5b546c5495-8dp69
+      namespace: openshift-authentication
+      resourceVersion: "53454"
+      uid: 6c25cffb-309a-4e4d-9eae-f38c426adca7
+    zone: us-east-1c
+  - addresses:
+    - 10.130.0.17
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: oauth-openshift-5b546c5495-h5xjm
+      namespace: openshift-authentication
+      resourceVersion: "62234"
+      uid: 387bee46-b04e-4cb6-9409-6dd056cfaa3f
+    zone: us-east-1a
+  - addresses:
+    - 10.129.0.21
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-149-121.ec2.internal
+    targetRef:
+      kind: Pod
+      name: oauth-openshift-5b546c5495-cj48z
+      namespace: openshift-authentication
+      resourceVersion: "72646"
+      uid: 5fe1c051-10cc-454c-878a-01176ed65ac5
+    zone: us-east-1b
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:41:02Z"
+    creationTimestamp: "2022-05-24T18:07:51Z"
+    generateName: oauth-openshift-
+    generation: 73
+    labels:
+      app: oauth-openshift
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: oauth-openshift
+    name: oauth-openshift-dmphm
+    namespace: openshift-authentication
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: oauth-openshift
+      uid: b3a6fa69-81a2-4c95-a33b-c5b4d3fedb3b
+    resourceVersion: "72650"
+    uid: f3bf032d-c8a4-4d01-badf-5e76639730c6
+  ports:
+  - name: https
+    port: 6443
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "296686"

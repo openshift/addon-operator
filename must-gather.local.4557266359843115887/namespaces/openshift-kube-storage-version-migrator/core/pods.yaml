@@ -1,0 +1,163 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.34"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.34"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: anyuid
+    creationTimestamp: "2022-05-24T18:31:57Z"
+    generateName: migrator-554f9655f9-
+    labels:
+      app: migrator
+      pod-template-hash: 554f9655f9
+    name: migrator-554f9655f9-tshcf
+    namespace: openshift-kube-storage-version-migrator
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: migrator-554f9655f9
+      uid: 49dde09d-8ff2-4908-8cdc-4f6159b94788
+    resourceVersion: "54530"
+    uid: 2776d3bb-11a0-4cc9-98d7-a856544b266f
+  spec:
+    containers:
+    - command:
+      - migrator
+      - --alsologtostderr
+      - --v=2
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f67a6ff8759a1e64f04ae6811951d85ef6488a1340d9d1c351d5debfd32b917e
+      imagePullPolicy: IfNotPresent
+      name: migrator
+      resources:
+        requests:
+          cpu: 10m
+          memory: 200Mi
+      securityContext:
+        capabilities:
+          drop:
+          - MKNOD
+        runAsUser: 1001
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fbnlk
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: kube-storage-version-migrator-sa-dockercfg-fmnjt
+    nodeName: ip-10-0-128-34.ec2.internal
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seLinuxOptions:
+        level: s0:c23,c7
+    serviceAccount: kube-storage-version-migrator-sa
+    serviceAccountName: kube-storage-version-migrator-sa
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: kube-api-access-fbnlk
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:58Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:01Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:01Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:58Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://1d646e36505f7b20e24d5fdc1107f748fe543f3ba2cf82fc56f0629aa687cb64
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f67a6ff8759a1e64f04ae6811951d85ef6488a1340d9d1c351d5debfd32b917e
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f67a6ff8759a1e64f04ae6811951d85ef6488a1340d9d1c351d5debfd32b917e
+      lastState: {}
+      name: migrator
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:32:01Z"
+    hostIP: 10.0.128.34
+    phase: Running
+    podIP: 10.131.0.34
+    podIPs:
+    - ip: 10.131.0.34
+    qosClass: Burstable
+    startTime: "2022-05-24T18:31:58Z"
+kind: PodList
+metadata:
+  resourceVersion: "317543"

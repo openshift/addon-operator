@@ -1,0 +1,154 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+      volume.kubernetes.io/selected-node: ip-10-0-140-240.ec2.internal
+      volume.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+    creationTimestamp: "2022-05-24T18:28:25Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    labels:
+      alertmanager: main
+      app.kubernetes.io/instance: main
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: alertmanager
+    name: alertmanager-data-alertmanager-main-0
+    namespace: openshift-monitoring
+    resourceVersion: "44907"
+    uid: b3533ad8-2245-4800-9298-3eca83678086
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+    storageClassName: gp2
+    volumeMode: Filesystem
+    volumeName: pvc-b3533ad8-2245-4800-9298-3eca83678086
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 10Gi
+    phase: Bound
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+      volume.kubernetes.io/selected-node: ip-10-0-166-35.ec2.internal
+      volume.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+    creationTimestamp: "2022-05-24T18:28:25Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    labels:
+      alertmanager: main
+      app.kubernetes.io/instance: main
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: alertmanager
+    name: alertmanager-data-alertmanager-main-1
+    namespace: openshift-monitoring
+    resourceVersion: "44924"
+    uid: 02780825-355e-4273-afa1-2086745bf99b
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+    storageClassName: gp2
+    volumeMode: Filesystem
+    volumeName: pvc-02780825-355e-4273-afa1-2086745bf99b
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 10Gi
+    phase: Bound
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+      volume.kubernetes.io/selected-node: ip-10-0-166-35.ec2.internal
+      volume.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+    creationTimestamp: "2022-05-24T18:28:21Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    labels:
+      app.kubernetes.io/instance: k8s
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: prometheus
+      operator.prometheus.io/name: k8s
+      operator.prometheus.io/shard: "0"
+      prometheus: k8s
+    name: prometheus-data-prometheus-k8s-0
+    namespace: openshift-monitoring
+    resourceVersion: "42437"
+    uid: 465426c4-9aad-4dc5-b116-210a2303c93c
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Gi
+    storageClassName: gp2
+    volumeMode: Filesystem
+    volumeName: pvc-465426c4-9aad-4dc5-b116-210a2303c93c
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 100Gi
+    phase: Bound
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+      volume.kubernetes.io/selected-node: ip-10-0-140-240.ec2.internal
+      volume.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+    creationTimestamp: "2022-05-24T18:28:21Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    labels:
+      app.kubernetes.io/instance: k8s
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: prometheus
+      operator.prometheus.io/name: k8s
+      operator.prometheus.io/shard: "0"
+      prometheus: k8s
+    name: prometheus-data-prometheus-k8s-1
+    namespace: openshift-monitoring
+    resourceVersion: "42452"
+    uid: 09885ae7-519c-4c08-b2a6-f6e30dd39e37
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Gi
+    storageClassName: gp2
+    volumeMode: Filesystem
+    volumeName: pvc-09885ae7-519c-4c08-b2a6-f6e30dd39e37
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 100Gi
+    phase: Bound
+kind: PersistentVolumeClaimList
+metadata:
+  resourceVersion: "322437"

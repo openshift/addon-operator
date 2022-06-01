@@ -1,0 +1,96 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+    operatorframework.io/installed-alongside-c569578e83a47937: openshift-storage/ocs-operator.v4.10.0
+  creationTimestamp: "2022-05-24T18:28:18Z"
+  generation: 1
+  labels:
+    operators.coreos.com/ocs-operator.openshift-storage: ""
+  name: volumereplicationclasses.replication.storage.openshift.io
+  resourceVersion: "51248"
+  uid: 246146dd-c29d-4863-aee5-5aa94eb94239
+spec:
+  conversion:
+    strategy: None
+  group: replication.storage.openshift.io
+  names:
+    kind: VolumeReplicationClass
+    listKind: VolumeReplicationClassList
+    plural: volumereplicationclasses
+    shortNames:
+    - vrc
+    singular: volumereplicationclass
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.provisioner
+      name: provisioner
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: VolumeReplicationClass is the Schema for the volumereplicationclasses
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: VolumeReplicationClassSpec specifies parameters that an underlying
+              storage system uses when creating a volume replica. A specific VolumeReplicationClass
+              is used by specifying its name in a VolumeReplication object.
+            properties:
+              parameters:
+                additionalProperties:
+                  type: string
+                description: Parameters is a key-value map with storage provisioner
+                  specific configurations for creating volume replicas
+                type: object
+              provisioner:
+                description: Provisioner is the name of storage provisioner
+                type: string
+            required:
+            - provisioner
+            type: object
+          status:
+            description: VolumeReplicationClassStatus defines the observed state of
+              VolumeReplicationClass
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: VolumeReplicationClass
+    listKind: VolumeReplicationClassList
+    plural: volumereplicationclasses
+    shortNames:
+    - vrc
+    singular: volumereplicationclass
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:28:18Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2022-05-24T18:28:18Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1alpha1

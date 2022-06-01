@@ -1,0 +1,75 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    exclude.release.openshift.io/internal-openshift-hosted: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: insights
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "295146"
+  uid: 93b69395-2c24-46cf-be75-5d9647272ed7
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:15:32Z"
+    reason: AsExpected
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:15:32Z"
+    reason: AsExpected
+    status: "False"
+    type: Disabled
+  - lastTransitionTime: "2022-05-24T18:15:32Z"
+    reason: AsExpected
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:15:32Z"
+    message: Monitoring the cluster
+    reason: AsExpected
+    status: "False"
+    type: Progressing
+  extension:
+    lastReportTime: "2022-05-24T22:51:55Z"
+  relatedObjects:
+  - group: ""
+    name: openshift-insights
+    resource: namespaces
+  - group: apps
+    name: insights-operator
+    namespace: openshift-insights
+    resource: deployments
+  - group: ""
+    name: pull-secret
+    namespace: openshift-config
+    resource: secrets
+  - group: ""
+    name: support
+    namespace: openshift-config
+    resource: secrets
+  - group: ""
+    name: gather
+    namespace: openshift-insights
+    resource: serviceaccounts
+  - group: ""
+    name: operator
+    namespace: openshift-insights
+    resource: serviceaccounts
+  - group: ""
+    name: metrics
+    namespace: openshift-insights
+    resource: services
+  - group: ""
+    name: service-ca-bundle
+    namespace: openshift-insights
+    resource: configmaps
+  versions:
+  - name: operator
+    version: 4.10.13

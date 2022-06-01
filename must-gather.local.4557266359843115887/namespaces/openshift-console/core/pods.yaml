@@ -1,0 +1,1038 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      console.openshift.io/console-config-version: "30911"
+      console.openshift.io/image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c18d023fb1b8304a191a9d5bbef0cacdb4f945b7590cf5f550f3a5b9e0bc676
+      console.openshift.io/infrastructure-config-version: "595"
+      console.openshift.io/oauth-secret-version: "25483"
+      console.openshift.io/oauth-serving-cert-config-version: "36522"
+      console.openshift.io/proxy-config-version: "615"
+      console.openshift.io/service-ca-config-version: "25476"
+      console.openshift.io/trusted-ca-config-version: "25478"
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.38"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.38"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:31:55Z"
+    generateName: console-6c7cfdb6c6-
+    labels:
+      app: console
+      component: ui
+      pod-template-hash: 6c7cfdb6c6
+    name: console-6c7cfdb6c6-6w9gn
+    namespace: openshift-console
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: console-6c7cfdb6c6
+      uid: 528d9610-82ff-4a7b-9d55-4ea6e210e27b
+    resourceVersion: "55857"
+    uid: de18d1b7-5e05-444e-baff-823dbe83cdc8
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: component
+              operator: In
+              values:
+              - ui
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - command:
+      - /opt/bridge/bin/bridge
+      - --public-dir=/opt/bridge/static
+      - --config=/var/console-config/console-config.yaml
+      - --service-ca-file=/var/service-ca/service-ca.crt
+      - --v=2
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c18d023fb1b8304a191a9d5bbef0cacdb4f945b7590cf5f550f3a5b9e0bc676
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - sleep
+            - "25"
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /health
+          port: 8443
+          scheme: HTTPS
+        initialDelaySeconds: 150
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: console
+      ports:
+      - containerPort: 8443
+        name: https
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /health
+          port: 8443
+          scheme: HTTPS
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 10m
+          memory: 100Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000620000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/serving-cert
+        name: console-serving-cert
+        readOnly: true
+      - mountPath: /var/oauth-config
+        name: console-oauth-config
+        readOnly: true
+      - mountPath: /var/console-config
+        name: console-config
+        readOnly: true
+      - mountPath: /var/service-ca
+        name: service-ca
+        readOnly: true
+      - mountPath: /var/oauth-serving-cert
+        name: oauth-serving-cert
+        readOnly: true
+      - mountPath: /etc/pki/ca-trust/extracted/pem
+        name: trusted-ca-bundle
+        readOnly: true
+      - mountPath: /var/logo/
+        name: custom-logo
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-zhqw7
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: console-dockercfg-5bdj9
+    nodeName: ip-10-0-169-205.ec2.internal
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000620000
+      seLinuxOptions:
+        level: s0:c25,c10
+    serviceAccount: console
+    serviceAccountName: console
+    terminationGracePeriodSeconds: 40
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-reachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: console-serving-cert
+      secret:
+        defaultMode: 420
+        secretName: console-serving-cert
+    - name: console-oauth-config
+      secret:
+        defaultMode: 420
+        secretName: console-oauth-config
+    - configMap:
+        defaultMode: 420
+        name: console-config
+      name: console-config
+    - configMap:
+        defaultMode: 420
+        name: service-ca
+      name: service-ca
+    - configMap:
+        defaultMode: 420
+        name: oauth-serving-cert
+      name: oauth-serving-cert
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: trusted-ca-bundle
+      name: trusted-ca-bundle
+    - configMap:
+        defaultMode: 420
+        name: custom-logo
+      name: custom-logo
+    - name: kube-api-access-zhqw7
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:56Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:16Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:32:16Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:31:56Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://a8eb913e1aaef5d62749c28600b5d0b4f6ec4e276b15446f3141d422ce2471cc
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c18d023fb1b8304a191a9d5bbef0cacdb4f945b7590cf5f550f3a5b9e0bc676
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c18d023fb1b8304a191a9d5bbef0cacdb4f945b7590cf5f550f3a5b9e0bc676
+      lastState: {}
+      name: console
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:31:58Z"
+    hostIP: 10.0.169.205
+    phase: Running
+    podIP: 10.128.0.38
+    podIPs:
+    - ip: 10.128.0.38
+    qosClass: Burstable
+    startTime: "2022-05-24T18:31:56Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      console.openshift.io/console-config-version: "30911"
+      console.openshift.io/image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c18d023fb1b8304a191a9d5bbef0cacdb4f945b7590cf5f550f3a5b9e0bc676
+      console.openshift.io/infrastructure-config-version: "595"
+      console.openshift.io/oauth-secret-version: "25483"
+      console.openshift.io/oauth-serving-cert-config-version: "36522"
+      console.openshift.io/proxy-config-version: "615"
+      console.openshift.io/service-ca-config-version: "25476"
+      console.openshift.io/trusted-ca-config-version: "25478"
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.130.0.26"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.130.0.26"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:36:35Z"
+    generateName: console-6c7cfdb6c6-
+    labels:
+      app: console
+      component: ui
+      pod-template-hash: 6c7cfdb6c6
+    name: console-6c7cfdb6c6-xd9bp
+    namespace: openshift-console
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: console-6c7cfdb6c6
+      uid: 528d9610-82ff-4a7b-9d55-4ea6e210e27b
+    resourceVersion: "64197"
+    uid: 745486af-26e3-4bb1-ad93-c04aba72763a
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: component
+              operator: In
+              values:
+              - ui
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - command:
+      - /opt/bridge/bin/bridge
+      - --public-dir=/opt/bridge/static
+      - --config=/var/console-config/console-config.yaml
+      - --service-ca-file=/var/service-ca/service-ca.crt
+      - --v=2
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c18d023fb1b8304a191a9d5bbef0cacdb4f945b7590cf5f550f3a5b9e0bc676
+      imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - sleep
+            - "25"
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /health
+          port: 8443
+          scheme: HTTPS
+        initialDelaySeconds: 150
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: console
+      ports:
+      - containerPort: 8443
+        name: https
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /health
+          port: 8443
+          scheme: HTTPS
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 10m
+          memory: 100Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000620000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/serving-cert
+        name: console-serving-cert
+        readOnly: true
+      - mountPath: /var/oauth-config
+        name: console-oauth-config
+        readOnly: true
+      - mountPath: /var/console-config
+        name: console-config
+        readOnly: true
+      - mountPath: /var/service-ca
+        name: service-ca
+        readOnly: true
+      - mountPath: /var/oauth-serving-cert
+        name: oauth-serving-cert
+        readOnly: true
+      - mountPath: /etc/pki/ca-trust/extracted/pem
+        name: trusted-ca-bundle
+        readOnly: true
+      - mountPath: /var/logo/
+        name: custom-logo
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-7fk4j
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: console-dockercfg-5bdj9
+    nodeName: ip-10-0-138-197.ec2.internal
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000620000
+      seLinuxOptions:
+        level: s0:c25,c10
+    serviceAccount: console
+    serviceAccountName: console
+    terminationGracePeriodSeconds: 40
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-reachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: console-serving-cert
+      secret:
+        defaultMode: 420
+        secretName: console-serving-cert
+    - name: console-oauth-config
+      secret:
+        defaultMode: 420
+        secretName: console-oauth-config
+    - configMap:
+        defaultMode: 420
+        name: console-config
+      name: console-config
+    - configMap:
+        defaultMode: 420
+        name: service-ca
+      name: service-ca
+    - configMap:
+        defaultMode: 420
+        name: oauth-serving-cert
+      name: oauth-serving-cert
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: trusted-ca-bundle
+      name: trusted-ca-bundle
+    - configMap:
+        defaultMode: 420
+        name: custom-logo
+      name: custom-logo
+    - name: kube-api-access-7fk4j
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:35Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:55Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:55Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:36:35Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://37f008feddf8fa0bf6ec6f26b22a98bc0d074490dd5a3f9616686988eefce4f7
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c18d023fb1b8304a191a9d5bbef0cacdb4f945b7590cf5f550f3a5b9e0bc676
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:1c18d023fb1b8304a191a9d5bbef0cacdb4f945b7590cf5f550f3a5b9e0bc676
+      lastState: {}
+      name: console
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:36:37Z"
+    hostIP: 10.0.138.197
+    phase: Running
+    podIP: 10.130.0.26
+    podIPs:
+    - ip: 10.130.0.26
+    qosClass: Burstable
+    startTime: "2022-05-24T18:36:35Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.46"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.46"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:42:31Z"
+    generateName: downloads-76c8fbd97c-
+    labels:
+      app: console
+      component: downloads
+      pod-template-hash: 76c8fbd97c
+    name: downloads-76c8fbd97c-25z4z
+    namespace: openshift-console
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: downloads-76c8fbd97c
+      uid: 114b1e9e-7f67-4bde-a0ba-88da0dc690fa
+    resourceVersion: "75880"
+    uid: e7d3b9b9-d1df-4fb7-96f2-f1d2032b1b32
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: component
+              operator: In
+              values:
+              - downloads
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - args:
+      - -c
+      - "cat <<EOF >>/tmp/serve.py\nimport errno, http.server, os, re, signal, socket,
+        sys, tarfile, tempfile, threading, time, zipfile\n\nsignal.signal(signal.SIGTERM,
+        lambda signum, frame: sys.exit(0))\n\ndef write_index(path, message):\n  with
+        open(path, 'wb') as f:\n    f.write('\\n'.join([\n      '<!doctype html>',\n
+        \     '<html lang=\"en\">',\n      '<head>',\n      '  <meta charset=\"utf-8\">',\n
+        \     '</head>',\n      '<body>',\n      '  {}'.format(message),\n      '</body>',\n
+        \     '</html>',\n      '',\n    ]).encode('utf-8'))\n\n# Launch multiple
+        listeners as threads\nclass Thread(threading.Thread):\n  def __init__(self,
+        i, socket):\n    threading.Thread.__init__(self)\n    self.i = i\n    self.socket
+        = socket\n    self.daemon = True\n    self.start()\n\n  def run(self):\n    server
+        = http.server.SimpleHTTPRequestHandler\n    server.server_version = \"OpenShift
+        Downloads Server\"\n    server.sys_version = \"\"\n    httpd = http.server.HTTPServer(addr,
+        server, False)\n\n    # Prevent the HTTP server from re-binding every handler.\n
+        \   # https://stackoverflow.com/questions/46210672/\n    httpd.socket = self.socket\n
+        \   httpd.server_bind = self.server_close = lambda self: None\n\n    httpd.serve_forever()\n\ntemp_dir
+        = tempfile.mkdtemp()\nprint('serving from {}'.format(temp_dir))\nos.chdir(temp_dir)\nfor
+        arch in ['amd64', 'arm64', 'ppc64le', 's390x']:\n  os.mkdir(arch)\ncontent
+        = ['<a href=\"oc-license\">license</a>']\nos.symlink('/usr/share/openshift/LICENSE',
+        'oc-license')\n\nfor arch, operating_system, path in [\n    ('amd64', 'linux',
+        '/usr/share/openshift/linux_amd64/oc'),\n    ('amd64', 'mac', '/usr/share/openshift/mac/oc'),\n
+        \   ('amd64', 'windows', '/usr/share/openshift/windows/oc.exe'),\n    ('arm64',
+        'linux', '/usr/share/openshift/linux_arm64/oc'),\n    ('arm64', 'mac', '/usr/share/openshift/mac_arm64/oc'),\n
+        \   ('ppc64le', 'linux', '/usr/share/openshift/linux_ppc64le/oc'),\n    ('s390x',
+        'linux', '/usr/share/openshift/linux_s390x/oc'),\n    ]:\n  basename = os.path.basename(path)\n
+        \ target_path = os.path.join(arch, operating_system, basename)\n  os.mkdir(os.path.join(arch,
+        operating_system))\n  os.symlink(path, target_path)\n  base_root, _ = os.path.splitext(basename)\n
+        \ archive_path_root = os.path.join(arch, operating_system, base_root)\n  with
+        tarfile.open('{}.tar'.format(archive_path_root), 'w') as tar:\n    tar.add(path,
+        basename)\n  with zipfile.ZipFile('{}.zip'.format(archive_path_root), 'w')
+        as zip:\n    zip.write(path, basename)\n  content.append('<a href=\"{0}\">oc
+        ({1} {2})</a> (<a href=\"{0}.tar\">tar</a> <a href=\"{0}.zip\">zip</a>)'.format(target_path,
+        arch, operating_system))\n\nfor root, directories, filenames in os.walk(temp_dir):\n
+        \ root_link = os.path.relpath(temp_dir, os.path.join(root, 'child')).replace(os.path.sep,
+        '/')\n  for directory in directories:\n    write_index(\n      path=os.path.join(root,
+        directory, 'index.html'),\n      message='<p>Directory listings are disabled.
+        \ See <a href=\"{}\">here</a> for available content.</p>'.format(root_link),\n
+        \   )\n\nwrite_index(\n  path=os.path.join(temp_dir, 'index.html'),\n  message='\\n'.join(\n
+        \   ['<ul>'] +\n    ['  <li>{}</li>'.format(entry) for entry in content] +\n
+        \   ['</ul>']\n  ),\n)\n\n# Create socket\n# IPv6 should handle IPv4 passively
+        so long as it is not bound to a\n# specific address or set to IPv6_ONLY\n#
+        https://stackoverflow.com/questions/25817848/python-3-does-http-server-support-ipv6\ntry:\n
+        \ addr = ('::', 8080)\n  sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)\nexcept
+        socket.error as err:\n  # errno.EAFNOSUPPORT is \"socket.error: [Errno 97]
+        Address family not supported by protocol\"\n  # When IPv6 is disabled, socket
+        will bind using IPv4.\n  if err.errno == errno.EAFNOSUPPORT:\n    addr = ('',
+        8080)\n    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n  else:\n
+        \   raise    \nsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\nsock.bind(addr)\nsock.listen(5)\n\n[Thread(i,
+        socket=sock) for i in range(100)]\ntime.sleep(9e9)\nEOF\nexec python3 /tmp/serve.py\n"
+      command:
+      - /bin/sh
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7c9ce037d8f73dc66e5d10c540863e70cbc7726147ebf270aaed8f4dc37b681b
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 8080
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: download-server
+      ports:
+      - containerPort: 8080
+        name: http
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 8080
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000620000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2fw58
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: default-dockercfg-dcrln
+    nodeName: ip-10-0-128-34.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000620000
+      seLinuxOptions:
+        level: s0:c25,c10
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 0
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-reachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: kube-api-access-2fw58
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:31Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:36Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:36Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:42:31Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://385c403a3dd219c887c82390066071f416312c653ed89298ec4fe39213a4d054
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7c9ce037d8f73dc66e5d10c540863e70cbc7726147ebf270aaed8f4dc37b681b
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7c9ce037d8f73dc66e5d10c540863e70cbc7726147ebf270aaed8f4dc37b681b
+      lastState: {}
+      name: download-server
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:42:34Z"
+    hostIP: 10.0.128.34
+    phase: Running
+    podIP: 10.131.0.46
+    podIPs:
+    - ip: 10.131.0.46
+    qosClass: Burstable
+    startTime: "2022-05-24T18:42:31Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.9"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.9"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: restricted
+    creationTimestamp: "2022-05-24T18:38:55Z"
+    generateName: downloads-76c8fbd97c-
+    labels:
+      app: console
+      component: downloads
+      pod-template-hash: 76c8fbd97c
+    name: downloads-76c8fbd97c-f8kgn
+    namespace: openshift-console
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: downloads-76c8fbd97c
+      uid: 114b1e9e-7f67-4bde-a0ba-88da0dc690fa
+    resourceVersion: "70401"
+    uid: 0f7b3d9a-6170-4e93-8836-60eeea6b38e0
+  spec:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: component
+              operator: In
+              values:
+              - downloads
+          topologyKey: kubernetes.io/hostname
+    containers:
+    - args:
+      - -c
+      - "cat <<EOF >>/tmp/serve.py\nimport errno, http.server, os, re, signal, socket,
+        sys, tarfile, tempfile, threading, time, zipfile\n\nsignal.signal(signal.SIGTERM,
+        lambda signum, frame: sys.exit(0))\n\ndef write_index(path, message):\n  with
+        open(path, 'wb') as f:\n    f.write('\\n'.join([\n      '<!doctype html>',\n
+        \     '<html lang=\"en\">',\n      '<head>',\n      '  <meta charset=\"utf-8\">',\n
+        \     '</head>',\n      '<body>',\n      '  {}'.format(message),\n      '</body>',\n
+        \     '</html>',\n      '',\n    ]).encode('utf-8'))\n\n# Launch multiple
+        listeners as threads\nclass Thread(threading.Thread):\n  def __init__(self,
+        i, socket):\n    threading.Thread.__init__(self)\n    self.i = i\n    self.socket
+        = socket\n    self.daemon = True\n    self.start()\n\n  def run(self):\n    server
+        = http.server.SimpleHTTPRequestHandler\n    server.server_version = \"OpenShift
+        Downloads Server\"\n    server.sys_version = \"\"\n    httpd = http.server.HTTPServer(addr,
+        server, False)\n\n    # Prevent the HTTP server from re-binding every handler.\n
+        \   # https://stackoverflow.com/questions/46210672/\n    httpd.socket = self.socket\n
+        \   httpd.server_bind = self.server_close = lambda self: None\n\n    httpd.serve_forever()\n\ntemp_dir
+        = tempfile.mkdtemp()\nprint('serving from {}'.format(temp_dir))\nos.chdir(temp_dir)\nfor
+        arch in ['amd64', 'arm64', 'ppc64le', 's390x']:\n  os.mkdir(arch)\ncontent
+        = ['<a href=\"oc-license\">license</a>']\nos.symlink('/usr/share/openshift/LICENSE',
+        'oc-license')\n\nfor arch, operating_system, path in [\n    ('amd64', 'linux',
+        '/usr/share/openshift/linux_amd64/oc'),\n    ('amd64', 'mac', '/usr/share/openshift/mac/oc'),\n
+        \   ('amd64', 'windows', '/usr/share/openshift/windows/oc.exe'),\n    ('arm64',
+        'linux', '/usr/share/openshift/linux_arm64/oc'),\n    ('arm64', 'mac', '/usr/share/openshift/mac_arm64/oc'),\n
+        \   ('ppc64le', 'linux', '/usr/share/openshift/linux_ppc64le/oc'),\n    ('s390x',
+        'linux', '/usr/share/openshift/linux_s390x/oc'),\n    ]:\n  basename = os.path.basename(path)\n
+        \ target_path = os.path.join(arch, operating_system, basename)\n  os.mkdir(os.path.join(arch,
+        operating_system))\n  os.symlink(path, target_path)\n  base_root, _ = os.path.splitext(basename)\n
+        \ archive_path_root = os.path.join(arch, operating_system, base_root)\n  with
+        tarfile.open('{}.tar'.format(archive_path_root), 'w') as tar:\n    tar.add(path,
+        basename)\n  with zipfile.ZipFile('{}.zip'.format(archive_path_root), 'w')
+        as zip:\n    zip.write(path, basename)\n  content.append('<a href=\"{0}\">oc
+        ({1} {2})</a> (<a href=\"{0}.tar\">tar</a> <a href=\"{0}.zip\">zip</a>)'.format(target_path,
+        arch, operating_system))\n\nfor root, directories, filenames in os.walk(temp_dir):\n
+        \ root_link = os.path.relpath(temp_dir, os.path.join(root, 'child')).replace(os.path.sep,
+        '/')\n  for directory in directories:\n    write_index(\n      path=os.path.join(root,
+        directory, 'index.html'),\n      message='<p>Directory listings are disabled.
+        \ See <a href=\"{}\">here</a> for available content.</p>'.format(root_link),\n
+        \   )\n\nwrite_index(\n  path=os.path.join(temp_dir, 'index.html'),\n  message='\\n'.join(\n
+        \   ['<ul>'] +\n    ['  <li>{}</li>'.format(entry) for entry in content] +\n
+        \   ['</ul>']\n  ),\n)\n\n# Create socket\n# IPv6 should handle IPv4 passively
+        so long as it is not bound to a\n# specific address or set to IPv6_ONLY\n#
+        https://stackoverflow.com/questions/25817848/python-3-does-http-server-support-ipv6\ntry:\n
+        \ addr = ('::', 8080)\n  sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)\nexcept
+        socket.error as err:\n  # errno.EAFNOSUPPORT is \"socket.error: [Errno 97]
+        Address family not supported by protocol\"\n  # When IPv6 is disabled, socket
+        will bind using IPv4.\n  if err.errno == errno.EAFNOSUPPORT:\n    addr = ('',
+        8080)\n    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n  else:\n
+        \   raise    \nsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)\nsock.bind(addr)\nsock.listen(5)\n\n[Thread(i,
+        socket=sock) for i in range(100)]\ntime.sleep(9e9)\nEOF\nexec python3 /tmp/serve.py\n"
+      command:
+      - /bin/sh
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7c9ce037d8f73dc66e5d10c540863e70cbc7726147ebf270aaed8f4dc37b681b
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 8080
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: download-server
+      ports:
+      - containerPort: 8080
+        name: http
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 8080
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        runAsUser: 1000620000
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-shzfq
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: default-dockercfg-dcrln
+    nodeName: ip-10-0-164-190.ec2.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000620000
+      seLinuxOptions:
+        level: s0:c25,c10
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 0
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-reachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    volumes:
+    - name: kube-api-access-shzfq
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:09Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:19Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:19Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-05-24T18:40:09Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://47265237de63b721bb20be9b92ae17df7a872c435695fe5504489d65ae670d3d
+      image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7c9ce037d8f73dc66e5d10c540863e70cbc7726147ebf270aaed8f4dc37b681b
+      imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7c9ce037d8f73dc66e5d10c540863e70cbc7726147ebf270aaed8f4dc37b681b
+      lastState: {}
+      name: download-server
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2022-05-24T18:40:12Z"
+    hostIP: 10.0.164.190
+    phase: Running
+    podIP: 10.128.2.9
+    podIPs:
+    - ip: 10.128.2.9
+    qosClass: Burstable
+    startTime: "2022-05-24T18:40:09Z"
+kind: PodList
+metadata:
+  resourceVersion: "309280"

@@ -1,0 +1,80 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: (devel)
+    operatorframework.io/installed-alongside-c569578e83a47937: openshift-storage/ocs-operator.v4.10.0
+  creationTimestamp: "2022-05-24T18:28:17Z"
+  generation: 1
+  labels:
+    operators.coreos.com/ocs-operator.openshift-storage: ""
+  name: cephfilesystemsubvolumegroups.ceph.rook.io
+  resourceVersion: "51143"
+  uid: 9bef0459-9dc2-4368-81e6-cf39e687fc97
+spec:
+  conversion:
+    strategy: None
+  group: ceph.rook.io
+  names:
+    kind: CephFilesystemSubVolumeGroup
+    listKind: CephFilesystemSubVolumeGroupList
+    plural: cephfilesystemsubvolumegroups
+    singular: cephfilesystemsubvolumegroup
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              filesystemName:
+                type: string
+            required:
+            - filesystemName
+            type: object
+          status:
+            properties:
+              info:
+                additionalProperties:
+                  type: string
+                nullable: true
+                type: object
+              phase:
+                type: string
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        required:
+        - metadata
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: CephFilesystemSubVolumeGroup
+    listKind: CephFilesystemSubVolumeGroupList
+    plural: cephfilesystemsubvolumegroups
+    singular: cephfilesystemsubvolumegroup
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:28:17Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2022-05-24T18:28:18Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1

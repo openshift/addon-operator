@@ -1,0 +1,8 @@
+2022-05-24T18:42:34.078586542Z 2022/05/24 18:42:34 provider.go:129: Defaulting client-id to system:serviceaccount:openshift-user-workload-monitoring:thanos-ruler
+2022-05-24T18:42:34.078648543Z 2022/05/24 18:42:34 provider.go:134: Defaulting client-secret to service account token /var/run/secrets/kubernetes.io/serviceaccount/token
+2022-05-24T18:42:34.080328693Z 2022/05/24 18:42:34 provider.go:358: Delegation of authentication and authorization to OpenShift is enabled for bearer tokens and client certificates.
+2022-05-24T18:42:35.140125728Z 2022/05/24 18:42:35 oauthproxy.go:203: mapping path "/" => upstream "http://localhost:10902/"
+2022-05-24T18:42:35.140125728Z 2022/05/24 18:42:35 oauthproxy.go:230: OAuthProxy configured for  Client ID: system:serviceaccount:openshift-user-workload-monitoring:thanos-ruler
+2022-05-24T18:42:35.140155719Z 2022/05/24 18:42:35 oauthproxy.go:240: Cookie settings: name:_oauth_proxy secure(https):true httponly:true expiry:168h0m0s domain:<default> samesite: refresh:disabled
+2022-05-24T18:42:35.140646544Z I0524 18:42:35.140621       1 dynamic_serving_content.go:130] Starting serving::/etc/tls/private/tls.crt::/etc/tls/private/tls.key
+2022-05-24T18:42:35.140696124Z 2022/05/24 18:42:35 http.go:107: HTTPS: listening on [::]:9091

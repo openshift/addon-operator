@@ -1,0 +1,201 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.129.0.11"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.129.0.11"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+  creationTimestamp: "2022-05-24T18:07:08Z"
+  generateName: network-metrics-daemon-
+  labels:
+    app: network-metrics-daemon
+    component: network
+    controller-revision-hash: 68cd77d7c5
+    openshift.io/component: network
+    pod-template-generation: "1"
+    type: infra
+  name: network-metrics-daemon-6snhx
+  namespace: openshift-multus
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: network-metrics-daemon
+    uid: 01e6ff91-72be-4ade-82fd-aad534fc8bc2
+  resourceVersion: "71743"
+  uid: 04163615-a35e-4b19-88c2-96c426c91bb7
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ip-10-0-149-121.ec2.internal
+  containers:
+  - args:
+    - --node-name
+    - $(NODE_NAME)
+    command:
+    - /usr/bin/network-metrics
+    env:
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fa14b77345ce258fdb531a52c98abc6a3f5ad6d7aaa82f6aca30ab46d52c75ec
+    imagePullPolicy: IfNotPresent
+    name: network-metrics-daemon
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5c547
+      readOnly: true
+  - args:
+    - --logtostderr
+    - --secure-listen-address=:8443
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+    - --upstream=http://127.0.0.1:9091/
+    - --tls-private-key-file=/etc/metrics/tls.key
+    - --tls-cert-file=/etc/metrics/tls.crt
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy
+    ports:
+    - containerPort: 8443
+      name: https
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/metrics
+      name: metrics-certs
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5c547
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ip-10-0-149-121.ec2.internal
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+  serviceAccount: metrics-daemon-sa
+  serviceAccountName: metrics-daemon-sa
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  volumes:
+  - name: metrics-certs
+    secret:
+      defaultMode: 420
+      secretName: metrics-daemon-secret
+  - name: kube-api-access-5c547
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:07:09Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:40:42Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:40:42Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:07:08Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://c6c062beb124f76564e65b134829850d27908107ded0df11bb4eb904518d377f
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:40:41Z"
+  - containerID: cri-o://18487150c2fb918fe5ae93b998e90bd3ddc093938cce6cbea5f107f889e089f1
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fa14b77345ce258fdb531a52c98abc6a3f5ad6d7aaa82f6aca30ab46d52c75ec
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fa14b77345ce258fdb531a52c98abc6a3f5ad6d7aaa82f6aca30ab46d52c75ec
+    lastState: {}
+    name: network-metrics-daemon
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:40:41Z"
+  hostIP: 10.0.149.121
+  phase: Running
+  podIP: 10.129.0.11
+  podIPs:
+  - ip: 10.129.0.11
+  qosClass: Burstable
+  startTime: "2022-05-24T18:07:09Z"

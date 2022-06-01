@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+imagePullSecrets:
+- name: operator-dockercfg-hvz6h
+kind: ServiceAccount
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:06:16Z"
+  name: operator
+  namespace: openshift-insights
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "17276"
+  uid: 2d778e64-4fc5-44f6-ad25-b757bed31b1f
+secrets:
+- name: operator-token-pqsr9
+- name: operator-dockercfg-hvz6h

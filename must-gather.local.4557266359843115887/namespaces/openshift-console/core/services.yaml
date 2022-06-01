@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-secret-name: console-serving-cert
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:19:47Z"
+    labels:
+      app: console
+    name: console
+    namespace: openshift-console
+    resourceVersion: "25446"
+    uid: 89f5ab80-2400-4da4-91c7-369d56ff8aa9
+  spec:
+    clusterIP: 172.30.138.202
+    clusterIPs:
+    - 172.30.138.202
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    selector:
+      app: console
+      component: ui
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2022-05-24T18:19:47Z"
+    name: downloads
+    namespace: openshift-console
+    resourceVersion: "25406"
+    uid: 1c437eb9-2b3d-4e04-b230-5bec49faf20d
+  spec:
+    clusterIP: 172.30.29.235
+    clusterIPs:
+    - 172.30.29.235
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: console
+      component: downloads
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "309283"

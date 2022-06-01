@@ -1,0 +1,22 @@
+2022-05-24T18:44:19.408673352Z I0524 18:44:19.408543       1 main.go:45] Version:52986d95896619efeda191597587c34a086b7f75
+2022-05-24T18:44:19.408673352Z I0524 18:44:19.408651       1 main.go:46] Starting with config{  :9091 ip-10-0-145-179.ec2.internal}
+2022-05-24T18:44:19.410101740Z W0524 18:44:19.410073       1 client_config.go:543] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+2022-05-24T18:44:19.415825801Z I0524 18:44:19.415797       1 controller.go:42] Setting up event handlers
+2022-05-24T18:44:19.415986615Z I0524 18:44:19.415966       1 podmetrics.go:101] Serving network metrics
+2022-05-24T18:44:19.416000671Z I0524 18:44:19.415989       1 controller.go:101] Starting pod controller
+2022-05-24T18:44:19.416000671Z I0524 18:44:19.415993       1 controller.go:104] Waiting for informer caches to sync
+2022-05-24T18:44:22.616895381Z I0524 18:44:22.616570       1 controller.go:109] Starting workers
+2022-05-24T18:44:22.616895381Z I0524 18:44:22.616884       1 controller.go:114] Started workers
+2022-05-24T18:44:22.616945020Z I0524 18:44:22.616928       1 controller.go:192] Received pod 'dns-default-sh4np'
+2022-05-24T18:44:22.616973521Z I0524 18:44:22.616954       1 controller.go:192] Received pod 'ingress-canary-mvn6j'
+2022-05-24T18:44:22.617010141Z I0524 18:44:22.616995       1 controller.go:151] Successfully synced 'openshift-dns/dns-default-sh4np'
+2022-05-24T18:44:22.617010141Z I0524 18:44:22.617000       1 controller.go:151] Successfully synced 'openshift-ingress-canary/ingress-canary-mvn6j'
+2022-05-24T18:44:22.617010141Z I0524 18:44:22.617005       1 controller.go:192] Received pod 'sre-dns-latency-exporter-tm8gj'
+2022-05-24T18:44:22.617018992Z I0524 18:44:22.617008       1 controller.go:192] Received pod 'network-metrics-daemon-2nbf9'
+2022-05-24T18:44:22.617025521Z I0524 18:44:22.617018       1 controller.go:151] Successfully synced 'openshift-monitoring/sre-dns-latency-exporter-tm8gj'
+2022-05-24T18:44:22.617025521Z I0524 18:44:22.617021       1 controller.go:151] Successfully synced 'openshift-multus/network-metrics-daemon-2nbf9'
+2022-05-24T18:44:22.617032271Z I0524 18:44:22.617024       1 controller.go:192] Received pod 'network-check-target-2swxp'
+2022-05-24T18:44:22.617032271Z I0524 18:44:22.617027       1 controller.go:192] Received pod 'splunkforwarder-ds-dg8j6'
+2022-05-24T18:44:22.617040477Z I0524 18:44:22.617034       1 controller.go:151] Successfully synced 'openshift-network-diagnostics/network-check-target-2swxp'
+2022-05-24T18:44:22.617040477Z I0524 18:44:22.617038       1 controller.go:151] Successfully synced 'openshift-security/splunkforwarder-ds-dg8j6'
+2022-05-24T18:45:03.278826532Z I0524 18:45:03.278788       1 controller.go:151] Successfully synced 'openshift-multus/ip-reconciler-27556965-pssv5'

@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/node-selector: ""
+    openshift.io/sa.scc.mcs: s0:c24,c14
+    openshift.io/sa.scc.supplemental-groups: 1000580000/10000
+    openshift.io/sa.scc.uid-range: 1000580000/10000
+    workload.openshift.io/allowed: management
+  creationTimestamp: "2022-05-24T18:08:52Z"
+  labels:
+    kubernetes.io/metadata.name: openshift-ingress
+    managed.openshift.io/service-lb-quota-exempt: "true"
+    name: openshift-ingress
+    network.openshift.io/policy-group: ingress
+    olm.operatorgroup.uid/8a93c0f1-8a8d-4e81-b276-28403a176bac: ""
+    openshift.io/cluster-monitoring: "true"
+    policy-group.network.openshift.io/ingress: ""
+  name: openshift-ingress
+  resourceVersion: "30528"
+  uid: 0e44ac70-2507-4de9-b3ae-9790d61b129e
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active

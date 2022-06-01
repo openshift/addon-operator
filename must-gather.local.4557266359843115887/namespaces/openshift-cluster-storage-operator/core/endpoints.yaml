@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:31:59Z"
+    creationTimestamp: "2022-05-24T18:06:17Z"
+    labels:
+      app: cluster-storage-operator-metrics
+    name: cluster-storage-operator-metrics
+    namespace: openshift-cluster-storage-operator
+    resourceVersion: "54407"
+    uid: 4058e165-32f0-4c32-a087-6f782d9b9586
+  subsets:
+  - addresses:
+    - ip: 10.128.0.40
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: cluster-storage-operator-b7998b4df-j578g
+        namespace: openshift-cluster-storage-operator
+        resourceVersion: "54397"
+        uid: 97d65592-22b7-4447-bdc3-a7f6ffcde6ea
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:32:11Z"
+    creationTimestamp: "2022-05-24T18:05:40Z"
+    labels:
+      app: csi-snapshot-controller-operator
+    name: csi-snapshot-controller-operator-metrics
+    namespace: openshift-cluster-storage-operator
+    resourceVersion: "55576"
+    uid: 5dd7c64a-4f8e-4666-9f9a-a88ee047e220
+  subsets:
+  - addresses:
+    - ip: 10.128.0.50
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: csi-snapshot-controller-operator-5fcfc75bd9-sw2w9
+        namespace: openshift-cluster-storage-operator
+        resourceVersion: "55572"
+        uid: 42d23f85-144e-488a-b9a3-546a4e006b48
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:33Z"
+    creationTimestamp: "2022-05-24T18:06:06Z"
+    labels:
+      app: csi-snapshot-webhook
+    name: csi-snapshot-webhook
+    namespace: openshift-cluster-storage-operator
+    resourceVersion: "63009"
+    uid: 7b07f562-4da0-457a-b48c-e2701c9e8683
+  subsets:
+  - addresses:
+    - ip: 10.128.0.42
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: csi-snapshot-webhook-d77867d47-crpm5
+        namespace: openshift-cluster-storage-operator
+        resourceVersion: "55565"
+        uid: 4d9c0798-482f-49f8-b169-20b061210c20
+    - ip: 10.130.0.23
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: csi-snapshot-webhook-d77867d47-vdgrm
+        namespace: openshift-cluster-storage-operator
+        resourceVersion: "63003"
+        uid: d348db50-d3a2-4a42-8dbc-60b399d89aaf
+    ports:
+    - name: webhook
+      port: 8443
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "309546"

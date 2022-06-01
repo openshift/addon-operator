@@ -1,0 +1,424 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    checksum/grafana-config: 28b9b36ac4d235c1c5f2f9ca81714d1c
+    checksum/grafana-dashboardproviders: 9ac0e8fe144a3a59f7ab62b4e733f22d
+    checksum/grafana-datasources: 58dfbb3df9951f2ac8acf4c625c7173c
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.2.10"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.2.10"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:34:57Z"
+  generateName: grafana-56c5499d4d-
+  labels:
+    app.kubernetes.io/component: grafana
+    app.kubernetes.io/managed-by: cluster-monitoring-operator
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/part-of: openshift-monitoring
+    app.kubernetes.io/version: 8.3.4
+    pod-template-hash: 56c5499d4d
+  name: grafana-56c5499d4d-lkgqn
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: grafana-56c5499d4d
+    uid: f6179ea5-e2d0-42ac-9f68-cee627677321
+  resourceVersion: "60594"
+  uid: 4ca96914-f3cc-4968-a952-ef71cc530161
+spec:
+  containers:
+  - args:
+    - -config=/etc/grafana/grafana.ini
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:39594b0dd96744cb8fa31cf0485f7bee06159dc08e489edbacba3b3062efbb68
+    imagePullPolicy: IfNotPresent
+    name: grafana
+    ports:
+    - containerPort: 3001
+      name: http
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 4m
+        memory: 64Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/lib/grafana
+      name: grafana-storage
+    - mountPath: /etc/grafana/provisioning/datasources
+      name: grafana-datasources
+    - mountPath: /etc/grafana/provisioning/dashboards
+      name: grafana-dashboards
+    - mountPath: /grafana-dashboard-definitions/0/cluster-total
+      name: grafana-dashboard-cluster-total
+    - mountPath: /grafana-dashboard-definitions/0/etcd
+      name: grafana-dashboard-etcd
+    - mountPath: /grafana-dashboard-definitions/0/k8s-resources-cluster
+      name: grafana-dashboard-k8s-resources-cluster
+    - mountPath: /grafana-dashboard-definitions/0/k8s-resources-namespace
+      name: grafana-dashboard-k8s-resources-namespace
+    - mountPath: /grafana-dashboard-definitions/0/k8s-resources-node
+      name: grafana-dashboard-k8s-resources-node
+    - mountPath: /grafana-dashboard-definitions/0/k8s-resources-pod
+      name: grafana-dashboard-k8s-resources-pod
+    - mountPath: /grafana-dashboard-definitions/0/k8s-resources-workload
+      name: grafana-dashboard-k8s-resources-workload
+    - mountPath: /grafana-dashboard-definitions/0/k8s-resources-workloads-namespace
+      name: grafana-dashboard-k8s-resources-workloads-namespace
+    - mountPath: /grafana-dashboard-definitions/0/namespace-by-pod
+      name: grafana-dashboard-namespace-by-pod
+    - mountPath: /grafana-dashboard-definitions/0/node-cluster-rsrc-use
+      name: grafana-dashboard-node-cluster-rsrc-use
+    - mountPath: /grafana-dashboard-definitions/0/node-rsrc-use
+      name: grafana-dashboard-node-rsrc-use
+    - mountPath: /grafana-dashboard-definitions/0/pod-total
+      name: grafana-dashboard-pod-total
+    - mountPath: /grafana-dashboard-definitions/0/prometheus
+      name: grafana-dashboard-prometheus
+    - mountPath: /etc/grafana
+      name: grafana-config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-7n5nr
+      readOnly: true
+  - args:
+    - -provider=openshift
+    - -https-address=:3000
+    - -http-address=
+    - -email-domain=*
+    - -upstream=http://localhost:3001
+    - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+    - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get"}}'
+    - -tls-cert=/etc/tls/private/tls.crt
+    - -tls-key=/etc/tls/private/tls.key
+    - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+    - -cookie-secret-file=/etc/proxy/secrets/session_secret
+    - -openshift-service-account=grafana
+    - -openshift-ca=/etc/pki/tls/cert.pem
+    - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    env:
+    - name: HTTP_PROXY
+    - name: HTTPS_PROXY
+    - name: NO_PROXY
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+    imagePullPolicy: IfNotPresent
+    name: grafana-proxy
+    ports:
+    - containerPort: 3000
+      name: https
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /oauth/healthz
+        port: https
+        scheme: HTTPS
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 1m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/tls/private
+      name: secret-grafana-tls
+    - mountPath: /etc/proxy/secrets
+      name: secret-grafana-proxy
+    - mountPath: /etc/pki/ca-trust/extracted/pem/
+      name: grafana-trusted-ca-bundle
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-7n5nr
+      readOnly: true
+  - args:
+    - --secure-listen-address=0.0.0.0:3002
+    - --upstream=http://127.0.0.1:3001
+    - --config-file=/etc/kube-rbac-proxy/config.yaml
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    - --client-ca-file=/etc/tls/client/client-ca.crt
+    - --logtostderr=true
+    - --allow-paths=/metrics
+    - --tls-min-version=VersionTLS12
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy-metrics
+    ports:
+    - containerPort: 3002
+      name: metrics
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1m
+        memory: 15Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /etc/kube-rbac-proxy
+      name: secret-grafana-kube-rbac-proxy-metric
+      readOnly: true
+    - mountPath: /etc/tls/private
+      name: secret-grafana-tls
+      readOnly: true
+    - mountPath: /etc/tls/client
+      name: metrics-client-ca
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-7n5nr
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: grafana-dockercfg-6fbk4
+  nodeName: ip-10-0-166-35.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/infra: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: grafana
+  serviceAccountName: grafana
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - emptyDir: {}
+    name: grafana-storage
+  - name: grafana-datasources
+    secret:
+      defaultMode: 420
+      secretName: grafana-datasources-v2
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboards
+    name: grafana-dashboards
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-cluster-total
+    name: grafana-dashboard-cluster-total
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-etcd
+    name: grafana-dashboard-etcd
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-k8s-resources-cluster
+    name: grafana-dashboard-k8s-resources-cluster
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-k8s-resources-namespace
+    name: grafana-dashboard-k8s-resources-namespace
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-k8s-resources-node
+    name: grafana-dashboard-k8s-resources-node
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-k8s-resources-pod
+    name: grafana-dashboard-k8s-resources-pod
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-k8s-resources-workload
+    name: grafana-dashboard-k8s-resources-workload
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-k8s-resources-workloads-namespace
+    name: grafana-dashboard-k8s-resources-workloads-namespace
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-namespace-by-pod
+    name: grafana-dashboard-namespace-by-pod
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-node-cluster-rsrc-use
+    name: grafana-dashboard-node-cluster-rsrc-use
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-node-rsrc-use
+    name: grafana-dashboard-node-rsrc-use
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-pod-total
+    name: grafana-dashboard-pod-total
+  - configMap:
+      defaultMode: 420
+      name: grafana-dashboard-prometheus
+    name: grafana-dashboard-prometheus
+  - name: grafana-config
+    secret:
+      defaultMode: 420
+      secretName: grafana-config
+  - name: secret-grafana-tls
+    secret:
+      defaultMode: 420
+      secretName: grafana-tls
+  - name: secret-grafana-kube-rbac-proxy-metric
+    secret:
+      defaultMode: 420
+      secretName: grafana-kube-rbac-proxy-metric
+  - name: secret-grafana-proxy
+    secret:
+      defaultMode: 420
+      secretName: grafana-proxy
+  - configMap:
+      defaultMode: 420
+      name: metrics-client-ca
+    name: metrics-client-ca
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: ca-bundle.crt
+        path: tls-ca-bundle.pem
+      name: grafana-trusted-ca-bundle-2rsonso43rc5p
+      optional: true
+    name: grafana-trusted-ca-bundle
+  - name: kube-api-access-7n5nr
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:57Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:35:06Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:35:06Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:34:57Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://6497270c2e05041d01b88f535f77d6defcc26d097807efb841f25188b700d7fe
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:39594b0dd96744cb8fa31cf0485f7bee06159dc08e489edbacba3b3062efbb68
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:39594b0dd96744cb8fa31cf0485f7bee06159dc08e489edbacba3b3062efbb68
+    lastState: {}
+    name: grafana
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:35:05Z"
+  - containerID: cri-o://14171e7839f1b8324c15e6ebd91218bff3d3a01128e722b7ce0b56707ab98114
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:d787f47ee2a410f924ea00b2428f0cf2275eb059adac96ca1b69c71ad20ccb1d
+    lastState: {}
+    name: grafana-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:35:05Z"
+  - containerID: cri-o://890a0f712ff8670262fb84dba1630a85ac8e83afe052d576132f9ac0ecea152b
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy-metrics
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:35:05Z"
+  hostIP: 10.0.166.35
+  phase: Running
+  podIP: 10.131.2.10
+  podIPs:
+  - ip: 10.131.2.10
+  qosClass: Burstable
+  startTime: "2022-05-24T18:34:57Z"

@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+    creationTimestamp: "2022-05-24T18:13:03Z"
+    generation: 1
+    labels:
+      ingress.openshift.io/canary: canary_controller
+    name: ingress-canary
+    namespace: openshift-ingress-canary
+    resourceVersion: "78666"
+    uid: 142e58b0-8290-4e8f-b18a-38e14138b83a
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+    template:
+      metadata:
+        annotations:
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+      spec:
+        containers:
+        - command:
+          - ingress-operator
+          - serve-healthcheck
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:42ea6ea5b944666bb255253f8e41a77e75fb1c43a6c7bd349c343d8ebcf65d0e
+          imagePullPolicy: IfNotPresent
+          name: serve-healthcheck-canary
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 8888
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 10%
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 6
+    desiredNumberScheduled: 6
+    numberAvailable: 6
+    numberMisscheduled: 0
+    numberReady: 6
+    observedGeneration: 1
+    updatedNumberScheduled: 6
+kind: DaemonSetList
+metadata:
+  resourceVersion: "312934"

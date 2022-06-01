@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:37Z"
+    creationTimestamp: "2022-05-24T18:05:47Z"
+    labels:
+      name: dns-operator
+    name: metrics
+    namespace: openshift-dns-operator
+    resourceVersion: "63435"
+    uid: 44d2a515-fb89-44e1-8d18-a7e21d95cb69
+  subsets:
+  - addresses:
+    - ip: 10.130.0.24
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: dns-operator-6c5d9c7574-z9ztf
+        namespace: openshift-dns-operator
+        resourceVersion: "63428"
+        uid: e42a0087-ec86-4782-96d4-9a59edf359d6
+    ports:
+    - name: metrics
+      port: 9393
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "309881"

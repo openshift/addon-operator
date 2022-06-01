@@ -1,0 +1,117 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.38
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: console-6c7cfdb6c6-6w9gn
+      namespace: openshift-console
+      resourceVersion: "55857"
+      uid: de18d1b7-5e05-444e-baff-823dbe83cdc8
+    zone: us-east-1c
+  - addresses:
+    - 10.130.0.26
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: console-6c7cfdb6c6-xd9bp
+      namespace: openshift-console
+      resourceVersion: "64197"
+      uid: 745486af-26e3-4bb1-ad93-c04aba72763a
+    zone: us-east-1a
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:19:47Z"
+    generateName: console-
+    generation: 48
+    labels:
+      app: console
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: console
+    name: console-mgcxc
+    namespace: openshift-console
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: console
+      uid: 89f5ab80-2400-4da4-91c7-369d56ff8aa9
+    resourceVersion: "64395"
+    uid: 187d2f14-92ad-4a81-a18e-51b91766c37a
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.2.9
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-164-190.ec2.internal
+    targetRef:
+      kind: Pod
+      name: downloads-76c8fbd97c-f8kgn
+      namespace: openshift-console
+      resourceVersion: "70401"
+      uid: 0f7b3d9a-6170-4e93-8836-60eeea6b38e0
+    zone: us-east-1c
+  - addresses:
+    - 10.131.0.46
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-128-34.ec2.internal
+    targetRef:
+      kind: Pod
+      name: downloads-76c8fbd97c-25z4z
+      namespace: openshift-console
+      resourceVersion: "75880"
+      uid: e7d3b9b9-d1df-4fb7-96f2-f1d2032b1b32
+    zone: us-east-1a
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:19:47Z"
+    creationTimestamp: "2022-05-24T18:19:47Z"
+    generateName: downloads-
+    generation: 14
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: downloads
+    name: downloads-hfns2
+    namespace: openshift-console
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: downloads
+      uid: 1c437eb9-2b3d-4e04-b230-5bec49faf20d
+    resourceVersion: "76416"
+    uid: fea0a64b-fbe8-46d0-bf36-af9066716dce
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "309294"

@@ -1,0 +1,209 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.44"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.44"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+  creationTimestamp: "2022-05-24T18:31:58Z"
+  generateName: etcd-operator-6565d86cc-
+  labels:
+    app: etcd-operator
+    pod-template-hash: 6565d86cc
+  name: etcd-operator-6565d86cc-jcwp7
+  namespace: openshift-etcd-operator
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: etcd-operator-6565d86cc
+    uid: c126bbaa-5566-4962-9764-f7008670ede2
+  resourceVersion: "55502"
+  uid: 8d0af300-795f-401a-bf23-8edefdb51698
+spec:
+  containers:
+  - args:
+    - --config=/var/run/configmaps/config/config.yaml
+    - -v=4
+    - --terminate-on-files=/var/run/secrets/serving-cert/tls.crt
+    - --terminate-on-files=/var/run/secrets/serving-cert/tls.key
+    command:
+    - cluster-etcd-operator
+    - operator
+    env:
+    - name: IMAGE
+      value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:69322de62138a64e0614d12803b76bd0d9114a66a38165309d3f20dc60084f6f
+    - name: OPERATOR_IMAGE
+      value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f161673930ffcc897e097257b86f2452eccb61aeca0fc95c2989371b796e275d
+    - name: CLI_IMAGE
+      value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+    - name: OPERATOR_IMAGE_VERSION
+      value: 4.10.13
+    - name: OPERAND_IMAGE_VERSION
+      value: 4.10.13
+    - name: OPENSHIFT_PROFILE
+      value: web
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f161673930ffcc897e097257b86f2452eccb61aeca0fc95c2989371b796e275d
+    imagePullPolicy: IfNotPresent
+    name: etcd-operator
+    ports:
+    - containerPort: 8443
+      name: metrics
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /var/run/configmaps/config
+      name: config
+    - mountPath: /var/run/secrets/serving-cert
+      name: serving-cert
+    - mountPath: /var/run/configmaps/etcd-ca
+      name: etcd-ca
+    - mountPath: /var/run/configmaps/etcd-service-ca
+      name: etcd-service-ca
+    - mountPath: /var/run/secrets/etcd-client
+      name: etcd-client
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-x5bh8
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: etcd-operator-dockercfg-4rv6l
+  nodeName: ip-10-0-169-205.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000000000
+  priorityClassName: system-cluster-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: etcd-operator
+  serviceAccountName: etcd-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: serving-cert
+    secret:
+      defaultMode: 420
+      optional: true
+      secretName: etcd-operator-serving-cert
+  - configMap:
+      defaultMode: 420
+      name: etcd-operator-config
+    name: config
+  - configMap:
+      defaultMode: 420
+      name: etcd-ca-bundle
+    name: etcd-ca
+  - configMap:
+      defaultMode: 420
+      name: etcd-service-ca-bundle
+    name: etcd-service-ca
+  - name: etcd-client
+    secret:
+      defaultMode: 420
+      secretName: etcd-client
+  - name: kube-api-access-x5bh8
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:58Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:10Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:10Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:31:58Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://91b2edd4d87ea2e20fd1cb4fb7dd3c3c2cad25a32cf8b51c439c676898c90984
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f161673930ffcc897e097257b86f2452eccb61aeca0fc95c2989371b796e275d
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:f161673930ffcc897e097257b86f2452eccb61aeca0fc95c2989371b796e275d
+    lastState: {}
+    name: etcd-operator
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:09Z"
+  hostIP: 10.0.169.205
+  phase: Running
+  podIP: 10.128.0.44
+  podIPs:
+  - ip: 10.128.0.44
+  qosClass: Burstable
+  startTime: "2022-05-24T18:31:58Z"

@@ -1,0 +1,10 @@
+2022-05-24T18:31:32.425660435Z I0524 18:31:32.425376       1 main.go:53] starting net-attach-def-admission-controller webhook server
+2022-05-24T18:31:32.485660350Z I0524 18:31:32.485615       1 localmetrics.go:51] UPdating net-attach-def metrics for any with value 0
+2022-05-24T18:31:32.485758097Z I0524 18:31:32.485740       1 localmetrics.go:51] UPdating net-attach-def metrics for sriov with value 0
+2022-05-24T18:31:32.485805388Z I0524 18:31:32.485794       1 localmetrics.go:51] UPdating net-attach-def metrics for ib-sriov with value 0
+2022-05-24T18:31:32.490263806Z I0524 18:31:32.490230       1 controller.go:194] Starting net-attach-def-admission-controller
+2022-05-24T18:31:39.891448624Z I0524 18:31:39.891243       1 controller.go:203] net-attach-def-admission-controller synced and ready
+2022-05-24T18:39:08.678012164Z 2022/05/24 18:39:08 http: TLS handshake error from 10.128.0.71:36458: remote error: tls: bad certificate
+2022-05-24T18:39:09.686158228Z 2022/05/24 18:39:09 http: TLS handshake error from 10.128.0.71:36916: remote error: tls: bad certificate
+2022-05-24T18:39:13.815434392Z 2022/05/24 18:39:13 http: TLS handshake error from 10.128.0.71:38742: remote error: tls: bad certificate
+2022-05-24T18:39:16.830606588Z 2022/05/24 18:39:16 http: TLS handshake error from 10.128.0.71:39774: remote error: tls: bad certificate

@@ -1,0 +1,10 @@
+2022-05-24T18:28:01.316469315Z time="2022-05-24T18:28:01Z" level=info msg="Using in-cluster kube client config"
+2022-05-24T18:28:01.327461085Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/odf-operator-controller-manager-metrics-monitor_monitoring.coreos.com_v1_servicemonitor.yaml
+2022-05-24T18:28:01.327981300Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/odf-operator-controller-manager-metrics-service_rbac.authorization.k8s.io_v1_role.yaml
+2022-05-24T18:28:01.328979594Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/odf-operator-controller-manager-metrics-service_rbac.authorization.k8s.io_v1_rolebinding.yaml
+2022-05-24T18:28:01.329318585Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/odf-operator-controller-manager-metrics-service_v1_service.yaml
+2022-05-24T18:28:01.329780742Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/odf-operator-manager-config_v1_configmap.yaml
+2022-05-24T18:28:01.330414652Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/odf-operator-metrics-reader_rbac.authorization.k8s.io_v1_clusterrole.yaml
+2022-05-24T18:28:01.330523393Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/odf-operator.clusterserviceversion.yaml
+2022-05-24T18:28:01.331764132Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/manifests/odf.openshift.io_storagesystems.yaml
+2022-05-24T18:28:01.332197923Z time="2022-05-24T18:28:01Z" level=info msg="Reading file" file=/bundle/metadata/annotations.yaml

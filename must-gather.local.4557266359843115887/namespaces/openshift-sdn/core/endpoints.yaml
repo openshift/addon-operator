@@ -1,0 +1,140 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:21Z"
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    labels:
+      app: sdn
+      service.kubernetes.io/headless: ""
+    name: sdn
+    namespace: openshift-sdn
+    resourceVersion: "78697"
+    uid: cddfca78-6aa9-4bca-bbcf-d5c5d5f9ef8d
+  subsets:
+  - addresses:
+    - ip: 10.0.128.34
+      nodeName: ip-10-0-128-34.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-5m8hv
+        namespace: openshift-sdn
+        resourceVersion: "37716"
+        uid: c848a092-e673-4648-9936-44f44cc8c000
+    - ip: 10.0.138.197
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-2f447
+        namespace: openshift-sdn
+        resourceVersion: "61601"
+        uid: c086781c-9350-4b02-863a-3b592e247f34
+    - ip: 10.0.140.240
+      nodeName: ip-10-0-140-240.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-ctt2v
+        namespace: openshift-sdn
+        resourceVersion: "67427"
+        uid: 9c0c7136-f2cf-43f3-aeb3-82b9ba9fa5d0
+    - ip: 10.0.145.179
+      nodeName: ip-10-0-145-179.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-7s5qn
+        namespace: openshift-sdn
+        resourceVersion: "78696"
+        uid: 504a7c69-363f-4aa4-bbfa-44cd7da37a7b
+    - ip: 10.0.148.123
+      nodeName: ip-10-0-148-123.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-t4jcw
+        namespace: openshift-sdn
+        resourceVersion: "74676"
+        uid: 927118e3-1692-41f4-9bd4-e7af5805a2b5
+    - ip: 10.0.149.121
+      nodeName: ip-10-0-149-121.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-26p6q
+        namespace: openshift-sdn
+        resourceVersion: "71415"
+        uid: ecc8735c-94c4-48c5-897d-8105e1d597e0
+    - ip: 10.0.164.190
+      nodeName: ip-10-0-164-190.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-v8jp5
+        namespace: openshift-sdn
+        resourceVersion: "69854"
+        uid: 70506fed-13b0-4631-bd10-5fed12109745
+    - ip: 10.0.166.35
+      nodeName: ip-10-0-166-35.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-k6cjf
+        namespace: openshift-sdn
+        resourceVersion: "56632"
+        uid: 3856c578-2463-4037-9914-704a28d4f084
+    - ip: 10.0.169.205
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-fwmj8
+        namespace: openshift-sdn
+        resourceVersion: "53168"
+        uid: 23ce3f39-cbcd-4288-beea-8b78fb0a7304
+    ports:
+    - name: metrics
+      port: 9101
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:40:31Z"
+    creationTimestamp: "2022-05-24T18:07:09Z"
+    labels:
+      app: sdn-controller
+      service.kubernetes.io/headless: ""
+    name: sdn-controller
+    namespace: openshift-sdn
+    resourceVersion: "70978"
+    uid: 057f2d52-5c0b-464e-8f2d-d70bfc8d8cbc
+  subsets:
+  - addresses:
+    - ip: 10.0.138.197
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-controller-l8dcw
+        namespace: openshift-sdn
+        resourceVersion: "61432"
+        uid: b458aeab-0927-4735-8224-145ed3a7ecb1
+    - ip: 10.0.149.121
+      nodeName: ip-10-0-149-121.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-controller-7qjhd
+        namespace: openshift-sdn
+        resourceVersion: "70977"
+        uid: c4dec300-5aaa-47f1-9f5d-997036df19cd
+    - ip: 10.0.169.205
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: sdn-controller-pqwj6
+        namespace: openshift-sdn
+        resourceVersion: "52842"
+        uid: 0aafd61c-ad82-4214-af63-ef065a558860
+    ports:
+    - name: controller-metrics
+      port: 9106
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "328192"

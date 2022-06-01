@@ -1,0 +1,47 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.76
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: insights-operator-5d5b6d5998-5qslf
+      namespace: openshift-insights
+      resourceVersion: "63888"
+      uid: 93b7d518-69c9-4762-bcfd-4f4bb01c789e
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:06:17Z"
+    generateName: metrics-
+    generation: 13
+    labels:
+      app: insights-operator
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: metrics
+    name: metrics-j2dcd
+    namespace: openshift-insights
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: metrics
+      uid: e1422253-1d43-4ee8-8939-776a932d197a
+    resourceVersion: "63910"
+    uid: dd684ccf-8063-4df4-832d-ff3a0ed8380e
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "313146"

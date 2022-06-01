@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    service.alpha.openshift.io/serving-cert-secret-name: metrics-daemon-secret
+    service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  labels:
+    service: network-metrics-service
+  name: network-metrics-service
+  namespace: openshift-multus
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "6238"
+  uid: 4c54dd5b-a5d6-4ed4-b5c5-99db6a3e9827
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: metrics
+    port: 8443
+    protocol: TCP
+    targetPort: https
+  selector:
+    app: network-metrics-daemon
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

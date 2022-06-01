@@ -1,0 +1,71 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    exclude.release.openshift.io/internal-openshift-hosted: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: baremetal
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "7885"
+  uid: b1605510-b032-4011-bb30-50faa0054fb8
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:08:40Z"
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:08:40Z"
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:08:40Z"
+    message: Operational
+    reason: AsExpected
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:08:40Z"
+    status: "True"
+    type: Upgradeable
+  - lastTransitionTime: "2022-05-24T18:08:40Z"
+    message: Nothing to do on this Platform
+    reason: UnsupportedPlatform
+    status: "True"
+    type: Disabled
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-machine-api
+    resource: namespaces
+  - group: metal3.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: baremetalhosts
+  - group: metal3.io
+    name: ""
+    resource: provisioning
+  - group: metal3.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: hostfirmwaresettings
+  - group: metal3.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: firmwareschemas
+  - group: metal3.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: preprovisioningimages
+  - group: metal3.io
+    name: ""
+    namespace: openshift-machine-api
+    resource: bmceventsubscriptions
+  versions:
+  - name: operator
+    version: 4.10.13

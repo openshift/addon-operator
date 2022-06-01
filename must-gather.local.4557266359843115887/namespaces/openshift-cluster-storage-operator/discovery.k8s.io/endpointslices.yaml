@@ -1,0 +1,147 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.40
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: cluster-storage-operator-b7998b4df-j578g
+      namespace: openshift-cluster-storage-operator
+      resourceVersion: "54397"
+      uid: 97d65592-22b7-4447-bdc3-a7f6ffcde6ea
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:31:59Z"
+    creationTimestamp: "2022-05-24T18:06:17Z"
+    generateName: cluster-storage-operator-metrics-
+    generation: 14
+    labels:
+      app: cluster-storage-operator-metrics
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: cluster-storage-operator-metrics
+    name: cluster-storage-operator-metrics-dbgsg
+    namespace: openshift-cluster-storage-operator
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: cluster-storage-operator-metrics
+      uid: faf799a2-eaa8-41ba-9e43-c6e701f4f89b
+    resourceVersion: "54399"
+    uid: 0f6daf5c-fe11-4556-a424-661612d30384
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.50
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: csi-snapshot-controller-operator-5fcfc75bd9-sw2w9
+      namespace: openshift-cluster-storage-operator
+      resourceVersion: "55572"
+      uid: 42d23f85-144e-488a-b9a3-546a4e006b48
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:32:11Z"
+    creationTimestamp: "2022-05-24T18:05:40Z"
+    generateName: csi-snapshot-controller-operator-metrics-
+    generation: 12
+    labels:
+      app: csi-snapshot-controller-operator
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: csi-snapshot-controller-operator-metrics
+    name: csi-snapshot-controller-operator-metrics-46f4t
+    namespace: openshift-cluster-storage-operator
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: csi-snapshot-controller-operator-metrics
+      uid: 23fbd5b3-8f2d-45de-bee4-1079fbdf20a9
+    resourceVersion: "55573"
+    uid: 6425c148-2c25-4e50-8ac7-b82b2de09b4a
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.128.0.42
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: csi-snapshot-webhook-d77867d47-crpm5
+      namespace: openshift-cluster-storage-operator
+      resourceVersion: "55565"
+      uid: 4d9c0798-482f-49f8-b169-20b061210c20
+    zone: us-east-1c
+  - addresses:
+    - 10.130.0.23
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: csi-snapshot-webhook-d77867d47-vdgrm
+      namespace: openshift-cluster-storage-operator
+      resourceVersion: "63003"
+      uid: d348db50-d3a2-4a42-8dbc-60b399d89aaf
+    zone: us-east-1a
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:06:06Z"
+    generateName: csi-snapshot-webhook-
+    generation: 13
+    labels:
+      app: csi-snapshot-webhook
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: csi-snapshot-webhook
+    name: csi-snapshot-webhook-hzkd9
+    namespace: openshift-cluster-storage-operator
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: csi-snapshot-webhook
+      uid: 6536625e-cb49-4612-9cc3-d55aea6dee15
+    resourceVersion: "63285"
+    uid: a038e7aa-55af-4133-ab4b-9bdb7fd27f6d
+  ports:
+  - name: webhook
+    port: 8443
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "309546"

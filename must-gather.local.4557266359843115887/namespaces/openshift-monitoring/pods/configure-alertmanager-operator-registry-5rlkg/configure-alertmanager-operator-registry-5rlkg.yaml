@@ -1,0 +1,178 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.0.49"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.131.0.49"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"operators.coreos.com/v1alpha1","kind":"CatalogSource","metadata":{"annotations":{},"labels":{"hive.openshift.io/managed":"true","opsrc-datastore":"true","opsrc-provider":"redhat"},"name":"configure-alertmanager-operator-registry","namespace":"openshift-monitoring"},"spec":{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"preference":{"matchExpressions":[{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]},"weight":1}]}},"displayName":"Configure Alertmanager Operator","icon":{"base64data":"","mediatype":""},"image":"quay.io/app-sre/configure-alertmanager-operator-registry@sha256:650a457e673ee1a1b82621d886083e868a458bbb047dc6f110da2dc3edd25aa6","publisher":"Red Hat","sourceType":"grpc","tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","operator":"Exists"}]}}
+    openshift.io/scc: anyuid
+  creationTimestamp: "2022-05-24T18:42:32Z"
+  generateName: configure-alertmanager-operator-registry-
+  labels:
+    olm.catalogSource: configure-alertmanager-operator-registry
+    olm.pod-spec-hash: 6ccb8f9985
+  name: configure-alertmanager-operator-registry-5rlkg
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: operators.coreos.com/v1alpha1
+    blockOwnerDeletion: false
+    controller: false
+    kind: CatalogSource
+    name: configure-alertmanager-operator-registry
+    uid: 3791c25c-4418-45bd-b05e-06f4c9e8f671
+  resourceVersion: "76285"
+  uid: 832e302e-afc2-4ad1-a08b-610597c4bdd7
+spec:
+  containers:
+  - image: quay.io/app-sre/configure-alertmanager-operator-registry@sha256:650a457e673ee1a1b82621d886083e868a458bbb047dc6f110da2dc3edd25aa6
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      exec:
+        command:
+        - grpc_health_probe
+        - -addr=:50051
+      failureThreshold: 3
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    name: registry-server
+    ports:
+    - containerPort: 50051
+      name: grpc
+      protocol: TCP
+    readinessProbe:
+      exec:
+        command:
+        - grpc_health_probe
+        - -addr=:50051
+      failureThreshold: 3
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+    securityContext:
+      capabilities:
+        drop:
+        - MKNOD
+      readOnlyRootFilesystem: false
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: FallbackToLogsOnError
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-l4vmp
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: configure-alertmanager-operator-registry-dockercfg-9ptbl
+  nodeName: ip-10-0-128-34.ec2.internal
+  nodeSelector:
+    kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: configure-alertmanager-operator-registry
+  serviceAccountName: configure-alertmanager-operator-registry
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: kube-api-access-l4vmp
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:33Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:50Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:50Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:33Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://fa2b3d6cc505ccff3d447b7686365c506584fd964f8319b67423e13cecf8ff98
+    image: quay.io/app-sre/configure-alertmanager-operator-registry@sha256:650a457e673ee1a1b82621d886083e868a458bbb047dc6f110da2dc3edd25aa6
+    imageID: quay.io/app-sre/configure-alertmanager-operator-registry@sha256:650a457e673ee1a1b82621d886083e868a458bbb047dc6f110da2dc3edd25aa6
+    lastState: {}
+    name: registry-server
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:42:37Z"
+  hostIP: 10.0.128.34
+  phase: Running
+  podIP: 10.131.0.49
+  podIPs:
+  - ip: 10.131.0.49
+  qosClass: Burstable
+  startTime: "2022-05-24T18:42:33Z"

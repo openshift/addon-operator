@@ -1,0 +1,54 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  annotations:
+    operatorframework.io/managed-by: marketplace-operator
+    target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+  creationTimestamp: "2022-05-24T18:08:01Z"
+  generation: 1
+  name: community-operators
+  namespace: openshift-marketplace
+  resourceVersion: "319343"
+  uid: 801e1929-83c0-4d5c-bf00-1ea32b4d2b74
+spec:
+  displayName: Community Operators
+  grpcPodConfig:
+    nodeSelector:
+      kubernetes.io/os: linux
+      node-role.kubernetes.io/master: ""
+    priorityClassName: system-cluster-critical
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 120
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 120
+  icon:
+    base64data: ""
+    mediatype: ""
+  image: registry.redhat.io/redhat/community-operator-index:v4.10
+  priority: -400
+  publisher: Red Hat
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 10m0s
+status:
+  connectionState:
+    address: community-operators.openshift-marketplace.svc:50051
+    lastConnect: "2022-05-24T22:23:09Z"
+    lastObservedState: READY
+  latestImageRegistryPoll: "2022-05-24T23:45:28Z"
+  registryService:
+    createdAt: "2022-05-24T18:32:12Z"
+    port: "50051"
+    protocol: grpc
+    serviceName: community-operators
+    serviceNamespace: openshift-marketplace

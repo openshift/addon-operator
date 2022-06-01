@@ -1,0 +1,34 @@
+2022-05-24T18:28:21.056770050Z ts=2022-05-24T18:28:21.056Z caller=main.go:532 level=info msg="Starting Prometheus" version="(version=2.32.1, branch=rhaos-4.10-rhel-8, revision=5c3feca83c597825440bce55a40a079160fc2e5a)"
+2022-05-24T18:28:21.056833257Z ts=2022-05-24T18:28:21.056Z caller=main.go:537 level=info build_context="(go=go1.17.5, user=root@5385249c56db, date=20220421-13:27:51)"
+2022-05-24T18:28:21.056833257Z ts=2022-05-24T18:28:21.056Z caller=main.go:538 level=info host_details="(Linux 4.18.0-305.45.1.el8_4.x86_64 #1 SMP Wed Apr 6 13:48:37 EDT 2022 x86_64 prometheus-user-workload-0 (none))"
+2022-05-24T18:28:21.056833257Z ts=2022-05-24T18:28:21.056Z caller=main.go:539 level=info fd_limits="(soft=1048576, hard=1048576)"
+2022-05-24T18:28:21.056842462Z ts=2022-05-24T18:28:21.056Z caller=main.go:540 level=info vm_limits="(soft=unlimited, hard=unlimited)"
+2022-05-24T18:28:21.058332795Z ts=2022-05-24T18:28:21.058Z caller=web.go:570 level=info component=web msg="Start listening for connections" address=127.0.0.1:9090
+2022-05-24T18:28:21.059256577Z ts=2022-05-24T18:28:21.059Z caller=main.go:941 level=info msg="Starting TSDB ..."
+2022-05-24T18:28:21.061177799Z ts=2022-05-24T18:28:21.061Z caller=tls_config.go:231 level=info component=web msg="TLS is disabled." http2=false
+2022-05-24T18:28:21.062036615Z ts=2022-05-24T18:28:21.062Z caller=head.go:488 level=info component=tsdb msg="Replaying on-disk memory mappable chunks if any"
+2022-05-24T18:28:21.062052058Z ts=2022-05-24T18:28:21.062Z caller=head.go:522 level=info component=tsdb msg="On-disk memory mappable chunks replay completed" duration=1.521µs
+2022-05-24T18:28:21.062052058Z ts=2022-05-24T18:28:21.062Z caller=head.go:528 level=info component=tsdb msg="Replaying WAL, this may take a while"
+2022-05-24T18:28:21.062677771Z ts=2022-05-24T18:28:21.062Z caller=head.go:599 level=info component=tsdb msg="WAL segment loaded" segment=0 maxSegment=0
+2022-05-24T18:28:21.062688429Z ts=2022-05-24T18:28:21.062Z caller=head.go:605 level=info component=tsdb msg="WAL replay completed" checkpoint_replay_duration=23.328µs wal_replay_duration=603.471µs total_replay_duration=642.192µs
+2022-05-24T18:28:21.063492782Z ts=2022-05-24T18:28:21.063Z caller=main.go:962 level=info fs_type=XFS_SUPER_MAGIC
+2022-05-24T18:28:21.063502700Z ts=2022-05-24T18:28:21.063Z caller=main.go:965 level=info msg="TSDB started"
+2022-05-24T18:28:21.063527131Z ts=2022-05-24T18:28:21.063Z caller=main.go:1146 level=info msg="Loading configuration file" filename=/etc/prometheus/config_out/prometheus.env.yaml
+2022-05-24T18:28:21.064221264Z ts=2022-05-24T18:28:21.064Z caller=kubernetes.go:284 level=info component="discovery manager notify" discovery=kubernetes msg="Using pod service account via in-cluster config"
+2022-05-24T18:28:21.065611806Z ts=2022-05-24T18:28:21.065Z caller=main.go:1183 level=info msg="Completed loading of configuration file" filename=/etc/prometheus/config_out/prometheus.env.yaml totalDuration=1.975405ms db_storage=477ns remote_storage=1.072µs web_handler=229ns query_engine=556ns scrape=184.459µs scrape_sd=3.98µs notify=86.285µs notify_sd=1.369181ms rules=34.948µs
+2022-05-24T18:28:21.065611806Z ts=2022-05-24T18:28:21.065Z caller=main.go:914 level=info msg="Server is ready to receive web requests."
+2022-05-24T18:28:21.156345547Z ts=2022-05-24T18:28:21.156Z caller=main.go:1146 level=info msg="Loading configuration file" filename=/etc/prometheus/config_out/prometheus.env.yaml
+2022-05-24T18:28:21.156994452Z ts=2022-05-24T18:28:21.156Z caller=kubernetes.go:284 level=info component="discovery manager notify" discovery=kubernetes msg="Using pod service account via in-cluster config"
+2022-05-24T18:28:21.158031943Z ts=2022-05-24T18:28:21.158Z caller=main.go:1183 level=info msg="Completed loading of configuration file" filename=/etc/prometheus/config_out/prometheus.env.yaml totalDuration=1.714448ms db_storage=935ns remote_storage=2.171µs web_handler=304ns query_engine=800ns scrape=60.136µs scrape_sd=2.778µs notify=91.422µs notify_sd=1.20973ms rules=24.931µs
+2022-05-24T18:34:46.786544318Z ts=2022-05-24T18:34:46.786Z caller=main.go:1146 level=info msg="Loading configuration file" filename=/etc/prometheus/config_out/prometheus.env.yaml
+2022-05-24T18:34:46.787549228Z ts=2022-05-24T18:34:46.787Z caller=kubernetes.go:284 level=info component="discovery manager scrape" discovery=kubernetes msg="Using pod service account via in-cluster config"
+2022-05-24T18:34:46.788632712Z ts=2022-05-24T18:34:46.788Z caller=kubernetes.go:284 level=info component="discovery manager notify" discovery=kubernetes msg="Using pod service account via in-cluster config"
+2022-05-24T18:34:46.789420122Z ts=2022-05-24T18:34:46.789Z caller=main.go:1183 level=info msg="Completed loading of configuration file" filename=/etc/prometheus/config_out/prometheus.env.yaml totalDuration=2.905939ms db_storage=892ns remote_storage=2.221µs web_handler=296ns query_engine=879ns scrape=109.041µs scrape_sd=959.57µs notify=78.996µs notify_sd=959.679µs rules=23.894µs
+2022-05-24T18:41:04.846695944Z ts=2022-05-24T18:41:04.846Z caller=main.go:1146 level=info msg="Loading configuration file" filename=/etc/prometheus/config_out/prometheus.env.yaml
+2022-05-24T18:41:04.849496016Z ts=2022-05-24T18:41:04.849Z caller=kubernetes.go:284 level=info component="discovery manager scrape" discovery=kubernetes msg="Using pod service account via in-cluster config"
+2022-05-24T18:41:04.850683738Z ts=2022-05-24T18:41:04.850Z caller=kubernetes.go:284 level=info component="discovery manager notify" discovery=kubernetes msg="Using pod service account via in-cluster config"
+2022-05-24T18:41:04.851464066Z ts=2022-05-24T18:41:04.851Z caller=main.go:1183 level=info msg="Completed loading of configuration file" filename=/etc/prometheus/config_out/prometheus.env.yaml totalDuration=4.7886ms db_storage=969ns remote_storage=2.517µs web_handler=475ns query_engine=986ns scrape=695.246µs scrape_sd=1.159367ms notify=70.548µs notify_sd=937.934µs rules=27.277µs
+2022-05-24T21:41:12.394465207Z ts=2022-05-24T21:41:12.394Z caller=compact.go:518 level=info component=tsdb msg="write block" mint=1653417667334 maxt=1653422400000 ulid=01G3W08JGMARNMC0MEJRE7AQYX duration=53.86934ms
+2022-05-24T21:41:12.397018975Z ts=2022-05-24T21:41:12.396Z caller=head.go:812 level=info component=tsdb msg="Head GC completed" duration=2.231103ms
+2022-05-24T23:00:07.407702698Z ts=2022-05-24T23:00:07.407Z caller=compact.go:518 level=info component=tsdb msg="write block" mint=1653422402334 maxt=1653429600000 ulid=01G3W4S2HCF8RVZ6HMCTY1GA3S duration=66.76688ms
+2022-05-24T23:00:07.410145143Z ts=2022-05-24T23:00:07.410Z caller=head.go:812 level=info component=tsdb msg="Head GC completed" duration=2.127774ms

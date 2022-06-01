@@ -1,0 +1,8 @@
+2022-05-24T18:40:25.708401569Z I0524 18:40:25.708265       1 main.go:151] Reading config file: /etc/kube-rbac-proxy/config.yaml
+2022-05-24T18:40:25.710756446Z I0524 18:40:25.710725       1 main.go:181] Valid token audiences: 
+2022-05-24T18:40:25.711142216Z I0524 18:40:25.711123       1 dynamic_cafile_content.go:129] Loaded a new CA Bundle and Verifier for "client-ca::/etc/tls/client/client-ca.crt"
+2022-05-24T18:40:25.711249956Z I0524 18:40:25.711224       1 main.go:305] Reading certificate files
+2022-05-24T18:40:25.711306142Z I0524 18:40:25.711287       1 reloader.go:98] reloading key /etc/tls/private/tls.key certificate /etc/tls/private/tls.crt
+2022-05-24T18:40:25.711346273Z I0524 18:40:25.711321       1 dynamic_cafile_content.go:167] Starting client-ca::/etc/tls/client/client-ca.crt
+2022-05-24T18:40:25.711561968Z I0524 18:40:25.711538       1 main.go:339] Starting TCP socket on 0.0.0.0:9092
+2022-05-24T18:40:25.711779172Z I0524 18:40:25.711760       1 main.go:346] Listening securely on 0.0.0.0:9092

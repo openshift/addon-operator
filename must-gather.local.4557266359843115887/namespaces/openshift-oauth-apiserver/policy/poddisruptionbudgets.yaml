@@ -1,0 +1,34 @@
+---
+apiVersion: policy/v1
+items:
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: "2022-05-24T18:07:50Z"
+    generation: 1
+    name: oauth-apiserver-pdb
+    namespace: openshift-oauth-apiserver
+    resourceVersion: "72551"
+    uid: cb463ed3-f5c5-4751-a996-2e48c9bd409e
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        apiserver: "true"
+        app: openshift-oauth-apiserver
+  status:
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:41:00Z"
+      message: ""
+      observedGeneration: 1
+      reason: SufficientPods
+      status: "True"
+      type: DisruptionAllowed
+    currentHealthy: 3
+    desiredHealthy: 2
+    disruptionsAllowed: 1
+    expectedPods: 3
+    observedGeneration: 1
+kind: PodDisruptionBudgetList
+metadata:
+  resourceVersion: "297319"

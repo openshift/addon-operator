@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/node-selector: ""
+    openshift.io/sa.scc.mcs: s0:c24,c4
+    openshift.io/sa.scc.supplemental-groups: 1000560000/10000
+    openshift.io/sa.scc.uid-range: 1000560000/10000
+    workload.openshift.io/allowed: management
+  creationTimestamp: "2022-05-24T18:07:47Z"
+  labels:
+    kubernetes.io/metadata.name: openshift-authentication
+    olm.operatorgroup.uid/8a93c0f1-8a8d-4e81-b276-28403a176bac: ""
+    openshift.io/cluster-monitoring: "true"
+  name: openshift-authentication
+  resourceVersion: "7516"
+  uid: 87111e73-335f-48a3-8ede-6e3ae0d1d921
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active

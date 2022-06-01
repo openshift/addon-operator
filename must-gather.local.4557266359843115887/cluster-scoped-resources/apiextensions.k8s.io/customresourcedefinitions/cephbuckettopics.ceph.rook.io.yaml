@@ -1,0 +1,140 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: (devel)
+    operatorframework.io/installed-alongside-c569578e83a47937: openshift-storage/ocs-operator.v4.10.0
+  creationTimestamp: "2022-05-24T18:28:16Z"
+  generation: 1
+  labels:
+    operators.coreos.com/ocs-operator.openshift-storage: ""
+  name: cephbuckettopics.ceph.rook.io
+  resourceVersion: "50891"
+  uid: e8ac35a2-163b-4fe3-8eb4-621d710ccff8
+spec:
+  conversion:
+    strategy: None
+  group: ceph.rook.io
+  names:
+    kind: CephBucketTopic
+    listKind: CephBucketTopicList
+    plural: cephbuckettopics
+    singular: cephbuckettopic
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              endpoint:
+                properties:
+                  amqp:
+                    properties:
+                      ackLevel:
+                        default: broker
+                        enum:
+                        - none
+                        - broker
+                        - routeable
+                        type: string
+                      disableVerifySSL:
+                        type: boolean
+                      exchange:
+                        minLength: 1
+                        type: string
+                      uri:
+                        minLength: 1
+                        type: string
+                    required:
+                    - exchange
+                    - uri
+                    type: object
+                  http:
+                    properties:
+                      disableVerifySSL:
+                        type: boolean
+                      uri:
+                        minLength: 1
+                        type: string
+                    required:
+                    - uri
+                    type: object
+                  kafka:
+                    properties:
+                      ackLevel:
+                        default: broker
+                        enum:
+                        - none
+                        - broker
+                        type: string
+                      disableVerifySSL:
+                        type: boolean
+                      uri:
+                        minLength: 1
+                        type: string
+                      useSSL:
+                        type: boolean
+                    required:
+                    - uri
+                    type: object
+                type: object
+              objectStoreName:
+                minLength: 1
+                type: string
+              objectStoreNamespace:
+                minLength: 1
+                type: string
+              opaqueData:
+                type: string
+              persistent:
+                type: boolean
+            required:
+            - endpoint
+            - objectStoreName
+            - objectStoreNamespace
+            type: object
+          status:
+            properties:
+              ARN:
+                nullable: true
+                type: string
+              phase:
+                type: string
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        required:
+        - metadata
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: CephBucketTopic
+    listKind: CephBucketTopicList
+    plural: cephbuckettopics
+    singular: cephbuckettopic
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:28:16Z"
+    message: no conflicts found
+    reason: NoConflicts
+    status: "True"
+    type: NamesAccepted
+  - lastTransitionTime: "2022-05-24T18:28:16Z"
+    message: the initial names have been accepted
+    reason: InitialNamesAccepted
+    status: "True"
+    type: Established
+  storedVersions:
+  - v1

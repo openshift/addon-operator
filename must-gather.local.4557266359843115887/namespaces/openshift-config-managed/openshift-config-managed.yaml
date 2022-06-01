@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+    openshift.io/node-selector: ""
+    openshift.io/sa.scc.mcs: s0:c21,c10
+    openshift.io/sa.scc.supplemental-groups: 1000440000/10000
+    openshift.io/sa.scc.uid-range: 1000440000/10000
+  creationTimestamp: "2022-05-24T18:05:57Z"
+  labels:
+    kubernetes.io/metadata.name: openshift-config-managed
+    openshift.io/run-level: "0"
+  name: openshift-config-managed
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "1725"
+  uid: be5a3c35-2da2-4891-a3fc-b6898173b945
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active

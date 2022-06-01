@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2022-05-24T18:13:03Z"
+    labels:
+      ingress.openshift.io/canary: canary_controller
+    name: ingress-canary
+    namespace: openshift-ingress-canary
+    ownerReferences:
+    - apiVersion: apps/v1
+      controller: true
+      kind: daemonset
+      name: ingress-canary
+      uid: 142e58b0-8290-4e8f-b18a-38e14138b83a
+    resourceVersion: "14999"
+    uid: 9331cd95-650e-40b5-888b-a3bfb3b3d721
+  spec:
+    clusterIP: 172.30.239.203
+    clusterIPs:
+    - 172.30.239.203
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      ingresscanary.operator.openshift.io/daemonset-ingresscanary: canary_controller
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "312932"

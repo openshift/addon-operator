@@ -1,0 +1,76 @@
+---
+apiVersion: batch/v1
+items:
+- apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"batch/v1beta1","kind":"CronJob","metadata":{"annotations":{},"labels":{"hive.openshift.io/managed":"true"},"name":"osd-rebalance-infra-nodes","namespace":"openshift-monitoring"},"spec":{"concurrencyPolicy":"Replace","failedJobsHistoryLimit":3,"jobTemplate":{"spec":{"template":{"spec":{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"preference":{"matchExpressions":[{"key":"node-role.kubernetes.io/infra","operator":"Exists"}]},"weight":1}]}},"containers":[{"command":["/bin/sh","-c","/etc/config/entrypoint"],"image":"image-registry.openshift-image-registry.svc:5000/openshift/cli:latest","name":"osd-rebalance-infra-nodes","volumeMounts":[{"mountPath":"/etc/config","name":"osd-rebalance-infra-nodes","readOnly":true}]}],"restartPolicy":"Never","serviceAccountName":"osd-rebalance-infra-nodes","tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","operator":"Exists"}],"volumes":[{"configMap":{"defaultMode":493,"name":"osd-rebalance-infra-nodes"},"name":"osd-rebalance-infra-nodes"}]}}}},"schedule":"*/15 * * * *","successfulJobsHistoryLimit":3}}
+    creationTimestamp: "2022-05-24T18:25:46Z"
+    generation: 1
+    labels:
+      hive.openshift.io/managed: "true"
+    name: osd-rebalance-infra-nodes
+    namespace: openshift-monitoring
+    resourceVersion: "319060"
+    uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+  spec:
+    concurrencyPolicy: Replace
+    failedJobsHistoryLimit: 3
+    jobTemplate:
+      metadata:
+        creationTimestamp: null
+      spec:
+        template:
+          metadata:
+            creationTimestamp: null
+          spec:
+            affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                - preference:
+                    matchExpressions:
+                    - key: node-role.kubernetes.io/infra
+                      operator: Exists
+                  weight: 1
+            containers:
+            - command:
+              - /bin/sh
+              - -c
+              - /etc/config/entrypoint
+              image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+              imagePullPolicy: Always
+              name: osd-rebalance-infra-nodes
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+              - mountPath: /etc/config
+                name: osd-rebalance-infra-nodes
+                readOnly: true
+            dnsPolicy: ClusterFirst
+            restartPolicy: Never
+            schedulerName: default-scheduler
+            securityContext: {}
+            serviceAccount: osd-rebalance-infra-nodes
+            serviceAccountName: osd-rebalance-infra-nodes
+            terminationGracePeriodSeconds: 30
+            tolerations:
+            - effect: NoSchedule
+              key: node-role.kubernetes.io/infra
+              operator: Exists
+            volumes:
+            - configMap:
+                defaultMode: 493
+                name: osd-rebalance-infra-nodes
+              name: osd-rebalance-infra-nodes
+    schedule: '*/15 * * * *'
+    successfulJobsHistoryLimit: 3
+    suspend: false
+  status:
+    lastScheduleTime: "2022-05-24T23:45:00Z"
+    lastSuccessfulTime: "2022-05-24T23:45:06Z"
+kind: CronJobList
+metadata:
+  resourceVersion: "322405"

@@ -1,0 +1,57 @@
+---
+apiVersion: flowcontrol.apiserver.k8s.io/v1beta2
+kind: FlowSchema
+metadata:
+  annotations:
+    include.release.openshift.io/self-managed-high-availability: "true"
+  creationTimestamp: "2022-05-24T18:07:09Z"
+  generation: 1
+  name: openshift-sdn
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "2913"
+  uid: ee18c04f-4c5f-4e7a-9b54-870172c00dbc
+spec:
+  distinguisherMethod:
+    type: ByUser
+  matchingPrecedence: 500
+  priorityLevelConfiguration:
+    name: system
+  rules:
+  - nonResourceRules:
+    - nonResourceURLs:
+      - '*'
+      verbs:
+      - '*'
+    resourceRules:
+    - apiGroups:
+      - '*'
+      clusterScope: true
+      namespaces:
+      - '*'
+      resources:
+      - '*'
+      verbs:
+      - '*'
+    subjects:
+    - kind: ServiceAccount
+      serviceAccount:
+        name: sdn
+        namespace: openshift-sdn
+    - kind: ServiceAccount
+      serviceAccount:
+        name: sdn-controller
+        namespace: openshift-sdn
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:07:09Z"
+    message: This FlowSchema references the PriorityLevelConfiguration object named
+      "system" and it exists
+    reason: Found
+    status: "False"
+    type: Dangling

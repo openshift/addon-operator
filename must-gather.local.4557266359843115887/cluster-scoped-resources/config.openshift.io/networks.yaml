@@ -1,0 +1,32 @@
+---
+apiVersion: config.openshift.io/v1
+items:
+- apiVersion: config.openshift.io/v1
+  kind: Network
+  metadata:
+    creationTimestamp: "2022-05-24T18:05:22Z"
+    generation: 2
+    name: cluster
+    resourceVersion: "3060"
+    uid: e89998ea-d2e0-4325-9588-c0f81cfbbee8
+  spec:
+    clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+    externalIP:
+      policy: {}
+    networkType: OpenShiftSDN
+    serviceNetwork:
+    - 172.30.0.0/16
+  status:
+    clusterNetwork:
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
+    clusterNetworkMTU: 8951
+    networkType: OpenShiftSDN
+    serviceNetwork:
+    - 172.30.0.0/16
+kind: NetworkList
+metadata:
+  continue: ""
+  resourceVersion: "295182"

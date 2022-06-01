@@ -1,0 +1,13 @@
+---
+apiVersion: operator.openshift.io/v1
+kind: CloudCredential
+metadata:
+  creationTimestamp: "2022-05-24T18:05:20Z"
+  generation: 1
+  name: cluster
+  resourceVersion: "590"
+  uid: 6117026c-2f5f-43cf-bb13-4ccb2f01d537
+spec:
+  credentialsMode: Manual
+  logLevel: Normal
+  operatorLogLevel: Normal

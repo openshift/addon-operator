@@ -1,0 +1,41 @@
+---
+apiVersion: config.openshift.io/v1
+items:
+- apiVersion: config.openshift.io/v1
+  kind: OperatorHub
+  metadata:
+    annotations:
+      include.release.openshift.io/ibm-cloud-managed: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+      release.openshift.io/create-only: "true"
+    creationTimestamp: "2022-05-24T18:06:02Z"
+    generation: 2
+    name: cluster
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "33404"
+    uid: 7f9b196c-9421-43d8-aed3-5a4169c344e2
+  spec:
+    disableAllDefaultSources: false
+  status:
+    sources:
+    - disabled: false
+      name: redhat-operators
+      status: Success
+    - disabled: false
+      name: certified-operators
+      status: Success
+    - disabled: false
+      name: community-operators
+      status: Success
+    - disabled: false
+      name: redhat-marketplace
+      status: Success
+kind: OperatorHubList
+metadata:
+  continue: ""
+  resourceVersion: "295190"

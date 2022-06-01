@@ -1,0 +1,53 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: marketplace
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "6053"
+  uid: c6a5b805-9ab5-441f-bad0-9c34c78613fd
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:08:01Z"
+    message: 'Successfully progressed to release version: 4.10.13'
+    reason: OperatorAvailable
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:08:01Z"
+    message: 'Available release version: 4.10.13'
+    reason: OperatorAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:08:01Z"
+    message: Marketplace is upgradeable
+    reason: OperatorAvailable
+    status: "True"
+    type: Upgradeable
+  - lastTransitionTime: "2022-05-24T18:08:01Z"
+    message: 'Available release version: 4.10.13'
+    reason: OperatorAvailable
+    status: "False"
+    type: Degraded
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-marketplace
+    resource: namespaces
+  - group: operators.coreos.com
+    name: ""
+    namespace: openshift-marketplace
+    resource: catalogsources
+  versions:
+  - name: operator
+    version: 4.10.13

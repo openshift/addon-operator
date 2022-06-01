@@ -1,0 +1,30 @@
+---
+apiVersion: config.openshift.io/v1
+items:
+- apiVersion: config.openshift.io/v1
+  kind: Image
+  metadata:
+    annotations:
+      include.release.openshift.io/ibm-cloud-managed: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+      release.openshift.io/create-only: "true"
+    creationTimestamp: "2022-05-24T18:05:57Z"
+    generation: 1
+    name: cluster
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "38938"
+    uid: 39798a50-189d-4b84-ad43-8cef50492e3e
+  spec: {}
+  status:
+    externalRegistryHostnames:
+    - default-route-openshift-image-registry.apps.odf-service.dif5.p1.openshiftapps.com
+    internalRegistryHostname: image-registry.openshift-image-registry.svc:5000
+kind: ImageList
+metadata:
+  continue: ""
+  resourceVersion: "295184"

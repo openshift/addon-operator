@@ -1,0 +1,13 @@
+2022-05-24T18:31:58.335405725Z I0524 18:31:58.335237       1 main.go:151] Reading config file: /etc/kube-rbac-proxy/config-file.yaml
+2022-05-24T18:31:58.337377767Z I0524 18:31:58.337352       1 main.go:181] Valid token audiences: 
+2022-05-24T18:31:58.337473309Z I0524 18:31:58.337461       1 main.go:305] Reading certificate files
+2022-05-24T18:31:58.337694369Z I0524 18:31:58.337677       1 main.go:339] Starting TCP socket on 0.0.0.0:8443
+2022-05-24T18:31:58.338238691Z I0524 18:31:58.338213       1 main.go:346] Listening securely on 0.0.0.0:8443
+2022-05-24T18:32:15.679972756Z 2022/05/24 18:32:15 http: proxy error: dial tcp [::1]:8080: connect: connection refused
+2022-05-24T18:32:45.661958133Z 2022/05/24 18:32:45 http: proxy error: dial tcp [::1]:8080: connect: connection refused
+2022-05-24T18:33:01.492212751Z 2022/05/24 18:33:01 http: proxy error: dial tcp [::1]:8080: connect: connection refused
+2022-05-24T18:33:15.661715076Z 2022/05/24 18:33:15 http: proxy error: dial tcp [::1]:8080: connect: connection refused
+2022-05-24T18:33:31.484925885Z 2022/05/24 18:33:31 http: proxy error: dial tcp [::1]:8080: connect: connection refused
+2022-05-24T18:33:45.662250091Z 2022/05/24 18:33:45 http: proxy error: dial tcp [::1]:8080: connect: connection refused
+2022-05-24T18:34:01.484824185Z 2022/05/24 18:34:01 http: proxy error: dial tcp [::1]:8080: connect: connection refused
+2022-05-24T18:34:15.661370323Z 2022/05/24 18:34:15 http: proxy error: dial tcp [::1]:8080: connect: connection refused

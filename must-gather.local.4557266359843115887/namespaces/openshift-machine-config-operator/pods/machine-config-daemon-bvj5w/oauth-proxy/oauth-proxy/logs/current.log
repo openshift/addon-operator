@@ -1,0 +1,11 @@
+2022-05-24T18:31:24.734873154Z 2022/05/24 18:31:24 provider.go:129: Defaulting client-id to system:serviceaccount:openshift-machine-config-operator:machine-config-daemon
+2022-05-24T18:31:24.734954157Z 2022/05/24 18:31:24 provider.go:134: Defaulting client-secret to service account token /var/run/secrets/kubernetes.io/serviceaccount/token
+2022-05-24T18:31:24.871076324Z 2022/05/24 18:31:24 provider.go:358: Delegation of authentication and authorization to OpenShift is enabled for bearer tokens and client certificates.
+2022-05-24T18:31:33.612989771Z E0524 18:31:33.612828    3449 reflector.go:127] github.com/openshift/oauth-proxy/providers/openshift/provider.go:354: Failed to watch *v1.ConfigMap: failed to list *v1.ConfigMap: Get "https://172.30.0.1:443/api/v1/namespaces/openshift-config-managed/configmaps?fieldSelector=metadata.name%3Doauth-serving-cert&limit=500&resourceVersion=0": dial tcp 172.30.0.1:443: connect: no route to host
+2022-05-24T18:31:33.612989771Z 2022/05/24 18:31:33 provider.go:375: unable to retrieve authentication information for tokens: Post "https://172.30.0.1:443/apis/authentication.k8s.io/v1/tokenreviews": dial tcp 172.30.0.1:443: connect: no route to host
+2022-05-24T18:31:35.647151964Z 2022/05/24 18:31:35 oauthproxy.go:203: mapping path "/" => upstream "http://127.0.0.1:8797/"
+2022-05-24T18:31:35.647188741Z 2022/05/24 18:31:35 oauthproxy.go:230: OAuthProxy configured for  Client ID: system:serviceaccount:openshift-machine-config-operator:machine-config-daemon
+2022-05-24T18:31:35.647226613Z 2022/05/24 18:31:35 oauthproxy.go:240: Cookie settings: name:_oauth_proxy secure(https):true httponly:true expiry:168h0m0s domain:<default> samesite: refresh:disabled
+2022-05-24T18:31:35.655431644Z 2022/05/24 18:31:35 http.go:61: HTTP: listening on 127.0.0.1:4180
+2022-05-24T18:31:35.655722907Z I0524 18:31:35.655669    3449 dynamic_serving_content.go:130] Starting serving::/etc/tls/private/tls.crt::/etc/tls/private/tls.key
+2022-05-24T18:31:35.655748485Z 2022/05/24 18:31:35 http.go:107: HTTPS: listening on [::]:9001

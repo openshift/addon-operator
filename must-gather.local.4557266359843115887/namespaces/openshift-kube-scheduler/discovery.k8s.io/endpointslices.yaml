@@ -1,0 +1,77 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.0.169.205
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: openshift-kube-scheduler-ip-10-0-169-205.ec2.internal
+      namespace: openshift-kube-scheduler
+      resourceVersion: "69808"
+      uid: 1b78a07c-9d38-418d-aa2d-7b214062e82c
+    zone: us-east-1c
+  - addresses:
+    - 10.0.149.121
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-149-121.ec2.internal
+    targetRef:
+      kind: Pod
+      name: openshift-kube-scheduler-ip-10-0-149-121.ec2.internal
+      namespace: openshift-kube-scheduler
+      resourceVersion: "74907"
+      uid: 6cadc5f8-b3b1-447e-8e0b-ebe84102f76a
+    zone: us-east-1b
+  - addresses:
+    - 10.0.138.197
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: openshift-kube-scheduler-ip-10-0-138-197.ec2.internal
+      namespace: openshift-kube-scheduler
+      resourceVersion: "78488"
+      uid: 6fb15829-5286-4ff6-a544-56c170638d68
+    zone: us-east-1a
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:14Z"
+    creationTimestamp: "2022-05-24T18:07:47Z"
+    generateName: scheduler-
+    generation: 55
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: scheduler
+      prometheus: kube-scheduler
+    name: scheduler-k94wk
+    namespace: openshift-kube-scheduler
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: scheduler
+      uid: 49073368-1028-41b6-925e-ab86ad41087d
+    resourceVersion: "78490"
+    uid: 5fcd7b3b-0f59-4eb4-acc9-6cdae13d889a
+  ports:
+  - name: https
+    port: 10259
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "316587"

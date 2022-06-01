@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: serving-cert
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1653415662
+    creationTimestamp: "2022-05-24T18:07:47Z"
+    labels:
+      prometheus: kube-scheduler
+    name: scheduler
+    namespace: openshift-kube-scheduler
+    resourceVersion: "5934"
+    uid: 49073368-1028-41b6-925e-ab86ad41087d
+  spec:
+    clusterIP: 172.30.221.218
+    clusterIPs:
+    - 172.30.221.218
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 10259
+    selector:
+      scheduler: "true"
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: ServiceList
+metadata:
+  resourceVersion: "316570"

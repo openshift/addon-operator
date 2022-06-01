@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: reference-addon-amc
+  labels:
+    app.kubernetes.io/name: reference-addon
+spec:
+  route:
+    groupBy: ['job']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: 'pagerduty'
+  receivers:
+  - name: 'pagerduty'
+    pagerduty_configs:
+    - service_key: PQSWOFV
+      description: 'reference-addon alerts'

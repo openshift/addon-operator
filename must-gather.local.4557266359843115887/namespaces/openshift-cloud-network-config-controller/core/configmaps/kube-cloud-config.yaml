@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  name: kube-cloud-config
+  namespace: openshift-cloud-network-config-controller
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "2655"
+  uid: 67cbb73b-aad3-42a5-8125-d755a7066062

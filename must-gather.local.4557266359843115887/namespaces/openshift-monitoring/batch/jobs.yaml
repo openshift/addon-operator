@@ -1,0 +1,303 @@
+---
+apiVersion: batch/v1
+items:
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: "2022-05-24T18:25:32Z"
+    generation: 1
+    labels:
+      hive.openshift.io/managed: "true"
+    name: osd-cluster-ready
+    namespace: openshift-monitoring
+    resourceVersion: "29555"
+    uid: 4730ac38-ba20-437f-88c4-85794e648bd2
+  spec:
+    backoffLimit: 500
+    completionMode: NonIndexed
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 4730ac38-ba20-437f-88c4-85794e648bd2
+    suspend: false
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 4730ac38-ba20-437f-88c4-85794e648bd2
+          job-name: osd-cluster-ready
+          managed.openshift.io/version: v0.1.81-33838ec
+        name: osd-cluster-ready
+      spec:
+        containers:
+        - command:
+          - /root/main
+          image: quay.io/app-sre/osd-cluster-ready@sha256:c5064d58b8697f9793f7cd7b169393f3c078d40650613660520a51fab75e8716
+          imagePullPolicy: IfNotPresent
+          name: osd-cluster-ready
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: OnFailure
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: osd-cluster-ready
+        serviceAccountName: osd-cluster-ready
+        terminationGracePeriodSeconds: 30
+  status:
+    active: 1
+    startTime: "2022-05-24T18:25:32Z"
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: "2022-05-24T23:15:00Z"
+    generation: 1
+    labels:
+      controller-uid: 965a462d-c1b4-4987-974a-4cd94c2b88ab
+      job-name: osd-rebalance-infra-nodes-27557235
+    name: osd-rebalance-infra-nodes-27557235
+    namespace: openshift-monitoring
+    ownerReferences:
+    - apiVersion: batch/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: osd-rebalance-infra-nodes
+      uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+    resourceVersion: "295478"
+    uid: 965a462d-c1b4-4987-974a-4cd94c2b88ab
+  spec:
+    backoffLimit: 6
+    completionMode: NonIndexed
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 965a462d-c1b4-4987-974a-4cd94c2b88ab
+    suspend: false
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 965a462d-c1b4-4987-974a-4cd94c2b88ab
+          job-name: osd-rebalance-infra-nodes-27557235
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - command:
+          - /bin/sh
+          - -c
+          - /etc/config/entrypoint
+          image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+          imagePullPolicy: Always
+          name: osd-rebalance-infra-nodes
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/config
+            name: osd-rebalance-infra-nodes
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: Never
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: osd-rebalance-infra-nodes
+        serviceAccountName: osd-rebalance-infra-nodes
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - configMap:
+            defaultMode: 493
+            name: osd-rebalance-infra-nodes
+          name: osd-rebalance-infra-nodes
+  status:
+    completionTime: "2022-05-24T23:15:06Z"
+    conditions:
+    - lastProbeTime: "2022-05-24T23:15:06Z"
+      lastTransitionTime: "2022-05-24T23:15:06Z"
+      status: "True"
+      type: Complete
+    startTime: "2022-05-24T23:15:00Z"
+    succeeded: 1
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: "2022-05-24T23:30:00Z"
+    generation: 1
+    labels:
+      controller-uid: 17e12fb5-15ed-4fbd-882c-31eaaa4ab4c2
+      job-name: osd-rebalance-infra-nodes-27557250
+    name: osd-rebalance-infra-nodes-27557250
+    namespace: openshift-monitoring
+    ownerReferences:
+    - apiVersion: batch/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: osd-rebalance-infra-nodes
+      uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+    resourceVersion: "307247"
+    uid: 17e12fb5-15ed-4fbd-882c-31eaaa4ab4c2
+  spec:
+    backoffLimit: 6
+    completionMode: NonIndexed
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: 17e12fb5-15ed-4fbd-882c-31eaaa4ab4c2
+    suspend: false
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: 17e12fb5-15ed-4fbd-882c-31eaaa4ab4c2
+          job-name: osd-rebalance-infra-nodes-27557250
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - command:
+          - /bin/sh
+          - -c
+          - /etc/config/entrypoint
+          image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+          imagePullPolicy: Always
+          name: osd-rebalance-infra-nodes
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/config
+            name: osd-rebalance-infra-nodes
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: Never
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: osd-rebalance-infra-nodes
+        serviceAccountName: osd-rebalance-infra-nodes
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - configMap:
+            defaultMode: 493
+            name: osd-rebalance-infra-nodes
+          name: osd-rebalance-infra-nodes
+  status:
+    completionTime: "2022-05-24T23:30:06Z"
+    conditions:
+    - lastProbeTime: "2022-05-24T23:30:06Z"
+      lastTransitionTime: "2022-05-24T23:30:06Z"
+      status: "True"
+      type: Complete
+    startTime: "2022-05-24T23:30:00Z"
+    succeeded: 1
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    creationTimestamp: "2022-05-24T23:45:00Z"
+    generation: 1
+    labels:
+      controller-uid: f9ba7886-508f-41c8-b683-872a8ad003f3
+      job-name: osd-rebalance-infra-nodes-27557265
+    name: osd-rebalance-infra-nodes-27557265
+    namespace: openshift-monitoring
+    ownerReferences:
+    - apiVersion: batch/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: CronJob
+      name: osd-rebalance-infra-nodes
+      uid: 81aa9ac4-4efd-4e4b-8ec3-8fcc0c4afd02
+    resourceVersion: "319054"
+    uid: f9ba7886-508f-41c8-b683-872a8ad003f3
+  spec:
+    backoffLimit: 6
+    completionMode: NonIndexed
+    completions: 1
+    parallelism: 1
+    selector:
+      matchLabels:
+        controller-uid: f9ba7886-508f-41c8-b683-872a8ad003f3
+    suspend: false
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          controller-uid: f9ba7886-508f-41c8-b683-872a8ad003f3
+          job-name: osd-rebalance-infra-nodes-27557265
+      spec:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                - key: node-role.kubernetes.io/infra
+                  operator: Exists
+              weight: 1
+        containers:
+        - command:
+          - /bin/sh
+          - -c
+          - /etc/config/entrypoint
+          image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+          imagePullPolicy: Always
+          name: osd-rebalance-infra-nodes
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/config
+            name: osd-rebalance-infra-nodes
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: Never
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: osd-rebalance-infra-nodes
+        serviceAccountName: osd-rebalance-infra-nodes
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          operator: Exists
+        volumes:
+        - configMap:
+            defaultMode: 493
+            name: osd-rebalance-infra-nodes
+          name: osd-rebalance-infra-nodes
+  status:
+    completionTime: "2022-05-24T23:45:06Z"
+    conditions:
+    - lastProbeTime: "2022-05-24T23:45:06Z"
+      lastTransitionTime: "2022-05-24T23:45:06Z"
+      status: "True"
+      type: Complete
+    startTime: "2022-05-24T23:45:00Z"
+    succeeded: 1
+kind: JobList
+metadata:
+  resourceVersion: "322405"

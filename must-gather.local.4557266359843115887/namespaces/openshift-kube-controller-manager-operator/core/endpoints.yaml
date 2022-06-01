@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:36:40Z"
+    creationTimestamp: "2022-05-24T18:05:41Z"
+    labels:
+      app: kube-controller-manager-operator
+    name: metrics
+    namespace: openshift-kube-controller-manager-operator
+    resourceVersion: "63639"
+    uid: a22f430a-7236-4388-b9d7-e9332e5d6567
+  subsets:
+  - addresses:
+    - ip: 10.128.0.72
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: kube-controller-manager-operator-6948b87db7-wkj4b
+        namespace: openshift-kube-controller-manager-operator
+        resourceVersion: "63637"
+        uid: cf6fe0fe-a1b1-4cd6-9535-5a1e6271fec0
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "315576"

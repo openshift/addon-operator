@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+imagePullSecrets:
+- name: cloud-network-config-controller-dockercfg-6nhxd
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  name: cloud-network-config-controller
+  namespace: openshift-cloud-network-config-controller
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "16797"
+  uid: b87bd87e-9641-415c-b801-b861cbc4f89f
+secrets:
+- name: cloud-network-config-controller-token-gm5jc
+- name: cloud-network-config-controller-dockercfg-6nhxd

@@ -1,0 +1,199 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.4.12"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.4.12"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-05-24T18:42:34Z"
+  generateName: token-refresher-7f8c567555-
+  labels:
+    app.kubernetes.io/component: authentication-proxy
+    app.kubernetes.io/name: token-refresher
+    app.kubernetes.io/version: master-2021-02-24-1e01b9c
+    pod-template-hash: 7f8c567555
+  name: token-refresher-7f8c567555-svz87
+  namespace: openshift-monitoring
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: token-refresher-7f8c567555
+    uid: 7f40ad39-8781-4a28-9afe-4b41ff7786c4
+  resourceVersion: "76067"
+  uid: 88a06257-1b67-48c5-b667-e448fe4e4bef
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: node-role.kubernetes.io/infra
+            operator: Exists
+        weight: 1
+  containers:
+  - args:
+    - --oidc.audience=observatorium-telemeter
+    - --oidc.client-id=$(CLIENT_ID)
+    - --oidc.client-secret=$(CLIENT_SECRET)
+    - --oidc.issuer-url=$(ISSUER_URL)
+    - --url=$(RECEIVER_URL)
+    env:
+    - name: CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          key: client-id
+          name: observatorium-credentials
+    - name: CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          key: client-secret
+          name: observatorium-credentials
+    - name: RECEIVER_URL
+      valueFrom:
+        secretKeyRef:
+          key: receiver-url
+          name: observatorium-credentials
+    - name: ISSUER_URL
+      value: https://sso.redhat.com/auth/realms/redhat-external
+    image: quay.io/observatorium/token-refresher@sha256:6ce9b80cd1d907cb6c9ed2a18612f386f7503257772d1d88155a4a2e6773fd00
+    imagePullPolicy: IfNotPresent
+    name: token-refresher
+    ports:
+    - containerPort: 8080
+      name: http
+      protocol: TCP
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000420000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/ssl/certs/
+      name: token-refresher-trusted-ca-bundle
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-m5t7d
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: default-dockercfg-pwshv
+  nodeName: ip-10-0-148-123.ec2.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000420000
+    seLinuxOptions:
+      level: s0:c21,c0
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/infra
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: ca-bundle.crt
+        path: ca-certificates.crt
+      name: token-refresher-trusted-ca-bundle
+    name: token-refresher-trusted-ca-bundle
+  - name: kube-api-access-m5t7d
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:34Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:40Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:40Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:42:34Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://ed766ac77abe8d164c5b2fa4df714b12aa767ba9236ca706c8301a1e1c0ba9f9
+    image: quay.io/observatorium/token-refresher@sha256:6ce9b80cd1d907cb6c9ed2a18612f386f7503257772d1d88155a4a2e6773fd00
+    imageID: quay.io/observatorium/token-refresher@sha256:6ce9b80cd1d907cb6c9ed2a18612f386f7503257772d1d88155a4a2e6773fd00
+    lastState: {}
+    name: token-refresher
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:42:40Z"
+  hostIP: 10.0.148.123
+  phase: Running
+  podIP: 10.128.4.12
+  podIPs:
+  - ip: 10.128.4.12
+  qosClass: BestEffort
+  startTime: "2022-05-24T18:42:34Z"

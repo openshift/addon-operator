@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/description: Multus network plugin components
+    openshift.io/node-selector: ""
+    openshift.io/sa.scc.mcs: s0:c22,c4
+    openshift.io/sa.scc.supplemental-groups: 1000470000/10000
+    openshift.io/sa.scc.uid-range: 1000470000/10000
+    workload.openshift.io/allowed: management
+  creationTimestamp: "2022-05-24T18:06:57Z"
+  labels:
+    kubernetes.io/metadata.name: openshift-multus
+    name: openshift-multus
+    olm.operatorgroup.uid/8a93c0f1-8a8d-4e81-b276-28403a176bac: ""
+    openshift.io/cluster-monitoring: "true"
+    openshift.io/run-level: "0"
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/warn: privileged
+  name: openshift-multus
+  ownerReferences:
+  - apiVersion: operator.openshift.io/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Network
+    name: cluster
+    uid: 4e35e56a-2302-44e2-8a26-07783f86078d
+  resourceVersion: "7474"
+  uid: ab65e5f1-c7dd-4a5c-ba74-5a5e567a343a
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active

@@ -1,0 +1,2 @@
+2022-05-24T22:00:03.942968149Z I0524 22:00:03.942848       7 prune.go:347] Creating image pruner with keepYoungerThan=24h0m0s, keepTagRevisions=3, pruneOverSizeLimit=<nil>, allImages=true
+2022-05-24T22:00:03.983576343Z Summary: deleted 0 objects

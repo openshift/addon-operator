@@ -1,0 +1,6 @@
+2022-05-24T18:31:26.058128669Z I0524 18:31:26.058032    3886 main.go:151] Reading config file: /etc/kube-rbac-policy/config.yaml
+2022-05-24T18:31:26.104954672Z I0524 18:31:26.104920    3886 main.go:181] Valid token audiences: 
+2022-05-24T18:31:26.105362487Z I0524 18:31:26.105335    3886 main.go:305] Reading certificate files
+2022-05-24T18:31:26.105441170Z I0524 18:31:26.105428    3886 dynamic_cafile_content.go:167] Starting client-ca::/etc/tls/client/client-ca.crt
+2022-05-24T18:31:26.105600416Z I0524 18:31:26.105571    3886 main.go:339] Starting TCP socket on [10.0.169.205]:9100
+2022-05-24T18:31:26.106086779Z I0524 18:31:26.106065    3886 main.go:346] Listening securely on [10.0.169.205]:9100

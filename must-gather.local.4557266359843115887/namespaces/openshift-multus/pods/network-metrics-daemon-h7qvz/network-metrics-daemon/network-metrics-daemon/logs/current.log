@@ -1,0 +1,44 @@
+2022-05-24T18:40:05.313946016Z I0524 18:40:05.313788       1 main.go:45] Version:52986d95896619efeda191597587c34a086b7f75
+2022-05-24T18:40:05.313946016Z I0524 18:40:05.313922       1 main.go:46] Starting with config{  :9091 ip-10-0-164-190.ec2.internal}
+2022-05-24T18:40:05.315106039Z W0524 18:40:05.315084       1 client_config.go:543] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+2022-05-24T18:40:05.319436808Z I0524 18:40:05.319421       1 controller.go:42] Setting up event handlers
+2022-05-24T18:40:05.319575668Z I0524 18:40:05.319563       1 podmetrics.go:101] Serving network metrics
+2022-05-24T18:40:05.319583938Z I0524 18:40:05.319578       1 controller.go:101] Starting pod controller
+2022-05-24T18:40:05.319583938Z I0524 18:40:05.319581       1 controller.go:104] Waiting for informer caches to sync
+2022-05-24T18:40:08.520264698Z I0524 18:40:08.519948       1 controller.go:109] Starting workers
+2022-05-24T18:40:08.520264698Z I0524 18:40:08.520254       1 controller.go:114] Started workers
+2022-05-24T18:40:08.520781032Z I0524 18:40:08.520580       1 controller.go:192] Received pod 'ingress-canary-7g79x'
+2022-05-24T18:40:08.520781032Z I0524 18:40:08.520577       1 controller.go:192] Received pod 'dns-default-slcnk'
+2022-05-24T18:40:08.520781032Z I0524 18:40:08.520733       1 controller.go:151] Successfully synced 'openshift-ingress-canary/ingress-canary-7g79x'
+2022-05-24T18:40:08.520781032Z I0524 18:40:08.520746       1 controller.go:192] Received pod 'sre-dns-latency-exporter-6vr76'
+2022-05-24T18:40:08.521363064Z I0524 18:40:08.521342       1 controller.go:151] Successfully synced 'openshift-monitoring/sre-dns-latency-exporter-6vr76'
+2022-05-24T18:40:08.521363064Z I0524 18:40:08.521359       1 controller.go:192] Received pod 'network-metrics-daemon-h7qvz'
+2022-05-24T18:40:08.521421161Z I0524 18:40:08.521405       1 controller.go:151] Successfully synced 'openshift-dns/dns-default-slcnk'
+2022-05-24T18:40:08.521433321Z I0524 18:40:08.521420       1 controller.go:192] Received pod 'network-check-target-nbdzx'
+2022-05-24T18:40:08.521450775Z I0524 18:40:08.521439       1 controller.go:151] Successfully synced 'openshift-network-diagnostics/network-check-target-nbdzx'
+2022-05-24T18:40:08.521450775Z I0524 18:40:08.521447       1 controller.go:192] Received pod 'splunkforwarder-ds-tr2qv'
+2022-05-24T18:40:08.521469148Z I0524 18:40:08.521458       1 controller.go:151] Successfully synced 'openshift-security/splunkforwarder-ds-tr2qv'
+2022-05-24T18:40:08.521495437Z I0524 18:40:08.521479       1 controller.go:151] Successfully synced 'openshift-multus/network-metrics-daemon-h7qvz'
+2022-05-24T18:40:12.085009285Z I0524 18:40:12.084960       1 controller.go:192] Received pod 'addon-ocs-provider-catalog-pg8w6'
+2022-05-24T18:40:12.085037600Z I0524 18:40:12.085020       1 controller.go:151] Successfully synced 'openshift-storage/addon-ocs-provider-catalog-pg8w6'
+2022-05-24T18:40:12.205938448Z I0524 18:40:12.205901       1 controller.go:192] Received pod 'rbac-permissions-operator-registry-kpd8x'
+2022-05-24T18:40:12.205970977Z I0524 18:40:12.205963       1 controller.go:151] Successfully synced 'openshift-rbac-permissions/rbac-permissions-operator-registry-kpd8x'
+2022-05-24T18:40:12.250035827Z I0524 18:40:12.250007       1 controller.go:192] Received pod 'openshift-managed-node-metadata-operator-controller-managesjjfx'
+2022-05-24T18:40:12.250061911Z I0524 18:40:12.250044       1 controller.go:151] Successfully synced 'openshift-managed-node-metadata-operator/openshift-managed-node-metadata-operator-controller-managesjjfx'
+2022-05-24T18:40:12.339786685Z I0524 18:40:12.339750       1 controller.go:192] Received pod 'osd-metrics-exporter-registry-4ch45'
+2022-05-24T18:40:12.339820706Z I0524 18:40:12.339793       1 controller.go:151] Successfully synced 'openshift-osd-metrics/osd-metrics-exporter-registry-4ch45'
+2022-05-24T18:40:12.658057703Z I0524 18:40:12.658021       1 controller.go:192] Received pod 'downloads-76c8fbd97c-f8kgn'
+2022-05-24T18:40:12.658089035Z I0524 18:40:12.658058       1 controller.go:151] Successfully synced 'openshift-console/downloads-76c8fbd97c-f8kgn'
+2022-05-24T18:40:12.828840868Z I0524 18:40:12.828808       1 controller.go:192] Received pod 'splunk-forwarder-operator-catalog-l4g57'
+2022-05-24T18:40:12.828901560Z I0524 18:40:12.828889       1 controller.go:151] Successfully synced 'openshift-splunk-forwarder-operator/splunk-forwarder-operator-catalog-l4g57'
+2022-05-24T18:40:13.278549370Z I0524 18:40:13.278508       1 controller.go:192] Received pod 'network-check-source-6dc5d48b58-gzj8w'
+2022-05-24T18:40:13.278584411Z I0524 18:40:13.278552       1 controller.go:151] Successfully synced 'openshift-network-diagnostics/network-check-source-6dc5d48b58-gzj8w'
+2022-05-24T18:42:33.436705594Z I0524 18:42:33.436656       1 controller.go:192] Received pod 'thanos-querier-86c47bb76-8lj47'
+2022-05-24T18:42:33.436766590Z I0524 18:42:33.436746       1 controller.go:151] Successfully synced 'openshift-monitoring/thanos-querier-86c47bb76-8lj47'
+2022-05-24T18:42:33.449660606Z I0524 18:42:33.449629       1 controller.go:192] Received pod 'thanos-ruler-user-workload-1'
+2022-05-24T18:42:33.449697334Z I0524 18:42:33.449685       1 controller.go:151] Successfully synced 'openshift-user-workload-monitoring/thanos-ruler-user-workload-1'
+2022-05-24T18:42:34.077935673Z I0524 18:42:34.077895       1 controller.go:192] Received pod 'prometheus-user-workload-1'
+2022-05-24T18:42:34.077970430Z I0524 18:42:34.077938       1 controller.go:151] Successfully synced 'openshift-user-workload-monitoring/prometheus-user-workload-1'
+2022-05-24T18:45:02.097232311Z I0524 18:45:02.097183       1 controller.go:192] Received pod 'collect-profiles-27556965-vcqfg'
+2022-05-24T18:45:02.097266220Z I0524 18:45:02.097245       1 controller.go:151] Successfully synced 'openshift-operator-lifecycle-manager/collect-profiles-27556965-vcqfg'
+2022-05-24T19:30:07.916129108Z I0524 19:30:07.916078       1 controller.go:151] Successfully synced 'openshift-operator-lifecycle-manager/collect-profiles-27556965-vcqfg'

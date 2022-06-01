@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:14Z"
+    creationTimestamp: "2022-05-24T18:07:47Z"
+    labels:
+      prometheus: kube-scheduler
+    name: scheduler
+    namespace: openshift-kube-scheduler
+    resourceVersion: "78489"
+    uid: 88986b66-054a-4a76-828f-029e83e7b64f
+  subsets:
+  - addresses:
+    - ip: 10.0.138.197
+      nodeName: ip-10-0-138-197.ec2.internal
+      targetRef:
+        kind: Pod
+        name: openshift-kube-scheduler-ip-10-0-138-197.ec2.internal
+        namespace: openshift-kube-scheduler
+        resourceVersion: "78488"
+        uid: 6fb15829-5286-4ff6-a544-56c170638d68
+    - ip: 10.0.149.121
+      nodeName: ip-10-0-149-121.ec2.internal
+      targetRef:
+        kind: Pod
+        name: openshift-kube-scheduler-ip-10-0-149-121.ec2.internal
+        namespace: openshift-kube-scheduler
+        resourceVersion: "74907"
+        uid: 6cadc5f8-b3b1-447e-8e0b-ebe84102f76a
+    - ip: 10.0.169.205
+      nodeName: ip-10-0-169-205.ec2.internal
+      targetRef:
+        kind: Pod
+        name: openshift-kube-scheduler-ip-10-0-169-205.ec2.internal
+        namespace: openshift-kube-scheduler
+        resourceVersion: "69808"
+        uid: 1b78a07c-9d38-418d-aa2d-7b214062e82c
+    ports:
+    - name: https
+      port: 10259
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "316587"

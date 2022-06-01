@@ -1,0 +1,135 @@
+2022-05-24T18:36:37.793307451Z 2022-05-24T18:36:37.793Z	INFO	operator.main	ingress-operator/start.go:63	using operator namespace	{"namespace": "openshift-ingress-operator"}
+2022-05-24T18:36:39.885097908Z I0524 18:36:39.885060       1 request.go:665] Waited for 1.046650506s due to client-side throttling, not priority and fairness, request: GET:https://172.30.0.1:443/apis/apiextensions.k8s.io/v1?timeout=32s
+2022-05-24T18:36:41.994237348Z 2022-05-24T18:36:41.994Z	INFO	operator.main	ingress-operator/start.go:63	registering Prometheus metrics for canary_controller
+2022-05-24T18:36:41.994270884Z 2022-05-24T18:36:41.994Z	INFO	operator.main	ingress-operator/start.go:63	registering Prometheus metrics for ingress_controller
+2022-05-24T18:36:41.995088521Z 2022-05-24T18:36:41.994Z	INFO	operator.main	ingress-operator/start.go:63	watching file	{"filename": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"}
+2022-05-24T18:36:41.995088521Z 2022-05-24T18:36:41.994Z	INFO	operator.init	runtime/asm_amd64.s:1581	starting metrics listener	{"addr": "127.0.0.1:60000"}
+2022-05-24T18:36:45.198343306Z 2022-05-24T18:36:45.198Z	INFO	operator.init.controller-runtime.metrics	metrics/listener.go:44	Metrics server is starting to listen	{"addr": ":8080"}
+2022-05-24T18:36:45.202135249Z 2022-05-24T18:36:45.202Z	INFO	operator.init	runtime/asm_amd64.s:1581	Starting server	{"path": "/metrics", "kind": "metrics", "addr": "[::]:8080"}
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.ingress_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.ingress_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.Deployment"}
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.ingress_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.Service"}
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.ingress_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.DNS"}
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.ingress_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.DNSRecord"}
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.ingress_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.Ingress"}
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.ingress_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.status_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.803728868Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.status_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.803759510Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.configurable_route_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.Ingress"}
+2022-05-24T18:36:45.803815384Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.configurable_route_controller	controller/controller.go:234	Starting EventSource	{"source": "&{{%!s(*v1.Role=&{{ } {      0 {{0 0 <nil>}} <nil> <nil> map[] map[] [] []  []} []}) %!s(*cache.multiNamespaceCache=&{map[:0xc00059e338 openshift-config:0xc00059e348 openshift-config-managed:0xc00059e330 openshift-ingress:0xc00059e320 openshift-ingress-canary:0xc00059e328 openshift-ingress-operator:0xc00059e310] 0xc0002f3d50 0xc0004e00f0 0xc00059e308}) %!s(chan error=<nil>) %!s(func()=<nil>)}}"}
+2022-05-24T18:36:45.803887365Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.configurable_route_controller	controller/controller.go:234	Starting EventSource	{"source": "&{{%!s(*v1.RoleBinding=&{{ } {      0 {{0 0 <nil>}} <nil> <nil> map[] map[] [] []  []} [] {  }}) %!s(*cache.multiNamespaceCache=&{map[:0xc00059e338 openshift-config:0xc00059e348 openshift-config-managed:0xc00059e330 openshift-ingress:0xc00059e320 openshift-ingress-canary:0xc00059e328 openshift-ingress-operator:0xc00059e310] 0xc0002f3d50 0xc0004e00f0 0xc00059e308}) %!s(chan error=<nil>) %!s(func()=<nil>)}}"}
+2022-05-24T18:36:45.803915631Z 2022-05-24T18:36:45.803Z	INFO	operator.init.controller.configurable_route_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.804259576Z 2022-05-24T18:36:45.804Z	INFO	operator.init.controller.error_page_configmap_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.804285698Z 2022-05-24T18:36:45.804Z	INFO	operator.init.controller.error_page_configmap_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.ConfigMap"}
+2022-05-24T18:36:45.804285698Z 2022-05-24T18:36:45.804Z	INFO	operator.init.controller.error_page_configmap_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.ConfigMap"}
+2022-05-24T18:36:45.804285698Z 2022-05-24T18:36:45.804Z	INFO	operator.init.controller.error_page_configmap_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.807629345Z 2022-05-24T18:36:45.807Z	INFO	operator.init.controller.certificate_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.807629345Z 2022-05-24T18:36:45.807Z	INFO	operator.init.controller.certificate_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.807849260Z 2022-05-24T18:36:45.807Z	INFO	operator.init.controller.clientca_configmap_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.807849260Z 2022-05-24T18:36:45.807Z	INFO	operator.init.controller.clientca_configmap_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.ConfigMap"}
+2022-05-24T18:36:45.807869854Z 2022-05-24T18:36:45.807Z	INFO	operator.init.controller.clientca_configmap_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.ConfigMap"}
+2022-05-24T18:36:45.807869854Z 2022-05-24T18:36:45.807Z	INFO	operator.init.controller.clientca_configmap_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.810379586Z 2022-05-24T18:36:45.810Z	INFO	operator.init.controller.certificate_publisher_controller	controller/controller.go:234	Starting EventSource	{"source": "informer source: 0xc000306270"}
+2022-05-24T18:36:45.812840559Z 2022-05-24T18:36:45.811Z	INFO	operator.init.controller.certificate_publisher_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.812840559Z 2022-05-24T18:36:45.811Z	INFO	operator.init.controller.certificate_publisher_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.812840559Z 2022-05-24T18:36:45.811Z	INFO	operator.init.controller.dns_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.DNSRecord"}
+2022-05-24T18:36:45.812840559Z 2022-05-24T18:36:45.811Z	INFO	operator.init.controller.dns_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.DNS"}
+2022-05-24T18:36:45.812840559Z 2022-05-24T18:36:45.812Z	INFO	operator.init.controller.dns_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.Infrastructure"}
+2022-05-24T18:36:45.812840559Z 2022-05-24T18:36:45.812Z	INFO	operator.init.controller.dns_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.Secret"}
+2022-05-24T18:36:45.812840559Z 2022-05-24T18:36:45.812Z	INFO	operator.init.controller.dns_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.816661737Z 2022-05-24T18:36:45.816Z	INFO	operator.certificate_publisher_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.816661737Z 2022-05-24T18:36:45.816Z	INFO	operator.certificate_publisher_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.816940546Z 2022-05-24T18:36:45.816Z	INFO	operator.certificate_publisher_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.816940546Z 2022-05-24T18:36:45.816Z	INFO	operator.certificate_publisher_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.820151032Z 2022-05-24T18:36:45.820Z	INFO	operator.certificate_publisher_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.820201757Z 2022-05-24T18:36:45.820Z	INFO	operator.certificate_publisher_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.822020743Z 2022-05-24T18:36:45.821Z	INFO	operator.init.controller.crl	controller/controller.go:234	Starting EventSource	{"source": "informer source: 0xc0003064f0"}
+2022-05-24T18:36:45.822633013Z 2022-05-24T18:36:45.822Z	INFO	operator.init.controller.crl	controller/controller.go:234	Starting EventSource	{"source": "informer source: 0xc0003064f0"}
+2022-05-24T18:36:45.823262445Z 2022-05-24T18:36:45.823Z	INFO	operator.init.controller.canary_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.823285022Z 2022-05-24T18:36:45.823Z	INFO	operator.init.controller.canary_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.Route"}
+2022-05-24T18:36:45.823285022Z 2022-05-24T18:36:45.823Z	INFO	operator.init.controller.canary_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.823381882Z 2022-05-24T18:36:45.823Z	INFO	operator.init.controller.ingressclass_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.823395162Z 2022-05-24T18:36:45.823Z	INFO	operator.init.controller.ingressclass_controller	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressClass"}
+2022-05-24T18:36:45.823405457Z 2022-05-24T18:36:45.823Z	INFO	operator.init.controller.ingressclass_controller	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.828685275Z 2022-05-24T18:36:45.828Z	INFO	operator.init.controller.crl	controller/controller.go:234	Starting EventSource	{"source": "kind source: *v1.IngressController"}
+2022-05-24T18:36:45.828747307Z 2022-05-24T18:36:45.828Z	INFO	operator.init.controller.crl	controller/controller.go:234	Starting Controller
+2022-05-24T18:36:45.879163869Z 2022-05-24T18:36:45.879Z	INFO	operator.certificate_publisher_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.879163869Z 2022-05-24T18:36:45.879Z	INFO	operator.certificate_publisher_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.903846344Z 2022-05-24T18:36:45.903Z	INFO	operator.init.controller.status_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:45.913872729Z 2022-05-24T18:36:45.913Z	INFO	operator.status_controller	controller/controller.go:114	Reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:36:45.913953737Z 2022-05-24T18:36:45.905Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.914859743Z 2022-05-24T18:36:45.913Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:36:45.925062539Z 2022-05-24T18:36:45.924Z	INFO	operator.dns_controller	handler/enqueue_mapped.go:80	queueing dnsrecord	{"name": "default-wildcard", "related": ""}
+2022-05-24T18:36:45.925062539Z 2022-05-24T18:36:45.924Z	INFO	operator.dns_controller	handler/enqueue_mapped.go:80	queueing dnsrecord	{"name": "default-wildcard", "related": ""}
+2022-05-24T18:36:45.925289032Z 2022-05-24T18:36:45.925Z	INFO	operator.dns_controller	handler/enqueue_mapped.go:80	queueing dnsrecord	{"name": "default-wildcard", "related": ""}
+2022-05-24T18:36:45.925826791Z 2022-05-24T18:36:45.925Z	INFO	operator.dns_controller	handler/enqueue_mapped.go:80	queueing dnsrecord	{"name": "default-wildcard", "related": ""}
+2022-05-24T18:36:45.925974349Z 2022-05-24T18:36:45.925Z	INFO	operator.dns_controller	handler/enqueue_mapped.go:80	queueing dnsrecord	{"name": "default-wildcard", "related": ""}
+2022-05-24T18:36:45.936306311Z 2022-05-24T18:36:45.936Z	INFO	operator.init.controller.crl	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.025713024Z 2022-05-24T18:36:46.025Z	INFO	operator.init.controller.ingressclass_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.025761171Z 2022-05-24T18:36:46.025Z	INFO	operator.ingressclass_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:36:46.113753398Z 2022-05-24T18:36:46.113Z	INFO	operator.init.controller.certificate_publisher_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.113805857Z 2022-05-24T18:36:46.113Z	INFO	operator.certificate_publisher_controller	controller/controller.go:114	Reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:36:46.113805857Z 2022-05-24T18:36:46.113Z	INFO	operator.init.controller.certificate_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.113817262Z 2022-05-24T18:36:46.113Z	INFO	operator.init.controller.error_page_configmap_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.227521659Z 2022-05-24T18:36:46.227Z	INFO	operator.init.controller.dns_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.227615513Z 2022-05-24T18:36:46.227Z	INFO	operator.dns_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default-wildcard"}
+2022-05-24T18:36:46.229149759Z 2022-05-24T18:36:46.228Z	INFO	operator.init.controller.clientca_configmap_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.240255208Z 2022-05-24T18:36:46.239Z	INFO	operator.dns	dns/controller.go:538	using region from operator config	{"region name": "us-east-1"}
+2022-05-24T18:36:46.409708129Z 2022-05-24T18:36:46.409Z	INFO	operator.init.controller.configurable_route_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.409749412Z 2022-05-24T18:36:46.409Z	INFO	operator.configurable_route_controller	controller/controller.go:114	reconciling	{"request": "/cluster"}
+2022-05-24T18:36:46.416529209Z 2022-05-24T18:36:46.416Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:36:46.416529209Z 2022-05-24T18:36:46.416Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:36:46.416580651Z 2022-05-24T18:36:46.416Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:36:46.416595415Z 2022-05-24T18:36:46.416Z	INFO	operator.init.controller.ingress_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.416595415Z 2022-05-24T18:36:46.416Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:36:46.416605672Z 2022-05-24T18:36:46.416Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:36:46.416617650Z 2022-05-24T18:36:46.416Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:36:46.416676541Z 2022-05-24T18:36:46.416Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:36:46.428159648Z 2022-05-24T18:36:46.428Z	INFO	operator.init.controller.canary_controller	controller/controller.go:234	Starting workers	{"worker count": 1}
+2022-05-24T18:36:46.607393678Z 2022-05-24T18:36:46.607Z	INFO	operator.dns_controller	dns/controller.go:192	skipping zone to which the DNS record is already published	{"record": {"dnsName":"*.apps.odf-service.dif5.p1.openshiftapps.com.","targets":["a886fe245b5804cb69232fbd2feef57e-1782300549.us-east-1.elb.amazonaws.com"],"recordType":"CNAME","recordTTL":30}, "dnszone": {"tags":{"Name":"odf-service-c778b-int","kubernetes.io/cluster/odf-service-c778b":"owned"}}}
+2022-05-24T18:36:46.607393678Z 2022-05-24T18:36:46.607Z	INFO	operator.dns_controller	dns/controller.go:192	skipping zone to which the DNS record is already published	{"record": {"dnsName":"*.apps.odf-service.dif5.p1.openshiftapps.com.","targets":["a886fe245b5804cb69232fbd2feef57e-1782300549.us-east-1.elb.amazonaws.com"],"recordType":"CNAME","recordTTL":30}, "dnszone": {"id":"Z017850510MGFL80PZLFV"}}
+2022-05-24T18:36:46.701446263Z 2022-05-24T18:36:46.701Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:15.709330854Z 2022-05-24T18:40:15.709Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:15.709330854Z 2022-05-24T18:40:15.709Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:15.709425590Z 2022-05-24T18:40:15.709Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:15.710902623Z 2022-05-24T18:40:15.709Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:15.710902623Z 2022-05-24T18:40:15.709Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:15.721481781Z 2022-05-24T18:40:15.721Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:15.721560712Z 2022-05-24T18:40:15.721Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:15.721994786Z 2022-05-24T18:40:15.721Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:15.722049171Z 2022-05-24T18:40:15.722Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:15.805681747Z 2022-05-24T18:40:15.805Z	INFO	operator.status_controller	controller/controller.go:114	Reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:15.805968554Z 2022-05-24T18:40:15.805Z	INFO	operator.ingressclass_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:15.806489626Z 2022-05-24T18:40:15.806Z	ERROR	operator.ingress_controller	controller/controller.go:114	got retryable error; requeueing	{"after": "59m59.999987836s", "error": "IngressController may become degraded soon: DeploymentReplicasAllAvailable=False"}
+2022-05-24T18:40:15.806529797Z 2022-05-24T18:40:15.806Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:15.819440130Z 2022-05-24T18:40:15.819Z	INFO	operator.status_controller	controller/controller.go:114	Reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:15.821468230Z 2022-05-24T18:40:15.821Z	INFO	operator.ingressclass_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:15.897674973Z 2022-05-24T18:40:15.897Z	ERROR	operator.ingress_controller	controller/controller.go:114	got retryable error; requeueing	{"after": "59m59.104319311s", "error": "IngressController may become degraded soon: DeploymentReplicasAllAvailable=False"}
+2022-05-24T18:40:26.974818235Z 2022-05-24T18:40:26.974Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:26.974905064Z 2022-05-24T18:40:26.974Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:26.974932144Z 2022-05-24T18:40:26.974Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:26.975225993Z 2022-05-24T18:40:26.975Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:26.975307435Z 2022-05-24T18:40:26.975Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:27.100777295Z 2022-05-24T18:40:27.100Z	ERROR	operator.ingress_controller	controller/controller.go:114	got retryable error; requeueing	{"after": "59m47.901178189s", "error": "IngressController may become degraded soon: DeploymentReplicasAllAvailable=False"}
+2022-05-24T18:40:27.100812974Z 2022-05-24T18:40:27.100Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:27.232533560Z 2022-05-24T18:40:27.232Z	ERROR	operator.ingress_controller	controller/controller.go:114	got retryable error; requeueing	{"after": "59m47.769671408s", "error": "IngressController may become degraded soon: DeploymentReplicasAllAvailable=False"}
+2022-05-24T18:40:56.990445584Z 2022-05-24T18:40:56.990Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:56.990563562Z 2022-05-24T18:40:56.990Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:56.990623673Z 2022-05-24T18:40:56.990Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:56.990649501Z 2022-05-24T18:40:56.990Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingress	{"name": "default", "related": ""}
+2022-05-24T18:40:56.990694274Z 2022-05-24T18:40:56.990Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:57.082238021Z 2022-05-24T18:40:57.082Z	INFO	operator.status_controller	controller/controller.go:114	Reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:57.082544539Z 2022-05-24T18:40:57.082Z	INFO	operator.ingressclass_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:57.083246406Z 2022-05-24T18:40:57.083Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:57.099235293Z 2022-05-24T18:40:57.097Z	INFO	operator.status_controller	controller/controller.go:114	Reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:40:57.099235293Z 2022-05-24T18:40:57.098Z	INFO	operator.ingressclass_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:45:09.943777883Z 2022-05-24T18:45:09.943Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:45:09.943777883Z 2022-05-24T18:45:09.943Z	INFO	operator.dns_controller	handler/enqueue_mapped.go:80	queueing dnsrecord	{"name": "default-wildcard", "related": ""}
+2022-05-24T18:45:09.943826417Z 2022-05-24T18:45:09.943Z	INFO	operator.ingress_controller	handler/enqueue_mapped.go:80	queueing ingresscontroller	{"name": "default", "related": ""}
+2022-05-24T18:45:09.943826417Z 2022-05-24T18:45:09.943Z	INFO	operator.dns_controller	handler/enqueue_mapped.go:80	queueing dnsrecord	{"name": "default-wildcard", "related": ""}
+2022-05-24T18:45:09.943883820Z 2022-05-24T18:45:09.943Z	INFO	operator.dns_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default-wildcard"}
+2022-05-24T18:45:09.943937459Z 2022-05-24T18:45:09.943Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T18:45:09.956314808Z 2022-05-24T18:45:09.956Z	INFO	operator.dns_controller	dns/controller.go:192	skipping zone to which the DNS record is already published	{"record": {"dnsName":"*.apps.odf-service.dif5.p1.openshiftapps.com.","targets":["a886fe245b5804cb69232fbd2feef57e-1782300549.us-east-1.elb.amazonaws.com"],"recordType":"CNAME","recordTTL":30}, "dnszone": {"tags":{"Name":"odf-service-c778b-int","kubernetes.io/cluster/odf-service-c778b":"owned"}}}
+2022-05-24T18:45:09.956338923Z 2022-05-24T18:45:09.956Z	INFO	operator.dns_controller	dns/controller.go:192	skipping zone to which the DNS record is already published	{"record": {"dnsName":"*.apps.odf-service.dif5.p1.openshiftapps.com.","targets":["a886fe245b5804cb69232fbd2feef57e-1782300549.us-east-1.elb.amazonaws.com"],"recordType":"CNAME","recordTTL":30}, "dnszone": {"id":"Z017850510MGFL80PZLFV"}}
+2022-05-24T18:45:10.055370505Z 2022-05-24T18:45:10.055Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}
+2022-05-24T19:40:15.002732664Z 2022-05-24T19:40:15.002Z	INFO	operator.ingress_controller	controller/controller.go:114	reconciling	{"request": "openshift-ingress-operator/default"}

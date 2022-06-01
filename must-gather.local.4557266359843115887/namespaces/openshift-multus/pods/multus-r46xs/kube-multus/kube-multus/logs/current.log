@@ -1,0 +1,11 @@
+2022-05-24T18:44:15.146426920Z Successfully copied files in /usr/src/multus-cni/rhel8/bin/ to /host/opt/cni/bin/
+2022-05-24T18:44:15.245038950Z 2022-05-24T18:44:15+00:00 WARN: {unknown parameter "-"}
+2022-05-24T18:44:15.252669595Z 2022-05-24T18:44:15+00:00 Entrypoint skipped copying Multus binary.
+2022-05-24T18:44:15.274917276Z 2022-05-24T18:44:15+00:00 Generating Multus configuration file using files in /host/var/run/multus/cni/net.d...
+2022-05-24T18:44:15.280778155Z 2022-05-24T18:44:15+00:00 Attempting to find master plugin configuration, attempt 0
+2022-05-24T18:44:17.289722722Z 2022-05-24T18:44:17+00:00 Using MASTER_PLUGIN: 80-openshift-network.conf
+2022-05-24T18:44:17.443940866Z 2022-05-24T18:44:17+00:00 Nested capabilities string: 
+2022-05-24T18:44:17.446744259Z 2022-05-24T18:44:17+00:00 Using /host/var/run/multus/cni/net.d/80-openshift-network.conf as a source to generate the Multus configuration
+2022-05-24T18:44:17.453732816Z 2022-05-24T18:44:17+00:00 Config file created @ /host/etc/cni/net.d/00-multus.conf
+2022-05-24T18:44:17.453775830Z { "cniVersion": "0.3.1", "name": "multus-cni-network", "type": "multus", "namespaceIsolation": true, "globalNamespaces": "default,openshift-multus,openshift-sriov-network-operator", "logLevel": "verbose", "binDir": "/opt/multus/bin", "readinessindicatorfile": "/var/run/multus/cni/net.d/80-openshift-network.conf", "kubeconfig": "/etc/kubernetes/cni/net.d/multus.d/multus.kubeconfig", "delegates": [ { "cniVersion": "0.3.1", "name": "openshift-sdn", "type": "openshift-sdn" } ] }
+2022-05-24T18:44:17.455445267Z 2022-05-24T18:44:17+00:00 Entering watch loop...

@@ -1,0 +1,555 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.56"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.128.0.56"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+    operator.openshift.io/dep-openshift-machine-api.mao-trusted-ca.configmap: WAXdSw==
+  creationTimestamp: "2022-05-24T18:32:01Z"
+  generateName: machine-api-controllers-77fb6ff9f7-
+  labels:
+    api: clusterapi
+    k8s-app: controller
+    pod-template-hash: 77fb6ff9f7
+  name: machine-api-controllers-77fb6ff9f7-vckw9
+  namespace: openshift-machine-api
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: machine-api-controllers-77fb6ff9f7
+    uid: de8d4591-3d3b-4eac-ac90-b6883f1b8ccf
+  resourceVersion: "57005"
+  uid: c087a651-1f90-4deb-83ff-89b14836c470
+spec:
+  containers:
+  - args:
+    - --logtostderr=true
+    - --v=3
+    - --leader-elect=true
+    - --leader-elect-lease-duration=120s
+    - --namespace=openshift-machine-api
+    command:
+    - /machineset-controller
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: machineset-controller
+    ports:
+    - containerPort: 8443
+      name: webhook-server
+      protocol: TCP
+    - containerPort: 9441
+      name: healthz
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000460000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/machine-api-operator/tls
+      name: cert
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-zcvbt
+      readOnly: true
+  - args:
+    - --logtostderr=true
+    - --v=3
+    - --leader-elect=true
+    - --leader-elect-lease-duration=120s
+    - --namespace=openshift-machine-api
+    command:
+    - /machine-controller-manager
+    env:
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:72c985011200f103ad95899acd09b01af755bb976803bc8a16b7be78f19f7a40
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: machine-controller
+    ports:
+    - containerPort: 9440
+      name: healthz
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000460000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/pki/ca-trust/extracted/pem
+      name: trusted-ca
+      readOnly: true
+    - mountPath: /var/run/secrets/openshift/serviceaccount
+      name: bound-sa-token
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-zcvbt
+      readOnly: true
+  - args:
+    - --logtostderr=true
+    - --v=3
+    - --leader-elect=true
+    - --leader-elect-lease-duration=120s
+    - --namespace=openshift-machine-api
+    command:
+    - /nodelink-controller
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    imagePullPolicy: IfNotPresent
+    name: nodelink-controller
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000460000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-zcvbt
+      readOnly: true
+  - args:
+    - --logtostderr=true
+    - --v=3
+    - --leader-elect=true
+    - --leader-elect-lease-duration=120s
+    - --namespace=openshift-machine-api
+    command:
+    - /machine-healthcheck
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: machine-healthcheck-controller
+    ports:
+    - containerPort: 9442
+      name: healthz
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000460000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-zcvbt
+      readOnly: true
+  - args:
+    - --secure-listen-address=0.0.0.0:8442
+    - --upstream=http://localhost:8082
+    - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    - --logtostderr=true
+    - --v=3
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy-machineset-mtrc
+    ports:
+    - containerPort: 8442
+      name: machineset-mtrc
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000460000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kube-rbac-proxy
+      name: config
+    - mountPath: /etc/tls/private
+      name: machine-api-controllers-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-zcvbt
+      readOnly: true
+  - args:
+    - --secure-listen-address=0.0.0.0:8441
+    - --upstream=http://localhost:8081
+    - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    - --logtostderr=true
+    - --v=3
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy-machine-mtrc
+    ports:
+    - containerPort: 8441
+      name: machine-mtrc
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000460000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kube-rbac-proxy
+      name: config
+    - mountPath: /etc/tls/private
+      name: machine-api-controllers-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-zcvbt
+      readOnly: true
+  - args:
+    - --secure-listen-address=0.0.0.0:8444
+    - --upstream=http://localhost:8083
+    - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+    - --tls-cert-file=/etc/tls/private/tls.crt
+    - --tls-private-key-file=/etc/tls/private/tls.key
+    - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+    - --logtostderr=true
+    - --v=3
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imagePullPolicy: IfNotPresent
+    name: kube-rbac-proxy-mhc-mtrc
+    ports:
+    - containerPort: 8444
+      name: mhc-mtrc
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 10m
+        memory: 20Mi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000460000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kube-rbac-proxy
+      name: config
+    - mountPath: /etc/tls/private
+      name: machine-api-controllers-tls
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-zcvbt
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: machine-api-controllers-dockercfg-25jnl
+  nodeName: ip-10-0-169-205.ec2.internal
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000460000
+    seLinuxOptions:
+      level: s0:c21,c20
+  serviceAccount: machine-api-controllers
+  serviceAccountName: machine-api-controllers
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 120
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: cert
+    secret:
+      defaultMode: 420
+      items:
+      - key: tls.crt
+        path: tls.crt
+      - key: tls.key
+        path: tls.key
+      secretName: machine-api-operator-webhook-cert
+  - name: bound-sa-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: openshift
+          expirationSeconds: 3600
+          path: token
+  - configMap:
+      defaultMode: 420
+      name: kube-rbac-proxy
+    name: config
+  - name: machine-api-controllers-tls
+    secret:
+      defaultMode: 420
+      secretName: machine-api-controllers-tls
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: ca-bundle.crt
+        path: tls-ca-bundle.pem
+      name: mao-trusted-ca
+      optional: true
+    name: trusted-ca
+  - name: kube-api-access-zcvbt
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:01Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:41Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:41Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-05-24T18:32:01Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://36ecd88ac929647128162076c0648a36d92cf1c0e9b565b6e6ff273c661f2f00
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy-machine-mtrc
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:30Z"
+  - containerID: cri-o://18c9e370c386d05066551fa5f582ec9e9221eaa4809f3c45ee80877c82189f5c
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy-machineset-mtrc
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:29Z"
+  - containerID: cri-o://7ffddc4a24d3471550d7cfa5f0bca27408336e93b83638e9c5c4fad01c8cb8b8
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+    lastState: {}
+    name: kube-rbac-proxy-mhc-mtrc
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:30Z"
+  - containerID: cri-o://45d2f3b11b2876a354223be045961b756c4fe0fa0100456554fbcbfec86bf50c
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:72c985011200f103ad95899acd09b01af755bb976803bc8a16b7be78f19f7a40
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:72c985011200f103ad95899acd09b01af755bb976803bc8a16b7be78f19f7a40
+    lastState: {}
+    name: machine-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:23Z"
+  - containerID: cri-o://1aad77882ead510b33a63d5d68e59adc1e004a32db5f48128f339f7c9d6ce55f
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    lastState: {}
+    name: machine-healthcheck-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:29Z"
+  - containerID: cri-o://f04d24a36355ee8181e367add161d105554c20ab40ad88bb8fd1308e625979f8
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    lastState: {}
+    name: machineset-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:20Z"
+  - containerID: cri-o://e8bac09d91466e040b40fdb5ab6e73fb292eb6816a555526d366d74184abcbf5
+    image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    imageID: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+    lastState: {}
+    name: nodelink-controller
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2022-05-24T18:32:28Z"
+  hostIP: 10.0.169.205
+  phase: Running
+  podIP: 10.128.0.56
+  podIPs:
+  - ip: 10.128.0.56
+  qosClass: Burstable
+  startTime: "2022-05-24T18:32:01Z"

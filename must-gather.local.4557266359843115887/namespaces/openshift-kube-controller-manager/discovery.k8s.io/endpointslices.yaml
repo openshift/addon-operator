@@ -1,0 +1,77 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.0.138.197
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: kube-controller-manager-ip-10-0-138-197.ec2.internal
+      namespace: openshift-kube-controller-manager
+      resourceVersion: "76654"
+      uid: a55f5b70-9bd7-4565-87b8-3f84e14cdbca
+    zone: us-east-1a
+  - addresses:
+    - 10.0.149.121
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-149-121.ec2.internal
+    targetRef:
+      kind: Pod
+      name: kube-controller-manager-ip-10-0-149-121.ec2.internal
+      namespace: openshift-kube-controller-manager
+      resourceVersion: "74208"
+      uid: a2153a01-a99b-470a-8760-5b68232b0112
+    zone: us-east-1b
+  - addresses:
+    - 10.0.169.205
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-169-205.ec2.internal
+    targetRef:
+      kind: Pod
+      name: kube-controller-manager-ip-10-0-169-205.ec2.internal
+      namespace: openshift-kube-controller-manager
+      resourceVersion: "78370"
+      uid: bf512a4d-c603-47cd-b810-e9a6eb4eb0b6
+    zone: us-east-1c
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:44:10Z"
+    creationTimestamp: "2022-05-24T18:07:48Z"
+    generateName: kube-controller-manager-
+    generation: 64
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: kube-controller-manager
+      prometheus: kube-controller-manager
+    name: kube-controller-manager-ssq85
+    namespace: openshift-kube-controller-manager
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: kube-controller-manager
+      uid: 791b28d8-30e6-4e93-b901-8db944837859
+    resourceVersion: "78371"
+    uid: d746ee26-22da-4bb7-aa80-137d380d9ee2
+  ports:
+  - name: https
+    port: 10257
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "315366"

@@ -1,0 +1,35 @@
+2022-05-24T18:38:36.634196290Z I0524 18:38:36.634060       1 main.go:45] Version:52986d95896619efeda191597587c34a086b7f75
+2022-05-24T18:38:36.634308688Z I0524 18:38:36.634283       1 main.go:46] Starting with config{  :9091 ip-10-0-140-240.ec2.internal}
+2022-05-24T18:38:36.636298628Z W0524 18:38:36.636263       1 client_config.go:543] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+2022-05-24T18:38:36.642691156Z I0524 18:38:36.642088       1 controller.go:42] Setting up event handlers
+2022-05-24T18:38:36.645561860Z I0524 18:38:36.645527       1 podmetrics.go:101] Serving network metrics
+2022-05-24T18:38:36.645561860Z I0524 18:38:36.645554       1 controller.go:101] Starting pod controller
+2022-05-24T18:38:36.645587021Z I0524 18:38:36.645558       1 controller.go:104] Waiting for informer caches to sync
+2022-05-24T18:38:39.846524466Z I0524 18:38:39.846155       1 controller.go:109] Starting workers
+2022-05-24T18:38:39.846565787Z I0524 18:38:39.846524       1 controller.go:114] Started workers
+2022-05-24T18:38:39.846586204Z I0524 18:38:39.846574       1 controller.go:192] Received pod 'ingress-canary-p2mb7'
+2022-05-24T18:38:39.846642464Z I0524 18:38:39.846617       1 controller.go:192] Received pod 'sre-dns-latency-exporter-74pbq'
+2022-05-24T18:38:39.846681735Z I0524 18:38:39.846663       1 controller.go:151] Successfully synced 'openshift-ingress-canary/ingress-canary-p2mb7'
+2022-05-24T18:38:39.846681735Z I0524 18:38:39.846678       1 controller.go:192] Received pod 'network-metrics-daemon-pt752'
+2022-05-24T18:38:39.846693519Z I0524 18:38:39.846685       1 controller.go:151] Successfully synced 'openshift-monitoring/sre-dns-latency-exporter-74pbq'
+2022-05-24T18:38:39.846703253Z I0524 18:38:39.846695       1 controller.go:192] Received pod 'network-check-target-bfgfj'
+2022-05-24T18:38:39.846713225Z I0524 18:38:39.846701       1 controller.go:151] Successfully synced 'openshift-multus/network-metrics-daemon-pt752'
+2022-05-24T18:38:39.846713225Z I0524 18:38:39.846709       1 controller.go:192] Received pod 'splunkforwarder-ds-wgmw2'
+2022-05-24T18:38:39.846723236Z I0524 18:38:39.846712       1 controller.go:151] Successfully synced 'openshift-network-diagnostics/network-check-target-bfgfj'
+2022-05-24T18:38:39.846735184Z I0524 18:38:39.846727       1 controller.go:151] Successfully synced 'openshift-security/splunkforwarder-ds-wgmw2'
+2022-05-24T18:40:12.005872301Z I0524 18:40:12.005820       1 controller.go:192] Received pod 'custom-domains-operator-867455f6cd-khzlk'
+2022-05-24T18:40:12.005908501Z I0524 18:40:12.005898       1 controller.go:151] Successfully synced 'openshift-custom-domains-operator/custom-domains-operator-867455f6cd-khzlk'
+2022-05-24T18:40:12.224817233Z I0524 18:40:12.224778       1 controller.go:192] Received pod 'ocm-agent-operator-6477bb6b7d-jrc6v'
+2022-05-24T18:40:12.224863773Z I0524 18:40:12.224847       1 controller.go:151] Successfully synced 'openshift-ocm-agent-operator/ocm-agent-operator-6477bb6b7d-jrc6v'
+2022-05-24T18:40:12.490591396Z I0524 18:40:12.490545       1 controller.go:192] Received pod 'route-monitor-operator-controller-manager-cc7bb695b-dl86d'
+2022-05-24T18:40:12.490623022Z I0524 18:40:12.490591       1 controller.go:151] Successfully synced 'openshift-route-monitor-operator/route-monitor-operator-controller-manager-cc7bb695b-dl86d'
+2022-05-24T18:40:12.622178225Z I0524 18:40:12.622135       1 controller.go:192] Received pod 'addon-operator-manager-7fc6bf4658-57dl9'
+2022-05-24T18:40:12.622298133Z I0524 18:40:12.622276       1 controller.go:151] Successfully synced 'openshift-addon-operator/addon-operator-manager-7fc6bf4658-57dl9'
+2022-05-24T18:40:16.093887452Z I0524 18:40:16.093850       1 controller.go:192] Received pod 'alertmanager-main-0'
+2022-05-24T18:40:16.093994437Z I0524 18:40:16.093982       1 controller.go:151] Successfully synced 'openshift-monitoring/alertmanager-main-0'
+2022-05-24T18:40:16.907750348Z I0524 18:40:16.907668       1 controller.go:192] Received pod 'prometheus-k8s-1'
+2022-05-24T18:40:16.907750348Z I0524 18:40:16.907732       1 controller.go:151] Successfully synced 'openshift-monitoring/prometheus-k8s-1'
+2022-05-24T18:40:23.880115183Z I0524 18:40:23.880067       1 controller.go:192] Received pod 'prometheus-adapter-58f5b7f7c-lmrdw'
+2022-05-24T18:40:23.880230662Z I0524 18:40:23.880206       1 controller.go:151] Successfully synced 'openshift-monitoring/prometheus-adapter-58f5b7f7c-lmrdw'
+2022-05-24T18:40:24.704423677Z I0524 18:40:24.703810       1 controller.go:192] Received pod 'router-default-6f54df4f4-fn65g'
+2022-05-24T18:40:24.704423677Z I0524 18:40:24.703859       1 controller.go:151] Successfully synced 'openshift-ingress/router-default-6f54df4f4-fn65g'

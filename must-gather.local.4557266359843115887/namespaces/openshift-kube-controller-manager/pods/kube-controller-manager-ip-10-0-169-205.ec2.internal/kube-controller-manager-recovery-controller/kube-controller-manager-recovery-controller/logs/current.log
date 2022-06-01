@@ -1,0 +1,9 @@
+2022-05-24T18:44:00.241557021Z + timeout 3m /bin/bash -exuo pipefail -c 'while [ -n "$(ss -Htanop \( sport = 9443 \))" ]; do sleep 1; done'
+2022-05-24T18:44:00.244588459Z ++ ss -Htanop '(' sport = 9443 ')'
+2022-05-24T18:44:00.248698263Z + '[' -n '' ']'
+2022-05-24T18:44:00.249112810Z + exec cluster-kube-controller-manager-operator cert-recovery-controller --kubeconfig=/etc/kubernetes/static-pod-resources/configmaps/kube-controller-cert-syncer-kubeconfig/kubeconfig --namespace=openshift-kube-controller-manager --listen=0.0.0.0:9443 -v=2
+2022-05-24T18:44:00.281598240Z W0524 18:44:00.281509       1 cmd.go:213] Using insecure, self-signed certificates
+2022-05-24T18:44:00.281743372Z I0524 18:44:00.281714       1 crypto.go:601] Generating new CA for cert-recovery-controller-signer@1653417840 cert, and key in /tmp/serving-cert-3941182340/serving-signer.crt, /tmp/serving-cert-3941182340/serving-signer.key
+2022-05-24T18:44:00.604576842Z I0524 18:44:00.604532       1 observer_polling.go:159] Starting file observer
+2022-05-24T18:44:00.633067975Z I0524 18:44:00.633030       1 builder.go:262] cert-recovery-controller version 4.10.0-202204211158.p0.gca3ff53.assembly.stream-ca3ff53-ca3ff5396f45632a4ae9997d9b71441b52b62efd
+2022-05-24T18:44:00.637528694Z I0524 18:44:00.637495       1 leaderelection.go:248] attempting to acquire leader lease openshift-kube-controller-manager/cert-recovery-controller-lock...

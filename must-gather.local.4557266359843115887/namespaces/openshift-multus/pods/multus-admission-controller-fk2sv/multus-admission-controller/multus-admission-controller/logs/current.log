@@ -1,0 +1,6 @@
+2022-05-24T18:40:40.917323376Z I0524 18:40:40.917114       1 main.go:53] starting net-attach-def-admission-controller webhook server
+2022-05-24T18:40:40.973211288Z I0524 18:40:40.973172       1 localmetrics.go:51] UPdating net-attach-def metrics for any with value 0
+2022-05-24T18:40:40.973294647Z I0524 18:40:40.973279       1 localmetrics.go:51] UPdating net-attach-def metrics for sriov with value 0
+2022-05-24T18:40:40.973330598Z I0524 18:40:40.973320       1 localmetrics.go:51] UPdating net-attach-def metrics for ib-sriov with value 0
+2022-05-24T18:40:40.977102619Z I0524 18:40:40.977051       1 controller.go:194] Starting net-attach-def-admission-controller
+2022-05-24T18:40:48.578360840Z I0524 18:40:48.578023       1 controller.go:203] net-attach-def-admission-controller synced and ready

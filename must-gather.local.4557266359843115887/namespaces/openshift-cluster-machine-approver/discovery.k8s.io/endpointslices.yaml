@@ -1,0 +1,48 @@
+---
+apiVersion: discovery.k8s.io/v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.0.138.197
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: ip-10-0-138-197.ec2.internal
+    targetRef:
+      kind: Pod
+      name: machine-approver-6c94df4c6c-wvw6z
+      namespace: openshift-cluster-machine-approver
+      resourceVersion: "63242"
+      uid: d67e1263-d1bf-44eb-9938-486b6f7649f1
+    zone: us-east-1a
+  kind: EndpointSlice
+  metadata:
+    creationTimestamp: "2022-05-24T18:06:08Z"
+    generateName: machine-approver-
+    generation: 15
+    labels:
+      app: machine-approver
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: machine-approver
+      service.kubernetes.io/headless: ""
+    name: machine-approver-dc6kh
+    namespace: openshift-cluster-machine-approver
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: machine-approver
+      uid: 0c774f3d-1859-437e-9342-3a4b70defc21
+    resourceVersion: "63566"
+    uid: 90793f93-c89f-44bf-b353-80744fa1171a
+  ports:
+  - name: https
+    port: 9192
+    protocol: TCP
+kind: EndpointSliceList
+metadata:
+  resourceVersion: "319241"

@@ -1,0 +1,60 @@
+---
+apiVersion: config.openshift.io/v1
+kind: ClusterOperator
+metadata:
+  annotations:
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+  creationTimestamp: "2022-05-24T18:05:27Z"
+  generation: 1
+  name: dns
+  ownerReferences:
+  - apiVersion: config.openshift.io/v1
+    kind: ClusterVersion
+    name: version
+    uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+  resourceVersion: "78998"
+  uid: 39fd4c58-bc4b-4803-974b-8d9468b2a74a
+spec: {}
+status:
+  conditions:
+  - lastTransitionTime: "2022-05-24T18:08:55Z"
+    message: DNS "default" is available.
+    reason: AsExpected
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-05-24T18:44:29Z"
+    message: desired and current number of DNSes are equal
+    reason: AsExpected
+    status: "False"
+    type: Progressing
+  - lastTransitionTime: "2022-05-24T18:13:34Z"
+    reason: DNSNotDegraded
+    status: "False"
+    type: Degraded
+  - lastTransitionTime: "2022-05-24T18:08:40Z"
+    message: 'DNS default is upgradeable: DNS Operator can be upgraded'
+    reason: DNSUpgradeable
+    status: "True"
+    type: Upgradeable
+  extension: null
+  relatedObjects:
+  - group: ""
+    name: openshift-dns-operator
+    resource: namespaces
+  - group: operator.openshift.io
+    name: default
+    resource: dnses
+  - group: ""
+    name: openshift-dns
+    resource: namespaces
+  versions:
+  - name: operator
+    version: 4.10.13
+  - name: coredns
+    version: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ceb0d1d2015b87e9daf3e57b93f5464f15a1386a6bcab5442b7dba594b058b24
+  - name: openshift-cli
+    version: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:5cb8eed4d9713a7a3da331026e21773c76d52feef9a591921807ccf217f66757
+  - name: kube-rbac-proxy
+    version: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3

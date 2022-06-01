@@ -1,0 +1,35 @@
+---
+apiVersion: policy/v1
+items:
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    annotations:
+      imageregistry.operator.openshift.io/checksum: sha256:fbd92701d7a2b26e7770e68fe98498809b39e955dd4b69d78db4b07762ac55e6
+    creationTimestamp: "2022-05-24T18:13:28Z"
+    generation: 1
+    name: image-registry
+    namespace: openshift-image-registry
+    resourceVersion: "76855"
+    uid: 27dd53a9-56e6-4794-9c96-cda0dd3951b4
+  spec:
+    minAvailable: 1
+    selector:
+      matchLabels:
+        docker-registry: default
+  status:
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:43:04Z"
+      message: ""
+      observedGeneration: 1
+      reason: SufficientPods
+      status: "True"
+      type: DisruptionAllowed
+    currentHealthy: 2
+    desiredHealthy: 1
+    disruptionsAllowed: 1
+    expectedPods: 2
+    observedGeneration: 1
+kind: PodDisruptionBudgetList
+metadata:
+  resourceVersion: "312099"

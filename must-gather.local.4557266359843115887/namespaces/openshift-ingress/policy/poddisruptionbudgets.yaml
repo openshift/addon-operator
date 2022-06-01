@@ -1,0 +1,39 @@
+---
+apiVersion: policy/v1
+items:
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: "2022-05-24T18:08:52Z"
+    generation: 1
+    name: router-default
+    namespace: openshift-ingress
+    ownerReferences:
+    - apiVersion: apps/v1
+      controller: true
+      kind: Deployment
+      name: router-default
+      uid: b76058fd-20e9-43c4-a6ef-4a9bae514f62
+    resourceVersion: "70754"
+    uid: f236ee8e-74da-4fc5-a3b1-05cfb8a1d11a
+  spec:
+    maxUnavailable: 50%
+    selector:
+      matchLabels:
+        ingresscontroller.operator.openshift.io/deployment-ingresscontroller: default
+  status:
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:40:26Z"
+      message: ""
+      observedGeneration: 1
+      reason: SufficientPods
+      status: "True"
+      type: DisruptionAllowed
+    currentHealthy: 2
+    desiredHealthy: 1
+    disruptionsAllowed: 1
+    expectedPods: 2
+    observedGeneration: 1
+kind: PodDisruptionBudgetList
+metadata:
+  resourceVersion: "297096"

@@ -1,0 +1,838 @@
+---
+apiVersion: apps/v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+    creationTimestamp: "2022-05-24T18:06:18Z"
+    generation: 1
+    labels:
+      k8s-app: cluster-autoscaler-operator
+    name: cluster-autoscaler-operator
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "54388"
+    uid: e353a69f-76cf-48f0-aa7f-b93f1bb5431e
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        k8s-app: cluster-autoscaler-operator
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          k8s-app: cluster-autoscaler-operator
+      spec:
+        containers:
+        - args:
+          - --secure-listen-address=0.0.0.0:9192
+          - --upstream=http://127.0.0.1:9191/
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+          - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+          - --logtostderr=true
+          - --v=3
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy
+          ports:
+          - containerPort: 9192
+            name: metrics
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/kube-rbac-proxy
+            name: auth-proxy-config
+            readOnly: true
+          - mountPath: /etc/tls/private
+            name: cert
+            readOnly: true
+        - args:
+          - -alsologtostderr
+          command:
+          - cluster-autoscaler-operator
+          env:
+          - name: RELEASE_VERSION
+            value: 4.10.13
+          - name: WATCH_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: CLUSTER_AUTOSCALER_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: LEADER_ELECTION_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: CLUSTER_AUTOSCALER_IMAGE
+            value: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:8a3207dae1eb921166f5143c0b8bdfa05248a97cbe3a664930763ca5990931e0
+          - name: WEBHOOKS_CERT_DIR
+            value: /etc/cluster-autoscaler-operator/tls
+          - name: WEBHOOKS_PORT
+            value: "8443"
+          - name: METRICS_PORT
+            value: "9191"
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2579c0d49c1ad674f4d2b20c255dfa17eeeabe8ed1e6f032495d1817b8d20c01
+          imagePullPolicy: IfNotPresent
+          name: cluster-autoscaler-operator
+          ports:
+          - containerPort: 8443
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 20m
+              memory: 50Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/cluster-autoscaler-operator/tls
+            name: cert
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-node-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: cluster-autoscaler-operator
+        serviceAccountName: cluster-autoscaler-operator
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        volumes:
+        - name: cert
+          secret:
+            defaultMode: 420
+            items:
+            - key: tls.crt
+              path: tls.crt
+            - key: tls.key
+              path: tls.key
+            secretName: cluster-autoscaler-operator-cert
+        - configMap:
+            defaultMode: 420
+            name: kube-rbac-proxy-cluster-autoscaler-operator
+          name: auth-proxy-config
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:06:18Z"
+      lastUpdateTime: "2022-05-24T18:08:34Z"
+      message: ReplicaSet "cluster-autoscaler-operator-5987f8b95" has successfully
+        progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2022-05-24T18:31:59Z"
+      lastUpdateTime: "2022-05-24T18:31:59Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+    creationTimestamp: "2022-05-24T18:06:18Z"
+    generation: 1
+    labels:
+      k8s-app: cluster-baremetal-operator
+    name: cluster-baremetal-operator
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "63975"
+    uid: 1496601b-b103-41cf-aa0a-f7f80faae386
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        k8s-app: cluster-baremetal-operator
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          include.release.openshift.io/self-managed-high-availability: "true"
+          include.release.openshift.io/single-node-developer: "true"
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          k8s-app: cluster-baremetal-operator
+      spec:
+        containers:
+        - command:
+          - /usr/bin/cluster-baremetal-operator
+          env:
+          - name: RELEASE_VERSION
+            value: 4.10.13
+          - name: COMPONENT_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: METRICS_PORT
+            value: "8080"
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2fb612f93bd0d79f399a42e9595340b9004fa542ea07ce397a059e7ecab9c616
+          imagePullPolicy: IfNotPresent
+          name: cluster-baremetal-operator
+          ports:
+          - containerPort: 9443
+            name: webhook-server
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/cluster-baremetal-operator/tls
+            name: cert
+            readOnly: true
+          - mountPath: /etc/cluster-baremetal-operator/images
+            name: images
+            readOnly: true
+        - args:
+          - --secure-listen-address=0.0.0.0:8443
+          - --upstream=http://localhost:8080/
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+          - --logtostderr=true
+          - --v=10
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy
+          ports:
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/kube-rbac-proxy
+            name: config
+          - mountPath: /etc/tls/private
+            name: cluster-baremetal-operator-tls
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-node-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: cluster-baremetal-operator
+        serviceAccountName: cluster-baremetal-operator
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: cert
+          secret:
+            defaultMode: 420
+            secretName: cluster-baremetal-webhook-server-cert
+        - configMap:
+            defaultMode: 420
+            name: kube-rbac-proxy
+          name: config
+        - name: cluster-baremetal-operator-tls
+          secret:
+            defaultMode: 420
+            secretName: cluster-baremetal-operator-tls
+        - configMap:
+            defaultMode: 420
+            name: cluster-baremetal-operator-images
+          name: images
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:06:18Z"
+      lastUpdateTime: "2022-05-24T18:08:35Z"
+      message: ReplicaSet "cluster-baremetal-operator-569bb4749d" has successfully
+        progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2022-05-24T18:36:46Z"
+      lastUpdateTime: "2022-05-24T18:36:46Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      machine.openshift.io/owned: ""
+      operator.openshift.io/dep-openshift-machine-api.mao-trusted-ca.configmap: WAXdSw==
+      operator.openshift.io/spec-hash: 4a40c10e53662537899797607de3ed788deb774a461343a1f3080abe464d1455
+    creationTimestamp: "2022-05-24T18:08:35Z"
+    generation: 1
+    labels:
+      api: clusterapi
+      k8s-app: controller
+    name: machine-api-controllers
+    namespace: openshift-machine-api
+    resourceVersion: "57011"
+    uid: 3521b6ee-9030-41d1-8c94-147f928dd2b4
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        api: clusterapi
+        k8s-app: controller
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          operator.openshift.io/dep-openshift-machine-api.mao-trusted-ca.configmap: WAXdSw==
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          api: clusterapi
+          k8s-app: controller
+      spec:
+        containers:
+        - args:
+          - --logtostderr=true
+          - --v=3
+          - --leader-elect=true
+          - --leader-elect-lease-duration=120s
+          - --namespace=openshift-machine-api
+          command:
+          - /machineset-controller
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: machineset-controller
+          ports:
+          - containerPort: 8443
+            name: webhook-server
+            protocol: TCP
+          - containerPort: 9441
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/machine-api-operator/tls
+            name: cert
+            readOnly: true
+        - args:
+          - --logtostderr=true
+          - --v=3
+          - --leader-elect=true
+          - --leader-elect-lease-duration=120s
+          - --namespace=openshift-machine-api
+          command:
+          - /machine-controller-manager
+          env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:72c985011200f103ad95899acd09b01af755bb976803bc8a16b7be78f19f7a40
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: machine-controller
+          ports:
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/pki/ca-trust/extracted/pem
+            name: trusted-ca
+            readOnly: true
+          - mountPath: /var/run/secrets/openshift/serviceaccount
+            name: bound-sa-token
+            readOnly: true
+        - args:
+          - --logtostderr=true
+          - --v=3
+          - --leader-elect=true
+          - --leader-elect-lease-duration=120s
+          - --namespace=openshift-machine-api
+          command:
+          - /nodelink-controller
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+          imagePullPolicy: IfNotPresent
+          name: nodelink-controller
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - --logtostderr=true
+          - --v=3
+          - --leader-elect=true
+          - --leader-elect-lease-duration=120s
+          - --namespace=openshift-machine-api
+          command:
+          - /machine-healthcheck
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: machine-healthcheck-controller
+          ports:
+          - containerPort: 9442
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - args:
+          - --secure-listen-address=0.0.0.0:8442
+          - --upstream=http://localhost:8082
+          - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+          - --logtostderr=true
+          - --v=3
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy-machineset-mtrc
+          ports:
+          - containerPort: 8442
+            name: machineset-mtrc
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/kube-rbac-proxy
+            name: config
+          - mountPath: /etc/tls/private
+            name: machine-api-controllers-tls
+        - args:
+          - --secure-listen-address=0.0.0.0:8441
+          - --upstream=http://localhost:8081
+          - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+          - --logtostderr=true
+          - --v=3
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy-machine-mtrc
+          ports:
+          - containerPort: 8441
+            name: machine-mtrc
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/kube-rbac-proxy
+            name: config
+          - mountPath: /etc/tls/private
+            name: machine-api-controllers-tls
+        - args:
+          - --secure-listen-address=0.0.0.0:8444
+          - --upstream=http://localhost:8083
+          - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+          - --logtostderr=true
+          - --v=3
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy-mhc-mtrc
+          ports:
+          - containerPort: 8444
+            name: mhc-mtrc
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/kube-rbac-proxy
+            name: config
+          - mountPath: /etc/tls/private
+            name: machine-api-controllers-tls
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-node-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: machine-api-controllers
+        serviceAccountName: machine-api-controllers
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - name: cert
+          secret:
+            defaultMode: 420
+            items:
+            - key: tls.crt
+              path: tls.crt
+            - key: tls.key
+              path: tls.key
+            secretName: machine-api-operator-webhook-cert
+        - name: bound-sa-token
+          projected:
+            defaultMode: 420
+            sources:
+            - serviceAccountToken:
+                audience: openshift
+                expirationSeconds: 3600
+                path: token
+        - configMap:
+            defaultMode: 420
+            name: kube-rbac-proxy
+          name: config
+        - name: machine-api-controllers-tls
+          secret:
+            defaultMode: 420
+            secretName: machine-api-controllers-tls
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+            name: mao-trusted-ca
+            optional: true
+          name: trusted-ca
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:08:35Z"
+      lastUpdateTime: "2022-05-24T18:09:05Z"
+      message: ReplicaSet "machine-api-controllers-77fb6ff9f7" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2022-05-24T18:32:42Z"
+      lastUpdateTime: "2022-05-24T18:32:42Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      exclude.release.openshift.io/internal-openshift-hosted: "true"
+      include.release.openshift.io/self-managed-high-availability: "true"
+      include.release.openshift.io/single-node-developer: "true"
+    creationTimestamp: "2022-05-24T18:06:20Z"
+    generation: 1
+    labels:
+      k8s-app: machine-api-operator
+    name: machine-api-operator
+    namespace: openshift-machine-api
+    ownerReferences:
+    - apiVersion: config.openshift.io/v1
+      kind: ClusterVersion
+      name: version
+      uid: 1aeb4053-5b18-4117-b8a7-b4d0a7d94362
+    resourceVersion: "54308"
+    uid: d612a10a-c6f8-4ab0-8f72-15702103fff7
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        k8s-app: machine-api-operator
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          k8s-app: machine-api-operator
+      spec:
+        containers:
+        - args:
+          - --secure-listen-address=0.0.0.0:8443
+          - --upstream=http://localhost:8080/
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
+          - --config-file=/etc/kube-rbac-proxy/config-file.yaml
+          - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+          - --logtostderr=true
+          - --v=3
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:08e8b4004edaeeb125ced09ab2c4cd6d690afaf3a86309c91a994dec8e3ccbf3
+          imagePullPolicy: IfNotPresent
+          name: kube-rbac-proxy
+          ports:
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/kube-rbac-proxy
+            name: config
+          - mountPath: /etc/tls/private
+            name: machine-api-operator-tls
+        - args:
+          - start
+          - --images-json=/etc/machine-api-operator-config/images/images.json
+          - --alsologtostderr
+          - --v=3
+          command:
+          - /machine-api-operator
+          env:
+          - name: RELEASE_VERSION
+            value: 4.10.13
+          - name: COMPONENT_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: METRICS_PORT
+            value: "8080"
+          image: quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:37ab472df860086e59090eab8f3e327c3088263d669f3dea9048574bef72c201
+          imagePullPolicy: IfNotPresent
+          name: machine-api-operator
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/machine-api-operator-config/images
+            name: images
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          node-role.kubernetes.io/master: ""
+        priorityClassName: system-node-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: machine-api-operator
+        serviceAccountName: machine-api-operator
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 120
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 120
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: kube-rbac-proxy
+          name: config
+        - configMap:
+            defaultMode: 420
+            name: machine-api-operator-images
+          name: images
+        - name: machine-api-operator-tls
+          secret:
+            defaultMode: 420
+            secretName: machine-api-operator-tls
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2022-05-24T18:06:20Z"
+      lastUpdateTime: "2022-05-24T18:08:34Z"
+      message: ReplicaSet "machine-api-operator-7cb76cb4d8" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2022-05-24T18:31:59Z"
+      lastUpdateTime: "2022-05-24T18:31:59Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+kind: DeploymentList
+metadata:
+  resourceVersion: "297567"

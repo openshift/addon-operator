@@ -1,0 +1,85 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:40:26Z"
+    creationTimestamp: "2022-05-24T18:08:52Z"
+    labels:
+      app: router
+      ingresscontroller.operator.openshift.io/owning-ingresscontroller: default
+      router: router-default
+    name: router-default
+    namespace: openshift-ingress
+    resourceVersion: "70749"
+    uid: 4f404405-7a75-4a24-bbfb-6f0e04bffe38
+  subsets:
+  - addresses:
+    - ip: 10.130.2.14
+      nodeName: ip-10-0-140-240.ec2.internal
+      targetRef:
+        kind: Pod
+        name: router-default-6f54df4f4-fn65g
+        namespace: openshift-ingress
+        resourceVersion: "70746"
+        uid: ae55cb43-cf96-4d38-90c2-ac13dbeaca7d
+    - ip: 10.131.2.15
+      nodeName: ip-10-0-166-35.ec2.internal
+      targetRef:
+        kind: Pod
+        name: router-default-6f54df4f4-xtmw6
+        namespace: openshift-ingress
+        resourceVersion: "60453"
+        uid: 1ce27c73-6e73-48d0-beed-9038194e7000
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+    - name: http
+      port: 80
+      protocol: TCP
+- apiVersion: v1
+  kind: Endpoints
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2022-05-24T18:40:26Z"
+    creationTimestamp: "2022-05-24T18:08:52Z"
+    labels:
+      ingresscontroller.operator.openshift.io/owning-ingresscontroller: default
+    name: router-internal-default
+    namespace: openshift-ingress
+    resourceVersion: "70751"
+    uid: 94c2e027-b36f-46c9-8a02-4ba5789f91dd
+  subsets:
+  - addresses:
+    - ip: 10.130.2.14
+      nodeName: ip-10-0-140-240.ec2.internal
+      targetRef:
+        kind: Pod
+        name: router-default-6f54df4f4-fn65g
+        namespace: openshift-ingress
+        resourceVersion: "70746"
+        uid: ae55cb43-cf96-4d38-90c2-ac13dbeaca7d
+    - ip: 10.131.2.15
+      nodeName: ip-10-0-166-35.ec2.internal
+      targetRef:
+        kind: Pod
+        name: router-default-6f54df4f4-xtmw6
+        namespace: openshift-ingress
+        resourceVersion: "60453"
+        uid: 1ce27c73-6e73-48d0-beed-9038194e7000
+    ports:
+    - name: metrics
+      port: 1936
+      protocol: TCP
+    - name: https
+      port: 443
+      protocol: TCP
+    - name: http
+      port: 80
+      protocol: TCP
+kind: EndpointsList
+metadata:
+  resourceVersion: "297093"
