@@ -319,13 +319,14 @@ func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon)
 	}
 
 	return []monitoringv1.Endpoint{{
-		HonorLabels: true,
-		Port:        "9090",
-		Path:        "/federate",
-		Scheme:      "https",
-		Interval:    "30s",
-		TLSConfig:   tlsConfig,
-		Params:      map[string][]string{"match[]": matchParams},
+		BearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token",
+		HonorLabels:     true,
+		Port:            addon.Spec.Monitoring.Federation.PortName,
+		Path:            "/federate",
+		Scheme:          "https",
+		Interval:        "30s",
+		TLSConfig:       tlsConfig,
+		Params:          map[string][]string{"match[]": matchParams},
 	}}
 }
 

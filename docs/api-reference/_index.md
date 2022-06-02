@@ -325,6 +325,7 @@ Tracks the last state last reported to the Upgrade Policy endpoint.
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
 | namespace | Namespace where the prometheus server is running. | string | true |
+| portName | The name of the service port fronting the prometheus server. | string | true |
 | matchNames | List of series names to federate from the prometheus server. | []string | true |
 | matchLabels | List of labels used to discover the prometheus server(s) to be federated. | map[string]string | true |
 
