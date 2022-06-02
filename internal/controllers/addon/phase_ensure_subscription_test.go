@@ -110,7 +110,7 @@ func assertUnreconciledSubscription(t *testing.T, sub *operatorsv1alpha1.Subscri
 	assert.EqualError(t, err, controllers.ErrNotOwnedByUs.Error())
 }
 
-func TestCreateSubscriptionObject(t *testing.T) {
+func TestCreateSubscriptionConfigObject(t *testing.T) {
 	testCases := []struct {
 		commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon
 		expected             *operatorsv1alpha1.SubscriptionConfig
