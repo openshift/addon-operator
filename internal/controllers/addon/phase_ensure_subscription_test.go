@@ -7,6 +7,7 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	corev1 "k8s.io/api/core/v1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
@@ -107,4 +108,128 @@ func assertUnreconciledSubscription(t *testing.T, sub *operatorsv1alpha1.Subscri
 
 	assert.Error(t, err)
 	assert.EqualError(t, err, controllers.ErrNotOwnedByUs.Error())
+}
+
+func TestCreateSubscriptionObject(t *testing.T) {
+	testCases := []struct {
+		commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon
+		expected             *operatorsv1alpha1.SubscriptionConfig
+	}{
+		{
+			commonInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
+				Config: nil,
+			},
+			expected: nil,
+		},
+		{
+			commonInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
+				Config: &addonsv1alpha1.SubscriptionConfig{
+					EnvironmentVariables: []addonsv1alpha1.EnvObject{
+						{
+							Name:  "test",
+							Value: "test",
+						},
+					},
+				},
+			},
+			expected: &operatorsv1alpha1.SubscriptionConfig{
+				Env: []corev1.EnvVar{
+					{
+						Name:  "test",
+						Value: "test",
+					},
+				},
+			},
+		},
+		{
+			commonInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
+				Config: &addonsv1alpha1.SubscriptionConfig{
+					EnvironmentVariables: []addonsv1alpha1.EnvObject{
+						{
+							Name:  "test-1",
+							Value: "test-1",
+						},
+						{
+							Name:  "test-2",
+							Value: "test-2",
+						},
+					},
+				},
+			},
+			expected: &operatorsv1alpha1.SubscriptionConfig{
+				Env: []corev1.EnvVar{
+					{
+						Name:  "test-1",
+						Value: "test-1",
+					},
+					{
+						Name:  "test-2",
+						Value: "test-2",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("create subscription config object test", func(t *testing.T) {
+			subscriptionConfig := createSubscriptionConfigObject(tc.commonInstallOptions)
+			assert.Equal(t, tc.expected, subscriptionConfig)
+		})
+	}
+}
+
+func TestGetSubscriptionEnvObjects(t *testing.T) {
+	testCases := []struct {
+		envObjects []addonsv1alpha1.EnvObject
+		expected   []corev1.EnvVar
+	}{
+		{
+			envObjects: []addonsv1alpha1.EnvObject{},
+			expected:   []corev1.EnvVar{},
+		},
+		{
+			envObjects: []addonsv1alpha1.EnvObject{
+				{
+					Name:  "test",
+					Value: "test",
+				},
+			},
+			expected: []corev1.EnvVar{
+				{
+					Name:  "test",
+					Value: "test",
+				},
+			},
+		},
+		{
+			envObjects: []addonsv1alpha1.EnvObject{
+				{
+					Name:  "test-1",
+					Value: "test-1",
+				},
+				{
+					Name:  "test-2",
+					Value: "test-2",
+				},
+			},
+			expected: []corev1.EnvVar{
+				{
+					Name:  "test-1",
+					Value: "test-1",
+				},
+				{
+					Name:  "test-2",
+					Value: "test-2",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("get subscription environment objects test", func(t *testing.T) {
+			subscriptionEnvObjects := getSubscriptionEnvObjects(tc.envObjects)
+			assert.Equal(t, tc.expected, subscriptionEnvObjects)
+		})
+	}
 }
