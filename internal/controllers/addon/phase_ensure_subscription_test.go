@@ -112,17 +112,17 @@ func assertUnreconciledSubscription(t *testing.T, sub *operatorsv1alpha1.Subscri
 
 func TestCreateSubscriptionConfigObject(t *testing.T) {
 	testCases := []struct {
-		commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon
-		expected             *operatorsv1alpha1.SubscriptionConfig
+		commonOLMInstallOptions    addonsv1alpha1.AddonInstallOLMCommon
+		expectedSubscriptionConfig *operatorsv1alpha1.SubscriptionConfig
 	}{
 		{
-			commonInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
+			commonOLMInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
 				Config: nil,
 			},
-			expected: nil,
+			expectedSubscriptionConfig: nil,
 		},
 		{
-			commonInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
+			commonOLMInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
 				Config: &addonsv1alpha1.SubscriptionConfig{
 					EnvironmentVariables: []addonsv1alpha1.EnvObject{
 						{
@@ -132,7 +132,7 @@ func TestCreateSubscriptionConfigObject(t *testing.T) {
 					},
 				},
 			},
-			expected: &operatorsv1alpha1.SubscriptionConfig{
+			expectedSubscriptionConfig: &operatorsv1alpha1.SubscriptionConfig{
 				Env: []corev1.EnvVar{
 					{
 						Name:  "test",
@@ -142,7 +142,7 @@ func TestCreateSubscriptionConfigObject(t *testing.T) {
 			},
 		},
 		{
-			commonInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
+			commonOLMInstallOptions: addonsv1alpha1.AddonInstallOLMCommon{
 				Config: &addonsv1alpha1.SubscriptionConfig{
 					EnvironmentVariables: []addonsv1alpha1.EnvObject{
 						{
@@ -156,7 +156,7 @@ func TestCreateSubscriptionConfigObject(t *testing.T) {
 					},
 				},
 			},
-			expected: &operatorsv1alpha1.SubscriptionConfig{
+			expectedSubscriptionConfig: &operatorsv1alpha1.SubscriptionConfig{
 				Env: []corev1.EnvVar{
 					{
 						Name:  "test-1",
@@ -173,20 +173,20 @@ func TestCreateSubscriptionConfigObject(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run("create subscription config object test", func(t *testing.T) {
-			subscriptionConfig := createSubscriptionConfigObject(tc.commonInstallOptions)
-			assert.Equal(t, tc.expected, subscriptionConfig)
+			subscriptionConfig := createSubscriptionConfigObject(tc.commonOLMInstallOptions)
+			assert.Equal(t, tc.expectedSubscriptionConfig, subscriptionConfig)
 		})
 	}
 }
 
 func TestGetSubscriptionEnvObjects(t *testing.T) {
 	testCases := []struct {
-		envObjects []addonsv1alpha1.EnvObject
-		expected   []corev1.EnvVar
+		envObjects   []addonsv1alpha1.EnvObject
+		expectedEnvs []corev1.EnvVar
 	}{
 		{
-			envObjects: []addonsv1alpha1.EnvObject{},
-			expected:   []corev1.EnvVar{},
+			envObjects:   []addonsv1alpha1.EnvObject{},
+			expectedEnvs: []corev1.EnvVar{},
 		},
 		{
 			envObjects: []addonsv1alpha1.EnvObject{
@@ -195,7 +195,7 @@ func TestGetSubscriptionEnvObjects(t *testing.T) {
 					Value: "test",
 				},
 			},
-			expected: []corev1.EnvVar{
+			expectedEnvs: []corev1.EnvVar{
 				{
 					Name:  "test",
 					Value: "test",
@@ -213,7 +213,7 @@ func TestGetSubscriptionEnvObjects(t *testing.T) {
 					Value: "test-2",
 				},
 			},
-			expected: []corev1.EnvVar{
+			expectedEnvs: []corev1.EnvVar{
 				{
 					Name:  "test-1",
 					Value: "test-1",
@@ -229,7 +229,7 @@ func TestGetSubscriptionEnvObjects(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run("get subscription environment objects test", func(t *testing.T) {
 			subscriptionEnvObjects := getSubscriptionEnvObjects(tc.envObjects)
-			assert.Equal(t, tc.expected, subscriptionEnvObjects)
+			assert.Equal(t, tc.expectedEnvs, subscriptionEnvObjects)
 		})
 	}
 }
