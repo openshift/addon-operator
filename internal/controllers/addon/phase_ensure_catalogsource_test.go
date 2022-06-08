@@ -26,12 +26,11 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 	c.On("Create",
 		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
-		mock.Anything,
 	).Return(nil)
 
 	ctx := context.Background()
 	catalogSource := testutil.NewTestCatalogSource()
-	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy(), addonsv1alpha1.ResourceAdoptionAdoptAll)
+	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy())
 	assert.NoError(t, err)
 	assert.NotNil(t, reconciledCatalogSource)
 	c.AssertExpectations(t)
@@ -40,7 +39,7 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 		Namespace: catalogSource.Namespace,
 	}, testutil.IsOperatorsV1Alpha1CatalogSourcePtr)
 	c.AssertCalled(t, "Create", mock.Anything,
-		testutil.IsOperatorsV1Alpha1CatalogSourcePtr, mock.Anything)
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr)
 }
 
 func TestReconcileCatalogSource_NotExistingYet_WithClientErrorGet(t *testing.T) {
@@ -54,7 +53,7 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorGet(t *testing.T) 
 	).Return(timeoutErr)
 
 	ctx := context.Background()
-	_, err := reconcileCatalogSource(ctx, c, testutil.NewTestCatalogSource(), addonsv1alpha1.ResourceAdoptionAdoptAll)
+	_, err := reconcileCatalogSource(ctx, c, testutil.NewTestCatalogSource())
 	assert.Error(t, err)
 	assert.EqualError(t, err, timeoutErr.Error())
 	c.AssertExpectations(t)
@@ -76,7 +75,7 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorCreate(t *testing.
 	).Return(timeoutErr)
 
 	ctx := context.Background()
-	_, err := reconcileCatalogSource(ctx, c, testutil.NewTestCatalogSource(), addonsv1alpha1.ResourceAdoptionAdoptAll)
+	_, err := reconcileCatalogSource(ctx, c, testutil.NewTestCatalogSource())
 	assert.Error(t, err)
 	assert.EqualError(t, err, timeoutErr.Error())
 	c.AssertExpectations(t)
@@ -85,37 +84,14 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorCreate(t *testing.
 func TestReconcileCatalogSource_Adoption(t *testing.T) {
 	for name, tc := range map[string]struct {
 		MustAdopt  bool
-		Strategy   addonsv1alpha1.ResourceAdoptionStrategyType
 		AssertFunc func(*testing.T, *operatorsv1alpha1.CatalogSource, error)
 	}{
-		"no strategy/no adoption": {
-			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			AssertFunc: assertReconciledCatalogSource,
-		},
-		"Prevent/no adoption": {
-			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionPrevent,
-			AssertFunc: assertReconciledCatalogSource,
-		},
 		"AdoptAll/no adoption": {
 			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionAdoptAll,
 			AssertFunc: assertReconciledCatalogSource,
-		},
-		"no strategy/must adopt": {
-			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			AssertFunc: assertUnreconciledCatalogSource,
-		},
-		"Prevent/must adopt": {
-			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionPrevent,
-			AssertFunc: assertUnreconciledCatalogSource,
 		},
 		"AdoptAll/must adopt": {
 			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionAdoptAll,
 			AssertFunc: assertReconciledCatalogSource,
 		},
 	} {
@@ -141,16 +117,14 @@ func TestReconcileCatalogSource_Adoption(t *testing.T) {
 				cs.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
 			}).Return(nil)
 
-			if !tc.MustAdopt || (tc.MustAdopt && tc.Strategy == addonsv1alpha1.ResourceAdoptionAdoptAll) {
-				c.On("Update",
-					mock.Anything,
-					testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
-					mock.Anything,
-				).Return(nil)
-			}
+			c.On("Update",
+				mock.Anything,
+				testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+				mock.Anything,
+			).Return(nil)
 
 			ctx := context.Background()
-			reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy(), tc.Strategy)
+			reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy())
 
 			tc.AssertFunc(t, reconciledCatalogSource, err)
 			c.AssertExpectations(t)
@@ -164,13 +138,6 @@ func assertReconciledCatalogSource(t *testing.T, cs *operatorsv1alpha1.CatalogSo
 	assert.NoError(t, err)
 	assert.NotNil(t, cs)
 
-}
-
-func assertUnreconciledCatalogSource(t *testing.T, cs *operatorsv1alpha1.CatalogSource, err error) {
-	t.Helper()
-
-	assert.Error(t, err)
-	assert.EqualError(t, err, controllers.ErrNotOwnedByUs.Error())
 }
 
 func TestEnsureCatalogSource_Create(t *testing.T) {

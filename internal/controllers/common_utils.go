@@ -59,8 +59,8 @@ func HasEqualControllerReference(current, wanted metav1.Object) bool {
 	wantedOwnerRefs := wanted.GetOwnerReferences()
 
 	for _, ownerRef := range wantedOwnerRefs {
-		// OwnerRef is the same if UIDs match
-		if currentControllerRef.UID == ownerRef.UID {
+		// OwnerRef's are the same if UIDs match
+		if ownerRef.UID == currentControllerRef.UID {
 			return true
 		}
 	}

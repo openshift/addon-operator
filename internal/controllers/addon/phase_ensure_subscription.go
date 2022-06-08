@@ -3,7 +3,6 @@ package addon
 import (
 	"context"
 	"fmt"
-
 	"github.com/go-logr/logr"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -118,19 +117,23 @@ func (r *olmReconciler) reconcileSubscription(
 	// keep installPlanApproval value of existing object
 	subscription.Spec.InstallPlanApproval = currentSubscription.Spec.InstallPlanApproval
 
-	// only update when spec has changed or owner reference has changed
-	currentLabels := labels.Set(currentSubscription.Labels)
-	newLabels := labels.Merge(currentLabels, labels.Set(subscription.Labels))
+	// TODO: remove after the syncSetMigration is finish and the resourceAdoptionStrategy is discontinued (after this comment)
 	ownedByAddon := controllers.HasEqualControllerReference(currentSubscription, subscription)
+	if strategy != addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
+		return nil, controllers.ErrNotOwnedByUs
+	} else if strategy == addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
+		currentSubscription.OwnerReferences = subscription.OwnerReferences
+	}
+	// TODO: remove after the syncSetMigration is finish and the resourceAdoptionStrategy is discontinued (before this comment)
+
+	// only update when spec or labels has changed
+	currentLabels := currentSubscription.Labels
+	newLabels := labels.Merge(currentLabels, subscription.Labels)
 	specChanged := !equality.Semantic.DeepEqual(subscription.Spec, currentSubscription.Spec)
+	// TODO: remove just `!ownedByAddon` after the syncSetMigration is finish and the resourceAdoptionStrategy is discontinued
 	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {
-		// TODO: remove this condition once resourceAdoptionStrategy is discontinued
-		if strategy != addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
-			return nil, controllers.ErrNotOwnedByUs
-		}
 		// copy new spec into existing object and update in the k8s api
 		currentSubscription.Spec = subscription.Spec
-		currentSubscription.OwnerReferences = subscription.OwnerReferences
 		currentSubscription.Labels = newLabels
 		return currentSubscription, r.client.Update(ctx, currentSubscription)
 	}
