@@ -167,7 +167,7 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 	ownedByAddon := controllers.HasEqualControllerReference(currentCatalogSource, catalogSource)
 	specChanged := !equality.Semantic.DeepEqual(catalogSource.Spec, currentCatalogSource.Spec)
 	currentLabels := labels.Set(currentCatalogSource.Labels)
-	newLabels := labels.Merge(currentLabels, catalogSource.Labels)
+	newLabels := labels.Merge(currentLabels, labels.Set(catalogSource.Labels))
 	if specChanged || !ownedByAddon || !labels.Equals(newLabels, currentLabels) {
 		currentCatalogSource.Spec = catalogSource.Spec
 		currentCatalogSource.OwnerReferences = catalogSource.OwnerReferences
