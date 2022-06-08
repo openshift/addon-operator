@@ -51,14 +51,15 @@ type AddonReconciler struct {
 	ocmClient    ocmClient
 	ocmClientMux sync.RWMutex
 
-	secretPropagationReconciler    addonReconciler
-	namespaceReconciler            addonReconciler
-	olmReconciler                  addonReconciler
-	monitoringFederationReconciler addonReconciler
+	// List of Addon sub-reconcilers.
+	// Reconcilers will run  serially
+	// in the order in which they appear in this slice.
+	subReconcilers []addonReconciler
 }
 
 type addonReconciler interface {
 	Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error)
+	Name() string
 }
 
 func NewAddonReconciler(
@@ -81,27 +82,35 @@ func NewAddonReconciler(
 		AddonOperatorNamespace: addonOperatorNamespace,
 		csvEventHandler:        csvEventHandler,
 
-		secretPropagationReconciler: &addonSecretPropagationReconciler{
-			cachedClient:           client,
-			uncachedClient:         uncachedClient,
-			scheme:                 scheme,
-			addonOperatorNamespace: addonOperatorNamespace,
-		},
-
-		namespaceReconciler: &namespaceReconciler{
-			client: client,
-			scheme: scheme,
-		},
-
-		olmReconciler: &olmReconciler{
-			client:          client,
-			scheme:          scheme,
-			csvEventHandler: csvEventHandler,
-		},
-
-		monitoringFederationReconciler: &monitoringFederationReconciler{
-			client: client,
-			scheme: scheme,
+		subReconcilers: []addonReconciler{
+			// Step 1: Reconcile Namespace
+			&namespaceReconciler{
+				client: client,
+				scheme: scheme,
+			},
+			// Step 2: Reconcile Addon pull secrets
+			&addonSecretPropagationReconciler{
+				cachedClient:           client,
+				uncachedClient:         uncachedClient,
+				scheme:                 scheme,
+				addonOperatorNamespace: addonOperatorNamespace,
+			},
+			// Step 3: Reconcile AddonInstance object
+			&addonInstanceReconciler{
+				client: client,
+				scheme: scheme,
+			},
+			// Step 4: Reconcile OLM objects
+			&olmReconciler{
+				client:          client,
+				scheme:          scheme,
+				csvEventHandler: csvEventHandler,
+			},
+			// Step 5: Reconcile Monitoring Federation
+			&monitoringFederationReconciler{
+				client: client,
+				scheme: scheme,
+			},
 		},
 	}
 }
@@ -259,7 +268,6 @@ func (r *AddonReconciler) Reconcile(
 	// Make sure Pause condition is removed
 	r.removeAddonPauseCondition(addon)
 
-	// Phase 0.
 	// Ensure cache finalizer
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
 		controllerutil.AddFinalizer(addon, cacheFinalizer)
@@ -268,37 +276,13 @@ func (r *AddonReconciler) Reconcile(
 		}
 	}
 
-	// Reconcile Namespace
-	if result, err := r.namespaceReconciler.Reconcile(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to reconcile namespace: %w", err)
-	} else if !result.IsZero() {
-		return result, nil
-	}
-
-	// Reconcile addon pullsecrets
-	if result, err := r.secretPropagationReconciler.Reconcile(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure pull secret: %w", err)
-	} else if !result.IsZero() {
-		return result, nil
-	}
-
-	// Ensure the creation of the corresponding AddonInstance in .spec.install.olmOwnNamespace/.spec.install.olmAllNamespaces namespace
-	if err := r.ensureAddonInstance(ctx, log, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure the creation of addoninstance: %w", err)
-	}
-
-	// Reconciler OLM objects
-	if result, err := r.olmReconciler.Reconcile(ctx, addon); err != nil {
-		return ctrl.Result{}, err
-	} else if !result.IsZero() {
-		return result, nil
-	}
-
-	// Reconcile monitoring objects
-	if result, err := r.monitoringFederationReconciler.Reconcile(ctx, addon); err != nil {
-		return ctrl.Result{}, err
-	} else if !result.IsZero() {
-		return result, nil
+	// Run each sub reconciler serially
+	for _, reconciler := range r.subReconcilers {
+		if result, err := reconciler.Reconcile(ctx, addon); err != nil {
+			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", reconciler.Name(), err)
+		} else if !result.IsZero() {
+			return result, nil
+		}
 	}
 
 	// After last phase and if everything is healthy

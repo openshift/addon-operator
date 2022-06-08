@@ -19,6 +19,8 @@ import (
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
+const NAMESPACE_RECONCILER_NAME = "namespaceReconciler"
+
 type namespaceReconciler struct {
 	client client.Client
 	scheme *runtime.Scheme
@@ -38,6 +40,10 @@ func (r *namespaceReconciler) Reconcile(ctx context.Context,
 		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted Namespaces: %w", err)
 	}
 	return reconcile.Result{}, nil
+}
+
+func (r *namespaceReconciler) Name() string {
+	return NAMESPACE_RECONCILER_NAME
 }
 
 // Ensure cleanup of Namespaces that are not needed anymore for the given Addon resource

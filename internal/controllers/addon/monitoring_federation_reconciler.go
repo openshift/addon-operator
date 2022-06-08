@@ -21,6 +21,8 @@ import (
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
+const MONITORING_FEDERATION_RECONCILER_NAME = "monitoringFederationReconciler"
+
 type monitoringFederationReconciler struct {
 	client client.Client
 	scheme *runtime.Scheme
@@ -48,6 +50,10 @@ func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
 		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted ServiceMonitors: %w", err)
 	}
 	return reconcile.Result{}, nil
+}
+
+func (r *monitoringFederationReconciler) Name() string {
+	return MONITORING_FEDERATION_RECONCILER_NAME
 }
 
 // ensureMonitoringFederation inspects an addon's MonitoringFederation specification
