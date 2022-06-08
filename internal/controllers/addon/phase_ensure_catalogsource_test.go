@@ -25,6 +25,7 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 	c.On("Create",
 		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Return(nil)
 
 	ctx := context.Background()
@@ -38,7 +39,7 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 		Namespace: catalogSource.Namespace,
 	}, testutil.IsOperatorsV1Alpha1CatalogSourcePtr)
 	c.AssertCalled(t, "Create", mock.Anything,
-		testutil.IsOperatorsV1Alpha1CatalogSourcePtr)
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr, mock.Anything)
 }
 
 func TestReconcileCatalogSource_NotExistingYet_WithClientErrorGet(t *testing.T) {
@@ -89,8 +90,8 @@ func TestReconcileCatalogSource_Adoption(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
-		existingCatalogSource := testutil.NewTestCatalogSourceWithoutOwner()
-		existingCatalogSource.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
+		currentCatalogSource := testutil.NewTestCatalogSourceWithoutOwner()
+		currentCatalogSource.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
 	}).Return(nil)
 
 	c.On("Update",
@@ -113,8 +114,8 @@ func TestReconcileCatalogSource_UpdateOnSpecChange(t *testing.T) {
 	const newConfigMapName = "new-config-map"
 	const oldConfigMapName = "old-config-map"
 
-	wantedCatalogSource := testutil.NewTestCatalogSource()
-	wantedCatalogSource.Spec.ConfigMap = newConfigMapName
+	catalogSource := testutil.NewTestCatalogSource()
+	catalogSource.Spec.ConfigMap = newConfigMapName
 
 	c := testutil.NewClient()
 
@@ -123,9 +124,9 @@ func TestReconcileCatalogSource_UpdateOnSpecChange(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
-		existingCatalogSource := testutil.NewTestCatalogSource()
-		existingCatalogSource.Spec.ConfigMap = oldConfigMapName
-		existingCatalogSource.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
+		currentCatalogSource := testutil.NewTestCatalogSource()
+		currentCatalogSource.Spec.ConfigMap = oldConfigMapName
+		currentCatalogSource.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
 	}).Return(nil)
 
 	c.On("Update",
@@ -136,7 +137,7 @@ func TestReconcileCatalogSource_UpdateOnSpecChange(t *testing.T) {
 
 	ctx := context.Background()
 
-	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, wantedCatalogSource.DeepCopy())
+	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy())
 
 	assert.NoError(t, err)
 	assert.NotNil(t, reconciledCatalogSource)
@@ -217,7 +218,7 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 }
 
 func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
-	addon := testutil.NewTestAddonWithCatalogSourceImage()
+	addon := testutil.NewTestAddonWithAdditionalCatalogSources()
 	c := testutil.NewClient()
 	c.On("Get",
 		mock.Anything,

@@ -53,7 +53,7 @@ func (r *olmReconciler) ensureSubscription(
 			// API default is `Automatic`
 			// Legacy behavior of existing managed-tenants tooling is:
 			// All addons initially have to be installed with `Automatic`
-			// so that the very first InstallPlan succeedes
+			// so that the very first InstallPlan succeeds
 			// but some addons want to take control of upgrades and thus
 			// change the Subscription.Spec.InstallPlanApproval value to `Manual`
 			// ATTENTION: When reconciling the subscription, we need to
@@ -65,8 +65,7 @@ func (r *olmReconciler) ensureSubscription(
 		return resultNil, client.ObjectKey{}, fmt.Errorf("setting controller reference: %w", err)
 	}
 
-	observedSubscription, err := r.reconcileSubscription(
-		ctx, desiredSubscription, addon.Spec.ResourceAdoptionStrategy)
+	observedSubscription, err := r.reconcileSubscription(ctx, desiredSubscription)
 	if err != nil {
 		return resultNil, client.ObjectKey{}, fmt.Errorf("reconciling Subscription: %w", err)
 	}
@@ -100,7 +99,6 @@ func (r *olmReconciler) ensureSubscription(
 func (r *olmReconciler) reconcileSubscription(
 	ctx context.Context,
 	subscription *operatorsv1alpha1.Subscription,
-	strategy addonsv1alpha1.ResourceAdoptionStrategyType,
 ) (currentSubscription *operatorsv1alpha1.Subscription, err error) {
 	currentSubscription = &operatorsv1alpha1.Subscription{}
 	err = r.client.Get(ctx, client.ObjectKey{
@@ -117,23 +115,15 @@ func (r *olmReconciler) reconcileSubscription(
 	// keep installPlanApproval value of existing object
 	subscription.Spec.InstallPlanApproval = currentSubscription.Spec.InstallPlanApproval
 
-	// TODO: remove after the syncSetMigration is finish and the resourceAdoptionStrategy is discontinued (after this comment)
-	ownedByAddon := controllers.HasEqualControllerReference(currentSubscription, subscription)
-	if strategy != addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
-		return nil, controllers.ErrNotOwnedByUs
-	} else if strategy == addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
-		currentSubscription.OwnerReferences = subscription.OwnerReferences
-	}
-	// TODO: remove after the syncSetMigration is finish and the resourceAdoptionStrategy is discontinued (before this comment)
-
 	// only update when spec or labels has changed
+	specChanged := !equality.Semantic.DeepEqual(subscription.Spec, currentSubscription.Spec)
+	ownedByAddon := controllers.HasEqualControllerReference(currentSubscription, subscription)
 	currentLabels := currentSubscription.Labels
 	newLabels := labels.Merge(currentLabels, subscription.Labels)
-	specChanged := !equality.Semantic.DeepEqual(subscription.Spec, currentSubscription.Spec)
-	// TODO: remove just `!ownedByAddon` after the syncSetMigration is finish and the resourceAdoptionStrategy is discontinued
 	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {
 		// copy new spec into existing object and update in the k8s api
 		currentSubscription.Spec = subscription.Spec
+		currentSubscription.OwnerReferences = subscription.OwnerReferences
 		currentSubscription.Labels = newLabels
 		return currentSubscription, r.client.Update(ctx, currentSubscription)
 	}
