@@ -2,6 +2,7 @@ package addon
 
 import (
 	"context"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"testing"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
@@ -9,8 +10,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -82,62 +81,67 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorCreate(t *testing.
 }
 
 func TestReconcileCatalogSource_Adoption(t *testing.T) {
-	for name, tc := range map[string]struct {
-		MustAdopt  bool
-		AssertFunc func(*testing.T, *operatorsv1alpha1.CatalogSource, error)
-	}{
-		"AdoptAll/no adoption": {
-			MustAdopt:  false,
-			AssertFunc: assertReconciledCatalogSource,
-		},
-		"AdoptAll/must adopt": {
-			MustAdopt:  true,
-			AssertFunc: assertReconciledCatalogSource,
-		},
-	} {
-		t.Run(name, func(t *testing.T) {
-			catalogSource := testutil.NewTestCatalogSource()
+	catalogSource := testutil.NewTestCatalogSource()
 
-			c := testutil.NewClient()
-			c.On("Get",
-				mock.Anything,
-				testutil.IsObjectKey,
-				testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
-			).Run(func(args mock.Arguments) {
-				var cs *operatorsv1alpha1.CatalogSource
+	c := testutil.NewClient()
+	c.On("Get",
+		mock.Anything,
+		testutil.IsObjectKey,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+	).Run(func(args mock.Arguments) {
+		existingCatalogSource := testutil.NewTestCatalogSourceWithoutOwner()
+		existingCatalogSource.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
+	}).Return(nil)
 
-				if tc.MustAdopt {
-					cs = testutil.NewTestCatalogSourceWithoutOwner()
-				} else {
-					cs = testutil.NewTestCatalogSource()
-					// Unrelated spec change to force reconciliation
-					cs.Spec.ConfigMap = "new-config-map"
-				}
+	c.On("Update",
+		mock.Anything,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
+	).Return(nil)
 
-				cs.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
-			}).Return(nil)
+	ctx := context.Background()
 
-			c.On("Update",
-				mock.Anything,
-				testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
-				mock.Anything,
-			).Return(nil)
-
-			ctx := context.Background()
-			reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy())
-
-			tc.AssertFunc(t, reconciledCatalogSource, err)
-			c.AssertExpectations(t)
-		})
-	}
-}
-
-func assertReconciledCatalogSource(t *testing.T, cs *operatorsv1alpha1.CatalogSource, err error) {
-	t.Helper()
+	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy())
 
 	assert.NoError(t, err)
-	assert.NotNil(t, cs)
+	assert.NotNil(t, reconciledCatalogSource)
+	assert.True(t, equality.Semantic.DeepEqual(reconciledCatalogSource.OwnerReferences, catalogSource.OwnerReferences))
+	c.AssertExpectations(t)
+}
 
+func TestReconcileCatalogSource_UpdateOnSpecChange(t *testing.T) {
+	const newConfigMapName = "new-config-map"
+	const oldConfigMapName = "old-config-map"
+
+	wantedCatalogSource := testutil.NewTestCatalogSource()
+	wantedCatalogSource.Spec.ConfigMap = newConfigMapName
+
+	c := testutil.NewClient()
+
+	c.On("Get",
+		mock.Anything,
+		testutil.IsObjectKey,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+	).Run(func(args mock.Arguments) {
+		existingCatalogSource := testutil.NewTestCatalogSource()
+		existingCatalogSource.Spec.ConfigMap = oldConfigMapName
+		existingCatalogSource.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
+	}).Return(nil)
+
+	c.On("Update",
+		mock.Anything,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
+	).Return(nil)
+
+	ctx := context.Background()
+
+	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, wantedCatalogSource.DeepCopy())
+
+	assert.NoError(t, err)
+	assert.NotNil(t, reconciledCatalogSource)
+	assert.Equal(t, newConfigMapName, reconciledCatalogSource.Spec.ConfigMap)
+	c.AssertExpectations(t)
 }
 
 func TestEnsureCatalogSource_Create(t *testing.T) {
@@ -149,6 +153,7 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Return(testutil.NewTestErrNotFound())
+
 	var createdCatalogSource *operatorsv1alpha1.CatalogSource
 	c.On("Create",
 		mock.Anything,
@@ -179,7 +184,7 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 }
 
 func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
-	addon := testutil.NewTestAddonWithAdditionalCatalogSource()
+	addon := testutil.NewTestAddonWithAdditionalCatalogSources()
 	c := testutil.NewClient()
 	c.On("Get",
 		mock.Anything,
@@ -212,7 +217,7 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 }
 
 func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
-	addon := testutil.NewTestAddonWithAdditionalCatalogSourceAndResourceAdoptionStrategy(addonsv1alpha1.ResourceAdoptionAdoptAll)
+	addon := testutil.NewTestAddonWithCatalogSourceImage()
 	c := testutil.NewClient()
 	c.On("Get",
 		mock.Anything,
@@ -244,7 +249,7 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 }
 
 func TestEnsureCatalogSource_Update(t *testing.T) {
-	addon := testutil.NewTestAddonWithCatalogSourceImageWithResourceAdoptionStrategy(addonsv1alpha1.ResourceAdoptionAdoptAll)
+	addon := testutil.NewTestAddonWithCatalogSourceImage()
 
 	c := testutil.NewClient()
 	c.On("Get",

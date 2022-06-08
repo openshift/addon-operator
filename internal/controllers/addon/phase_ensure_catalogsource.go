@@ -144,7 +144,7 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 	return resultNil, nil
 }
 
-// reconciles a CatalogSource and returns a new CatalogSource object with observed state.
+// reconciles a CatalogSource and returns a new CatalogSource object with updated state.
 // Warning: Will adopt existing CatalogSource
 func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource *operatorsv1alpha1.CatalogSource) (
 	*operatorsv1alpha1.CatalogSource, error) {
