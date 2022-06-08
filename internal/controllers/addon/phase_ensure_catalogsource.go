@@ -163,15 +163,12 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 		}
 	}
 
-	// only update when spec or labels have changed or when adopting (not already owned by addon controller)
+	// Only update when spec, controllerRef, or labels have changed
 	ownedByAddon := controllers.HasEqualControllerReference(currentCatalogSource, catalogSource)
 	specChanged := !equality.Semantic.DeepEqual(catalogSource.Spec, currentCatalogSource.Spec)
 	currentLabels := labels.Set(currentCatalogSource.Labels)
 	newLabels := labels.Merge(currentLabels, catalogSource.Labels)
-
 	if specChanged || !ownedByAddon || !labels.Equals(newLabels, currentLabels) {
-
-		// copy new spec into existing object and update in the k8s api
 		currentCatalogSource.Spec = catalogSource.Spec
 		currentCatalogSource.OwnerReferences = catalogSource.OwnerReferences
 		currentCatalogSource.Labels = newLabels

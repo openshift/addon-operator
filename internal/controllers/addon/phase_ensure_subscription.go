@@ -3,6 +3,7 @@ package addon
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-logr/logr"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -115,18 +116,18 @@ func (r *olmReconciler) reconcileSubscription(
 	// keep installPlanApproval value of existing object
 	subscription.Spec.InstallPlanApproval = currentSubscription.Spec.InstallPlanApproval
 
-	// only update when spec or labels has changed
+	// Only update when spec, controllerRef, or labels have changed
 	specChanged := !equality.Semantic.DeepEqual(subscription.Spec, currentSubscription.Spec)
 	ownedByAddon := controllers.HasEqualControllerReference(currentSubscription, subscription)
 	currentLabels := currentSubscription.Labels
 	newLabels := labels.Merge(currentLabels, subscription.Labels)
 	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {
-		// copy new spec into existing object and update in the k8s api
 		currentSubscription.Spec = subscription.Spec
 		currentSubscription.OwnerReferences = subscription.OwnerReferences
 		currentSubscription.Labels = newLabels
 		return currentSubscription, r.client.Update(ctx, currentSubscription)
 	}
+
 	return currentSubscription, nil
 }
 
