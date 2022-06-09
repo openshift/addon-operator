@@ -2,8 +2,9 @@ package addon
 
 import (
 	"context"
-	"k8s.io/apimachinery/pkg/api/equality"
 	"testing"
+
+	"k8s.io/apimachinery/pkg/api/equality"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"github.com/stretchr/testify/assert"
@@ -161,11 +162,11 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Run(func(args mock.Arguments) {
-		arg := args.Get(1).(*operatorsv1alpha1.CatalogSource)
-		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+		catalogSource := args.Get(1).(*operatorsv1alpha1.CatalogSource)
+		catalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
-		createdCatalogSource = arg
+		createdCatalogSource = catalogSource
 	}).Return(nil)
 
 	r := &olmReconciler{
@@ -197,8 +198,8 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Run(func(args mock.Arguments) {
-		arg := args.Get(1).(*operatorsv1alpha1.CatalogSource)
-		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+		catalogSource := args.Get(1).(*operatorsv1alpha1.CatalogSource)
+		catalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
 	}).Return(nil)
@@ -225,8 +226,8 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
-		arg := args.Get(2).(*operatorsv1alpha1.CatalogSource)
-		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+		currentCatalogSource := args.Get(2).(*operatorsv1alpha1.CatalogSource)
+		currentCatalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
 	}).Return(nil)
@@ -258,8 +259,8 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
-		arg := args.Get(2).(*operatorsv1alpha1.CatalogSource)
-		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+		currentCatalogSource := args.Get(2).(*operatorsv1alpha1.CatalogSource)
+		currentCatalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
 	}).Return(nil)
@@ -277,6 +278,7 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 	log := testutil.NewLogger(t)
 	ctx := controllers.ContextWithLogger(context.Background(), log)
 	requeueResult, _, err := r.ensureCatalogSource(ctx, addon)
+
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)
