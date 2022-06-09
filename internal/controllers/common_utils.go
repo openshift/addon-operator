@@ -40,32 +40,13 @@ func CommonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) labels.Selector {
 }
 
 // Tests if the controller reference on `wanted` matches the one on `current`
-func HasEqualControllerReference(current, wanted metav1.Object) bool {
-	currentOwnerRefs := current.GetOwnerReferences()
-
-	var currentControllerRef *metav1.OwnerReference
-	for _, ownerRef := range currentOwnerRefs {
-		or := ownerRef
-		if *or.Controller {
-			currentControllerRef = &or
-			break
-		}
-	}
-
-	if currentControllerRef == nil {
+func HasSameController(current, wanted metav1.Object) bool {
+	currentController := metav1.GetControllerOf(current)
+	wantedController := metav1.GetControllerOf(wanted)
+	if currentController == nil || wantedController == nil {
 		return false
 	}
-
-	wantedOwnerRefs := wanted.GetOwnerReferences()
-
-	for _, ownerRef := range wantedOwnerRefs {
-		// OwnerRef is the same if UIDs match
-		if currentControllerRef.UID == ownerRef.UID {
-			return true
-		}
-	}
-
-	return false
+	return currentController.UID == wantedController.UID
 }
 
 const inClusterNamespacePath = "/var/run/secrets/kubernetes.io/serviceaccount/namespace"

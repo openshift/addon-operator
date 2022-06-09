@@ -168,5 +168,5 @@ func validateOwnerReference(addon *addonsv1alpha1.Addon, obj metav1.Object) (boo
 	if err != nil {
 		return false, err
 	}
-	return controllers.HasEqualControllerReference(obj, ownedObject), nil
+	return controllers.HasSameController(obj, ownedObject), nil
 }

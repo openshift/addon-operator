@@ -46,7 +46,7 @@ func (r *olmReconciler) ensureCatalogSourcesNetworkPolicy(ctx context.Context, a
 	newLabels := labels.Merge(currentLabels, labels.Set(desired.Labels))
 
 	var (
-		mustAdopt     = !controllers.HasEqualControllerReference(actual, desired)
+		mustAdopt     = !controllers.HasSameController(actual, desired)
 		specChanged   = !equality.Semantic.DeepEqual(actual.Spec, desired.Spec)
 		labelsChanged = !labels.Equals(currentLabels, newLabels)
 	)

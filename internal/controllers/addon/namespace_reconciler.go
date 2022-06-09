@@ -187,7 +187,7 @@ func reconcileNamespace(ctx context.Context, c client.Client,
 	currentLabels := labels.Set(currentNamespace.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(namespace.Labels))
 	mustAdopt := len(currentNamespace.OwnerReferences) == 0 ||
-		!controllers.HasEqualControllerReference(currentNamespace, namespace)
+		!controllers.HasSameController(currentNamespace, namespace)
 
 	// TODO: remove this condition once resourceAdoptionStrategy is discontinued
 	if mustAdopt && strategy != addonsv1alpha1.ResourceAdoptionAdoptAll {
