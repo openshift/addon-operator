@@ -569,7 +569,7 @@ const (
 	kindVersion          = "0.11.1"
 	yqVersion            = "4.12.0"
 	goimportsVersion     = "0.1.5"
-	golangciLintVersion  = "1.43.0"
+	golangciLintVersion  = "1.46.2"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.18.0"
 	helmVersion          = "3.7.2"
