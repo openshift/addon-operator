@@ -2,8 +2,9 @@ package addon
 
 import (
 	"context"
-	"k8s.io/apimachinery/pkg/api/equality"
 	"testing"
+
+	"k8s.io/apimachinery/pkg/api/equality"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"github.com/stretchr/testify/assert"
@@ -42,7 +43,7 @@ func TestEnsureSubscription_Adoption(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, reconciledSubscription)
-	assert.True(t, equality.Semantic.DeepEqual(reconciledSubscription.OwnerReferences, reconciledSubscription.OwnerReferences))
+	assert.True(t, equality.Semantic.DeepEqual(subscription.OwnerReferences, reconciledSubscription.OwnerReferences))
 	c.AssertExpectations(t)
 
 }
