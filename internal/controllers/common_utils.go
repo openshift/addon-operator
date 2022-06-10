@@ -39,14 +39,14 @@ func CommonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) labels.Selector {
 	return labelSet.AsSelector()
 }
 
-// Tests if the controller reference on `wanted` matches the one on `current`
-func HasSameController(current, wanted metav1.Object) bool {
-	currentController := metav1.GetControllerOf(current)
-	wantedController := metav1.GetControllerOf(wanted)
-	if currentController == nil || wantedController == nil {
+// Tests if two objects have the same controller
+func HasSameController(objA, objB metav1.Object) bool {
+	controllerA := metav1.GetControllerOf(objA)
+	controllerB := metav1.GetControllerOf(objB)
+	if controllerA == nil || controllerB == nil {
 		return false
 	}
-	return currentController.UID == wantedController.UID
+	return controllerA.UID == controllerB.UID
 }
 
 const inClusterNamespacePath = "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
