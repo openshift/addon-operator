@@ -230,127 +230,64 @@ func TestEnsureNamespace_CreateWithLabels(t *testing.T) {
 }
 
 func TestReconcileNamespace_Create(t *testing.T) {
-	for name, tc := range map[string]struct {
-		Strategy addonsv1alpha1.ResourceAdoptionStrategyType
-	}{
-		"no adoption strategy": {
-			Strategy: addonsv1alpha1.ResourceAdoptionStrategyType(""),
-		},
-		"Prevent strategy": {
-			Strategy: addonsv1alpha1.ResourceAdoptionPrevent,
-		},
-		"AdoptAll strategy": {
-			Strategy: addonsv1alpha1.ResourceAdoptionAdoptAll,
-		},
-	} {
-		t.Run(name, func(t *testing.T) {
-			c := testutil.NewClient()
-			c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(testutil.NewTestErrNotFound())
-			c.On("Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Return(nil, testutil.NewTestNamespace())
+	c := testutil.NewClient()
+	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(testutil.NewTestErrNotFound())
+	c.On("Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Return(nil, testutil.NewTestNamespace())
 
-			ctx := context.Background()
-			reconciledNamespace, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace(), tc.Strategy)
-			require.NoError(t, err)
-			assert.NotNil(t, reconciledNamespace)
-			assert.Equal(t, testutil.NewTestNamespace(), reconciledNamespace)
-			c.AssertExpectations(t)
-			c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
-				Name: "namespace-1",
-			}, testutil.IsCoreV1NamespacePtr)
-			c.AssertCalled(t, "Create", testutil.IsContext, testutil.NewTestNamespace(), mock.Anything)
-		})
-	}
-
+	ctx := context.Background()
+	reconciledNamespace, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace())
+	require.NoError(t, err)
+	assert.NotNil(t, reconciledNamespace)
+	assert.Equal(t, testutil.NewTestNamespace(), reconciledNamespace)
+	c.AssertExpectations(t)
+	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
+		Name: "namespace-1",
+	}, testutil.IsCoreV1NamespacePtr)
+	c.AssertCalled(t, "Create", testutil.IsContext, testutil.NewTestNamespace(), mock.Anything)
 }
 
 func TestReconcileNamespace_CreateWithCollisionWithoutOwner(t *testing.T) {
-	for name, tc := range map[string]struct {
-		Strategy   addonsv1alpha1.ResourceAdoptionStrategyType
-		AssertFunc func(assert.TestingT, error, error, ...interface{}) bool
-	}{
-		"no adoption strategy": {
-			Strategy:   addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			AssertFunc: assert.ErrorIs,
-		},
-		"Prevent strategy": {
-			Strategy:   addonsv1alpha1.ResourceAdoptionPrevent,
-			AssertFunc: assert.ErrorIs,
-		},
-		"AdoptAll strategy": {
-			Strategy:   addonsv1alpha1.ResourceAdoptionAdoptAll,
-			AssertFunc: assert.NotErrorIs,
-		},
-	} {
-		t.Run(name, func(t *testing.T) {
-			c := testutil.NewClient()
-			c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
-				arg := args.Get(2).(*corev1.Namespace)
-				testutil.NewTestExistingNamespaceWithoutOwner().DeepCopyInto(arg)
-			}).Return(nil)
+	c := testutil.NewClient()
+	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
+		arg := args.Get(2).(*corev1.Namespace)
+		testutil.NewTestExistingNamespaceWithoutOwner().DeepCopyInto(arg)
+	}).Return(nil)
+	c.On("Update",
+		testutil.IsContext,
+		testutil.IsCoreV1NamespacePtr,
+		mock.Anything,
+	).Return(nil)
 
-			if tc.Strategy == addonsv1alpha1.ResourceAdoptionAdoptAll {
-				c.On("Update",
-					testutil.IsContext,
-					testutil.IsCoreV1NamespacePtr,
-					mock.Anything,
-				).Return(nil)
-			}
+	ctx := context.Background()
+	_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace())
 
-			ctx := context.Background()
-			_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace(), tc.Strategy)
-
-			tc.AssertFunc(t, err, controllers.ErrNotOwnedByUs)
-			c.AssertExpectations(t)
-			c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
-				Name: "namespace-1",
-			}, testutil.IsCoreV1NamespacePtr)
-		})
-	}
+	assert.Nil(t, err)
+	c.AssertExpectations(t)
+	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
+		Name: "namespace-1",
+	}, testutil.IsCoreV1NamespacePtr)
 }
 
 func TestReconcileNamespace_CreateWithCollisionWithOtherOwner(t *testing.T) {
-	for name, tc := range map[string]struct {
-		Strategy   addonsv1alpha1.ResourceAdoptionStrategyType
-		AssertFunc func(assert.TestingT, error, error, ...interface{}) bool
-	}{
-		"no adoption strategy": {
-			Strategy:   addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			AssertFunc: assert.ErrorIs,
-		},
-		"Prevent strategy": {
-			Strategy:   addonsv1alpha1.ResourceAdoptionPrevent,
-			AssertFunc: assert.ErrorIs,
-		},
-		"AdoptAll strategy": {
-			Strategy:   addonsv1alpha1.ResourceAdoptionAdoptAll,
-			AssertFunc: assert.NotErrorIs,
-		},
-	} {
-		t.Run(name, func(t *testing.T) {
-			c := testutil.NewClient()
-			c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
-				arg := args.Get(2).(*corev1.Namespace)
-				testutil.NewTestExistingNamespaceWithoutOwner().DeepCopyInto(arg)
-			}).Return(nil)
+	c := testutil.NewClient()
+	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
+		arg := args.Get(2).(*corev1.Namespace)
+		testutil.NewTestExistingNamespaceWithoutOwner().DeepCopyInto(arg)
+	}).Return(nil)
+	c.On("Update",
+		testutil.IsContext,
+		testutil.IsCoreV1NamespacePtr,
+		mock.Anything,
+	).Return(nil)
 
-			if tc.Strategy == addonsv1alpha1.ResourceAdoptionAdoptAll {
-				c.On("Update",
-					testutil.IsContext,
-					testutil.IsCoreV1NamespacePtr,
-					mock.Anything,
-				).Return(nil)
-			}
+	ctx := context.Background()
+	_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace())
 
-			ctx := context.Background()
-			_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace(), tc.Strategy)
-
-			tc.AssertFunc(t, err, controllers.ErrNotOwnedByUs)
-			c.AssertExpectations(t)
-			c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
-				Name: "namespace-1",
-			}, testutil.IsCoreV1NamespacePtr)
-		})
-	}
+	assert.Nil(t, err)
+	c.AssertExpectations(t)
+	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
+		Name: "namespace-1",
+	}, testutil.IsCoreV1NamespacePtr)
 }
 
 func TestReconcileNamespace_CreateWithClientError(t *testing.T) {
@@ -361,7 +298,7 @@ func TestReconcileNamespace_CreateWithClientError(t *testing.T) {
 		Return(timeoutErr)
 
 	ctx := context.Background()
-	_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace(), addonsv1alpha1.ResourceAdoptionPrevent)
+	_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace())
 	require.Error(t, err)
 	require.EqualError(t, err, timeoutErr.Error())
 	c.AssertExpectations(t)
