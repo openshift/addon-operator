@@ -147,11 +147,6 @@ func reportUnreadyNamespaces(addon *addonsv1alpha1.Addon, unreadyNamespaces []st
 		fmt.Sprintf("Namespaces not yet in Active phase: %s", strings.Join(unreadyNamespaces, ", ")))
 }
 
-func reportCollidedNamespaces(addon *addonsv1alpha1.Addon, collidedNamespaces []string) {
-	reportPendingStatus(addon, addonsv1alpha1.AddonReasonCollidedNamespaces,
-		fmt.Sprintf("Namespaces with collisions: %s", strings.Join(collidedNamespaces, ", ")))
-}
-
 func reportUnreadyCSV(addon *addonsv1alpha1.Addon, message string) {
 	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyCSV,
 		fmt.Sprintf("ClusterServiceVersion is not ready: %s", message))

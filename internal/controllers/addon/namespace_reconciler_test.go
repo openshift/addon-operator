@@ -28,9 +28,8 @@ func TestEnsureWantedNamespaces_AddonWithoutNamespaces(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	requeueResult, err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithoutNamespace())
+	err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithoutNamespace())
 	require.NoError(t, err)
-	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)
 }
 
@@ -47,9 +46,8 @@ func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Collision(t *testing.T)
 
 	ctx := context.Background()
 	addon := testutil.NewTestAddonWithSingleNamespace()
-	requeueResult, err := r.ensureWantedNamespaces(ctx, addon)
+	err := r.ensureWantedNamespaces(ctx, addon)
 	require.NoError(t, err)
-	assert.Equal(t, resultRetry, requeueResult)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr)
 
@@ -77,9 +75,8 @@ func TestEnsureWantedNamespaces_AddonWithSingleNamespace_NoCollision(t *testing.
 	}
 
 	ctx := context.Background()
-	requeueResult, err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithSingleNamespace())
+	err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithSingleNamespace())
 	require.NoError(t, err)
-	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr)
 	c.AssertCalled(t, "Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything)
@@ -101,9 +98,8 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_NoCollision(t *testi
 	}
 
 	ctx := context.Background()
-	requeueResult, err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithMultipleNamespaces())
+	err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithMultipleNamespaces())
 	require.NoError(t, err)
-	assert.Equal(t, resultNil, requeueResult)
 	// every namespace should have been created
 	namespaceCount := len(testutil.NewTestAddonWithMultipleNamespaces().Spec.Namespaces)
 	c.AssertExpectations(t)
@@ -139,9 +135,8 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_SingleCollision(t *t
 
 	ctx := context.Background()
 	addon := testutil.NewTestAddonWithMultipleNamespaces()
-	requeueResult, err := r.ensureWantedNamespaces(ctx, addon)
+	err := r.ensureWantedNamespaces(ctx, addon)
 	require.NoError(t, err)
-	assert.Equal(t, resultRetry, requeueResult)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", len(testutil.NewTestAddonWithMultipleNamespaces().Spec.Namespaces))
 
@@ -168,9 +163,8 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_MultipleCollisions(t
 
 	ctx := context.Background()
 	addon := testutil.NewTestAddonWithMultipleNamespaces()
-	requeueResult, err := r.ensureWantedNamespaces(ctx, addon)
+	err := r.ensureWantedNamespaces(ctx, addon)
 	require.NoError(t, err)
-	assert.Equal(t, resultRetry, requeueResult)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", len(testutil.NewTestAddonWithMultipleNamespaces().Spec.Namespaces))
 
