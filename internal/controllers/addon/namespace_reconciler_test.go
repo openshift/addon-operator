@@ -33,11 +33,15 @@ func TestEnsureWantedNamespaces_AddonWithoutNamespaces(t *testing.T) {
 	c.AssertExpectations(t)
 }
 
-func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Collision(t *testing.T) {
+func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Adoption(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
 		arg := args.Get(2).(*corev1.Namespace)
 		testutil.NewTestExistingNamespace().DeepCopyInto(arg)
+	}).Return(nil)
+	c.On("Update", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Run(func(args mock.Arguments) {
+		currentNamespace := args.Get(1).(*corev1.Namespace)
+		currentNamespace.Status.Phase = corev1.NamespaceActive
 	}).Return(nil)
 	r := &namespaceReconciler{
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
@@ -53,10 +57,7 @@ func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Collision(t *testing.T)
 
 	// validate Status condition
 	availableCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
-	if assert.NotNil(t, availableCond) {
-		assert.Equal(t, metav1.ConditionFalse, availableCond.Status)
-		assert.Equal(t, addonsv1alpha1.AddonReasonCollidedNamespaces, availableCond.Reason)
-	}
+	assert.Nil(t, availableCond)
 }
 
 func TestEnsureWantedNamespaces_AddonWithSingleNamespace_NoCollision(t *testing.T) {
