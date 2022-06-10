@@ -121,7 +121,7 @@ func (r *olmReconciler) reconcileSubscription(
 	// only update when spec has changed or owner reference has changed
 	currentLabels := labels.Set(currentSubscription.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(subscription.Labels))
-	ownedByAddon := controllers.HasEqualControllerReference(currentSubscription, subscription)
+	ownedByAddon := controllers.HasSameController(currentSubscription, subscription)
 	specChanged := !equality.Semantic.DeepEqual(subscription.Spec, currentSubscription.Spec)
 	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {
 		// TODO: remove this condition once resourceAdoptionStrategy is discontinued
