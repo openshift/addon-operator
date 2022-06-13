@@ -118,7 +118,7 @@ func (r *olmReconciler) reconcileSubscription(
 
 	// Only update when spec, controllerRef, or labels have changed
 	specChanged := !equality.Semantic.DeepEqual(subscription.Spec, currentSubscription.Spec)
-	ownedByAddon := controllers.HasEqualControllerReference(currentSubscription, subscription)
+	ownedByAddon := controllers.HasSameController(currentSubscription, subscription)
 	currentLabels := labels.Set(currentSubscription.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(subscription.Labels))
 	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {

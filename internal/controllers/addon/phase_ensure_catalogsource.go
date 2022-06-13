@@ -163,8 +163,7 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 		}
 	}
 
-	// Only update when spec, controllerRef, or labels have changed
-	ownedByAddon := controllers.HasEqualControllerReference(currentCatalogSource, catalogSource)
+	ownedByAddon := controllers.HasSameController(currentCatalogSource, catalogSource)
 	specChanged := !equality.Semantic.DeepEqual(catalogSource.Spec, currentCatalogSource.Spec)
 	currentLabels := labels.Set(currentCatalogSource.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(catalogSource.Labels))
