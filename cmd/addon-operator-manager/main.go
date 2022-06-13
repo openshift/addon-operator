@@ -70,13 +70,8 @@ func parseFlags() *options {
 	return opts
 }
 
-func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder) error {
+func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder, namespace string) error {
 	ctx := context.Background()
-
-	addonOperatorNamespace, err := controllers.CurrentNamespace()
-	if err != nil {
-		return err
-	}
 
 	// Create a client that does not cache resources cluster-wide.
 	uncachedClient, err := client.New(
@@ -100,7 +95,7 @@ func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder) error {
 		mgr.GetScheme(),
 		recorder,
 		clusterExternalID,
-		addonOperatorNamespace,
+		namespace,
 	)
 	if err := addonReconciler.SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create Addon controller: %w", err)
@@ -168,6 +163,11 @@ func setup() error {
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
+	addonOperatorNamespace, err := controllers.CurrentNamespace()
+	if err != nil {
+		return err
+	}
+
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                     scheme,
 		MetricsBindAddress:         opts.metricsAddr,
@@ -176,6 +176,7 @@ func setup() error {
 		LeaderElectionResourceLock: "leases",
 		LeaderElection:             opts.enableLeaderElection,
 		LeaderElectionID:           "8a4hp84a6s.addon-operator-lock",
+		LeaderElectionNamespace:    addonOperatorNamespace,
 		NewCache: cache.BuilderWithOptions(cache.Options{
 			SelectorsByObject: cache.SelectorsByObject{
 				&corev1.Secret{}: {
@@ -208,7 +209,7 @@ func setup() error {
 		recorder = metrics.NewRecorder(true)
 	}
 
-	if err := initReconcilers(mgr, recorder); err != nil {
+	if err := initReconcilers(mgr, recorder, addonOperatorNamespace); err != nil {
 		return fmt.Errorf("init reconcilers: %w", err)
 	}
 
