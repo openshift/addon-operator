@@ -805,3 +805,46 @@ func TestHasMonitoringFederation(t *testing.T) {
 		})
 	}
 }
+
+func TestHasAdoptAllStrategy(t *testing.T) {
+	testCases := []struct {
+		addon          *addonsv1alpha1.Addon
+		expectedResult bool
+	}{
+		{
+			addon:          &addonsv1alpha1.Addon{},
+			expectedResult: false,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					ResourceAdoptionStrategy: "invalid",
+				},
+			},
+			expectedResult: false,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					ResourceAdoptionStrategy: addonsv1alpha1.ResourceAdoptionPrevent,
+				},
+			},
+			expectedResult: false,
+		},
+		{
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					ResourceAdoptionStrategy: addonsv1alpha1.ResourceAdoptionAdoptAll,
+				},
+			},
+			expectedResult: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("test has adopt all strategy", func(t *testing.T) {
+			result := HasAdoptAllStrategy(tc.addon)
+			assert.Equal(t, tc.expectedResult, result)
+		})
+	}
+}
