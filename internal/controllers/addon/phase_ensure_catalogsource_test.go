@@ -91,8 +91,8 @@ func TestReconcileCatalogSource_Adoption(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
-		currentCatalogSource := testutil.NewTestCatalogSourceWithoutOwner()
-		currentCatalogSource.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
+		catalogSourceWithoutOwner := testutil.NewTestCatalogSourceWithoutOwner()
+		catalogSourceWithoutOwner.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
 	}).Return(nil)
 
 	c.On("Update",
