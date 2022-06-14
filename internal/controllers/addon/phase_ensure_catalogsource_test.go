@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"k8s.io/apimachinery/pkg/api/equality"
+
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -31,7 +31,7 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 
 	ctx := context.Background()
 	catalogSource := testutil.NewTestCatalogSource()
-	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy(), addonsv1alpha1.ResourceAdoptionAdoptAll)
+	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy())
 	assert.NoError(t, err)
 	assert.NotNil(t, reconciledCatalogSource)
 	c.AssertExpectations(t)
@@ -54,7 +54,7 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorGet(t *testing.T) 
 	).Return(timeoutErr)
 
 	ctx := context.Background()
-	_, err := reconcileCatalogSource(ctx, c, testutil.NewTestCatalogSource(), addonsv1alpha1.ResourceAdoptionAdoptAll)
+	_, err := reconcileCatalogSource(ctx, c, testutil.NewTestCatalogSource())
 	assert.Error(t, err)
 	assert.EqualError(t, err, timeoutErr.Error())
 	c.AssertExpectations(t)
@@ -76,101 +76,39 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorCreate(t *testing.
 	).Return(timeoutErr)
 
 	ctx := context.Background()
-	_, err := reconcileCatalogSource(ctx, c, testutil.NewTestCatalogSource(), addonsv1alpha1.ResourceAdoptionAdoptAll)
+	_, err := reconcileCatalogSource(ctx, c, testutil.NewTestCatalogSource())
 	assert.Error(t, err)
 	assert.EqualError(t, err, timeoutErr.Error())
 	c.AssertExpectations(t)
 }
 
 func TestReconcileCatalogSource_Adoption(t *testing.T) {
-	for name, tc := range map[string]struct {
-		MustAdopt  bool
-		Strategy   addonsv1alpha1.ResourceAdoptionStrategyType
-		AssertFunc func(*testing.T, *operatorsv1alpha1.CatalogSource, error)
-	}{
-		"no strategy/no adoption": {
-			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			AssertFunc: assertReconciledCatalogSource,
-		},
-		"Prevent/no adoption": {
-			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionPrevent,
-			AssertFunc: assertReconciledCatalogSource,
-		},
-		"AdoptAll/no adoption": {
-			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionAdoptAll,
-			AssertFunc: assertReconciledCatalogSource,
-		},
-		"no strategy/must adopt": {
-			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			AssertFunc: assertUnreconciledCatalogSource,
-		},
-		"Prevent/must adopt": {
-			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionPrevent,
-			AssertFunc: assertUnreconciledCatalogSource,
-		},
-		"AdoptAll/must adopt": {
-			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionAdoptAll,
-			AssertFunc: assertReconciledCatalogSource,
-		},
-	} {
-		t.Run(name, func(t *testing.T) {
-			catalogSource := testutil.NewTestCatalogSource()
+	catalogSource := testutil.NewTestCatalogSource()
 
-			c := testutil.NewClient()
-			c.On("Get",
-				mock.Anything,
-				testutil.IsObjectKey,
-				testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
-			).Run(func(args mock.Arguments) {
-				var cs *operatorsv1alpha1.CatalogSource
+	c := testutil.NewClient()
+	c.On("Get",
+		mock.Anything,
+		testutil.IsObjectKey,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+	).Run(func(args mock.Arguments) {
+		catalogSourceWithoutOwner := testutil.NewTestCatalogSourceWithoutOwner()
+		catalogSourceWithoutOwner.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
+	}).Return(nil)
 
-				if tc.MustAdopt {
-					cs = testutil.NewTestCatalogSourceWithoutOwner()
-				} else {
-					cs = testutil.NewTestCatalogSource()
-					// Unrelated spec change to force reconciliation
-					cs.Spec.ConfigMap = "new-config-map"
-				}
+	c.On("Update",
+		mock.Anything,
+		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
+	).Return(nil)
 
-				cs.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
-			}).Return(nil)
+	ctx := context.Background()
 
-			if !tc.MustAdopt || (tc.MustAdopt && tc.Strategy == addonsv1alpha1.ResourceAdoptionAdoptAll) {
-				c.On("Update",
-					mock.Anything,
-					testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
-					mock.Anything,
-				).Return(nil)
-			}
-
-			ctx := context.Background()
-			reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy(), tc.Strategy)
-
-			tc.AssertFunc(t, reconciledCatalogSource, err)
-			c.AssertExpectations(t)
-		})
-	}
-}
-
-func assertReconciledCatalogSource(t *testing.T, cs *operatorsv1alpha1.CatalogSource, err error) {
-	t.Helper()
+	reconciledCatalogSource, err := reconcileCatalogSource(ctx, c, catalogSource.DeepCopy())
 
 	assert.NoError(t, err)
-	assert.NotNil(t, cs)
-
-}
-
-func assertUnreconciledCatalogSource(t *testing.T, cs *operatorsv1alpha1.CatalogSource, err error) {
-	t.Helper()
-
-	assert.Error(t, err)
-	assert.EqualError(t, err, controllers.ErrNotOwnedByUs.Error())
+	assert.NotNil(t, reconciledCatalogSource)
+	assert.True(t, equality.Semantic.DeepEqual(reconciledCatalogSource.OwnerReferences, catalogSource.OwnerReferences))
+	c.AssertExpectations(t)
 }
 
 func TestEnsureCatalogSource_Create(t *testing.T) {
@@ -182,17 +120,18 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Return(testutil.NewTestErrNotFound())
+
 	var createdCatalogSource *operatorsv1alpha1.CatalogSource
 	c.On("Create",
 		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Run(func(args mock.Arguments) {
-		arg := args.Get(1).(*operatorsv1alpha1.CatalogSource)
-		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+		catalogSource := args.Get(1).(*operatorsv1alpha1.CatalogSource)
+		catalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
-		createdCatalogSource = arg
+		createdCatalogSource = catalogSource
 	}).Return(nil)
 
 	r := &olmReconciler{
@@ -212,7 +151,7 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 }
 
 func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
-	addon := testutil.NewTestAddonWithAdditionalCatalogSource()
+	addon := testutil.NewTestAddonWithAdditionalCatalogSources()
 	c := testutil.NewClient()
 	c.On("Get",
 		mock.Anything,
@@ -224,8 +163,8 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Run(func(args mock.Arguments) {
-		arg := args.Get(1).(*operatorsv1alpha1.CatalogSource)
-		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+		catalogSource := args.Get(1).(*operatorsv1alpha1.CatalogSource)
+		catalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
 	}).Return(nil)
@@ -245,15 +184,15 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 }
 
 func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
-	addon := testutil.NewTestAddonWithAdditionalCatalogSourceAndResourceAdoptionStrategy(addonsv1alpha1.ResourceAdoptionAdoptAll)
+	addon := testutil.NewTestAddonWithAdditionalCatalogSources()
 	c := testutil.NewClient()
 	c.On("Get",
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
-		arg := args.Get(2).(*operatorsv1alpha1.CatalogSource)
-		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+		currentCatalogSource := args.Get(2).(*operatorsv1alpha1.CatalogSource)
+		currentCatalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
 	}).Return(nil)
@@ -277,7 +216,7 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 }
 
 func TestEnsureCatalogSource_Update(t *testing.T) {
-	addon := testutil.NewTestAddonWithCatalogSourceImageWithResourceAdoptionStrategy(addonsv1alpha1.ResourceAdoptionAdoptAll)
+	addon := testutil.NewTestAddonWithCatalogSourceImage()
 
 	c := testutil.NewClient()
 	c.On("Get",
@@ -285,8 +224,8 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 	).Run(func(args mock.Arguments) {
-		arg := args.Get(2).(*operatorsv1alpha1.CatalogSource)
-		arg.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
+		currentCatalogSource := args.Get(2).(*operatorsv1alpha1.CatalogSource)
+		currentCatalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
 			LastObservedState: "READY",
 		}
 	}).Return(nil)
@@ -304,6 +243,7 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 	log := testutil.NewLogger(t)
 	ctx := controllers.ContextWithLogger(context.Background(), log)
 	requeueResult, _, err := r.ensureCatalogSource(ctx, addon)
+
 	assert.NoError(t, err)
 	assert.Equal(t, resultNil, requeueResult)
 	c.AssertExpectations(t)
