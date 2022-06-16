@@ -231,8 +231,8 @@ func TestValidateAddonInstallImmutability(t *testing.T) {
 
 func TestValidateSecretPropagation(t *testing.T) {
 	testCases := []struct {
-		addon    *addonsv1alpha1.Addon
-		expected error
+		addon       *addonsv1alpha1.Addon
+		expectedErr error
 	}{
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -247,7 +247,7 @@ func TestValidateSecretPropagation(t *testing.T) {
 					},
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -262,7 +262,7 @@ func TestValidateSecretPropagation(t *testing.T) {
 					},
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -278,7 +278,7 @@ func TestValidateSecretPropagation(t *testing.T) {
 					SecretPropagation: nil,
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -294,7 +294,7 @@ func TestValidateSecretPropagation(t *testing.T) {
 					SecretPropagation: nil,
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -323,7 +323,7 @@ func TestValidateSecretPropagation(t *testing.T) {
 					},
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -352,7 +352,7 @@ func TestValidateSecretPropagation(t *testing.T) {
 					},
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -381,7 +381,7 @@ func TestValidateSecretPropagation(t *testing.T) {
 					},
 				},
 			},
-			expected: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
+			expectedErr: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -410,7 +410,7 @@ func TestValidateSecretPropagation(t *testing.T) {
 					},
 				},
 			},
-			expected: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
+			expectedErr: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
 		},
 	}
 
@@ -418,15 +418,15 @@ func TestValidateSecretPropagation(t *testing.T) {
 		t.Run("validate secret propagation test", func(t *testing.T) {
 			addon := tc.addon.DeepCopy()
 			err := validateSecretPropagation(addon)
-			assert.Equal(t, tc.expected, err)
+			assert.Equal(t, tc.expectedErr, err)
 		})
 	}
 }
 
 func TestValidateAddon(t *testing.T) {
 	testCases := []struct {
-		addon    *addonsv1alpha1.Addon
-		expected error
+		addon       *addonsv1alpha1.Addon
+		expectedErr error
 	}{
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -437,7 +437,7 @@ func TestValidateAddon(t *testing.T) {
 					Install: addonsv1alpha1.AddonInstallSpec{},
 				},
 			},
-			expected: errSpecInstallTypeInvalid,
+			expectedErr: errSpecInstallTypeInvalid,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -451,7 +451,7 @@ func TestValidateAddon(t *testing.T) {
 					},
 				},
 			},
-			expected: errSpecInstallOwnNamespaceRequired,
+			expectedErr: errSpecInstallOwnNamespaceRequired,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -473,7 +473,7 @@ func TestValidateAddon(t *testing.T) {
 					},
 				},
 			},
-			expected: errAdditionalCatalogSourceNameCollision,
+			expectedErr: errAdditionalCatalogSourceNameCollision,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -487,7 +487,7 @@ func TestValidateAddon(t *testing.T) {
 					},
 				},
 			},
-			expected: errSpecInstallAllNamespacesRequired,
+			expectedErr: errSpecInstallAllNamespacesRequired,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -509,7 +509,7 @@ func TestValidateAddon(t *testing.T) {
 					},
 				},
 			},
-			expected: errAdditionalCatalogSourceNameCollision,
+			expectedErr: errAdditionalCatalogSourceNameCollision,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -524,7 +524,7 @@ func TestValidateAddon(t *testing.T) {
 					},
 				},
 			},
-			expected: errSpecInstallConfigMutuallyExclusive,
+			expectedErr: errSpecInstallConfigMutuallyExclusive,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -539,7 +539,7 @@ func TestValidateAddon(t *testing.T) {
 					},
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -568,7 +568,7 @@ func TestValidateAddon(t *testing.T) {
 					},
 				},
 			},
-			expected: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
+			expectedErr: fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", "test"),
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -597,7 +597,7 @@ func TestValidateAddon(t *testing.T) {
 					},
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 		{
 			addon: &addonsv1alpha1.Addon{
@@ -613,7 +613,7 @@ func TestValidateAddon(t *testing.T) {
 					SecretPropagation: nil,
 				},
 			},
-			expected: nil,
+			expectedErr: nil,
 		},
 	}
 
@@ -621,7 +621,7 @@ func TestValidateAddon(t *testing.T) {
 		t.Run("validate addon tests", func(t *testing.T) {
 			addon := tc.addon.DeepCopy()
 			err := validateAddon(addon)
-			assert.Equal(t, tc.expected, err)
+			assert.Equal(t, tc.expectedErr, err)
 		})
 	}
 }
