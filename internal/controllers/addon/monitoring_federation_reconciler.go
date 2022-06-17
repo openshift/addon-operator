@@ -89,18 +89,11 @@ func (r *monitoringFederationReconciler) ensureMonitoringNamespace(
 		return fmt.Errorf("getting monitoring namespace: %w", err)
 	}
 
-	var (
-		mustAdopt     = !controllers.HasSameController(actual, desired)
-		labelsChanged = !equality.Semantic.DeepEqual(actual.Labels, desired.Labels)
-	)
+	ownedByAddon := controllers.HasSameController(actual, desired)
+	labelsChanged := !equality.Semantic.DeepEqual(actual.Labels, desired.Labels)
 
-	if !mustAdopt && !labelsChanged {
+	if ownedByAddon && !labelsChanged {
 		return nil
-	}
-
-	// TODO: remove this condition once resourceAdoptionStrategy is discontinued
-	if mustAdopt && !HasAdoptAllStrategy(addon) {
-		return controllers.ErrNotOwnedByUs
 	}
 
 	actual.OwnerReferences, actual.Labels = desired.OwnerReferences, desired.Labels
@@ -116,7 +109,7 @@ func (r *monitoringFederationReconciler) ensureMonitoringNamespace(
 	reportUnreadyMonitoring(addon, fmt.Sprintf("namespace %q is not active", actual.Name))
 
 	// Previously this would trigger exit and move on to the next phase.
-	// However given that the reconciliation is not complete an error should
+	// However, given that the reconciliation is not complete an error should
 	// be returned to requeue the work.
 	return fmt.Errorf("monitoring namespace is not active")
 }
@@ -169,19 +162,12 @@ func (r *monitoringFederationReconciler) ensureServiceMonitor(ctx context.Contex
 
 	currentLabels := labels.Set(actual.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(desired.Labels))
+	ownedByAddon := controllers.HasSameController(actual, desired)
+	specChanged := !equality.Semantic.DeepEqual(actual.Spec, desired.Spec)
+	labelsChanged := !labels.Equals(currentLabels, newLabels)
 
-	var (
-		mustAdopt     = !controllers.HasSameController(actual, desired)
-		specChanged   = !equality.Semantic.DeepEqual(actual.Spec, desired.Spec)
-		labelsChanged = !labels.Equals(currentLabels, newLabels)
-	)
-
-	if !mustAdopt && !specChanged && !labelsChanged {
+	if ownedByAddon && !specChanged && !labelsChanged {
 		return nil
-	}
-
-	if mustAdopt && !HasAdoptAllStrategy(addon) {
-		return controllers.ErrNotOwnedByUs
 	}
 
 	actual.Spec = desired.Spec
