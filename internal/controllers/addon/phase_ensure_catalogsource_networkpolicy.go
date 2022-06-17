@@ -45,23 +45,17 @@ func (r *olmReconciler) ensureCatalogSourcesNetworkPolicy(ctx context.Context, a
 	currentLabels := labels.Set(actual.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(desired.Labels))
 
-	var (
-		mustAdopt     = !controllers.HasSameController(actual, desired)
-		specChanged   = !equality.Semantic.DeepEqual(actual.Spec, desired.Spec)
-		labelsChanged = !labels.Equals(currentLabels, newLabels)
-	)
+	ownedByAddon := controllers.HasSameController(actual, desired)
+	specChanged := !equality.Semantic.DeepEqual(actual.Spec, desired.Spec)
+	labelsChanged := !labels.Equals(currentLabels, newLabels)
 
-	if !mustAdopt && !specChanged && !labelsChanged {
+	if ownedByAddon && !specChanged && !labelsChanged {
 		return resultNil, nil
 	}
 
-	if mustAdopt && !HasAdoptAllStrategy(addon) {
-		return resultNil, controllers.ErrNotOwnedByUs
-	}
-
+	actual.OwnerReferences = desired.OwnerReferences
 	actual.Spec = desired.Spec
 	actual.Labels = newLabels
-	actual.OwnerReferences = desired.OwnerReferences
 
 	return resultNil, r.client.Update(ctx, actual)
 }
