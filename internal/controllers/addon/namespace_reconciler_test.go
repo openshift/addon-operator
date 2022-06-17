@@ -39,8 +39,8 @@ func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Adoption(t *testing.T) 
 		testutil.NewTestExistingNamespace().DeepCopyInto(arg)
 	}).Return(nil)
 	c.On("Update", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Run(func(args mock.Arguments) {
-		currentNamespace := args.Get(1).(*corev1.Namespace)
-		currentNamespace.Status.Phase = corev1.NamespaceActive
+		arg := args.Get(1).(*corev1.Namespace)
+		arg.Status.Phase = corev1.NamespaceActive
 	}).Return(nil)
 	r := &namespaceReconciler{
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
