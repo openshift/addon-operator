@@ -11,7 +11,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -60,7 +59,7 @@ func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Adoption(t *testing.T) 
 	assert.Nil(t, availableCond)
 }
 
-func TestEnsureWantedNamespaces_AddonWithSingleNamespace_NoCollision(t *testing.T) {
+func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Create(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(testutil.NewTestErrNotFound())
 	c.On("Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Run(func(args mock.Arguments) {
@@ -83,7 +82,7 @@ func TestEnsureWantedNamespaces_AddonWithSingleNamespace_NoCollision(t *testing.
 	c.AssertCalled(t, "Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything)
 }
 
-func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_NoCollision(t *testing.T) {
+func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_Create(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(testutil.NewTestErrNotFound())
 	c.On("Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Run(func(args mock.Arguments) {
@@ -108,7 +107,7 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_NoCollision(t *testi
 	c.AssertNumberOfCalls(t, "Create", namespaceCount)
 }
 
-func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_SingleCollision(t *testing.T) {
+func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_SingleAdoption(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).
 		Return(testutil.NewTestErrNotFound()).
@@ -128,6 +127,9 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_SingleCollision(t *t
 			testutil.NewTestExistingNamespace().DeepCopyInto(arg)
 		}).
 		Return(nil)
+	c.On("Update", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).
+		Return(nil).
+		Once()
 
 	r := &namespaceReconciler{
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
@@ -136,25 +138,24 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_SingleCollision(t *t
 
 	ctx := context.Background()
 	addon := testutil.NewTestAddonWithMultipleNamespaces()
+	addonCopy := addon.DeepCopy()
 	err := r.ensureWantedNamespaces(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
-	c.AssertNumberOfCalls(t, "Get", len(testutil.NewTestAddonWithMultipleNamespaces().Spec.Namespaces))
+	c.AssertNumberOfCalls(t, "Get", len(addonCopy.Spec.Namespaces))
+	c.AssertNumberOfCalls(t, "Create", 1)
+	c.AssertNumberOfCalls(t, "Update", 1)
 
-	// test addon status condition
-	availableCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
-	if assert.NotNil(t, availableCond) {
-		assert.Equal(t, metav1.ConditionFalse, availableCond.Status)
-		assert.Equal(t, addonsv1alpha1.AddonReasonCollidedNamespaces, availableCond.Reason)
-	}
 }
-func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_MultipleCollisions(t *testing.T) {
+func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_MultipleAdoptions(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).
 		Run(func(args mock.Arguments) {
 			arg := args.Get(2).(*corev1.Namespace)
 			testutil.NewTestExistingNamespace().DeepCopyInto(arg)
 		}).
+		Return(nil)
+	c.On("Update", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).
 		Return(nil)
 
 	r := &namespaceReconciler{
@@ -164,17 +165,12 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_MultipleCollisions(t
 
 	ctx := context.Background()
 	addon := testutil.NewTestAddonWithMultipleNamespaces()
+	addonCopy := addon.DeepCopy()
 	err := r.ensureWantedNamespaces(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
-	c.AssertNumberOfCalls(t, "Get", len(testutil.NewTestAddonWithMultipleNamespaces().Spec.Namespaces))
-
-	// test addon status condition
-	availableCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
-	if assert.NotNil(t, availableCond) {
-		assert.Equal(t, metav1.ConditionFalse, availableCond.Status)
-		assert.Equal(t, addonsv1alpha1.AddonReasonCollidedNamespaces, availableCond.Reason)
-	}
+	c.AssertNumberOfCalls(t, "Get", len(addonCopy.Spec.Namespaces))
+	c.AssertNumberOfCalls(t, "Update", len(addonCopy.Spec.Namespaces))
 }
 
 func TestEnsureNamespace_Create(t *testing.T) {
@@ -198,14 +194,19 @@ func TestEnsureNamespace_Create(t *testing.T) {
 
 func TestEnsureNamespace_CreateWithLabels(t *testing.T) {
 	addon := testutil.NewTestAddonWithSingleNamespace()
+	labels := map[string]string{
+		"foo": "bar",
+		"baz": "qux",
+	}
 
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(testutil.NewTestErrNotFound())
 	c.On("Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).
 		Run(func(args mock.Arguments) {
 			ns := args.Get(1).(*corev1.Namespace)
-			assert.Equal(t, "bar", ns.Labels["foo"])
-			assert.Equal(t, "qux", ns.Labels["baz"])
+			for key, value := range labels {
+				assert.Equal(t, value, ns.Labels[key])
+			}
 		}).
 		Return(nil)
 
@@ -215,33 +216,35 @@ func TestEnsureNamespace_CreateWithLabels(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	ensuredNamespace, err := r.ensureNamespaceWithLabels(ctx, addon, addon.Spec.Namespaces[0].Name, map[string]string{
-		"foo": "bar",
-		"baz": "qux",
-	})
+
+	ensuredNamespace, err := r.ensureNamespaceWithLabels(ctx, addon, addon.Spec.Namespaces[0].Name, labels)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
 	require.NotNil(t, ensuredNamespace)
 }
 
 func TestReconcileNamespace_Create(t *testing.T) {
+	namespace := testutil.NewTestNamespace()
+
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(testutil.NewTestErrNotFound())
-	c.On("Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Return(nil, testutil.NewTestNamespace())
+	c.On("Create", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Return(nil, namespace)
 
 	ctx := context.Background()
-	reconciledNamespace, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace())
+	reconciledNamespace, err := reconcileNamespace(ctx, c, namespace)
 	require.NoError(t, err)
 	assert.NotNil(t, reconciledNamespace)
-	assert.Equal(t, testutil.NewTestNamespace(), reconciledNamespace)
+	assert.Equal(t, namespace, reconciledNamespace)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
-		Name: "namespace-1",
+		Name: namespace.Name,
 	}, testutil.IsCoreV1NamespacePtr)
-	c.AssertCalled(t, "Create", testutil.IsContext, testutil.NewTestNamespace(), mock.Anything)
+	c.AssertCalled(t, "Create", testutil.IsContext, namespace, mock.Anything)
 }
 
-func TestReconcileNamespace_CreateWithCollisionWithoutOwner(t *testing.T) {
+func TestReconcileNamespace_CreateWithAdoptionWithoutOwner(t *testing.T) {
+	namespace := testutil.NewTestNamespace()
+
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
 		arg := args.Get(2).(*corev1.Namespace)
@@ -254,16 +257,16 @@ func TestReconcileNamespace_CreateWithCollisionWithoutOwner(t *testing.T) {
 	).Return(nil)
 
 	ctx := context.Background()
-	_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace())
+	_, err := reconcileNamespace(ctx, c, namespace)
 
 	assert.Nil(t, err)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
-		Name: "namespace-1",
+		Name: namespace.Name,
 	}, testutil.IsCoreV1NamespacePtr)
 }
 
-func TestReconcileNamespace_CreateWithCollisionWithOtherOwner(t *testing.T) {
+func TestReconcileNamespace_CreateWithAdoptionWithOtherOwner(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
 		arg := args.Get(2).(*corev1.Namespace)
@@ -276,12 +279,14 @@ func TestReconcileNamespace_CreateWithCollisionWithOtherOwner(t *testing.T) {
 	).Return(nil)
 
 	ctx := context.Background()
-	_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace())
+	namespace := testutil.NewTestNamespace()
+	namespaceCopy := namespace.DeepCopy()
+	_, err := reconcileNamespace(ctx, c, namespace)
 
 	assert.Nil(t, err)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
-		Name: "namespace-1",
+		Name: namespaceCopy.Name,
 	}, testutil.IsCoreV1NamespacePtr)
 }
 
@@ -293,12 +298,14 @@ func TestReconcileNamespace_CreateWithClientError(t *testing.T) {
 		Return(timeoutErr)
 
 	ctx := context.Background()
-	_, err := reconcileNamespace(ctx, c, testutil.NewTestNamespace())
+	namespace := testutil.NewTestNamespace()
+	namespaceCopy := namespace.DeepCopy()
+	_, err := reconcileNamespace(ctx, c, namespace)
 	require.Error(t, err)
 	require.EqualError(t, err, timeoutErr.Error())
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
-		Name: "namespace-1",
+		Name: namespaceCopy.Name,
 	}, testutil.IsCoreV1NamespacePtr)
 }
 
