@@ -342,5 +342,13 @@ func getCatalogSourceNetworkPolicyName(addon *addonsv1alpha1.Addon) string {
 	return fmt.Sprintf("addon-%s-catalogs", addon.Name)
 }
 
+func CatalogSourceName(addon *addonsv1alpha1.Addon) string {
+	return fmt.Sprintf("addon-%s-catalog", addon.Name)
+}
+
+func SubscriptionName(addon *addonsv1alpha1.Addon) string {
+	return fmt.Sprintf("addon-%s", addon.Name)
+}
+
 func corev1ProtocolPtr(proto corev1.Protocol) *corev1.Protocol   { return &proto }
 func intOrStringPtr(iors intstr.IntOrString) *intstr.IntOrString { return &iors }

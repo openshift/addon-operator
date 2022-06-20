@@ -33,7 +33,7 @@ func (r *olmReconciler) ensureCatalogSource(
 
 	catalogSource := &operatorsv1alpha1.CatalogSource{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      addon.Name,
+			Name:      CatalogSourceName(addon),
 			Namespace: commonConfig.Namespace,
 		},
 		Spec: operatorsv1alpha1.CatalogSourceSpec{

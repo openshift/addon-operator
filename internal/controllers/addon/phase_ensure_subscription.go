@@ -41,7 +41,7 @@ func (r *olmReconciler) ensureSubscription(
 	subscriptionConfigObject := createSubscriptionConfigObject(commonInstallOptions)
 	desiredSubscription := &operatorsv1alpha1.Subscription{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      addon.Name,
+			Name:      SubscriptionName(addon),
 			Namespace: commonInstallOptions.Namespace,
 		},
 		Spec: &operatorsv1alpha1.SubscriptionSpec{
