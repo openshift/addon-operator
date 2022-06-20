@@ -260,7 +260,8 @@ spec:
                 description: Defines a list of Kubernetes Namespaces that belong to
                   this Addon. Namespaces listed here will be created prior to installation
                   of the Addon and will be removed from the cluster when the Addon
-                  is deleted. Collisions with existing Namespaces are NOT allowed.
+                  is deleted. Collisions with existing Namespaces will result in the
+                  existing Namespaces being adopted.
                 items:
                   properties:
                     name:

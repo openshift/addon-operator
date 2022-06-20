@@ -23,7 +23,8 @@ type AddonSpec struct {
 	// Defines a list of Kubernetes Namespaces that belong to this Addon.
 	// Namespaces listed here will be created prior to installation of the Addon and
 	// will be removed from the cluster when the Addon is deleted.
-	// Collisions with existing Namespaces are NOT allowed.
+	// Collisions with existing Namespaces will result in the existing Namespaces
+	// being adopted.
 	Namespaces []AddonNamespace `json:"namespaces,omitempty"`
 
 	// Defines how an Addon is installed.
@@ -226,9 +227,6 @@ const (
 
 	// Addon has an unready additional Catalog source
 	AddonReasonUnreadyAdditionalCatalogSource = "UnreadyAdditionalCatalogSource"
-
-	// Addon has colliding namespaces
-	AddonReasonCollidedNamespaces = "CollidedNamespaces"
 
 	// Addon has unready namespaces
 	AddonReasonUnreadyNamespaces = "UnreadyNamespaces"
