@@ -13,6 +13,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
+	addonUtil "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
 // This test deploys a version of our addon where InstallPlan and
@@ -55,7 +56,7 @@ func (s *integrationTestSuite) TestAddon_BrokenSubscription() {
 		subscription := &operatorsv1alpha1.Subscription{}
 		err := integration.Client.Get(ctx, client.ObjectKey{
 			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
-			Name:      addon.Name,
+			Name:      addonUtil.SubscriptionName(addon),
 		}, subscription)
 		s.Require().NoError(err)
 
@@ -73,7 +74,7 @@ func (s *integrationTestSuite) TestAddon_BrokenSubscription() {
 		// assert that CatalogSource is gone
 		currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
 		err = integration.Client.Get(ctx, types.NamespacedName{
-			Name:      addon.Name,
+			Name:      addonUtil.CatalogSourceName(addon),
 			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
 		}, currentCatalogSource)
 		s.Assert().True(k8sApiErrors.IsNotFound(err), "CatalogSource not deleted: %s", currentCatalogSource.Name)

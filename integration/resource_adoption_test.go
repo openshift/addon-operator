@@ -16,6 +16,7 @@ import (
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
 	"github.com/openshift/addon-operator/internal/controllers"
+	addonUtil "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
 func (s *integrationTestSuite) TestResourceAdoption() {
@@ -107,7 +108,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 		{
 			observedSubscription := &operatorsv1alpha1.Subscription{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      referenceAddonName,
+					Name:      addonUtil.SubscriptionName(addon),
 					Namespace: referenceAddonNamespace,
 				},
 			}
@@ -142,7 +143,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 		{
 			observedCS := &operatorsv1alpha1.CatalogSource{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      referenceAddonName,
+					Name:      addonUtil.CatalogSourceName(addon),
 					Namespace: referenceAddonNamespace,
 				},
 			}
