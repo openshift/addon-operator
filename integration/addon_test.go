@@ -14,6 +14,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
+	addonUtil "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
 func (s *integrationTestSuite) TestAddon() {
@@ -119,7 +120,7 @@ func (s *integrationTestSuite) TestAddon() {
 	s.Run("catalogsource exists", func() {
 		currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
 		err := integration.Client.Get(ctx, client.ObjectKey{
-			Name:      addon.Name,
+			Name:      addonUtil.CatalogSourceName(addon),
 			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
 		}, currentCatalogSource)
 		s.Assert().NoError(err, "could not get CatalogSource %s", addon.Name)
@@ -133,7 +134,7 @@ func (s *integrationTestSuite) TestAddon() {
 		{
 			err := integration.Client.Get(ctx, client.ObjectKey{
 				Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
-				Name:      addon.Name,
+				Name:      addonUtil.SubscriptionName(addon),
 			}, subscription)
 			s.Require().NoError(err)
 
@@ -164,7 +165,7 @@ func (s *integrationTestSuite) TestAddon() {
 
 		err := integration.Client.Get(ctx, client.ObjectKey{
 			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
-			Name:      addon.Name,
+			Name:      addonUtil.SubscriptionName(addon),
 		}, subscription)
 		s.Require().NoError(err)
 		envObjectsPresent := subscription.Spec.Config.Env
@@ -187,7 +188,7 @@ func (s *integrationTestSuite) TestAddon() {
 		// assert that CatalogSource is gone
 		currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
 		err = integration.Client.Get(ctx, client.ObjectKey{
-			Name:      addon.Name,
+			Name:      addonUtil.CatalogSourceName(addon),
 			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
 		}, currentCatalogSource)
 		s.Assert().True(k8sApiErrors.IsNotFound(err), "CatalogSource not deleted: %s", currentCatalogSource.Name)
@@ -232,9 +233,9 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 		s.Assert().NoError(err, "could not get CatalogSource %s", addon.Name)
 		s.Assert().Equal(3, len(catalogSourceList.Items))
 		expectedImages := map[string]string{
-			"test-1":   referenceAddonCatalogSourceImageWorking,
-			"test-2":   referenceAddonCatalogSourceImageWorking,
-			addon.Name: referenceAddonCatalogSourceImageWorking,
+			"test-1":                           referenceAddonCatalogSourceImageWorking,
+			"test-2":                           referenceAddonCatalogSourceImageWorking,
+			addonUtil.CatalogSourceName(addon): referenceAddonCatalogSourceImageWorking,
 		}
 		for _, ctlgSrc := range catalogSourceList.Items {
 			s.Assert().Equal(expectedImages[ctlgSrc.Name], ctlgSrc.Spec.Image)

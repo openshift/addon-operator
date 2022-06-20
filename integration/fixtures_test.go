@@ -220,7 +220,7 @@ func namespace_TestResourceAdoption() *corev1.Namespace {
 func catalogsource_TestResourceAdoption() *operatorsv1alpha1.CatalogSource {
 	return &operatorsv1alpha1.CatalogSource{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      referenceAddonName,
+			Name:      fmt.Sprintf("addon-%s-catalog", referenceAddonName),
 			Namespace: referenceAddonNamespace,
 		},
 		Spec: operatorsv1alpha1.CatalogSourceSpec{
@@ -247,7 +247,7 @@ func operatorgroup_TestResourceAdoption() *operatorsv1.OperatorGroup {
 func subscription_TestResourceAdoption() *operatorsv1alpha1.Subscription {
 	return &operatorsv1alpha1.Subscription{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      referenceAddonName,
+			Name:      fmt.Sprintf("addon-%s", referenceAddonName),
 			Namespace: referenceAddonNamespace},
 		Spec: &operatorsv1alpha1.SubscriptionSpec{
 			CatalogSource:          referenceAddonName,
