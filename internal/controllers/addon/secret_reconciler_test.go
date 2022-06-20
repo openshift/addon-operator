@@ -434,3 +434,186 @@ func TestEnsureSecretPropagation_cleanup_when_nil(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, ctrl.Result{}, result)
 }
+
+func TestGetDestinationSecretWithoutNamespace_NoSecrets(t *testing.T) {
+	type Expected struct {
+		secret []corev1.Secret
+		result ctrl.Result
+		err    error
+	}
+	testCases := map[string]struct {
+		addon    *addonsv1alpha1.Addon
+		expected Expected
+	}{
+		"SecretPropagation is nil": {
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					SecretPropagation: nil,
+				},
+			},
+			expected: Expected{
+				secret: nil,
+				result: ctrl.Result{},
+				err:    nil,
+			},
+		},
+		"Secrets is empty": {
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+						Secrets: []addonsv1alpha1.AddonSecretPropagationReference{},
+					},
+				},
+			},
+			expected: Expected{
+				secret: nil,
+				result: ctrl.Result{},
+				err:    nil,
+			},
+		},
+	}
+
+	c := testutil.NewClient()
+	uncachedC := testutil.NewClient()
+
+	c.
+		On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(nil)
+	uncachedC.
+		On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(nil)
+
+	r := &addonSecretPropagationReconciler{
+		cachedClient:           c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
+	}
+
+	ctx := context.Background()
+	for key, tc := range testCases {
+		t.Run(key, func(t *testing.T) {
+			addon := tc.addon.DeepCopy()
+			secret, result, err := r.getDestinationSecretsWithoutNamespace(ctx, addon)
+			assert.Equal(t, tc.expected.secret, secret)
+			assert.Equal(t, tc.expected.result, result)
+			assert.Equal(t, tc.expected.err, err)
+		})
+	}
+}
+
+func TestGetDestinationSecretWithoutNamespace_WithSecrets(t *testing.T) {
+	addon := &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-mock",
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+				Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+					{
+						SourceSecret: corev1.LocalObjectReference{
+							Name: "src-1",
+						},
+						DestinationSecret: corev1.LocalObjectReference{
+							Name: "dest-1",
+						},
+					},
+				},
+			},
+		},
+	}
+	secretKey := client.ObjectKey{Name: "src-1", Namespace: "xxx-addon-operator"}
+
+	c := testutil.NewClient()
+	uncachedC := testutil.NewClient()
+	c.
+		On("Get",
+			mock.Anything,
+			secretKey,
+			mock.IsType(&corev1.Secret{}),
+		).
+		Return(testutil.NewTestErrNotFound())
+	uncachedC.
+		On("Get",
+			mock.Anything,
+			secretKey,
+			mock.IsType(&corev1.Secret{}),
+		).
+		Return(testutil.NewTestErrNotFound())
+
+	ctx := context.Background()
+
+	r := &addonSecretPropagationReconciler{
+		cachedClient:           c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
+	}
+
+	secret, result, err := r.getDestinationSecretsWithoutNamespace(ctx, addon)
+	c.AssertExpectations(t)
+	require.NoError(t, err)
+	assert.Equal(t, ctrl.Result{
+		RequeueAfter: defaultRetryAfterTime,
+	}, result)
+	assert.Nil(t, secret)
+}
+
+func TestGetDestinationSecretWithoutNamespace_WithSecretsUncachedFallback(t *testing.T) {
+	addon := &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-mock",
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			SecretPropagation: &addonsv1alpha1.AddonSecretPropagation{
+				Secrets: []addonsv1alpha1.AddonSecretPropagationReference{
+					{
+						SourceSecret: corev1.LocalObjectReference{
+							Name: "src-1",
+						},
+						DestinationSecret: corev1.LocalObjectReference{
+							Name: "dest-1",
+						},
+					},
+				},
+			},
+		},
+	}
+	secretKey := client.ObjectKey{Name: "src-1", Namespace: "xxx-addon-operator"}
+
+	c := testutil.NewClient()
+	uncachedC := testutil.NewClient()
+
+	c.
+		On("Get",
+			mock.Anything,
+			secretKey,
+			mock.IsType(&corev1.Secret{}),
+		).
+		Return(testutil.NewTestErrNotFound())
+	uncachedC.
+		On("Get",
+			mock.Anything,
+			secretKey,
+			mock.IsType(&corev1.Secret{}),
+		).
+		Return(nil)
+	c.On("Patch",
+		mock.Anything,
+		mock.IsType(&corev1.Secret{}),
+		mock.Anything,
+		mock.Anything,
+	).Return(nil)
+
+	r := &addonSecretPropagationReconciler{
+		cachedClient:           c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
+	}
+
+	ctx := context.Background()
+	secret, result, err := r.getDestinationSecretsWithoutNamespace(ctx, addon)
+	c.AssertExpectations(t)
+	require.NoError(t, err)
+	assert.Equal(t, ctrl.Result{}, result)
+	assert.NotNil(t, secret)
+}

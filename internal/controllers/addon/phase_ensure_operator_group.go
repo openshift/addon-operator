@@ -59,7 +59,7 @@ func (r *olmReconciler) reconcileOperatorGroup(
 
 	currentLabels := labels.Set(currentOperatorGroup.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(operatorGroup.Labels))
-	ownedByAddon := controllers.HasEqualControllerReference(currentOperatorGroup, operatorGroup)
+	ownedByAddon := controllers.HasSameController(currentOperatorGroup, operatorGroup)
 	specChanged := !equality.Semantic.DeepEqual(currentOperatorGroup.Spec, operatorGroup.Spec)
 	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {
 		// TODO: remove this condition once resourceAdoptionStrategy is discontinued

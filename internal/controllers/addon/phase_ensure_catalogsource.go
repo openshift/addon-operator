@@ -58,7 +58,7 @@ func (r *olmReconciler) ensureCatalogSource(
 	var observedCatalogSource *operatorsv1alpha1.CatalogSource
 	{
 		var err error
-		observedCatalogSource, err = reconcileCatalogSource(ctx, r.client, catalogSource, addon.Spec.ResourceAdoptionStrategy)
+		observedCatalogSource, err = reconcileCatalogSource(ctx, r.client, catalogSource)
 		if err != nil {
 			return resultNil, nil, err
 		}
@@ -121,7 +121,7 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 		}
 		var observedCatalogSource *operatorsv1alpha1.CatalogSource
 		var err error
-		observedCatalogSource, err = reconcileCatalogSource(ctx, r.client, currentCatalogSrc, addon.Spec.ResourceAdoptionStrategy)
+		observedCatalogSource, err = reconcileCatalogSource(ctx, r.client, currentCatalogSrc)
 		if err != nil {
 			return resultNil, err
 		}
@@ -144,9 +144,9 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 	return resultNil, nil
 }
 
-// reconciles a CatalogSource and returns a new CatalogSource object with observed state.
+// reconciles a CatalogSource and returns a new CatalogSource object with updated state.
 // Warning: Will adopt existing CatalogSource
-func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource *operatorsv1alpha1.CatalogSource, strategy addonsv1alpha1.ResourceAdoptionStrategyType) (
+func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource *operatorsv1alpha1.CatalogSource) (
 	*operatorsv1alpha1.CatalogSource, error) {
 	currentCatalogSource := &operatorsv1alpha1.CatalogSource{}
 
@@ -163,18 +163,11 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 		}
 	}
 
-	// only update when spec or ownerReference has changed
-	ownedByAddon := controllers.HasEqualControllerReference(currentCatalogSource, catalogSource)
+	ownedByAddon := controllers.HasSameController(currentCatalogSource, catalogSource)
 	specChanged := !equality.Semantic.DeepEqual(catalogSource.Spec, currentCatalogSource.Spec)
 	currentLabels := labels.Set(currentCatalogSource.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(catalogSource.Labels))
-
 	if specChanged || !ownedByAddon || !labels.Equals(newLabels, currentLabels) {
-		// TODO: remove this condition once resourceAdoptionStrategy is discontinued
-		if strategy != addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
-			return nil, controllers.ErrNotOwnedByUs
-		}
-		// copy new spec into existing object and update in the k8s api
 		currentCatalogSource.Spec = catalogSource.Spec
 		currentCatalogSource.OwnerReferences = catalogSource.OwnerReferences
 		currentCatalogSource.Labels = newLabels

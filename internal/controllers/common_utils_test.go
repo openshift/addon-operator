@@ -12,17 +12,17 @@ import (
 )
 
 func TestHasEqualControllerReference(t *testing.T) {
-	require.True(t, HasEqualControllerReference(
+	require.True(t, HasSameController(
 		testutil.NewTestNamespace(),
 		testutil.NewTestNamespace(),
 	))
 
-	require.False(t, HasEqualControllerReference(
+	require.False(t, HasSameController(
 		testutil.NewTestNamespace(),
 		testutil.NewTestExistingNamespace(),
 	))
 
-	require.False(t, HasEqualControllerReference(
+	require.False(t, HasSameController(
 		testutil.NewTestNamespace(),
 		testutil.NewTestExistingNamespaceWithoutOwner(),
 	))
