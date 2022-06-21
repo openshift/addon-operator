@@ -266,7 +266,7 @@ func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
 			addonCopy := addon.DeepCopy()
 
 			err := rec.ensureMonitoringFederation(context.Background(), addonCopy)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 
 			client.AssertExpectations(t)
 		})
