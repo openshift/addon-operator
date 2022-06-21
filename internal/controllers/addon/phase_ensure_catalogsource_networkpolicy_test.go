@@ -313,7 +313,7 @@ func TestEnsureCatalogSourceNetworkPolicy_Adoption(t *testing.T) {
 			}
 
 			_, err := rec.ensureCatalogSourcesNetworkPolicy(context.Background(), addon)
-			require.Nil(t, err)
+			require.NoError(t, err)
 
 			client.AssertExpectations(t)
 		})
