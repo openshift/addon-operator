@@ -38,6 +38,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 
 	s.Run("resource adoption", func() {
 		addon := addon.DeepCopy()
+		addon.Spec.ResourceAdoptionStrategy = addonsv1alpha1.ResourceAdoptionPrevent
 
 		err := integration.Client.Create(ctx, addon)
 		s.Require().NoError(err)
