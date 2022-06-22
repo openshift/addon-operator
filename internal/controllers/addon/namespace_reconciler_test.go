@@ -259,7 +259,7 @@ func TestReconcileNamespace_CreateWithAdoptionWithoutOwner(t *testing.T) {
 	ctx := context.Background()
 	_, err := reconcileNamespace(ctx, c, namespace)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
 		Name: namespace.Name,
@@ -283,7 +283,7 @@ func TestReconcileNamespace_CreateWithAdoptionWithOtherOwner(t *testing.T) {
 	namespaceCopy := namespace.DeepCopy()
 	_, err := reconcileNamespace(ctx, c, namespace)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
 		Name: namespaceCopy.Name,
