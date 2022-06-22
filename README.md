@@ -148,3 +148,24 @@ The AddonOperator is instrumented with the prometheus-client provided by control
 | `addon_operator_addon_health_info`          | `GaugeVec` | Addon Health information (0 - Unhealthy; 1 - Healthy; 2 - Unknown)                      |
 
 See [Quickstart](https://github.com/openshift/addon-operator#quickstart--develop-integration-tests) for instructions on how to setup a local monitoring stack for development / testing.
+
+## Releasing
+
+```sh
+# 1. edit VERSION file
+vim VERSION
+
+# 2. update packaging files and prepare release
+./mage prepare_release
+
+# 3. create a new PR in openshift/addon-operator
+
+# 4. create a Github Release/Git Tag on the latest commit of the main branch
+```
+
+## Deployment
+
+Addon Operator is deployed via app-interface.
+Example MR updating staging: https://gitlab.cee.redhat.com/service/app-interface/-/merge_requests/36630
+
+Example MR updating production: https://gitlab.cee.redhat.com/service/app-interface/-/merge_requests/36743
