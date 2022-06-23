@@ -437,7 +437,7 @@ func TestParseAddonInstallConfigurationForAdditionalCatalogSources(t *testing.T)
 	}
 }
 
-func TestParseAdoonInstallConfig(t *testing.T) {
+func TestParseAddonInstallConfig(t *testing.T) {
 	// expected outcome struct for every function call
 	type Expected struct {
 		common *addonsv1alpha1.AddonInstallOLMCommon
