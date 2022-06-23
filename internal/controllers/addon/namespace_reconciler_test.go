@@ -225,6 +225,7 @@ func TestEnsureNamespace_CreateWithLabels(t *testing.T) {
 
 func TestReconcileNamespace_Create(t *testing.T) {
 	namespace := testutil.NewTestNamespace()
+	namespaceCopy := namespace.DeepCopy()
 
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Return(testutil.NewTestErrNotFound())
@@ -234,7 +235,7 @@ func TestReconcileNamespace_Create(t *testing.T) {
 	reconciledNamespace, err := reconcileNamespace(ctx, c, namespace)
 	require.NoError(t, err)
 	assert.NotNil(t, reconciledNamespace)
-	assert.Equal(t, namespace, reconciledNamespace)
+	assert.Equal(t, namespaceCopy.OwnerReferences, reconciledNamespace.OwnerReferences)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
 		Name: namespace.Name,
@@ -244,11 +245,12 @@ func TestReconcileNamespace_Create(t *testing.T) {
 
 func TestReconcileNamespace_CreateWithAdoptionWithoutOwner(t *testing.T) {
 	namespace := testutil.NewTestNamespace()
+	namespaceCopy := namespace.DeepCopy()
 
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
 		arg := args.Get(2).(*corev1.Namespace)
-		testutil.NewTestExistingNamespaceWithoutOwner().DeepCopyInto(arg)
+		testutil.NewTestNamespaceWithoutOwner().DeepCopyInto(arg)
 	}).Return(nil)
 	c.On("Update",
 		testutil.IsContext,
@@ -257,9 +259,10 @@ func TestReconcileNamespace_CreateWithAdoptionWithoutOwner(t *testing.T) {
 	).Return(nil)
 
 	ctx := context.Background()
-	_, err := reconcileNamespace(ctx, c, namespace)
+	reconciledNamespace, err := reconcileNamespace(ctx, c, namespace)
 
 	assert.NoError(t, err)
+	assert.Equal(t, namespaceCopy.OwnerReferences, reconciledNamespace.OwnerReferences)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
 		Name: namespace.Name,
@@ -270,7 +273,7 @@ func TestReconcileNamespace_CreateWithAdoptionWithOtherOwner(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr).Run(func(args mock.Arguments) {
 		arg := args.Get(2).(*corev1.Namespace)
-		testutil.NewTestExistingNamespaceWithoutOwner().DeepCopyInto(arg)
+		testutil.NewTestNamespaceWithoutOwner().DeepCopyInto(arg)
 	}).Return(nil)
 	c.On("Update",
 		testutil.IsContext,
@@ -281,9 +284,10 @@ func TestReconcileNamespace_CreateWithAdoptionWithOtherOwner(t *testing.T) {
 	ctx := context.Background()
 	namespace := testutil.NewTestNamespace()
 	namespaceCopy := namespace.DeepCopy()
-	_, err := reconcileNamespace(ctx, c, namespace)
+	reconciledNamespace, err := reconcileNamespace(ctx, c, namespace)
 
 	assert.NoError(t, err)
+	assert.Equal(t, namespaceCopy.OwnerReferences, reconciledNamespace.OwnerReferences)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, client.ObjectKey{
 		Name: namespaceCopy.Name,
