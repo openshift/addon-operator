@@ -3,9 +3,10 @@ package testutil
 import (
 	"net/http"
 
+	"k8s.io/apimachinery/pkg/types"
+
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
-	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -191,18 +192,22 @@ func NewTestAddonWithAdditionalCatalogSources() *addonsv1alpha1.Addon {
 	}
 }
 
-func NewTestServiceMonitor() *monitoringv1.ServiceMonitor {
-	sm := NewTestServiceMonitorWithoutOwner()
-	sm.OwnerReferences = testOwnerRefs()
-
-	return sm
-}
-
-func NewTestServiceMonitorWithoutOwner() *monitoringv1.ServiceMonitor {
-	return &monitoringv1.ServiceMonitor{
+func NewTestAddonWithMonitoringFederation() *addonsv1alpha1.Addon {
+	return &addonsv1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "servicemonitor-abcdefgh",
-			Namespace: "default",
+			Name: "addon-foo",
+			UID:  types.UID("addon-foo-id"),
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			Monitoring: &addonsv1alpha1.MonitoringSpec{
+				Federation: &addonsv1alpha1.MonitoringFederationSpec{
+					Namespace:  "addon-foo-monitoring",
+					MatchNames: []string{"foo"},
+					MatchLabels: map[string]string{
+						"foo": "bar",
+					},
+				},
+			},
 		},
 	}
 }

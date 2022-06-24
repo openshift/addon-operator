@@ -23,11 +23,7 @@ import (
 func TestEnsureMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "addon-foo",
-		},
-	}
+	addon := testutil.NewTestAddonWithoutNamespace()
 
 	r := &monitoringFederationReconciler{
 		client: c,
@@ -48,23 +44,8 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "addon-foo",
-		},
-		Spec: addonsv1alpha1.AddonSpec{
-			Monitoring: &addonsv1alpha1.MonitoringSpec{
-				Federation: &addonsv1alpha1.MonitoringFederationSpec{
-					PortName:   "https",
-					Namespace:  "addon-foo-monitoring",
-					MatchNames: []string{"foo"},
-					MatchLabels: map[string]string{
-						"foo": "bar",
-					},
-				},
-			},
-		},
-	}
+	addon := testutil.NewTestAddonWithMonitoringFederation()
+	addon.Spec.Monitoring.Federation.PortName = "https"
 
 	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&corev1.Namespace{}), mock.Anything).
 		Return(testutil.NewTestErrNotFound())
@@ -104,23 +85,8 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
 
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "addon-foo",
-		},
-		Spec: addonsv1alpha1.AddonSpec{
-			Monitoring: &addonsv1alpha1.MonitoringSpec{
-				Federation: &addonsv1alpha1.MonitoringFederationSpec{
-					PortName:   "portName",
-					Namespace:  "addon-foo-monitoring",
-					MatchNames: []string{"foo"},
-					MatchLabels: map[string]string{
-						"foo": "bar",
-					},
-				},
-			},
-		},
-	}
+	addon := testutil.NewTestAddonWithMonitoringFederation()
+	addon.Spec.Monitoring.Federation.PortName = "portName"
 
 	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&corev1.Namespace{}), mock.Anything).
 		Run(func(args mock.Arguments) {
@@ -191,7 +157,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 }
 
 func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
-	addon := testAddonWithMonitoringFederation()
+	addon := testutil.NewTestAddonWithMonitoringFederation()
 
 	for name, tc := range map[string]struct {
 		ActualMonitoringNamespace *corev1.Namespace
@@ -219,47 +185,43 @@ func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			client := testutil.NewClient()
-			client.
-				On("Get",
-					testutil.IsContext,
-					mock.IsType(types.NamespacedName{}),
-					testutil.IsCoreV1NamespacePtr,
-					mock.Anything).
+			c := testutil.NewClient()
+			c.On("Get",
+				testutil.IsContext,
+				mock.IsType(types.NamespacedName{}),
+				testutil.IsCoreV1NamespacePtr,
+				mock.Anything).
 				Run(func(args mock.Arguments) {
 					tc.ActualMonitoringNamespace.DeepCopyInto(args.Get(2).(*corev1.Namespace))
 				}).
 				Return(nil)
 
-			client.
-				On("Update",
-					testutil.IsContext,
-					testutil.IsCoreV1NamespacePtr,
-					mock.Anything).
+			c.On("Update",
+				testutil.IsContext,
+				testutil.IsCoreV1NamespacePtr,
+				mock.Anything).
 				Return(nil).
 				Maybe()
 
-			client.
-				On("Get",
-					testutil.IsContext,
-					mock.IsType(types.NamespacedName{}),
-					testutil.IsMonitoringV1ServiceMonitorPtr,
-					mock.Anything).
+			c.On("Get",
+				testutil.IsContext,
+				mock.IsType(types.NamespacedName{}),
+				testutil.IsMonitoringV1ServiceMonitorPtr,
+				mock.Anything).
 				Run(func(args mock.Arguments) {
 					tc.ActualServiceMonitor.DeepCopyInto(args.Get(2).(*monitoringv1.ServiceMonitor))
 				}).
 				Return(nil)
 
-			client.
-				On("Update",
-					testutil.IsContext,
-					testutil.IsMonitoringV1ServiceMonitorPtr,
-					mock.Anything).
+			c.On("Update",
+				testutil.IsContext,
+				testutil.IsMonitoringV1ServiceMonitorPtr,
+				mock.Anything).
 				Return(nil).
 				Maybe()
 
 			rec := &monitoringFederationReconciler{
-				client: client,
+				client: c,
 				scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 			}
 
@@ -268,28 +230,8 @@ func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
 			err := rec.ensureMonitoringFederation(context.Background(), addonCopy)
 			assert.NoError(t, err)
 
-			client.AssertExpectations(t)
+			c.AssertExpectations(t)
 		})
-	}
-}
-
-func testAddonWithMonitoringFederation() *addonsv1alpha1.Addon {
-	return &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "addon-foo",
-			UID:  types.UID("addon-foo-id"),
-		},
-		Spec: addonsv1alpha1.AddonSpec{
-			Monitoring: &addonsv1alpha1.MonitoringSpec{
-				Federation: &addonsv1alpha1.MonitoringFederationSpec{
-					Namespace:  "addon-foo-monitoring",
-					MatchNames: []string{"foo"},
-					MatchLabels: map[string]string{
-						"foo": "bar",
-					},
-				},
-			},
-		},
 	}
 }
 
@@ -353,11 +295,7 @@ func testServiceMonitor(addon *addonsv1alpha1.Addon) *monitoringv1.ServiceMonito
 func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "addon-foo",
-		},
-	}
+	addon := testutil.NewTestAddonWithoutNamespace()
 
 	c.On("List", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitorList{}), mock.Anything).
 		Return(nil)
@@ -383,11 +321,7 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_NotPr
 func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_PresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "addon-foo",
-		},
-	}
+	addon := testutil.NewTestAddonWithoutNamespace()
 
 	serviceMonitorsInCluster := &monitoringv1.ServiceMonitorList{
 		Items: []*monitoringv1.ServiceMonitor{
@@ -454,32 +388,11 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_Prese
 func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_PresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 
-	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "addon-foo",
-		},
-		Spec: addonsv1alpha1.AddonSpec{
-			Monitoring: &addonsv1alpha1.MonitoringSpec{
-				Federation: &addonsv1alpha1.MonitoringFederationSpec{
-					Namespace:  "addon-foo-test-ns",
-					MatchNames: []string{"foo"},
-					MatchLabels: map[string]string{
-						"foo": "bar",
-					},
-				},
-			},
-		},
-	}
+	addon := testutil.NewTestAddonWithMonitoringFederation()
 
 	serviceMonitorsInCluster := &monitoringv1.ServiceMonitorList{
 		Items: []*monitoringv1.ServiceMonitor{
-			{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      GetMonitoringFederationServiceMonitorName(addon),
-					Namespace: GetMonitoringNamespaceName(addon),
-					Labels:    map[string]string{},
-				},
-			},
+			testServiceMonitor(addon),
 		},
 	}
 	controllers.AddCommonLabels(serviceMonitorsInCluster.Items[0], addon)
