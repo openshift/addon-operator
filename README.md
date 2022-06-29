@@ -20,11 +20,15 @@ Addon Operator coordinates the lifecycle of Addons in managed OpenShift.
 
 - [API reference](https://github.com/openshift/addon-operator/blob/main/docs/api-reference/_index.md)
 - [Development](https://github.com/openshift/addon-operator#development)
+	- [Prerequisites](https://github.com/openshift/addon-operator#prerequisites-and-dependencies)
 	- [Commiting](https://github.com/openshift/addon-operator#committing)
 	- [Quickstart](https://github.com/openshift/addon-operator#quickstart--develop-integration-tests)
 	- [Iterate fast](https://github.com/openshift/addon-operator#iterate-fast)
+	- [Unit test](https://github.com/openshift/addon-operator#unit-test)
 - [Troubleshooting](https://github.com/openshift/addon-operator#troubleshooting)
 - [Monitoring](https://github.com/openshift/addon-operator#monitoring-and-metrics)
+- [Releasing](https://github.com/openshift/addon-operator#releasing)
+- [Deployment](https://github.com/openshift/addon-operator#deployment)
 
 ## Development
 
@@ -118,6 +122,14 @@ export KUBECONFIG=$PWD/.cache/integration/kubeconfig
 make run-addon-operator-manager
 ```
 
+### Unit test
+
+To run all the unit test and mock test into the local system. This way we can test the testable parts of the operator, individually and independently for proper operation.
+
+```shell
+# To run all the unit tests and mock tests
+make test-unit
+```
 **Warning:**
 - Your code runs as `cluster-admin`, you might run into permission errors when running in-cluster.
 - Code-Generators need to be re-run and CRDs re-applied via `make setup-addon-operator-crds` when code under `./apis` is changed.
