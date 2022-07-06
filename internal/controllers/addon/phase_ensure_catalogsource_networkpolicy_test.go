@@ -16,7 +16,6 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
-	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
 )
 
@@ -256,98 +255,31 @@ func TestEnsureCatalogSourceNetworkPolicy_Adoption(t *testing.T) {
 	for name, tc := range map[string]struct {
 		ActualNetworkPolicy *networkingv1.NetworkPolicy
 		AlreadyOwned        bool
-		Strategy            addonsv1alpha1.ResourceAdoptionStrategyType
-		Expected            error
 	}{
-		"existing NetworkPolicy with no owner/no strategy": {
+		"existing NetworkPolicy with no owner": {
 			ActualNetworkPolicy: newTestNetworkPolicy(),
 			AlreadyOwned:        false,
-			Strategy:            addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			Expected:            controllers.ErrNotOwnedByUs,
 		},
-		"existing NetworkPolicy with no owner/Prevent": {
-			ActualNetworkPolicy: newTestNetworkPolicy(),
-			AlreadyOwned:        false,
-			Strategy:            addonsv1alpha1.ResourceAdoptionPrevent,
-			Expected:            controllers.ErrNotOwnedByUs,
-		},
-		"existing NetworkPolicy with no owner/AdoptAll": {
-			ActualNetworkPolicy: newTestNetworkPolicy(),
-			AlreadyOwned:        false,
-			Strategy:            addonsv1alpha1.ResourceAdoptionAdoptAll,
-			Expected:            nil,
-		},
-		"existing NetworkPolicy addon owned/no strategy": {
+		"existing NetworkPolicy addon owned": {
 			ActualNetworkPolicy: newTestNetworkPolicy(),
 			AlreadyOwned:        true,
-			Strategy:            addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			Expected:            nil,
 		},
-		"existing NetworkPolicy addon owned/Prevent": {
-			ActualNetworkPolicy: newTestNetworkPolicy(),
-			AlreadyOwned:        true,
-			Strategy:            addonsv1alpha1.ResourceAdoptionPrevent,
-			Expected:            nil,
-		},
-		"existing NetworkPolicy addon owned/AdoptAll": {
-			ActualNetworkPolicy: newTestNetworkPolicy(),
-			AlreadyOwned:        true,
-			Strategy:            addonsv1alpha1.ResourceAdoptionAdoptAll,
-			Expected:            nil,
-		},
-		"existing NetworkPolicy with altered spec/no strategy": {
+		"existing NetworkPolicy with altered spec": {
 			ActualNetworkPolicy: newTestNetworkPolicy(
 				testNetworkPolicyTypes(networkingv1.PolicyTypeEgress),
 			),
 			AlreadyOwned: false,
-			Strategy:     addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			Expected:     controllers.ErrNotOwnedByUs,
 		},
-		"existing NetworkPolicy with altered spec/Prevent": {
-			ActualNetworkPolicy: newTestNetworkPolicy(
-				testNetworkPolicyTypes(networkingv1.PolicyTypeEgress),
-			),
-			AlreadyOwned: false,
-			Strategy:     addonsv1alpha1.ResourceAdoptionPrevent,
-			Expected:     controllers.ErrNotOwnedByUs,
-		},
-		"existing NetworkPolicy with altered spec/AdoptAll": {
-			ActualNetworkPolicy: newTestNetworkPolicy(
-				testNetworkPolicyTypes(networkingv1.PolicyTypeEgress),
-			),
-			AlreadyOwned: false,
-			Strategy:     addonsv1alpha1.ResourceAdoptionAdoptAll,
-			Expected:     nil,
-		},
-		"existing NetworkPolicy with altered spec and addon owned/no strategy": {
+		"existing NetworkPolicy with altered spec and addon owned": {
 			ActualNetworkPolicy: newTestNetworkPolicy(
 				testNetworkPolicyTypes(networkingv1.PolicyTypeEgress),
 			),
 			AlreadyOwned: true,
-			Strategy:     addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			Expected:     nil,
-		},
-		"existing NetworkPolicy with altered spec and addon owned/Prevent": {
-			ActualNetworkPolicy: newTestNetworkPolicy(
-				testNetworkPolicyTypes(networkingv1.PolicyTypeEgress),
-			),
-			AlreadyOwned: true,
-			Strategy:     addonsv1alpha1.ResourceAdoptionPrevent,
-			Expected:     nil,
-		},
-		"existing NetworkPolicy with altered spec and addon owned/AdoptAll": {
-			ActualNetworkPolicy: newTestNetworkPolicy(
-				testNetworkPolicyTypes(networkingv1.PolicyTypeEgress),
-			),
-			AlreadyOwned: true,
-			Strategy:     addonsv1alpha1.ResourceAdoptionAdoptAll,
-			Expected:     nil,
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			addon := newNetworkPolicyTestAddon()
-			addon.Spec.ResourceAdoptionStrategy = tc.Strategy
 
+			addon := newNetworkPolicyTestAddon()
 			if tc.AlreadyOwned {
 				require.NoError(t, controllerutil.SetControllerReference(
 					addon,
@@ -381,7 +313,7 @@ func TestEnsureCatalogSourceNetworkPolicy_Adoption(t *testing.T) {
 			}
 
 			_, err := rec.ensureCatalogSourcesNetworkPolicy(context.Background(), addon)
-			require.ErrorIs(t, err, tc.Expected)
+			require.NoError(t, err)
 
 			client.AssertExpectations(t)
 		})
