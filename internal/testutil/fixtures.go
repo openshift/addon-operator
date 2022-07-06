@@ -76,7 +76,7 @@ func NewTestNamespaceWithoutOwner() *corev1.Namespace {
 }
 
 func NewTestExistingNamespace() *corev1.Namespace {
-	ns := NewTestExistingNamespaceWithoutOwner()
+	ns := NewTestNamespaceWithoutOwner()
 	ns.OwnerReferences = []metav1.OwnerReference{
 		{
 			APIVersion: "foo-apiVersion-something-else",
@@ -88,14 +88,6 @@ func NewTestExistingNamespace() *corev1.Namespace {
 	}
 
 	return ns
-}
-
-func NewTestExistingNamespaceWithoutOwner() *corev1.Namespace {
-	return &corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "namespace-1",
-		},
-	}
 }
 
 func NewTestErrNotFound() *k8sApiErrors.StatusError {

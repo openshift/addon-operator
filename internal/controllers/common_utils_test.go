@@ -24,7 +24,7 @@ func TestHasEqualControllerReference(t *testing.T) {
 
 	require.False(t, HasSameController(
 		testutil.NewTestNamespace(),
-		testutil.NewTestExistingNamespaceWithoutOwner(),
+		testutil.NewTestNamespaceWithoutOwner(),
 	))
 }
 

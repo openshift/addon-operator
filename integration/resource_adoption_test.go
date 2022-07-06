@@ -36,37 +36,8 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 	}
 
 	addon := addon_TestResourceAdoption()
-	s.Run("resource adoption strategy: Prevent", func() {
-		addon := addon.DeepCopy()
-		addon.Spec.ResourceAdoptionStrategy = addonsv1alpha1.ResourceAdoptionPrevent
 
-		err := integration.Client.Create(ctx, addon)
-		s.Require().NoError(err)
-
-		observedAddon := &addonsv1alpha1.Addon{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: referenceAddonName,
-			},
-		}
-
-		// check status condition for collided namespace error
-		err = integration.WaitForObject(
-			s.T(), 10*time.Minute, observedAddon, "to report collided namespaces",
-			func(obj client.Object) (done bool, err error) {
-				addon := obj.(*addonsv1alpha1.Addon)
-				if collidedCondition := meta.FindStatusCondition(addon.Status.Conditions,
-					addonsv1alpha1.Available); collidedCondition != nil {
-					return collidedCondition.Status == metav1.ConditionFalse &&
-						collidedCondition.Reason == addonsv1alpha1.AddonReasonCollidedNamespaces, nil
-				}
-				return false, nil
-			})
-		s.Require().NoError(err)
-		s.addonCleanup(addon, ctx)
-
-	})
-
-	s.Run("resource adoption strategy: AdoptAll", func() {
+	s.Run("resource adoption", func() {
 		addon := addon.DeepCopy()
 		addon.Spec.ResourceAdoptionStrategy = addonsv1alpha1.ResourceAdoptionAdoptAll
 

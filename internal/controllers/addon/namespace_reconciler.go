@@ -2,7 +2,6 @@ package addon
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	corev1 "k8s.io/api/core/v1"
@@ -29,10 +28,8 @@ type namespaceReconciler struct {
 func (r *namespaceReconciler) Reconcile(ctx context.Context,
 	addon *addonsv1alpha1.Addon) (reconcile.Result, error) {
 	// Ensure wanted namespaces
-	if requeueResult, err := r.ensureWantedNamespaces(ctx, addon); err != nil {
+	if err := r.ensureWantedNamespaces(ctx, addon); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure wanted Namespaces: %w", err)
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
 	}
 
 	// Ensure unwanted namespaces are removed
@@ -116,18 +113,13 @@ func getOwnedNamespacesViaCommonLabels(
 // Ensure existence of Namespaces specified in the given Addon resource
 // returns a bool that signals the caller to stop reconciliation and retry later
 func (r *namespaceReconciler) ensureWantedNamespaces(
-	ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
+	ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	var unreadyNamespaces []string
-	var collidedNamespaces []string
 
 	for _, namespace := range addon.Spec.Namespaces {
 		ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name)
 		if err != nil {
-			if errors.Is(err, controllers.ErrNotOwnedByUs) {
-				collidedNamespaces = append(collidedNamespaces, namespace.Name)
-				continue
-			}
-			return resultNil, err
+			return err
 		}
 
 		if ensuredNamespace.Status.Phase != corev1.NamespaceActive {
@@ -135,18 +127,11 @@ func (r *namespaceReconciler) ensureWantedNamespaces(
 		}
 	}
 
-	if len(collidedNamespaces) > 0 {
-		reportCollidedNamespaces(addon, unreadyNamespaces)
-		// collisions occured: signal caller to stop and retry
-		return resultRetry, nil
-	}
-
 	if len(unreadyNamespaces) > 0 {
 		reportUnreadyNamespaces(addon, unreadyNamespaces)
-		return resultNil, nil
 	}
 
-	return resultNil, nil
+	return nil
 }
 
 // Ensure a single Namespace for the given Addon resource
@@ -167,15 +152,14 @@ func (r *namespaceReconciler) ensureNamespaceWithLabels(ctx context.Context, add
 	if err != nil {
 		return nil, err
 	}
-	return reconcileNamespace(ctx, r.client, namespace, addon.Spec.ResourceAdoptionStrategy)
+	return reconcileNamespace(ctx, r.client, namespace)
 }
 
 // reconciles a Namespace and returns the current object as observed.
-// prevents adoption of Namespaces (unowned or owned by something else)
+// Warning: Will adopt existing Namespaces
 // reconciling a Namespace means: creating it when it is not present
-// and erroring if our controller is not the owner of said Namespace
-func reconcileNamespace(ctx context.Context, c client.Client,
-	namespace *corev1.Namespace, strategy addonsv1alpha1.ResourceAdoptionStrategyType) (*corev1.Namespace, error) {
+// and adopting it if our controller is not the owner of said Namespace
+func reconcileNamespace(ctx context.Context, c client.Client, namespace *corev1.Namespace) (*corev1.Namespace, error) {
 	currentNamespace := &corev1.Namespace{}
 
 	if err := c.Get(ctx, client.ObjectKey{Name: namespace.Name}, currentNamespace); k8sApiErrors.IsNotFound(err) {
@@ -184,20 +168,10 @@ func reconcileNamespace(ctx context.Context, c client.Client,
 		return nil, err
 	}
 
+	currentNamespace.OwnerReferences = namespace.OwnerReferences
+
 	currentLabels := labels.Set(currentNamespace.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(namespace.Labels))
-	mustAdopt := len(currentNamespace.OwnerReferences) == 0 ||
-		!controllers.HasSameController(currentNamespace, namespace)
-
-	// TODO: remove this condition once resourceAdoptionStrategy is discontinued
-	if mustAdopt && strategy != addonsv1alpha1.ResourceAdoptionAdoptAll {
-		return nil, controllers.ErrNotOwnedByUs
-	}
-
-	for k, v := range namespace.Labels {
-		currentNamespace.Labels[k] = v
-	}
-	currentNamespace.OwnerReferences = namespace.OwnerReferences
 	currentNamespace.Labels = newLabels
 
 	return currentNamespace, c.Update(ctx, currentNamespace)
