@@ -20,102 +20,100 @@ import (
 )
 
 func TestEnsureOperatorGroup(t *testing.T) {
-	t.Run("ensures OperatorGroup", func(t *testing.T) {
-		addonOwnNamespace := testutil.NewTestAddonWithoutNamespace()
-		addonOwnNamespace.Spec.Install = addonsv1alpha1.AddonInstallSpec{
-			Type: addonsv1alpha1.OLMOwnNamespace,
-			OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
-				AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
-					CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
-					Namespace:          "addon-system",
-				},
+	addonOwnNamespace := testutil.NewTestAddonWithoutNamespace()
+	addonOwnNamespace.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+		Type: addonsv1alpha1.OLMOwnNamespace,
+		OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+			AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+				CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
+				Namespace:          "addon-system",
 			},
-		}
+		},
+	}
 
-		addonAllNamespaces := testutil.NewTestAddonWithoutNamespace()
-		addonAllNamespaces.Spec.Install = addonsv1alpha1.AddonInstallSpec{
-			Type: addonsv1alpha1.OLMAllNamespaces,
-			OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
-				AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
-					CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
-					Namespace:          "addon-system",
-				},
+	addonAllNamespaces := testutil.NewTestAddonWithoutNamespace()
+	addonAllNamespaces.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+		Type: addonsv1alpha1.OLMAllNamespaces,
+		OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+			AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+				CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
+				Namespace:          "addon-system",
 			},
-		}
+		},
+	}
 
-		tests := []struct {
-			name                     string
-			addon                    *addonsv1alpha1.Addon
-			targetNamespace          string
-			expectedTargetNamespaces []string
-		}{
-			{
-				name:                     "OwnNamespace",
-				addon:                    addonOwnNamespace,
-				targetNamespace:          addonOwnNamespace.Spec.Install.OLMOwnNamespace.Namespace,
-				expectedTargetNamespaces: []string{addonOwnNamespace.Spec.Install.OLMOwnNamespace.Namespace},
-			},
-			{
-				name:            "AllNamespaces",
-				addon:           addonAllNamespaces,
-				targetNamespace: addonAllNamespaces.Spec.Install.OLMAllNamespaces.Namespace,
-			},
-		}
+	tests := []struct {
+		name                     string
+		addon                    *addonsv1alpha1.Addon
+		targetNamespace          string
+		expectedTargetNamespaces []string
+	}{
+		{
+			name:                     "addon with OlmOwnNamespace has only its namespace in target namespaces",
+			addon:                    addonOwnNamespace,
+			targetNamespace:          addonOwnNamespace.Spec.Install.OLMOwnNamespace.Namespace,
+			expectedTargetNamespaces: []string{addonOwnNamespace.Spec.Install.OLMOwnNamespace.Namespace},
+		},
+		{
+			name:            "addon with OLMAllNamespaces has empty target namespaces",
+			addon:           addonAllNamespaces,
+			targetNamespace: addonAllNamespaces.Spec.Install.OLMAllNamespaces.Namespace,
+		},
+	}
 
-		for _, test := range tests {
-			t.Run(test.name, func(t *testing.T) {
-				log := testutil.NewLogger(t)
-				c := testutil.NewClient()
-				r := &olmReconciler{
-					client: c,
-					scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
-				}
-				addon := test.addon
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			log := testutil.NewLogger(t)
+			c := testutil.NewClient()
+			r := &olmReconciler{
+				client: c,
+				scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+			}
+			addon := test.addon
 
-				// Mock Setup
-				c.
-					On(
-						"Get",
-						mock.Anything,
-						client.ObjectKey{
-							Name:      controllers.DefaultOperatorGroupName,
-							Namespace: test.targetNamespace,
-						},
-						mock.IsType(&operatorsv1.OperatorGroup{}),
-					).
-					Return(errors.NewNotFound(schema.GroupResource{}, ""))
-				var createdOperatorGroup *operatorsv1.OperatorGroup
-				c.
-					On(
-						"Create",
-						mock.Anything,
-						mock.IsType(&operatorsv1.OperatorGroup{}),
-						mock.Anything,
-					).
-					Run(func(args mock.Arguments) {
-						createdOperatorGroup = args.Get(1).(*operatorsv1.OperatorGroup)
-					}).
-					Return(nil)
-
-				// Test
-				ctx := controllers.ContextWithLogger(context.Background(), log)
-				requeueResult, err := r.ensureOperatorGroup(ctx, addon)
-				require.NoError(t, err)
-				assert.Equal(t, resultNil, requeueResult)
-
-				if c.AssertCalled(
-					t, "Create",
+			// Mock Setup
+			c.
+				On(
+					"Get",
+					mock.Anything,
+					client.ObjectKey{
+						Name:      controllers.DefaultOperatorGroupName,
+						Namespace: test.targetNamespace,
+					},
+					mock.IsType(&operatorsv1.OperatorGroup{}),
+				).
+				Return(errors.NewNotFound(schema.GroupResource{}, ""))
+			var createdOperatorGroup *operatorsv1.OperatorGroup
+			c.
+				On(
+					"Create",
 					mock.Anything,
 					mock.IsType(&operatorsv1.OperatorGroup{}),
 					mock.Anything,
-				) {
-					assert.Equal(t, controllers.DefaultOperatorGroupName, createdOperatorGroup.Name)
-					assert.Equal(t, test.targetNamespace, createdOperatorGroup.Namespace)
-					assert.Equal(t, test.expectedTargetNamespaces, createdOperatorGroup.Spec.TargetNamespaces)
-				}
-			})
-		}
-	})
+				).
+				Run(func(args mock.Arguments) {
+					createdOperatorGroup = args.Get(1).(*operatorsv1.OperatorGroup)
+				}).
+				Return(nil)
+
+			// Test
+			ctx := controllers.ContextWithLogger(context.Background(), log)
+			requeueResult, err := r.ensureOperatorGroup(ctx, addon)
+			require.NoError(t, err)
+			assert.Equal(t, resultNil, requeueResult)
+
+			if c.AssertCalled(
+				t, "Create",
+				mock.Anything,
+				mock.IsType(&operatorsv1.OperatorGroup{}),
+				mock.Anything,
+			) {
+				assert.Equal(t, controllers.DefaultOperatorGroupName, createdOperatorGroup.Name)
+				assert.Equal(t, test.targetNamespace, createdOperatorGroup.Namespace)
+				assert.Equal(t, test.expectedTargetNamespaces, createdOperatorGroup.Spec.TargetNamespaces)
+			}
+		})
+	}
 
 	t.Run("guards against invalid configuration", func(t *testing.T) {
 		addonOwnNamespaceIsNil := testutil.NewTestAddonWithoutNamespace()
@@ -187,15 +185,9 @@ func TestEnsureOperatorGroup(t *testing.T) {
 	})
 
 	t.Run("unsupported install type", func(t *testing.T) {
-		addonUnsupported := &addonsv1alpha1.Addon{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "addon-1",
-			},
-			Spec: addonsv1alpha1.AddonSpec{
-				Install: addonsv1alpha1.AddonInstallSpec{
-					Type: addonsv1alpha1.AddonInstallType("something something"),
-				},
-			},
+		addonUnsupportedInstallType := testutil.NewTestAddonWithoutNamespace()
+		addonUnsupportedInstallType.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+			Type: addonsv1alpha1.AddonInstallType("something something"),
 		}
 
 		log := testutil.NewLogger(t)
@@ -207,7 +199,7 @@ func TestEnsureOperatorGroup(t *testing.T) {
 
 		// Test
 		ctx := controllers.ContextWithLogger(context.Background(), log)
-		requeueResult, err := r.ensureOperatorGroup(ctx, addonUnsupported.DeepCopy())
+		requeueResult, err := r.ensureOperatorGroup(ctx, addonUnsupportedInstallType.DeepCopy())
 		require.NoError(t, err)
 		assert.Equal(t, resultStop, requeueResult)
 
