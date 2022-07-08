@@ -324,11 +324,6 @@ func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon)
 	}}
 }
 
-// HasAdoptAllStrategy returns true if a given addon has the AdoptAll ResourceAdoptionStrategy.
-func HasAdoptAllStrategy(addon *addonsv1alpha1.Addon) bool {
-	return addon.Spec.ResourceAdoptionStrategy == addonsv1alpha1.ResourceAdoptionAdoptAll
-}
-
 func getPrimaryCatalogSourceName(addon *addonsv1alpha1.Addon) string {
 	return fmt.Sprintf("addon-%s-catalog", addon.Name)
 }

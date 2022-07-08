@@ -16,7 +16,7 @@ import (
 	"github.com/openshift/addon-operator/internal/controllers"
 )
 
-// Ensures the presense or absense of an OperatorGroup depending on the Addon install type.
+// Ensures the presence or absence of an OperatorGroup depending on the Addon install type.
 func (r *olmReconciler) ensureOperatorGroup(
 	ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
 	log := controllers.LoggerFromContext(ctx)
@@ -40,13 +40,13 @@ func (r *olmReconciler) ensureOperatorGroup(
 	if err := controllerutil.SetControllerReference(addon, desiredOperatorGroup, r.scheme); err != nil {
 		return resultNil, fmt.Errorf("setting controller reference: %w", err)
 	}
-	return resultNil, r.reconcileOperatorGroup(ctx, desiredOperatorGroup, addon.Spec.ResourceAdoptionStrategy)
+	return resultNil, r.reconcileOperatorGroup(ctx, desiredOperatorGroup)
 }
 
 // Reconciles the Spec of the given OperatorGroup if needed by updating or creating the OperatorGroup.
 // The given OperatorGroup is updated to reflect the latest state from the kube-apiserver.
 func (r *olmReconciler) reconcileOperatorGroup(
-	ctx context.Context, operatorGroup *operatorsv1.OperatorGroup, strategy addonsv1alpha1.ResourceAdoptionStrategyType) error {
+	ctx context.Context, operatorGroup *operatorsv1.OperatorGroup) error {
 	currentOperatorGroup := &operatorsv1.OperatorGroup{}
 
 	err := r.client.Get(ctx, client.ObjectKeyFromObject(operatorGroup), currentOperatorGroup)
@@ -62,10 +62,6 @@ func (r *olmReconciler) reconcileOperatorGroup(
 	ownedByAddon := controllers.HasSameController(currentOperatorGroup, operatorGroup)
 	specChanged := !equality.Semantic.DeepEqual(currentOperatorGroup.Spec, operatorGroup.Spec)
 	if specChanged || !ownedByAddon || !labels.Equals(currentLabels, newLabels) {
-		// TODO: remove this condition once resourceAdoptionStrategy is discontinued
-		if strategy != addonsv1alpha1.ResourceAdoptionAdoptAll && !ownedByAddon {
-			return controllers.ErrNotOwnedByUs
-		}
 		currentOperatorGroup.Spec = operatorGroup.Spec
 		currentOperatorGroup.OwnerReferences = operatorGroup.OwnerReferences
 		currentOperatorGroup.Labels = newLabels
