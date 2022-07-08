@@ -21,36 +21,24 @@ import (
 
 func TestEnsureOperatorGroup(t *testing.T) {
 	t.Run("ensures OperatorGroup", func(t *testing.T) {
-		addonOwnNamespace := &addonsv1alpha1.Addon{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "addon-1",
-			},
-			Spec: addonsv1alpha1.AddonSpec{
-				Install: addonsv1alpha1.AddonInstallSpec{
-					Type: addonsv1alpha1.OLMOwnNamespace,
-					OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
-						AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
-							CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
-							Namespace:          "addon-system",
-						},
-					},
+		addonOwnNamespace := testutil.NewTestAddonWithoutNamespace()
+		addonOwnNamespace.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+			Type: addonsv1alpha1.OLMOwnNamespace,
+			OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+				AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+					CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
+					Namespace:          "addon-system",
 				},
 			},
 		}
 
-		addonAllNamespaces := &addonsv1alpha1.Addon{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "addon-1",
-			},
-			Spec: addonsv1alpha1.AddonSpec{
-				Install: addonsv1alpha1.AddonInstallSpec{
-					Type: addonsv1alpha1.OLMAllNamespaces,
-					OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
-						AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
-							CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
-							Namespace:          "addon-system",
-						},
-					},
+		addonAllNamespaces := testutil.NewTestAddonWithoutNamespace()
+		addonAllNamespaces.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+			Type: addonsv1alpha1.OLMAllNamespaces,
+			OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+				AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+					CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
+					Namespace:          "addon-system",
 				},
 			},
 		}
@@ -96,7 +84,7 @@ func TestEnsureOperatorGroup(t *testing.T) {
 						mock.IsType(&operatorsv1.OperatorGroup{}),
 					).
 					Return(errors.NewNotFound(schema.GroupResource{}, ""))
-				var createdOpeatorGroup *operatorsv1.OperatorGroup
+				var createdOperatorGroup *operatorsv1.OperatorGroup
 				c.
 					On(
 						"Create",
@@ -105,7 +93,7 @@ func TestEnsureOperatorGroup(t *testing.T) {
 						mock.Anything,
 					).
 					Run(func(args mock.Arguments) {
-						createdOpeatorGroup = args.Get(1).(*operatorsv1.OperatorGroup)
+						createdOperatorGroup = args.Get(1).(*operatorsv1.OperatorGroup)
 					}).
 					Return(nil)
 
@@ -121,73 +109,56 @@ func TestEnsureOperatorGroup(t *testing.T) {
 					mock.IsType(&operatorsv1.OperatorGroup{}),
 					mock.Anything,
 				) {
-					assert.Equal(t, controllers.DefaultOperatorGroupName, createdOpeatorGroup.Name)
-					assert.Equal(t, test.targetNamespace, createdOpeatorGroup.Namespace)
-
-					assert.Equal(t, test.expectedTargetNamespaces, createdOpeatorGroup.Spec.TargetNamespaces)
+					assert.Equal(t, controllers.DefaultOperatorGroupName, createdOperatorGroup.Name)
+					assert.Equal(t, test.targetNamespace, createdOperatorGroup.Namespace)
+					assert.Equal(t, test.expectedTargetNamespaces, createdOperatorGroup.Spec.TargetNamespaces)
 				}
 			})
 		}
 	})
 
 	t.Run("guards against invalid configuration", func(t *testing.T) {
+		addonOwnNamespaceIsNil := testutil.NewTestAddonWithoutNamespace()
+		addonOwnNamespaceIsNil.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+			Type: addonsv1alpha1.OLMOwnNamespace,
+		}
+
+		addonOwnNamespaceIsEmpty := testutil.NewTestAddonWithoutNamespace()
+		addonOwnNamespaceIsEmpty.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+			Type:            addonsv1alpha1.OLMOwnNamespace,
+			OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{},
+		}
+
+		addonAllNamespacesIsNil := testutil.NewTestAddonWithoutNamespace()
+		addonAllNamespacesIsNil.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+			Type: addonsv1alpha1.OLMAllNamespaces,
+		}
+
+		addonAllNamespacesIsEmpty := testutil.NewTestAddonWithoutNamespace()
+		addonAllNamespacesIsEmpty.Spec.Install = addonsv1alpha1.AddonInstallSpec{
+			Type:             addonsv1alpha1.OLMAllNamespaces,
+			OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{},
+		}
+
 		tests := []struct {
 			name  string
 			addon *addonsv1alpha1.Addon
 		}{
 			{
-				name: "ownNamespace is nil",
-				addon: &addonsv1alpha1.Addon{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "addon-1",
-					},
-					Spec: addonsv1alpha1.AddonSpec{
-						Install: addonsv1alpha1.AddonInstallSpec{
-							Type: addonsv1alpha1.OLMOwnNamespace,
-						},
-					},
-				},
+				name:  "ownNamespace is nil",
+				addon: addonOwnNamespaceIsNil,
 			},
 			{
-				name: "ownNamespace.namespace is empty",
-				addon: &addonsv1alpha1.Addon{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "addon-1",
-					},
-					Spec: addonsv1alpha1.AddonSpec{
-						Install: addonsv1alpha1.AddonInstallSpec{
-							Type:            addonsv1alpha1.OLMOwnNamespace,
-							OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{},
-						},
-					},
-				},
+				name:  "ownNamespace.namespace is empty",
+				addon: addonOwnNamespaceIsEmpty,
 			},
 			{
-				name: "allNamespaces is nil",
-				addon: &addonsv1alpha1.Addon{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "addon-1",
-					},
-					Spec: addonsv1alpha1.AddonSpec{
-						Install: addonsv1alpha1.AddonInstallSpec{
-							Type: addonsv1alpha1.OLMAllNamespaces,
-						},
-					},
-				},
+				name:  "allNamespaces is nil",
+				addon: addonAllNamespacesIsNil,
 			},
 			{
-				name: "allNamespaces.namespace is empty",
-				addon: &addonsv1alpha1.Addon{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "addon-1",
-					},
-					Spec: addonsv1alpha1.AddonSpec{
-						Install: addonsv1alpha1.AddonInstallSpec{
-							Type:             addonsv1alpha1.OLMAllNamespaces,
-							OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{},
-						},
-					},
-				},
+				name:  "allNamespaces.namespace is empty",
+				addon: addonAllNamespacesIsEmpty,
 			},
 		}
 
@@ -247,39 +218,13 @@ func TestEnsureOperatorGroup(t *testing.T) {
 
 func TestReconcileOperatorGroup_Adoption(t *testing.T) {
 	for name, tc := range map[string]struct {
-		MustAdopt  bool
-		Strategy   addonsv1alpha1.ResourceAdoptionStrategyType
-		AssertFunc func(*testing.T, error)
+		AlreadyOwnedByAddon bool
 	}{
-		"no strategy/no adoption": {
-			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			AssertFunc: assertReconciledOperatorGroup,
+		"Operator group not owned by addon": {
+			AlreadyOwnedByAddon: false,
 		},
-		"Prevent/no adoption": {
-			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionPrevent,
-			AssertFunc: assertReconciledOperatorGroup,
-		},
-		"AdoptAll/no adoption": {
-			MustAdopt:  false,
-			Strategy:   addonsv1alpha1.ResourceAdoptionAdoptAll,
-			AssertFunc: assertReconciledOperatorGroup,
-		},
-		"no strategy/must adopt": {
-			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionStrategyType(""),
-			AssertFunc: assertUnreconciledOperatorGroup,
-		},
-		"Prevent/must adopt": {
-			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionPrevent,
-			AssertFunc: assertUnreconciledOperatorGroup,
-		},
-		"AdoptAll/must adopt": {
-			MustAdopt:  true,
-			Strategy:   addonsv1alpha1.ResourceAdoptionAdoptAll,
-			AssertFunc: assertReconciledOperatorGroup,
+		"Operator group already owned by addon": {
+			AlreadyOwnedByAddon: true,
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
@@ -293,24 +238,22 @@ func TestReconcileOperatorGroup_Adoption(t *testing.T) {
 			).Run(func(args mock.Arguments) {
 				var og *operatorsv1.OperatorGroup
 
-				if tc.MustAdopt {
-					og = testutil.NewTestOperatorGroupWithoutOwner()
-				} else {
+				if tc.AlreadyOwnedByAddon {
 					og = testutil.NewTestOperatorGroup()
 					// Unrelated spec change to force reconciliation
 					og.Spec.StaticProvidedAPIs = true
+				} else {
+					og = testutil.NewTestOperatorGroupWithoutOwner()
 				}
 
 				og.DeepCopyInto(args.Get(2).(*operatorsv1.OperatorGroup))
 			}).Return(nil)
 
-			if !tc.MustAdopt || (tc.MustAdopt && tc.Strategy == addonsv1alpha1.ResourceAdoptionAdoptAll) {
-				c.On("Update",
-					testutil.IsContext,
-					testutil.IsOperatorsV1OperatorGroupPtr,
-					mock.Anything,
-				).Return(nil)
-			}
+			c.On("Update",
+				testutil.IsContext,
+				testutil.IsOperatorsV1OperatorGroupPtr,
+				mock.Anything,
+			).Return(nil)
 
 			rec := &olmReconciler{
 				client: c,
@@ -318,23 +261,10 @@ func TestReconcileOperatorGroup_Adoption(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			err := rec.reconcileOperatorGroup(ctx, operatorGroup.DeepCopy(), tc.Strategy)
+			err := rec.reconcileOperatorGroup(ctx, operatorGroup.DeepCopy())
 
-			tc.AssertFunc(t, err)
+			assert.NoError(t, err)
 			c.AssertExpectations(t)
 		})
 	}
-}
-
-func assertReconciledOperatorGroup(t *testing.T, err error) {
-	t.Helper()
-
-	assert.NoError(t, err)
-}
-
-func assertUnreconciledOperatorGroup(t *testing.T, err error) {
-	t.Helper()
-
-	assert.Error(t, err)
-	assert.EqualError(t, err, controllers.ErrNotOwnedByUs.Error())
 }
