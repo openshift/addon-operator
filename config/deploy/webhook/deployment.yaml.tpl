@@ -4,16 +4,16 @@ metadata:
   name: addon-operator-webhook
   namespace: addon-operator
   labels:
-    app.kubernetes.io/name: addon-operator-webook-server
+    app.kubernetes.io/name: addon-operator-webhook-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: addon-operator-webook-server
+      app.kubernetes.io/name: addon-operator-webhook-server
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: addon-operator-webook-server
+        app.kubernetes.io/name: addon-operator-webhook-server
     spec:
       serviceAccountName: addon-operator
       affinity:
@@ -33,7 +33,7 @@ spec:
                 - key: app.kubernetes.io/name
                   operator: In
                   values:
-                  - addon-operator-webook-server
+                  - addon-operator-webhook-server
               topologyKey: "kubernetes.io/hostname"
       tolerations:
         - effect: NoSchedule

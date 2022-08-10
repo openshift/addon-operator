@@ -8,4 +8,4 @@ spec:
     - port: 443
       targetPort: 8080
   selector:
-    app.kubernetes.io/name: addon-operator-webook-server
+    app.kubernetes.io/name: addon-operator-webhook-server
