@@ -4,8 +4,6 @@ kind: ValidatingWebhookConfiguration
 metadata:
   creationTimestamp: null
   name: addon-validating-webhook-configuration
-  annotations:
-    cert-manager.io/inject-ca-from: addon-operator/serving-cert
 webhooks:
 - admissionReviewVersions:
   - v1
