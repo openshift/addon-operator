@@ -23,7 +23,7 @@ type AddonWebhookHandler struct {
 
 var _ admission.Handler = (*AddonWebhookHandler)(nil)
 
-func (r *AddonWebhookHandler) Handle(ctx context.Context, req admission.Request) admission.Response {
+func (r *AddonWebhookHandler) Handle(_ context.Context, req admission.Request) admission.Response {
 	obj, err := r.decodeAddon(req)
 	if err != nil {
 		return admission.Errored(http.StatusBadRequest, err)
@@ -46,17 +46,14 @@ func (r *AddonWebhookHandler) Handle(ctx context.Context, req admission.Request)
 func (r *AddonWebhookHandler) decodeAddon(req admission.Request) (addonsv1alpha1.Addon, error) {
 	obj := addonsv1alpha1.Addon{}
 	if req.Operation != v1.Operation(adminv1beta1.Delete) {
-		if err := r.decoder.Decode(req, &obj); err != nil {
-			return obj, err
-		}
-		return obj, nil
+		err := r.decoder.Decode(req, &obj)
+		return obj, err
 	}
 	return obj, nil
 }
 
-func (r *AddonWebhookHandler) InjectDecoder(d *admission.Decoder) error {
+func (r *AddonWebhookHandler) InjectDecoder(d *admission.Decoder) {
 	r.decoder = d
-	return nil
 }
 
 func (r *AddonWebhookHandler) validateCreate(addon *addonsv1alpha1.Addon) admission.Response {
