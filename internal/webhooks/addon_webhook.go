@@ -52,8 +52,9 @@ func (r *AddonWebhookHandler) decodeAddon(req admission.Request) (addonsv1alpha1
 	return obj, nil
 }
 
-func (r *AddonWebhookHandler) InjectDecoder(d *admission.Decoder) {
+func (r *AddonWebhookHandler) InjectDecoder(d *admission.Decoder) error {
 	r.decoder = d
+	return nil
 }
 
 func (r *AddonWebhookHandler) validateCreate(addon *addonsv1alpha1.Addon) admission.Response {
