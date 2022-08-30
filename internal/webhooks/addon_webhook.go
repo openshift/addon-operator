@@ -23,6 +23,7 @@ type AddonWebhookHandler struct {
 
 var _ admission.Handler = (*AddonWebhookHandler)(nil)
 
+// Handle implements admission.Handler
 func (r *AddonWebhookHandler) Handle(_ context.Context, req admission.Request) admission.Response {
 	obj, err := r.decodeAddon(req)
 	if err != nil {
