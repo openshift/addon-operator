@@ -436,6 +436,9 @@ func imageURL(name string) string {
 	if url := os.Getenv(envvar); len(url) != 0 {
 		return url
 	}
+	if len(version) == 0 {
+		panic("empty version, refusing to return container image URL")
+	}
 	return imageOrg + "/" + name + ":" + version
 }
 
