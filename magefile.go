@@ -383,7 +383,7 @@ func (b Build) TemplateAddonOperatorCSV() error {
 				}
 			}
 
-		case "addon-operator-webhook":
+		case "addon-operator-webhooks":
 			for i := range deploy.Spec.
 				Template.Spec.Containers {
 				container := &deploy.Spec.Template.Spec.Containers[i]
@@ -893,7 +893,7 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
 	}
 	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment); err != nil {
-		return fmt.Errorf("deploy addon-operator-webhook: %w", err)
+		return fmt.Errorf("deploy addon-operator-webhooks: %w", err)
 	}
 	return nil
 }

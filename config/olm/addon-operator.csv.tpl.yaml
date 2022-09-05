@@ -4,11 +4,11 @@ metadata:
   annotations:
     capabilities: Full Lifecycle
     containerImage: quay.io/openshift/addon-operator:latest
-    olm.skipRange: '>=0.0.1 <1.4.2'
+    olm.skipRange: '>=0.0.1 <1.4.3'
     repository: https://github.com/openshift/addon-operator
     support: "false"
   creationTimestamp: null
-  name: addon-operator.v1.4.2
+  name: addon-operator.v1.4.3
 spec:
   apiservicedefinitions: {}
   cleanup:
@@ -210,7 +210,7 @@ spec:
               - name: tls
                 secret:
                   secretName: metrics-server-cert
-      - name: addon-operator-webhook
+      - name: addon-operator-webhooks
         spec:
           replicas: 3
           selector:
@@ -316,12 +316,12 @@ spec:
   provider:
     name: Red Hat
     url: www.redhat.com
-  version: 1.4.2
+  version: 1.4.3
   webhookdefinitions:
   - admissionReviewVersions:
     - v1
     containerPort: 443
-    deploymentName: addon-operator-webhook
+    deploymentName: addon-operator-webhooks
     failurePolicy: Fail
     generateName: vaddons.managed.openshift.io
     rules:
