@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: addon-operator-webhook
+  name: addon-operator-webhooks
   namespace: addon-operator
   labels:
     app.kubernetes.io/name: addon-operator-webhook-server
