@@ -8,6 +8,7 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -73,6 +74,23 @@ func (r *olmReconciler) ensureSubscription(
 
 	if len(observedSubscription.Status.InstalledCSV) == 0 ||
 		len(observedSubscription.Status.CurrentCSV) == 0 {
+		// This case seems to happen when e.g. dependency declarations in the bundle are missing.
+		//
+		// Example Subscription Condition:
+		// message: 'constraints not satisfiable: subscription addon-mcg-osd-dev requires addon-mcg-osd-dev-catalog/redhat-data-federation/alpha/mcg-osd-deployer.v1.0.0, subscription addon-mcg-osd-dev exists, bundle mcg-osd-deployer.v1.0.0 requires an operator with package: mcg-operator and with version in range: 4.11.0'
+		// reason: ConstraintsNotSatisfiable
+		// status: "True"
+		// type: ResolutionFailed
+		meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
+			Type:               addonsv1alpha1.Available,
+			Status:             metav1.ConditionUnknown,
+			Reason:             addonsv1alpha1.AddonReasonUnreadyCSV,
+			Message:            "CSV not linked in Subscription. Dependency issue?",
+			ObservedGeneration: addon.Generation,
+		})
+		addon.Status.ObservedGeneration = addon.Generation
+		addon.Status.Phase = addonsv1alpha1.PhaseError
+
 		log.Info("requeue", "reason", "csv not linked in subscription")
 		return resultRetry, client.ObjectKey{}, nil
 	}
