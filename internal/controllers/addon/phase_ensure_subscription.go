@@ -83,7 +83,7 @@ func (r *olmReconciler) ensureSubscription(
 		// type: ResolutionFailed
 		meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
 			Type:               addonsv1alpha1.Available,
-			Status:             metav1.ConditionUnknown,
+			Status:             metav1.ConditionFalse,
 			Reason:             addonsv1alpha1.AddonReasonUnreadyCSV,
 			Message:            "CSV not linked in Subscription. Dependency issue?",
 			ObservedGeneration: addon.Generation,
