@@ -227,7 +227,7 @@ func TestEnsureNamespace_CreateWithLabelsAndAnnotations(t *testing.T) {
 	ctx := context.Background()
 
 	namespace := addon.Spec.Namespaces[0]
-	ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name, WithNamespaceLabels(namespace.Labels), WithNamespaceAnnotations(namespace.Annotations))
+	ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name, WithNamespaceLabels(labels), WithNamespaceAnnotations(annotations))
 	c.AssertExpectations(t)
 	require.NoError(t, err)
 	require.NotNil(t, ensuredNamespace)
