@@ -231,6 +231,10 @@ type AddonNamespace struct {
 	// Name of the KubernetesNamespace.
 	// +kubebuilder:validation:MinLength=1
 	Name string `json:"name"`
+
+	Labels map[string]string `json:"labels"`
+
+	Annotations map[string]string `json:"annotations"`
 }
 
 const (

@@ -186,17 +186,22 @@ func TestEnsureNamespace_Create(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	ensuredNamespace, err := r.ensureNamespace(ctx, addon, addon.Spec.Namespaces[0].Name)
+	namespace := addon.Spec.Namespaces[0]
+	ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
 	require.NotNil(t, ensuredNamespace)
 }
 
-func TestEnsureNamespace_CreateWithLabels(t *testing.T) {
+func TestEnsureNamespace_CreateWithLabelsAndAnnotations(t *testing.T) {
 	addon := testutil.NewTestAddonWithSingleNamespace()
 	labels := map[string]string{
 		"foo": "bar",
 		"baz": "qux",
+	}
+	annotations := map[string]string{
+		"cache":  "invalidation",
+		"naming": "variables",
 	}
 
 	c := testutil.NewClient()
@@ -207,6 +212,10 @@ func TestEnsureNamespace_CreateWithLabels(t *testing.T) {
 			for key, value := range labels {
 				assert.Equal(t, value, ns.Labels[key])
 			}
+			for key, value := range annotations {
+				assert.Equal(t, value, ns.Annotations[key])
+			}
+
 		}).
 		Return(nil)
 
@@ -217,7 +226,8 @@ func TestEnsureNamespace_CreateWithLabels(t *testing.T) {
 
 	ctx := context.Background()
 
-	ensuredNamespace, err := r.ensureNamespaceWithLabels(ctx, addon, addon.Spec.Namespaces[0].Name, labels)
+	namespace := addon.Spec.Namespaces[0]
+	ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name, WithNamespaceLabels(namespace.Labels), WithNamespaceAnnotations(namespace.Annotations))
 	c.AssertExpectations(t)
 	require.NoError(t, err)
 	require.NotNil(t, ensuredNamespace)
