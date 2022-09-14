@@ -1,10 +1,10 @@
 package metrics
 
 import (
-	"fmt"
 	"sync"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	ctrlmetrics "sigs.k8s.io/controller-runtime/pkg/metrics"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -46,18 +46,20 @@ var (
 	total     addonCountLabel = "total"
 )
 
-func NewRecorder(register bool) *Recorder {
+func NewRecorder(register bool, clusterId string) *Recorder {
 
 	addonsCount := prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "addon_operator_addons_count",
-			Help: "Total number of Addon installations, grouped by 'available', 'paused' and 'total'",
+			Name:        "addon_operator_addons_count",
+			Help:        "Total number of Addon installations, grouped by 'available', 'paused' and 'total'",
+			ConstLabels: prometheus.Labels{"_id": clusterId},
 		}, []string{"count_by"})
 
 	addonOperatorPaused := prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			Name: "addon_operator_paused",
-			Help: "A boolean that tells if the AddonOperator is paused",
+			Name:        "addon_operator_paused",
+			Help:        "A boolean that tells if the AddonOperator is paused",
+			ConstLabels: prometheus.Labels{"_id": clusterId},
 		})
 
 	ocmAPIReqDuration := prometheus.NewSummary(
@@ -65,14 +67,16 @@ func NewRecorder(register bool) *Recorder {
 			Name: "addon_operator_ocm_api_requests_durations",
 			Help: "OCM API request latencies in microseconds",
 			// p50, p90 and p99 latencies
-			Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
+			Objectives:  map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
+			ConstLabels: prometheus.Labels{"_id": clusterId},
 		})
 
 	addonHealthInfo := prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "addon_operator_addon_health_info",
-			Help: "Addon Health information",
-		}, []string{"name", "version", "_id", "reason", "observed_generation"},
+			Name:        "addon_operator_addon_health_info",
+			Help:        "Addon Health information",
+			ConstLabels: prometheus.Labels{"_id": clusterId},
+		}, []string{"name", "version", "reason"},
 	)
 
 	// Register metrics if `register` is true
@@ -96,43 +100,6 @@ func NewRecorder(register bool) *Recorder {
 		ocmAPIRequestDuration: ocmAPIReqDuration,
 		addonHealthInfo:       addonHealthInfo,
 	}
-}
-
-func (r *Recorder) RecordAddonHealthInfo(addon *addonsv1alpha1.Addon,
-	clusterID string) {
-
-	var (
-		// `healthStatus` defaults to unknown unless status conditions say otherwise
-		healthStatus = 2
-		healthReason = "Unknown"
-		healthCond   = meta.FindStatusCondition(addon.Status.Conditions,
-			addonsv1alpha1.Available)
-	)
-
-	if healthCond != nil {
-		healthReason = healthCond.Reason
-
-		switch healthCond.Status {
-		case metav1.ConditionFalse:
-			healthStatus = 0
-		case metav1.ConditionTrue:
-			healthStatus = 1
-		default:
-			healthStatus = 2
-		}
-
-	}
-
-	addonVersion := "0.0.0" // default value when addon version is missing
-	if addon.Status.ObservedVersion != "" {
-		addonVersion = addon.Status.ObservedVersion
-	}
-
-	r.addonHealthInfo.WithLabelValues(addon.Name,
-		addonVersion,
-		clusterID,
-		healthReason,
-		fmt.Sprintf("%d", addon.Status.ObservedGeneration)).Set(float64(healthStatus))
 }
 
 // InjectOCMAPIRequestDuration allows us to override `r.ocmAPIRequestDuration` metric
@@ -184,9 +151,15 @@ func (r *Recorder) SetAddonOperatorPaused(paused bool) {
 // - addon_operator_addons_available
 // - addon_operator_addons_paused
 // - addon_operator_addons_total
+// - addon_operator_addon_health_info
 func (r *Recorder) RecordAddonMetrics(addon *addonsv1alpha1.Addon) {
 	r.addonState.lock.Lock()
 	defer r.addonState.lock.Unlock()
+
+	// reconcile addon_operator_addon_health_info
+	r.recordAddonHealthInfo(addon)
+
+	// reconcile addon_operator_addons_(available|paused|total)
 
 	currCondition := addonConditions{
 		available: meta.IsStatusConditionTrue(addon.Status.Conditions, addonsv1alpha1.Available),
@@ -244,4 +217,39 @@ func (r *Recorder) RecordAddonMetrics(addon *addonsv1alpha1.Addon) {
 		}
 		delete(r.addonState.conditionMap, addonUID)
 	}
+}
+
+func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
+
+	var (
+		// `healthStatus` defaults to unknown unless status conditions say otherwise
+		healthStatus = 2
+		healthReason = "Unknown"
+		healthCond   = meta.FindStatusCondition(addon.Status.Conditions,
+			addonsv1alpha1.Available)
+	)
+
+	if healthCond != nil {
+		healthReason = healthCond.Reason
+
+		switch healthCond.Status {
+		case metav1.ConditionFalse:
+			healthStatus = 0
+		case metav1.ConditionTrue:
+			healthStatus = 1
+		default:
+			healthStatus = 2
+		}
+
+	}
+
+	addonVersion := "0.0.0" // default value when addon version is missing
+	if addon.Status.ObservedVersion != "" {
+		addonVersion = addon.Status.ObservedVersion
+	}
+
+	r.addonHealthInfo.WithLabelValues(addon.Name,
+		addonVersion,
+		healthReason,
+	).Set(float64(healthStatus))
 }

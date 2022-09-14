@@ -70,7 +70,7 @@ func parseFlags() *options {
 	return opts
 }
 
-func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder, namespace string) error {
+func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) error {
 	ctx := context.Background()
 
 	// Create a client that does not cache resources cluster-wide.
@@ -87,6 +87,12 @@ func initReconcilers(mgr ctrl.Manager, recorder *metrics.Recorder, namespace str
 	}
 	// calling this external ID to differentiate it from the cluster ID we use to contact OCM
 	clusterExternalID := string(cv.Spec.ClusterID)
+
+	// Create metrics recorder
+	var recorder *metrics.Recorder
+	if enableRecorder {
+		recorder = metrics.NewRecorder(true, clusterExternalID)
+	}
 
 	addonReconciler := addoncontroller.NewAddonReconciler(
 		mgr.GetClient(),
@@ -203,13 +209,7 @@ func setup() error {
 		return fmt.Errorf("unable to set up ready check: %w", err)
 	}
 
-	// Create metrics recorder
-	var recorder *metrics.Recorder
-	if opts.enableMetricsRecorder {
-		recorder = metrics.NewRecorder(true)
-	}
-
-	if err := initReconcilers(mgr, recorder, addonOperatorNamespace); err != nil {
+	if err := initReconcilers(mgr, addonOperatorNamespace, opts.enableMetricsRecorder); err != nil {
 		return fmt.Errorf("init reconcilers: %w", err)
 	}
 

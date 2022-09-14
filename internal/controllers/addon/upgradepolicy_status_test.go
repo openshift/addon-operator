@@ -76,7 +76,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 		client := testutil.NewClient()
 		ocmClient := ocmtest.NewClient()
 
-		recorder := metrics.NewRecorder(false)
+		recorder := metrics.NewRecorder(false, "asa346546dfew143")
 		mockSummary := testutil.NewSummaryMock()
 		recorder.InjectOCMAPIRequestDuration(mockSummary)
 
@@ -161,7 +161,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 	t.Run("post `completed` after `started` when Available", func(t *testing.T) {
 		client := testutil.NewClient()
 		ocmClient := ocmtest.NewClient()
-		recorder := metrics.NewRecorder(false)
+		recorder := metrics.NewRecorder(false, "asdfew143")
 
 		mockSummary := testutil.NewSummaryMock()
 		recorder.InjectOCMAPIRequestDuration(mockSummary)
