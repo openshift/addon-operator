@@ -229,6 +229,8 @@ AddonInstallSpec defines the desired Addon installation type.
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
 | name | Name of the KubernetesNamespace. | string | true |
+| labels | Labels to be added to the namespace | map[string]string | false |
+| annotations | Annotations to be added to the namespace | map[string]string | false |
 
 [Back to Group]()
 

@@ -117,7 +117,7 @@ func (r *namespaceReconciler) ensureWantedNamespaces(
 	var unreadyNamespaces []string
 
 	for _, namespace := range addon.Spec.Namespaces {
-		ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name)
+		ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name, WithNamespaceLabels(namespace.Labels), WithNamespaceAnnotations(namespace.Annotations))
 		if err != nil {
 			return err
 		}
@@ -135,17 +135,15 @@ func (r *namespaceReconciler) ensureWantedNamespaces(
 }
 
 // Ensure a single Namespace for the given Addon resource
-func (r *namespaceReconciler) ensureNamespace(ctx context.Context, addon *addonsv1alpha1.Addon, name string) (*corev1.Namespace, error) {
-	return r.ensureNamespaceWithLabels(ctx, addon, name, map[string]string{})
-}
-
-// Ensure a single Namespace with a set of labels for the given Addon resource
-func (r *namespaceReconciler) ensureNamespaceWithLabels(ctx context.Context, addon *addonsv1alpha1.Addon, name string, labels map[string]string) (*corev1.Namespace, error) {
+func (r *namespaceReconciler) ensureNamespace(ctx context.Context, addon *addonsv1alpha1.Addon, name string, namespaceOpts ...NamespaceOpts) (*corev1.Namespace, error) {
 	namespace := &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   name,
-			Labels: labels,
+			Name: name,
 		},
+	}
+	for _, opt := range namespaceOpts {
+		opt := opt
+		opt(namespace)
 	}
 	controllers.AddCommonLabels(namespace, addon)
 	err := controllerutil.SetControllerReference(addon, namespace, r.scheme)
@@ -173,6 +171,10 @@ func reconcileNamespace(ctx context.Context, c client.Client, namespace *corev1.
 	currentLabels := labels.Set(currentNamespace.Labels)
 	newLabels := labels.Merge(currentLabels, labels.Set(namespace.Labels))
 	currentNamespace.Labels = newLabels
+
+	currentAnnotations := labels.Set(currentNamespace.Annotations)
+	newAnnotations := labels.Merge(currentAnnotations, labels.Set(namespace.Annotations))
+	currentNamespace.Annotations = newAnnotations
 
 	return currentNamespace, c.Update(ctx, currentNamespace)
 }

@@ -264,6 +264,16 @@ spec:
                   existing Namespaces being adopted.
                 items:
                   properties:
+                    annotations:
+                      additionalProperties:
+                        type: string
+                      description: Annotations to be added to the namespace
+                      type: object
+                    labels:
+                      additionalProperties:
+                        type: string
+                      description: Labels to be added to the namespace
+                      type: object
                     name:
                       description: Name of the KubernetesNamespace.
                       minLength: 1
