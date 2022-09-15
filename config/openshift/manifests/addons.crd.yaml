@@ -267,18 +267,18 @@ spec:
                     annotations:
                       additionalProperties:
                         type: string
+                      description: Annotations to be added to the namespace
                       type: object
                     labels:
                       additionalProperties:
                         type: string
+                      description: Labels to be added to the namespace
                       type: object
                     name:
                       description: Name of the KubernetesNamespace.
                       minLength: 1
                       type: string
                   required:
-                  - annotations
-                  - labels
                   - name
                   type: object
                 type: array
