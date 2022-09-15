@@ -172,5 +172,9 @@ func reconcileNamespace(ctx context.Context, c client.Client, namespace *corev1.
 	newLabels := labels.Merge(currentLabels, labels.Set(namespace.Labels))
 	currentNamespace.Labels = newLabels
 
+	currentAnnotations := labels.Set(currentNamespace.Annotations)
+	newAnnotations := labels.Merge(currentAnnotations, labels.Set(namespace.Annotations))
+	currentNamespace.Annotations = newAnnotations
+
 	return currentNamespace, c.Update(ctx, currentNamespace)
 }
