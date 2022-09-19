@@ -26,7 +26,7 @@ func newTestAddon(uid string, conditions []metav1.Condition) *addonsv1alpha1.Add
 }
 
 func TestAddonMetrics_InstallCount(t *testing.T) {
-	recorder := NewRecorder(false)
+	recorder := NewRecorder(false, "sdjkl83hjd")
 
 	addons := []*addonsv1alpha1.Addon{
 		newTestAddon("o672wxBaW9iR", []metav1.Condition{}),
@@ -78,13 +78,11 @@ func TestAddonMetrics_InstallCount(t *testing.T) {
 
 func TestAddonMetrics_AddonHealth(t *testing.T) {
 	var (
-		recorder           = NewRecorder(false)
-		addonNamePrefix    = "test-addon-"
-		clusterID          = "123"
-		observedGeneration = 1
+		recorder        = NewRecorder(false, "fdj41ddk")
+		addonNamePrefix = "test-addon-"
 	)
 
-	// sythetic test cases for addon health
+	// synthetic test cases for addon health
 	testCases := []struct {
 		addon    *addonsv1alpha1.Addon
 		expected float64
@@ -128,21 +126,18 @@ func TestAddonMetrics_AddonHealth(t *testing.T) {
 			// local copy of the addon
 			addon := tc.addon.DeepCopy()
 			addon.Name = fmt.Sprintf("%s-%d", addonNamePrefix, i)
-			addon.Status.ObservedGeneration = int64(observedGeneration)
 
 			healthReason := ""
 			if len(addon.Status.Conditions) == 0 {
 				healthReason = "Unknown"
 			}
 
-			recorder.RecordAddonHealthInfo(addon, clusterID)
+			recorder.recordAddonHealthInfo(addon)
 			assert.Equal(t, float64(tc.expected), testutil.ToFloat64(
 				recorder.addonHealthInfo.WithLabelValues(
 					addon.Name,
 					"0.0.0",
-					clusterID,
 					healthReason,
-					fmt.Sprintf("%d", addon.Status.ObservedGeneration),
 				),
 			))
 		})
@@ -150,7 +145,7 @@ func TestAddonMetrics_AddonHealth(t *testing.T) {
 }
 
 func TestAddonMetrics_AddonConditions(t *testing.T) {
-	recorder := NewRecorder(false)
+	recorder := NewRecorder(false, "asdf1234")
 	addon := newTestAddon("o672wxBaW9iR", []metav1.Condition{})
 
 	t.Run("uninitialized conditions", func(t *testing.T) {

@@ -23,5 +23,6 @@ spec:
       namespace: "reference-addon"
       matchNames:
       - reference_addon_foos_per_second
+      portName: "portName"
       matchLabels:
         prometheus: reference-addon
