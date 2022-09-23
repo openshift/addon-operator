@@ -47,15 +47,15 @@ spec:
           mountPath: "/tmp/k8s-metrics-server/serving-certs/"
           readOnly: true
         ports:
-        - containerPort: 8080
+        - containerPort: 8443
         readinessProbe:
           tcpSocket:
-            port: 8080
+            port: 8443
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           tcpSocket:
-            port: 8080
+            port: 8443
           initialDelaySeconds: 15
           periodSeconds: 20
         resources:

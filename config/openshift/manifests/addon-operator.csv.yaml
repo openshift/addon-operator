@@ -177,15 +177,15 @@ spec:
                   initialDelaySeconds: 15
                   periodSeconds: 20
                   tcpSocket:
-                    port: 8080
+                    port: 8443
                 name: metrics-relay-server
                 ports:
-                - containerPort: 8080
+                - containerPort: 8443
                 readinessProbe:
                   initialDelaySeconds: 5
                   periodSeconds: 10
                   tcpSocket:
-                    port: 8080
+                    port: 8443
                 resources:
                   limits:
                     cpu: 100m
