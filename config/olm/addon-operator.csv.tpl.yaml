@@ -174,11 +174,29 @@ spec:
                 - --ignore-paths=/metrics,/healthz
                 image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
                 name: metrics-relay-server
-                resources: {}
                 volumeMounts:
                 - mountPath: /tmp/k8s-metrics-server/serving-certs/
                   name: tls
                   readOnly: true
+                ports:
+                - containerPort: 8080
+                readinessProbe:
+                  tcpSocket:
+                    port: 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                livenessProbe:
+                  tcpSocket:
+                    port: 8080
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                resources:
+                  limits:
+                    cpu: 100m
+                    memory: 30Mi
+                  requests:
+                    cpu: 100m
+                    memory: 30Mi
               - args:
                 - --enable-leader-election
                 image: quay.io/openshift/addon-operator:latest
