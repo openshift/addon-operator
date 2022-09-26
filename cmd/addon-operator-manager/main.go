@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"net/http"
 	"net/http/pprof"
@@ -46,30 +45,6 @@ func init() {
 	_ = operatorsv1alpha1.AddToScheme(scheme)
 	_ = configv1.AddToScheme(scheme)
 	_ = monitoringv1.AddToScheme(scheme)
-}
-
-type options struct {
-	metricsAddr           string
-	pprofAddr             string
-	enableLeaderElection  bool
-	enableMetricsRecorder bool
-	probeAddr             string
-}
-
-func parseFlags() *options {
-	opts := &options{}
-
-	flag.StringVar(&opts.metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
-	flag.StringVar(&opts.pprofAddr, "pprof-addr", "", "The address the pprof web endpoint binds to.")
-	flag.BoolVar(&opts.enableLeaderElection, "enable-leader-election", false,
-		"Enable leader election for controller manager. "+
-			"Enabling this will ensure there is only one active controller manager.")
-	flag.StringVar(&opts.probeAddr, "health-probe-bind-address", ":8081",
-		"The address the probe endpoint binds to.")
-	flag.BoolVar(&opts.enableMetricsRecorder, "enable-metrics-recorder", true, "Enable recording Addon Metrics")
-	flag.Parse()
-
-	return opts
 }
 
 func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) error {
@@ -167,14 +142,17 @@ func initPprof(mgr ctrl.Manager, addr string) {
 }
 
 func setup() error {
-	opts := parseFlags()
+	opts := options{
+		MetricsAddr:           ":8080",
+		ProbeAddr:             ":8081",
+		EnableMetricsRecorder: true,
+	}
+
+	if err := opts.Process(); err != nil {
+		return fmt.Errorf("processing options: %w", err)
+	}
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
-
-	addonOperatorNamespace, err := controllers.CurrentNamespace()
-	if err != nil {
-		return err
-	}
 
 	csvSelector := labels.NewSelector()
 	csvRequirement, err := labels.NewRequirement("olm.copiedFrom", selection.DoesNotExist, []string{})
@@ -185,13 +163,13 @@ func setup() error {
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                     scheme,
-		MetricsBindAddress:         opts.metricsAddr,
-		HealthProbeBindAddress:     opts.probeAddr,
+		MetricsBindAddress:         opts.MetricsAddr,
+		HealthProbeBindAddress:     opts.ProbeAddr,
 		Port:                       9443,
 		LeaderElectionResourceLock: "leases",
-		LeaderElection:             opts.enableLeaderElection,
+		LeaderElection:             opts.EnableLeaderElection,
 		LeaderElectionID:           "8a4hp84a6s.addon-operator-lock",
-		LeaderElectionNamespace:    addonOperatorNamespace,
+		LeaderElectionNamespace:    opts.LeaderElectionNamespace,
 		NewCache: cache.BuilderWithOptions(cache.Options{
 			SelectorsByObject: cache.SelectorsByObject{
 				&corev1.Secret{}: {
@@ -210,8 +188,8 @@ func setup() error {
 	}
 
 	// PPROF
-	if len(opts.pprofAddr) > 0 {
-		initPprof(mgr, opts.pprofAddr)
+	if len(opts.PprofAddr) > 0 {
+		initPprof(mgr, opts.PprofAddr)
 	}
 
 	if err := mgr.AddHealthzCheck("health", healthz.Ping); err != nil {
@@ -221,7 +199,7 @@ func setup() error {
 		return fmt.Errorf("unable to set up ready check: %w", err)
 	}
 
-	if err := initReconcilers(mgr, addonOperatorNamespace, opts.enableMetricsRecorder); err != nil {
+	if err := initReconcilers(mgr, opts.Namespace, opts.EnableMetricsRecorder); err != nil {
 		return fmt.Errorf("init reconcilers: %w", err)
 	}
 
