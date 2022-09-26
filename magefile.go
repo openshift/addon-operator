@@ -195,7 +195,7 @@ func (Build) cmd(cmd, goos, goarch string) error {
 
 	if err := sh.RunWithV(
 		env,
-		"go", "build", "-v", "-o", bin, "./cmd/"+cmd+"/main.go",
+		"go", "build", "-v", "-o", bin, "./cmd/"+cmd,
 	); err != nil {
 		return fmt.Errorf("compiling cmd/%s: %w", cmd, err)
 	}
