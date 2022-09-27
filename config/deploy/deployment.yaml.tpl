@@ -46,6 +46,25 @@ spec:
         - name: tls
           mountPath: "/tmp/k8s-metrics-server/serving-certs/"
           readOnly: true
+        ports:
+        - containerPort: 8443
+        readinessProbe:
+          tcpSocket:
+            port: 8443
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8443
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          limits:
+            cpu: 100m
+            memory: 30Mi
+          requests:
+            cpu: 100m
+            memory: 30Mi
       - name: manager
         image: quay.io/openshift/addon-operator:latest
         args:
