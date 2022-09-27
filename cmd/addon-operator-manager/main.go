@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
+	"time"
 
 	"k8s.io/apimachinery/pkg/selection"
 
@@ -115,7 +116,12 @@ func initPprof(mgr ctrl.Manager, addr string) {
 	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
-	s := &http.Server{Addr: addr, Handler: mux}
+	s := &http.Server{
+		Addr: addr, Handler: mux,
+		// Mitigate: G112: Potential Slowloris Attack because
+		// ReadHeaderTimeout is not configured in the http.Server (gosec)
+		ReadHeaderTimeout: 2 * time.Second,
+	}
 	err := mgr.Add(manager.RunnableFunc(func(ctx context.Context) error {
 		errCh := make(chan error)
 		defer func() {
@@ -146,6 +152,13 @@ func setup() error {
 		MetricsAddr:           ":8080",
 		ProbeAddr:             ":8081",
 		EnableMetricsRecorder: true,
+		// Enable pprof by default to listen on localhost only.
+		// This way we don't expose pprof open to the whole cluster we are running on,
+		// while keeping it easy to access.
+		// Example Command:
+		// $ kubectl exec -it <addon-operator-pod> --container manager bash -- \
+		// curl -sK -v http://localhost:8070/debug/pprof/heap > heap.out
+		PprofAddr: "127.0.0.1:8070",
 	}
 
 	if err := opts.Process(); err != nil {
