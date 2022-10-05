@@ -4,11 +4,11 @@ metadata:
   annotations:
     capabilities: Full Lifecycle
     containerImage: quay.io/openshift/addon-operator:latest
-    olm.skipRange: '>=0.0.1 <1.5.1'
+    olm.skipRange: '>=0.0.1 <1.5.2'
     repository: https://github.com/openshift/addon-operator
     support: "false"
   creationTimestamp: null
-  name: addon-operator.v1.5.1
+  name: addon-operator.v1.5.2
 spec:
   apiservicedefinitions: {}
   cleanup:
@@ -173,23 +173,19 @@ spec:
                 - --logtostderr=true
                 - --ignore-paths=/metrics,/healthz
                 image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
+                livenessProbe:
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                  tcpSocket:
+                    port: 8443
                 name: metrics-relay-server
-                volumeMounts:
-                - mountPath: /tmp/k8s-metrics-server/serving-certs/
-                  name: tls
-                  readOnly: true
                 ports:
                 - containerPort: 8443
                 readinessProbe:
-                  tcpSocket:
-                    port: 8443
                   initialDelaySeconds: 5
                   periodSeconds: 10
-                livenessProbe:
                   tcpSocket:
                     port: 8443
-                  initialDelaySeconds: 15
-                  periodSeconds: 20
                 resources:
                   limits:
                     cpu: 100m
@@ -197,6 +193,10 @@ spec:
                   requests:
                     cpu: 100m
                     memory: 30Mi
+                volumeMounts:
+                - mountPath: /tmp/k8s-metrics-server/serving-certs/
+                  name: tls
+                  readOnly: true
               - args:
                 - --enable-leader-election
                 image: quay.io/openshift/addon-operator:latest
@@ -334,7 +334,7 @@ spec:
   provider:
     name: Red Hat
     url: www.redhat.com
-  version: 1.5.1
+  version: 1.5.2
   webhookdefinitions:
   - admissionReviewVersions:
     - v1
