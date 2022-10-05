@@ -84,9 +84,9 @@ func (c *Controller) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 }
 
 type ControllerConfig struct {
-	Log                 logr.Logger
-	PollingInterval     time.Duration
-	SerialPhases        []Phase
+	Log             logr.Logger
+	PollingInterval time.Duration
+	SerialPhases    []Phase
 }
 
 func (c *ControllerConfig) Option(opts ...ControllerOption) {
