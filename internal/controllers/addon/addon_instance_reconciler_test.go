@@ -27,7 +27,9 @@ func TestEnsureAddonInstance(t *testing.T) {
 				Namespace: "addon-system",
 			},
 			Spec: addonsv1alpha1.AddonInstanceSpec{
-				HeartbeatUpdatePeriod: controllers.DefaultAddonInstanceHeartbeatUpdatePeriod,
+				HeartbeatUpdatePeriod: metav1.Duration{
+					Duration: addonsv1alpha1.DefaultAddonInstanceHeartbeatUpdatePeriod,
+				},
 			},
 		}
 
@@ -148,7 +150,12 @@ func TestEnsureAddonInstance(t *testing.T) {
 
 				assert.Equal(t, addonsv1alpha1.DefaultAddonInstanceName, createdAddonInstance.Name)
 				assert.Equal(t, test.targetNamespace, createdAddonInstance.Namespace)
-				assert.Equal(t, controllers.DefaultAddonInstanceHeartbeatUpdatePeriod, createdAddonInstance.Spec.HeartbeatUpdatePeriod)
+				assert.Equal(t,
+					metav1.Duration{
+						Duration: addonsv1alpha1.DefaultAddonInstanceHeartbeatUpdatePeriod,
+					},
+					createdAddonInstance.Spec.HeartbeatUpdatePeriod,
+				)
 			})
 		}
 	})
@@ -264,7 +271,9 @@ func TestReconcileAddonInstance(t *testing.T) {
 			Namespace: "test",
 		},
 		Spec: addonsv1alpha1.AddonInstanceSpec{
-			HeartbeatUpdatePeriod: controllers.DefaultAddonInstanceHeartbeatUpdatePeriod,
+			HeartbeatUpdatePeriod: metav1.Duration{
+				Duration: addonsv1alpha1.DefaultAddonInstanceHeartbeatUpdatePeriod,
+			},
 		},
 	}
 

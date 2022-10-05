@@ -6,75 +6,110 @@ import (
 	"time"
 
 	"github.com/go-logr/logr"
-	"k8s.io/apimachinery/pkg/api/meta"
+	apimeta "k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/controllers"
+	av1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers/addoninstance/internal/phase"
 )
 
-type AddonInstanceReconciler struct {
-	client.Client
-	Log    logr.Logger
-	Scheme *runtime.Scheme
+func NewController(c client.Client, opts ...ControllerOption) *Controller {
+	var cfg ControllerConfig
 
-	heartbeatCheckerRate time.Duration
+	cfg.Option(opts...)
+	cfg.Default()
+
+	return &Controller{
+		cfg:    cfg,
+		client: c,
+	}
 }
 
-func (r *AddonInstanceReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	r.heartbeatCheckerRate = controllers.DefaultAddonInstanceHeartbeatUpdatePeriod.Duration
+type Controller struct {
+	cfg    ControllerConfig
+	client client.Client
+}
+
+func (r *Controller) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&addonsv1alpha1.AddonInstance{}).
+		For(&av1alpha1.AddonInstance{}).
 		Complete(r)
 }
 
-// AddonInstanceReconciler/Controller entrypoint
-func (r *AddonInstanceReconciler) Reconcile(
-	ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	log := r.Log.WithValues("addoninstance", req.NamespacedName.String())
+func (c *Controller) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	log := c.cfg.Log.WithValues(
+		"namespace", req.Namespace,
+		"name", req.Name,
+	)
 
-	addonInstance := &addonsv1alpha1.AddonInstance{}
-	if err := r.Get(ctx, req.NamespacedName, addonInstance); err != nil {
+	var instance av1alpha1.AddonInstance
+	if err := c.client.Get(ctx, req.NamespacedName, &instance); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	now, lastHeartbeatTime := metav1.Now(), addonInstance.Status.LastHeartbeatTime
-	if lastHeartbeatTime.IsZero() {
-		return ctrl.Result{RequeueAfter: r.heartbeatCheckerRate}, nil
-	}
+	log.Info("reconciling AddonInstance")
 
-	diff := int64(now.Time.Sub(lastHeartbeatTime.Time) / time.Second)
-	threshold := controllers.DefaultAddonInstanceHeartbeatTimeoutThresholdMultiplier *
-		int64(addonInstance.Spec.HeartbeatUpdatePeriod.Duration/time.Second)
+	var conditions []metav1.Condition
 
-	// if the last heartbeat is older than the timeout threshold,
-	// register HeartbeatTimeout Condition
-	if diff >= threshold {
-		// check if already HeartbeatTimeout condition exists
-		// if it does, no need to update it
-		existingCondition := meta.FindStatusCondition(addonInstance.Status.Conditions,
-			addonsv1alpha1.AddonInstanceHealthy)
-		if existingCondition == nil || existingCondition.Reason != "HeartbeatTimeout" {
-			log.Info(fmt.Sprintf("setting the Condition of %s/%s to 'HeartbeatTimeout'",
-				addonInstance.Namespace, addonInstance.Name))
-			// change the following line to:
-			// meta.SetStatusCondition(&addonInstance.Status.Conditions,
-			// addoninstanceapi.HeartbeatTimeoutCondition),
-			// once https://github.com/openshift/addon-operator/pull/91 gets merged
-			meta.SetStatusCondition(&addonInstance.Status.Conditions, metav1.Condition{
-				Type:    "addons.managed.openshift.io/Healthy",
-				Status:  "Unknown",
-				Reason:  "HeartbeatTimeout",
-				Message: "Addon failed to send heartbeat.",
-			})
-			if err := r.Client.Status().Update(ctx, addonInstance); err != nil {
-				return ctrl.Result{}, err
-			}
+	for _, p := range c.cfg.SerialPhases {
+		res := p.Execute(ctx, phase.Request{Instance: instance})
+		if err := res.Error(); err != nil {
+			log.Error(err, "reconciliation failed")
+
+			return ctrl.Result{}, fmt.Errorf("executing phase %q: %w", p, err)
 		}
+
+		conditions = append(conditions, res.Conditions...)
 	}
 
-	return ctrl.Result{RequeueAfter: r.heartbeatCheckerRate}, nil
+	for _, cond := range conditions {
+		apimeta.SetStatusCondition(&instance.Status.Conditions, cond)
+	}
+
+	instance.Status.ObservedGeneration = instance.Generation
+
+	log.Info("updating status conditions")
+
+	if err := c.client.Status().Update(ctx, &instance); err != nil {
+		return ctrl.Result{}, fmt.Errorf(
+			"updating status for AddonInstance '%s/%s': %w", instance.Namespace, instance.Name, err,
+		)
+	}
+
+	log.Info("successfully reconciled AddonInstance")
+
+	return ctrl.Result{RequeueAfter: c.cfg.PollingInterval}, nil
+}
+
+type ControllerConfig struct {
+	Log                 logr.Logger
+	PollingInterval     time.Duration
+	SerialPhases        []Phase
+}
+
+func (c *ControllerConfig) Option(opts ...ControllerOption) {
+	for _, opt := range opts {
+		opt.ConfigureController(c)
+	}
+}
+
+func (c *ControllerConfig) Default() {
+	if c.Log.GetSink() == nil {
+		c.Log = logr.Discard()
+	}
+
+	if c.PollingInterval == 0 {
+		c.PollingInterval = 10 * time.Second
+	}
+}
+
+type ControllerOption interface {
+	ConfigureController(c *ControllerConfig)
+}
+
+type Phase interface {
+	Execute(ctx context.Context, req phase.Request) phase.Result
+	fmt.Stringer
 }

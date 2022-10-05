@@ -9,9 +9,11 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
+const group = "addons.managed.openshift.io"
+
 var (
 	// GroupVersion is group version used to register these objects
-	GroupVersion = schema.GroupVersion{Group: "addons.managed.openshift.io", Version: "v1alpha1"}
+	GroupVersion = schema.GroupVersion{Group: group, Version: "v1alpha1"}
 
 	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
 	SchemeBuilder runtime.SchemeBuilder
