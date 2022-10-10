@@ -4,11 +4,11 @@ metadata:
   annotations:
     capabilities: Full Lifecycle
     containerImage: quay.io/openshift/addon-operator:latest
-    olm.skipRange: '>=0.0.1 <1.5.2'
+    olm.skipRange: '>=0.0.1 <1.5.3'
     repository: https://github.com/openshift/addon-operator
     support: "false"
   creationTimestamp: null
-  name: addon-operator.v1.5.2
+  name: addon-operator.v1.5.3
 spec:
   apiservicedefinitions: {}
   cleanup:
@@ -163,7 +163,7 @@ spec:
                       matchExpressions:
                       - key: node-role.kubernetes.io/infra
                         operator: Exists
-                    weight: 1
+                    weight: 100
               containers:
               - args:
                 - --secure-listen-address=0.0.0.0:8443
@@ -248,7 +248,7 @@ spec:
                       matchExpressions:
                       - key: node-role.kubernetes.io/infra
                         operator: Exists
-                    weight: 1
+                    weight: 100
                 podAntiAffinity:
                   preferredDuringSchedulingIgnoredDuringExecution:
                   - podAffinityTerm:
@@ -334,7 +334,7 @@ spec:
   provider:
     name: Red Hat
     url: www.redhat.com
-  version: 1.5.2
+  version: 1.5.3
   webhookdefinitions:
   - admissionReviewVersions:
     - v1
