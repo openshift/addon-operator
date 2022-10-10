@@ -163,7 +163,7 @@ spec:
                       matchExpressions:
                       - key: node-role.kubernetes.io/infra
                         operator: Exists
-                    weight: 1
+                    weight: 100
               containers:
               - args:
                 - --secure-listen-address=0.0.0.0:8443
