@@ -23,7 +23,7 @@ spec:
               matchExpressions:
               - key: node-role.kubernetes.io/infra
                 operator: Exists
-            weight: 1
+            weight: 100
       tolerations:
       - effect: NoSchedule
         key: node-role.kubernetes.io/infra

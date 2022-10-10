@@ -23,7 +23,7 @@ spec:
               matchExpressions:
               - key: node-role.kubernetes.io/infra
                 operator: Exists
-            weight: 1
+            weight: 100
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 100
