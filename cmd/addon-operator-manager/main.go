@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/pprof"
@@ -18,6 +19,7 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -167,12 +169,10 @@ func setup() error {
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
-	csvSelector := labels.NewSelector()
-	csvRequirement, err := labels.NewRequirement("olm.copiedFrom", selection.DoesNotExist, []string{})
+	newCacheFunc, err := prepareCache()
 	if err != nil {
-		return fmt.Errorf("error creating requirement for csv selector: %w", err)
+		return fmt.Errorf("preparing cache: %w", err)
 	}
-	csvSelector.Add(*csvRequirement)
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                     scheme,
@@ -183,18 +183,7 @@ func setup() error {
 		LeaderElection:             opts.EnableLeaderElection,
 		LeaderElectionID:           "8a4hp84a6s.addon-operator-lock",
 		LeaderElectionNamespace:    opts.LeaderElectionNamespace,
-		NewCache: cache.BuilderWithOptions(cache.Options{
-			SelectorsByObject: cache.SelectorsByObject{
-				&corev1.Secret{}: {
-					Label: labels.SelectorFromSet(labels.Set{
-						controllers.CommonCacheLabel: controllers.CommonCacheValue,
-					}),
-				},
-				&operatorsv1alpha1.ClusterServiceVersion{}: {
-					Label: csvSelector,
-				},
-			},
-		}),
+		NewCache:                   newCacheFunc,
 	})
 	if err != nil {
 		return fmt.Errorf("unable to start manager: %w", err)
@@ -221,6 +210,53 @@ func setup() error {
 		return fmt.Errorf("problem running manager: %w", err)
 	}
 	return nil
+}
+
+func prepareCache() (cache.NewCacheFunc, error) {
+	const olmCopiedFromLabel = "olm.copiedFrom"
+
+	csvRequirement, err := labels.NewRequirement(olmCopiedFromLabel, selection.DoesNotExist, []string{})
+	if err != nil {
+		return nil, fmt.Errorf("creating CSV label selector requirement: %w", err)
+	}
+
+	opts := cache.Options{
+		SelectorsByObject: cache.SelectorsByObject{
+			&operatorsv1alpha1.ClusterServiceVersion{}: {
+				Label: labels.NewSelector().Add(*csvRequirement),
+			},
+			&corev1.Secret{}: {
+				Label: labels.SelectorFromSet(labels.Set{
+					controllers.CommonCacheLabel: controllers.CommonCacheValue,
+				}),
+			},
+		},
+		TransformByObject: cache.TransformByObject{
+			&operatorsv1alpha1.ClusterServiceVersion{}: stripUnusedCSVFields,
+		},
+	}
+
+	return cache.BuilderWithOptions(opts), nil
+}
+
+var errInvalidObject = errors.New("invalid object")
+
+func stripUnusedCSVFields(obj interface{}) (interface{}, error) {
+	csv, ok := obj.(*operatorsv1alpha1.ClusterServiceVersion)
+	if !ok {
+		return nil, fmt.Errorf("casting %T as 'ClusterServiceVersion': %w", obj, errInvalidObject)
+	}
+
+	return &operatorsv1alpha1.ClusterServiceVersion{
+		TypeMeta: csv.TypeMeta,
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      csv.Name,
+			Namespace: csv.Namespace,
+		},
+		Status: operatorsv1alpha1.ClusterServiceVersionStatus{
+			Phase: csv.Status.Phase,
+		},
+	}, nil
 }
 
 func main() {
