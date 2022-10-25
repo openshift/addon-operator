@@ -110,14 +110,17 @@ This command will:
 2. Install OLM and OpenShift Console
 
 ```shell
-# just install Addon Operator CRDs
+# Install Addon Operator CRDs
 # into the cluster.
 make setup-addon-operator-crds
 
 # Make sure we run against the new kind cluster.
 export KUBECONFIG=$PWD/.cache/integration/kubeconfig
 
-# run the operator out-of-cluster:
+# Set Addon operator namespace environment variable
+export ADDON_OPERATOR_NAMESPACE=addon-operator
+
+# Run the operator out-of-cluster:
 # Mind your `KUBECONFIG` environment variable!
 make run-addon-operator-manager
 ```
