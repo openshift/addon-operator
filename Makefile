@@ -195,7 +195,7 @@ run-addon-operator-manager:
 ## Run cmd/% against $KUBECONFIG.
 run-%: generate
 	go run -ldflags "-w $(LD_FLAGS)" \
-		./cmd/$*/main.go \
+		./cmd/$*/*.go \
 			-pprof-addr="127.0.0.1:8065" \
 			-metrics-addr="0"
 
