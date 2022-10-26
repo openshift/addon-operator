@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path"
@@ -20,8 +22,10 @@ import (
 	"github.com/go-logr/stdr"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
+	"github.com/mt-sre/client"
 	"github.com/mt-sre/devkube/dev"
 	"github.com/mt-sre/devkube/magedeps"
+	imageparser "github.com/novln/docker-parser"
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
@@ -229,6 +233,14 @@ func (Build) PushImages() {
 	)
 }
 
+func (Build) PushImagesOnce() {
+	mg.Deps(
+		mg.F(Build.imagePushOnce, "addon-operator-manager"),
+		mg.F(Build.imagePushOnce, "addon-operator-webhook"),
+		mg.F(Build.imagePushOnce, "addon-operator-index"), // also pushes bundle
+	)
+}
+
 // Builds the docgen internal tool
 func (Build) Docgen() {
 	mg.Deps(mg.F(Build.cmd, "docgen", "", ""))
@@ -409,6 +421,25 @@ func (b Build) TemplateAddonOperatorCSV() error {
 	return nil
 }
 
+func (b Build) imagePushOnce(imageName string) error {
+	mg.SerialDeps(
+		Build.init,
+	)
+
+	ok, err := b.imageExists(context.Background(), imageName)
+	if err != nil {
+		return fmt.Errorf("checking if image %q exists: %w", imageName, err)
+	}
+
+	if ok {
+		fmt.Fprintf(os.Stdout, "skipping image %q since it is already up-to-date\n", imageName)
+
+		return nil
+	}
+
+	return b.imagePush(imageName)
+}
+
 func (Build) imagePush(imageName string) error {
 	mg.SerialDeps(
 		mg.F(Build.ImageBuild, imageName),
@@ -429,6 +460,29 @@ func (Build) imagePush(imageName string) error {
 	}
 
 	return nil
+}
+
+func (Build) imageExists(ctx context.Context, name string) (bool, error) {
+	ref, err := imageparser.Parse(imageURL(name))
+	if err != nil {
+		return false, fmt.Errorf("parsing image reference: %w", err)
+	}
+
+	url := url.URL{
+		Scheme: "https",
+		Host:   ref.Registry(),
+		Path:   path.Join("v2", ref.ShortName(), "manifests", ref.Tag()),
+	}
+
+	c := client.NewClient()
+	res, err := c.Head(ctx, url.String())
+	if err != nil {
+		return false, fmt.Errorf("sending HTTP request: %w", err)
+	}
+
+	defer res.Body.Close()
+
+	return res.StatusCode == http.StatusOK, nil
 }
 
 func imageURL(name string) string {
