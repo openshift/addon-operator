@@ -158,12 +158,11 @@ spec:
             spec:
               affinity:
                 nodeAffinity:
-                  preferredDuringSchedulingIgnoredDuringExecution:
-                  - preference:
-                      matchExpressions:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                    - matchExpressions:
                       - key: node-role.kubernetes.io/infra
                         operator: Exists
-                    weight: 100
               containers:
               - args:
                 - --secure-listen-address=0.0.0.0:8443
@@ -243,12 +242,11 @@ spec:
             spec:
               affinity:
                 nodeAffinity:
-                  preferredDuringSchedulingIgnoredDuringExecution:
-                  - preference:
-                      matchExpressions:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                    - matchExpressions:
                       - key: node-role.kubernetes.io/infra
                         operator: Exists
-                    weight: 100
                 podAntiAffinity:
                   preferredDuringSchedulingIgnoredDuringExecution:
                   - podAffinityTerm:
