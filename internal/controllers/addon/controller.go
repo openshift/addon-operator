@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"sigs.k8s.io/controller-runtime/pkg/builder"
+
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/metrics"
 
@@ -204,7 +206,7 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		}).
 		Watches(&source.Kind{
 			Type: &operatorsv1alpha1.ClusterServiceVersion{},
-		}, r.csvEventHandler).
+		}, r.csvEventHandler, builder.OnlyMetadata).
 		Watches(&source.Channel{ // Requeue everything when entering/leaving global pause.
 			Source: r.addonRequeueCh,
 		}, &handler.EnqueueRequestForObject{}).

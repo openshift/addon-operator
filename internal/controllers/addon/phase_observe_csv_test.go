@@ -6,9 +6,13 @@ import (
 	"testing"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+
+	"github.com/stretchr/testify/require"
+
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -23,20 +27,29 @@ func TestObserveCurrentCSV(t *testing.T) {
 	}
 
 	for name, tc := range map[string]struct {
-		CSV      *operatorsv1alpha1.ClusterServiceVersion
+		CSV      *unstructured.Unstructured
 		expected Expected
 	}{
 		"No CSV present": {
-			CSV: &operatorsv1alpha1.ClusterServiceVersion{},
+			CSV: &unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiversion": fmt.Sprintf("%s/%s", CSVGroup, CSVVersion),
+					"kind":       CSVKind,
+				},
+			},
 			expected: Expected{
 				Conditions: []metav1.Condition{unreadyCSVCondition("unkown/pending")},
 				Result:     resultRetry,
 			},
 		},
 		"Phase failed": {
-			CSV: &operatorsv1alpha1.ClusterServiceVersion{
-				Status: operatorsv1alpha1.ClusterServiceVersionStatus{
-					Phase: operatorsv1alpha1.CSVPhaseFailed,
+			CSV: &unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiversion": fmt.Sprintf("%s/%s", CSVGroup, CSVVersion),
+					"kind":       CSVKind,
+					"status": map[string]interface{}{
+						"phase": string(operatorsv1alpha1.CSVPhaseFailed),
+					},
 				},
 			},
 			expected: Expected{
@@ -45,9 +58,13 @@ func TestObserveCurrentCSV(t *testing.T) {
 			},
 		},
 		"Phase succeded": {
-			CSV: &operatorsv1alpha1.ClusterServiceVersion{
-				Status: operatorsv1alpha1.ClusterServiceVersionStatus{
-					Phase: operatorsv1alpha1.CSVPhaseSucceeded,
+			CSV: &unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiversion": fmt.Sprintf("%s/%s", CSVGroup, CSVVersion),
+					"kind":       CSVKind,
+					"status": map[string]interface{}{
+						"phase": string(operatorsv1alpha1.CSVPhaseSucceeded),
+					},
 				},
 			},
 			expected: Expected{
@@ -64,10 +81,10 @@ func TestObserveCurrentCSV(t *testing.T) {
 				On("Get",
 					mock.Anything,
 					mock.IsType(client.ObjectKey{}),
-					testutil.IsOperatorsV1Alpha1ClusterServiceVersionPtr,
+					testutil.IsUnstructuredUnstructuredPtr,
 				).
 				Run(func(args mock.Arguments) {
-					tc.CSV.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.ClusterServiceVersion))
+					tc.CSV.DeepCopyInto(args.Get(2).(*unstructured.Unstructured))
 				}).
 				Return(nil)
 
