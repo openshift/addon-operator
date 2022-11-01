@@ -1,6 +1,9 @@
 package v1alpha1
 
 import (
+	"path"
+	"time"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -60,16 +63,77 @@ type AddonInstanceList struct {
 }
 
 const (
-	DefaultAddonInstanceName = "addon-instance"
+	DefaultAddonInstanceName                  = "addon-instance"
+	DefaultAddonInstanceHeartbeatUpdatePeriod = 10 * time.Second
 )
+
+// AddonInstanceCondition is a condition Type used by AddonInstance
+// status conditions.
+type AddonInstanceCondition string
+
+func (c AddonInstanceCondition) String() string {
+	return path.Join(group, string(c))
+}
 
 // AddonInstance Conditions
 const (
 	// AddonInstanceHealthy tracks the general health of an Addon.
 	//
 	// If false the service is degraded to a point that manual intervention is likely.
-	// Higher level controllers are adviced to stop actions that might further worsen the state of the service. E.g. by delaying upgrades until the status is cleared.
-	AddonInstanceHealthy = "addons.managed.openshift.io/Healthy"
+	// Higher level controllers are advised to stop actions that might further worsen the state of the service.
+	// For example: delaying upgrades until the status is cleared.
+	AddonInstanceConditionHealthy AddonInstanceCondition = "Healthy"
+	// AddonInstanceDegraded reports partial lose of functionallity which otherwise
+	// does not affect the availability of an addon.
+	AddonInstanceConditionDegraded AddonInstanceCondition = "Degraded"
+	// AddonInstanceConditionInstalled reports installation status as either
+	// 'True' or 'False' with additional detail provided thorugh messages
+	// while condition is still 'False'.
+	AddonInstanceConditionInstalled AddonInstanceCondition = "Installed"
+)
+
+// AddonInstanceHealthyReason is a condition reason used by
+// AddonInstance status conditions when condition type is
+// AddonInstanceConditionHealthy.
+type AddonInstanceHealthyReason string
+
+func (r AddonInstanceHealthyReason) String() string {
+	return string(r)
+}
+
+const (
+	// AddonInstanceHealthyReasonReceivingHeartbeats is a status condition
+	// reason used when heartbeats are received within the configured
+	// threshold.
+	AddonInstanceHealthyReasonReceivingHeartbeats AddonInstanceHealthyReason = "ReceivingHeartbeats"
+	// AddonInstanceHealthyReasonPendingFirstHeartbeat is a status condition
+	// reason used before the first heartbeat has been received from the addon.
+	AddonInstanceHealthyReasonPendingFirstHeartbeat AddonInstanceHealthyReason = "PendingFirstHeartbeat"
+	// AddonInstanceHealthyReasonHeatbeatTimeout is a status condition
+	// reason when the last received timeout was not received before
+	// the configured threshold.
+	AddonInstanceHealthyReasonHeartbeatTimeout AddonInstanceHealthyReason = "HeartbeatTimeout"
+)
+
+// AddonInstanceInstalledReason is a condition reason used by
+// AddonInstance status conditions when condition type is
+// AddonInstanceConditionInstalled.
+type AddonInstanceInstalledReason string
+
+func (r AddonInstanceInstalledReason) String() string {
+	return string(r)
+}
+
+const (
+	// AddonInstanceInstalledReasonSetupComplete is a status condition
+	// reason used when addon installation setup work is complete.
+	AddonInstanceInstalledReasonSetupComplete AddonInstanceInstalledReason = "SetupComplete"
+	// AddonInstanceInstalledReasonTeardownComplete is a status condition
+	// reason used when addon installation teardown work is complete.
+	AddonInstanceInstalledReasonTeardownComplete AddonInstanceInstalledReason = "TeardownComplete"
+	// AddonInstanceInstalledReasonBlocked is a status condition
+	// reason used when addon installation is blocked.
+	AddonInstanceInstalledReasonBlocked AddonInstanceInstalledReason = "Blocked"
 )
 
 func init() {

@@ -579,7 +579,7 @@ func (Test) Unit() error {
 	return sh.RunWithV(map[string]string{
 		// needed to enable race detector -race
 		"CGO_ENABLED": "1",
-	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...")
+	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...", "./pkg/...")
 }
 
 func (Test) Integration() error {

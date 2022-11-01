@@ -54,7 +54,9 @@ func (r *addonInstanceReconciler) ensureAddonInstance(
 		},
 		// Can't skip specifying spec because in this case, the zero-value for metav1.Duration will be perceived beforehand i.e. 0s instead of CRD's default value of 10s
 		Spec: addonsv1alpha1.AddonInstanceSpec{
-			HeartbeatUpdatePeriod: controllers.DefaultAddonInstanceHeartbeatUpdatePeriod,
+			HeartbeatUpdatePeriod: metav1.Duration{
+				Duration: addonsv1alpha1.DefaultAddonInstanceHeartbeatUpdatePeriod,
+			},
 		},
 	}
 

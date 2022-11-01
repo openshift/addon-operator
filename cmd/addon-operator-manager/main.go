@@ -30,7 +30,7 @@ import (
 
 	aoapis "github.com/openshift/addon-operator/apis"
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
-	aicontroller "github.com/openshift/addon-operator/internal/controllers/addoninstance"
+	aictrl "github.com/openshift/addon-operator/internal/controllers/addoninstance"
 	aocontroller "github.com/openshift/addon-operator/internal/controllers/addonoperator"
 )
 
@@ -98,13 +98,25 @@ func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) er
 		return fmt.Errorf("unable to create AddonOperator controller: %w", err)
 	}
 
-	if err := (&aicontroller.AddonInstanceReconciler{
-		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controller").WithName("AddonInstance"),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
-		return fmt.Errorf("unable to create AddonInstance controller: %w", err)
+	var (
+		addonInstanceCtrlLog  = ctrl.Log.WithName("controllers").WithName("AddonInstance")
+		addonInstancePhaseLog = addonInstanceCtrlLog.V(1).WithName("phase")
+	)
+
+	addonInstanceCtrl := aictrl.NewController(
+		mgr.GetClient(),
+		aictrl.WithLog{Log: addonInstanceCtrlLog},
+		aictrl.WithSerialPhases{
+			aictrl.NewPhaseCheckHeartbeat(
+				aictrl.WithLog{Log: addonInstancePhaseLog.WithName("checkHeartbeat")},
+			),
+		},
+	)
+
+	if err := addonInstanceCtrl.SetupWithManager(mgr); err != nil {
+		return fmt.Errorf("setting up AddonInstance controller: %w", err)
 	}
+
 	return nil
 }
 
