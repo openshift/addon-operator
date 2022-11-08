@@ -439,10 +439,14 @@ spec:
                   value:
                     description: Upgrade policy value.
                     type: string
+                  version:
+                    description: Upgrade Policy Version.
+                    type: string
                 required:
                 - id
                 - observedGeneration
                 - value
+                - version
                 type: object
             type: object
         type: object
