@@ -23,7 +23,6 @@ import (
 
 const MONITORING_STACK_RECONCILER_NAME = "monitoringStackReconciler"
 
-
 type monitoringStackReconciler struct {
 	client client.Client
 	scheme *runtime.Scheme
@@ -49,48 +48,7 @@ func (r *monitoringStackReconciler) Reconcile(ctx context.Context,
 		return reconcile.Result{}, err
 	}
 
-	// ensure creation of ServiceMonitor
-	if err := r.ensureServiceMonitor(ctx, addon); err != nil {
-		return reconcile.Result{}, err
-	}
 	return reconcile.Result{}, nil
-}
-
-func (r *monitoringStackReconciler) ensureServiceMonitor(ctx context.Context,
-	addon *addonsv1alpha1.Addon) error {
-
-	// check if ServiceMonitor needs to be created
-	if addon.Spec.Monitoring.MonitoringStack.ServiceMonitorConfig == nil {
-		return nil
-	}
-
-	commonConfig, stop := parseAddonInstallConfig(controllers.LoggerFromContext(ctx), addon)
-	if stop {
-		return fmt.Errorf("error parsing Addon config")
-	}
-
-	addonServiceMonitorConfig := addon.Spec.Monitoring.MonitoringStack.ServiceMonitorConfig.DeepCopy()
-
-	// create desired ServiceMonitor
-	desiredServiceMonitor := &monv1.ServiceMonitor{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      getServiceMonitorName(addon.Name),
-			Namespace: commonConfig.Namespace,
-			Labels: map[string]string{
-				controllers.MSOLabel: addon.Name,
-			},
-		},
-		Spec: monv1.ServiceMonitorSpec{
-			NamespaceSelector: addonServiceMonitorConfig.NamespaceSelector,
-			Selector:          addonServiceMonitorConfig.Selector,
-			Endpoints:         addonServiceMonitorConfig.Endpoints,
-		},
-	}
-	controllers.AddCommonLabels(desiredServiceMonitor, addon)
-	if err := controllerutil.SetControllerReference(addon, desiredServiceMonitor, r.scheme); err != nil {
-		return err
-	}
-	return r.reconcileServiceMonitor(ctx, desiredServiceMonitor)
 }
 
 func (r *monitoringStackReconciler) ensureMonitoringStack(ctx context.Context,
@@ -172,40 +130,6 @@ func getServiceMonitorName(addonName string) string {
 
 func getMonitoringStackName(addonName string) string {
 	return fmt.Sprintf("%s-monitoring-stack", addonName)
-}
-
-func (r *monitoringStackReconciler) reconcileServiceMonitor(ctx context.Context,
-	desiredServiceMonitor *monv1.ServiceMonitor) error {
-
-	// get existing ServiceMonitor
-	currentServiceMonitor := &monv1.ServiceMonitor{}
-	if err := r.client.Get(ctx, client.ObjectKey{
-		Name:      desiredServiceMonitor.Name,
-		Namespace: desiredServiceMonitor.Namespace,
-	}, currentServiceMonitor); err != nil {
-		// create desired ServciceMonitor if it does not exist
-		if k8sApiErrors.IsNotFound(err) {
-			return r.client.Create(ctx, desiredServiceMonitor)
-		}
-		return err
-	}
-
-	// only update when spec or ownerReference has changed
-	var (
-		ownedByAddon  = controllers.HasSameController(currentServiceMonitor, desiredServiceMonitor)
-		specChanged   = !equality.Semantic.DeepEqual(desiredServiceMonitor.Spec, currentServiceMonitor.Spec)
-		currentLabels = labels.Set(currentServiceMonitor.Labels)
-		newLabels     = labels.Merge(currentLabels, labels.Set(desiredServiceMonitor.Labels))
-	)
-
-	if specChanged || !ownedByAddon || !labels.Equals(newLabels, currentLabels) {
-		// copy new spec into existing object and update in the k8s api
-		currentServiceMonitor.Spec = desiredServiceMonitor.Spec
-		currentServiceMonitor.OwnerReferences = desiredServiceMonitor.OwnerReferences
-		currentServiceMonitor.Labels = newLabels
-		return r.client.Update(ctx, currentServiceMonitor)
-	}
-	return nil
 }
 
 func (r *monitoringStackReconciler) reconcileMonitoringStack(ctx context.Context,
