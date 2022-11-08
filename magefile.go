@@ -1033,6 +1033,8 @@ func (d Dev) deploy(
 		}
 	}
 
+	ctx = dev.ContextWithLogger(ctx, logger)
+
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		"config/deploy/prometheus-remote-storage-mock/k8s/namespace.yaml",
 		"config/deploy/prometheus-remote-storage-mock/k8s/deployment.yaml",

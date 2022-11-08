@@ -106,21 +106,6 @@ type MonitoringStackSpec struct {
 	// Settings for RHOBS Remote Write
 	// +optional
 	RHOBSRemoteWriteConfig *RHOBSRemoteWriteConfigSpec `json:"rhobsRemoteWriteConfig,omitempty"`
-
-	// Settings for the ServiceMonitor
-	// +optional
-	ServiceMonitorConfig *ServiceMonitorConfig `json:"serviceMonitorConfig,omitempty"`
-}
-
-type ServiceMonitorConfig struct {
-	// Selector to select which namespaces the Kubernetes Endpoints objects are discovered from.
-	NamespaceSelector monv1.NamespaceSelector `json:"namespaceSelector"`
-
-	// Selector to select Endpoints objects.
-	Selector metav1.LabelSelector `json:"selector"`
-
-	// A list of endpoints allowed as part of this ServiceMonitor.
-	Endpoints []monv1.Endpoint `json:"endpoints"`
 }
 
 type RHOBSRemoteWriteConfigSpec struct {

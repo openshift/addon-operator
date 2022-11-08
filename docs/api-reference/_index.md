@@ -40,7 +40,6 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [OCMAddOnStatus](#ocmaddonstatusaddonsmanagedopenshiftiov1alpha1)
 	* [OCMAddOnStatusHash](#ocmaddonstatushashaddonsmanagedopenshiftiov1alpha1)
 	* [RHOBSRemoteWriteConfigSpec](#rhobsremotewriteconfigspecaddonsmanagedopenshiftiov1alpha1)
-	* [ServiceMonitorConfig](#servicemonitorconfigaddonsmanagedopenshiftiov1alpha1)
 	* [SubscriptionConfig](#subscriptionconfigaddonsmanagedopenshiftiov1alpha1)
 	* [ClusterSecretReference](#clustersecretreferenceaddonsmanagedopenshiftiov1alpha1)
 
@@ -396,7 +395,6 @@ Tracks the last state last reported to the Upgrade Policy endpoint.
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
 | rhobsRemoteWriteConfig | Settings for RHOBS Remote Write | *[RHOBSRemoteWriteConfigSpec.addons.managed.openshift.io/v1alpha1](#rhobsremotewriteconfigspecaddonsmanagedopenshiftiov1alpha1) | false |
-| serviceMonitorConfig | Settings for the ServiceMonitor | *[ServiceMonitorConfig.addons.managed.openshift.io/v1alpha1](#servicemonitorconfigaddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()
 
@@ -433,18 +431,6 @@ Struct used to hash the reported addon status (along with correlationID).
 | url | RHOBS endpoints where your data is sent to It varies by environment: - Staging: https://observatorium-mst.stage.api.openshift.com/api/metrics/v1/<tenant id>/api/v1/receive - Production: https://observatorium-mst.api.openshift.com/api/metrics/v1/<tenant id>/api/v1/receive | string | true |
 | oauth2 | OAuth2 config for the remote write URL | *monv1.OAuth2 | false |
 | allowlist | List of metrics to push to RHOBS. Any metric not listed here is dropped. | []string | false |
-
-[Back to Group]()
-
-### ServiceMonitorConfig.addons.managed.openshift.io/v1alpha1
-
-
-
-| Field | Description | Scheme | Required |
-| ----- | ----------- | ------ | -------- |
-| namespaceSelector | Selector to select which namespaces the Kubernetes Endpoints objects are discovered from. | monv1.NamespaceSelector | true |
-| selector | Selector to select Endpoints objects. | [metav1.LabelSelector](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#labelselector-v1-meta) | true |
-| endpoints | A list of endpoints allowed as part of this ServiceMonitor. | []monv1.Endpoint | true |
 
 [Back to Group]()
 
