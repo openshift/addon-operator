@@ -3,12 +3,11 @@ package addon
 import (
 	"context"
 	"fmt"
+	"k8s.io/apimachinery/pkg/api/meta"
 
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/go-logr/logr"
-	"k8s.io/apimachinery/pkg/api/meta"
-
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/ocm"
 )
@@ -43,7 +42,8 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 
 	if addon.Status.UpgradePolicy != nil &&
 		addon.Status.UpgradePolicy.ID == addon.Spec.UpgradePolicy.ID &&
-		addon.Status.UpgradePolicy.Value == addonsv1alpha1.AddonUpgradePolicyValueCompleted {
+		addon.Status.UpgradePolicy.Value == addonsv1alpha1.AddonUpgradePolicyValueCompleted &&
+		addon.Status.ObservedGeneration == addon.Generation {
 		// Addon upgrade status was already reported and is in a final transition state.
 		// Nothing to do, till the next upgrade is issued.
 		return nil
@@ -63,13 +63,16 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 	}
 
 	if addon.Status.UpgradePolicy == nil ||
-		addon.Status.UpgradePolicy.ID != addon.Spec.UpgradePolicy.ID {
-		// The current upgrade policy never received a status update.
+		addon.Status.UpgradePolicy.ID != addon.Spec.UpgradePolicy.ID ||
+		addon.Status.ObservedGeneration != addon.Generation {
+		// The current upgrade policy or the current generation never received a status update.
 		// Tell them: "we are working on it"
 		err := r.handlePatchUpgradePolicy(ctx, ocm.UpgradePolicyPatchRequest{
-			ID:          addon.Spec.UpgradePolicy.ID,
-			Value:       ocm.UpgradePolicyValueStarted,
-			Description: "Upgrading addon.",
+			ID:    addon.Spec.UpgradePolicy.ID,
+			Value: ocm.UpgradePolicyValueStarted,
+			Description: fmt.Sprintf(
+				"Upgrading addon to version %s", addon.Spec.Version,
+			),
 		})
 		if err != nil {
 			return fmt.Errorf("patching UpgradePolicy endpoint: %w", err)
@@ -82,7 +85,6 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 		}
 		return nil
 	}
-
 	if !meta.IsStatusConditionTrue(addon.Status.Conditions, addonsv1alpha1.Available) {
 		// Addon is not healthy or not done with the upgrade.
 		return nil
@@ -91,9 +93,11 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 	// Addon is healthy and we have not yet reported the upgrade as completed,
 	// let's do that :)
 	err := r.handlePatchUpgradePolicy(ctx, ocm.UpgradePolicyPatchRequest{
-		ID:          addon.Spec.UpgradePolicy.ID,
-		Value:       ocm.UpgradePolicyValueCompleted,
-		Description: "Addon was healthy at least once.",
+		ID:    addon.Spec.UpgradePolicy.ID,
+		Value: ocm.UpgradePolicyValueCompleted,
+		Description: fmt.Sprintf(
+			"Addon was healthy at least once in version %s", addon.Spec.Version,
+		),
 	})
 	if err != nil {
 		return fmt.Errorf("patching UpgradePolicy endpoint: %w", err)
