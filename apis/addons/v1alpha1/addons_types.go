@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -70,6 +71,8 @@ type AddonUpgradePolicyStatus struct {
 	ID string `json:"id"`
 	// Upgrade policy value.
 	Value AddonUpgradePolicyValue `json:"value"`
+	// Upgrade Policy Version.
+	Version string `json:"version"`
 	// The most recent generation a status update was based on.
 	ObservedGeneration int64 `json:"observedGeneration"`
 }
@@ -311,6 +314,25 @@ type Addon struct {
 	Spec AddonSpec `json:"spec,omitempty"`
 	// +kubebuilder:default={phase:Pending}
 	Status AddonStatus `json:"status,omitempty"`
+}
+
+func (a *Addon) IsAvailable() bool {
+	return meta.IsStatusConditionTrue(a.Status.Conditions, Available)
+}
+
+func (a *Addon) SetUpgradePolicyStatus(val AddonUpgradePolicyValue) {
+	a.Status.UpgradePolicy = &AddonUpgradePolicyStatus{
+		ID:                 a.Spec.UpgradePolicy.ID,
+		Value:              val,
+		Version:            a.Spec.Version,
+		ObservedGeneration: a.Generation,
+	}
+}
+
+func (a *Addon) UpgradeCompleteForCurrentVersion() bool {
+	return a.Status.UpgradePolicy != nil &&
+		a.Status.UpgradePolicy.Version == a.Spec.Version &&
+		a.Status.UpgradePolicy.Value == AddonUpgradePolicyValueCompleted
 }
 
 // AddonList contains a list of Addon

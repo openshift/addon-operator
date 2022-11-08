@@ -102,7 +102,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 			On("PatchUpgradePolicy", mock.Anything, ocm.UpgradePolicyPatchRequest{
 				ID:          "1234",
 				Value:       ocm.UpgradePolicyValueStarted,
-				Description: "Upgrading addon.",
+				Description: `Upgrading addon to version "".`,
 			}).
 			Return(
 				ocm.UpgradePolicyPatchResponse{},
@@ -199,7 +199,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 			On("PatchUpgradePolicy", mock.Anything, ocm.UpgradePolicyPatchRequest{
 				ID:          "1234",
 				Value:       ocm.UpgradePolicyValueCompleted,
-				Description: "Addon was healthy at least once.",
+				Description: `Addon was healthy at least once at version "".`,
 			}).
 			Return(
 				ocm.UpgradePolicyPatchResponse{},
