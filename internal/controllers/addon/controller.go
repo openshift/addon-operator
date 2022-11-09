@@ -126,6 +126,10 @@ type ocmClient interface {
 		ctx context.Context,
 		req ocm.UpgradePolicyPatchRequest,
 	) (res ocm.UpgradePolicyPatchResponse, err error)
+	GetUpgradePolicy(
+		ctx context.Context,
+		req ocm.UpgradePolicyGetRequest,
+	) (res ocm.UpgradePolicyGetResponse, err error)
 }
 
 func (r *AddonReconciler) InjectOCMClient(ctx context.Context, c *ocm.Client) error {

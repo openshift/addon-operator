@@ -304,7 +304,7 @@ Tracks the last state last reported to the Upgrade Policy endpoint.
 | ----- | ----------- | ------ | -------- |
 | id | Upgrade policy id. | string | true |
 | value | Upgrade policy value. | AddonUpgradePolicyValue.addons.managed.openshift.io/v1alpha1 | true |
-| version | Upgrade Policy Version. | string | true |
+| version | Upgrade Policy Version. | string | false |
 | observedGeneration | The most recent generation a status update was based on. | int64 | true |
 
 [Back to Group]()

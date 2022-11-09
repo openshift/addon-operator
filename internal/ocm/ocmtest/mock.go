@@ -25,6 +25,15 @@ func (c *Client) PatchUpgradePolicy(
 		args.Error(1)
 }
 
+func (c *Client) GetUpgradePolicy(
+	ctx context.Context,
+	req ocm.UpgradePolicyGetRequest,
+) (ocm.UpgradePolicyGetResponse, error) {
+	args := c.Called(ctx, req)
+	return args.Get(0).(ocm.UpgradePolicyGetResponse),
+		args.Error(1)
+}
+
 func (c *Client) GetCluster(
 	ctx context.Context,
 	req ocm.ClusterGetRequest,

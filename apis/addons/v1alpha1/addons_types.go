@@ -72,7 +72,8 @@ type AddonUpgradePolicyStatus struct {
 	// Upgrade policy value.
 	Value AddonUpgradePolicyValue `json:"value"`
 	// Upgrade Policy Version.
-	Version string `json:"version"`
+	// +optional
+	Version string `json:"version,omitempty"`
 	// The most recent generation a status update was based on.
 	ObservedGeneration int64 `json:"observedGeneration"`
 }

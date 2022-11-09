@@ -86,12 +86,15 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 			Recorder:  recorder,
 		}
 
+		var Version = "1.0.0"
+
 		log := testutil.NewLogger(t)
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Generation: 100,
 			},
 			Spec: addonsv1alpha1.AddonSpec{
+				Version: Version,
 				UpgradePolicy: &addonsv1alpha1.AddonUpgradePolicy{
 					ID: "1234",
 				},
@@ -102,7 +105,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 			On("PatchUpgradePolicy", mock.Anything, ocm.UpgradePolicyPatchRequest{
 				ID:          "1234",
 				Value:       ocm.UpgradePolicyValueStarted,
-				Description: `Upgrading addon to version "".`,
+				Description: `Upgrading addon to version "1.0.0".`,
 			}).
 			Return(
 				ocm.UpgradePolicyPatchResponse{},
@@ -138,19 +141,23 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 		}
 		log := testutil.NewLogger(t)
 
+		var Version = "1.0.0"
+
 		err := r.handleUpgradePolicyStatusReporting(
 			context.Background(),
 			log,
 			&addonsv1alpha1.Addon{
 				Spec: addonsv1alpha1.AddonSpec{
+					Version: Version,
 					UpgradePolicy: &addonsv1alpha1.AddonUpgradePolicy{
 						ID: "1234",
 					},
 				},
 				Status: addonsv1alpha1.AddonStatus{
 					UpgradePolicy: &addonsv1alpha1.AddonUpgradePolicyStatus{
-						ID:    "1234",
-						Value: addonsv1alpha1.AddonUpgradePolicyValueStarted,
+						ID:      "1234",
+						Version: Version,
+						Value:   addonsv1alpha1.AddonUpgradePolicyValueStarted,
 					},
 				},
 			},
@@ -166,6 +173,8 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 		mockSummary := testutil.NewSummaryMock()
 		recorder.InjectOCMAPIRequestDuration(mockSummary)
 
+		var Version = "1.0.0"
+
 		r := &AddonReconciler{
 			Client:    client,
 			ocmClient: ocmClient,
@@ -177,6 +186,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 				Generation: 100,
 			},
 			Spec: addonsv1alpha1.AddonSpec{
+				Version: Version,
 				UpgradePolicy: &addonsv1alpha1.AddonUpgradePolicy{
 					ID: "1234",
 				},
@@ -189,8 +199,9 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 					},
 				},
 				UpgradePolicy: &addonsv1alpha1.AddonUpgradePolicyStatus{
-					ID:    "1234",
-					Value: addonsv1alpha1.AddonUpgradePolicyValueStarted,
+					ID:      "1234",
+					Version: Version,
+					Value:   addonsv1alpha1.AddonUpgradePolicyValueStarted,
 				},
 			},
 		}
@@ -199,7 +210,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 			On("PatchUpgradePolicy", mock.Anything, ocm.UpgradePolicyPatchRequest{
 				ID:          "1234",
 				Value:       ocm.UpgradePolicyValueCompleted,
-				Description: `Addon was healthy at least once at version "".`,
+				Description: `Addon was healthy at least once at version "1.0.0".`,
 			}).
 			Return(
 				ocm.UpgradePolicyPatchResponse{},

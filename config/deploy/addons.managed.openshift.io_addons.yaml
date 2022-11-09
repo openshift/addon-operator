@@ -446,7 +446,6 @@ spec:
                 - id
                 - observedGeneration
                 - value
-                - version
                 type: object
             type: object
         type: object
