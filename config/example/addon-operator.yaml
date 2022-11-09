@@ -6,5 +6,5 @@ spec:
   ocm:
     endpoint: http://api-mock.api-mock.svc.cluster.local
     secret:
-      name: api-mock
+      name: pull-secret
       namespace: api-mock

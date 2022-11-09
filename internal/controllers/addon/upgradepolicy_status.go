@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/openshift/addon-operator/internal/ocm"
+
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/go-logr/logr"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/ocm"
 )
 
 func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
@@ -31,12 +32,49 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 		return nil
 	}
 
-	if addon.Spec.UpgradePolicy == nil || addon.UpgradeCompleteForCurrentVersion() {
+	if addon.Spec.Version == "" {
 		return nil
 	}
-	if addon.Status.UpgradePolicy == nil || addon.Status.UpgradePolicy.Version != addon.Spec.Version {
+
+	if addon.Spec.UpgradePolicy == nil {
+		return nil
+	}
+
+	if addon.UpgradeCompleteForCurrentVersion() {
+		return nil
+	}
+
+	if addon.Status.UpgradePolicy == nil {
 		return r.reportUpgradeStarted(ctx, addon)
 	}
+
+	var (
+		policyID = addon.Spec.UpgradePolicy.ID
+	)
+
+	if addon.Status.UpgradePolicy.Version == "" {
+		req := ocm.UpgradePolicyGetRequest{
+			ID: addon.Spec.UpgradePolicy.ID,
+		}
+		response, err := r.handleGetUpgradePolicyState(ctx, req)
+		if err != nil {
+			return fmt.Errorf(
+				"getting UpgradePolicy %q state: %w", policyID, err,
+			)
+		}
+		if response.Value == ocm.UpgradePolicyValueCompleted {
+			// When the upgrade policy is "completed" in the OCM API but we don't have
+			// a version in our status, we just have to populate the current version to our
+			// status as the "version" was just recently introduced
+			addon.SetUpgradePolicyStatus(addonsv1alpha1.AddonUpgradePolicyValueCompleted)
+			return nil
+		}
+	}
+
+	if addon.Status.UpgradePolicy.Version != addon.Spec.Version {
+		return r.reportUpgradeStarted(ctx, addon)
+	}
+
 	if addon.IsAvailable() {
 		return r.reportUpgradeCompleted(ctx, addon)
 	}
@@ -106,4 +144,18 @@ func (r *AddonReconciler) handlePatchUpgradePolicy(ctx context.Context,
 	}
 	_, err := r.ocmClient.PatchUpgradePolicy(ctx, req)
 	return err
+}
+
+func (r *AddonReconciler) handleGetUpgradePolicyState(ctx context.Context,
+	req ocm.UpgradePolicyGetRequest) (ocm.UpgradePolicyGetResponse, error) {
+	if r.Recorder != nil {
+		// TODO: do not count metrics when API returns 5XX response
+		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
+			us := v * 1000000 // convert to microseconds
+			r.Recorder.RecordOCMAPIRequests(us)
+		}))
+		defer timer.ObserveDuration()
+	}
+	response, err := r.ocmClient.GetUpgradePolicy(ctx, req)
+	return response, err
 }

@@ -60,6 +60,7 @@ func addon_OwnNamespace_UpgradePolicyReporting() *addonsv1alpha1.Addon {
 					},
 				},
 			},
+			Version: "1.0.0",
 			UpgradePolicy: &addonsv1alpha1.AddonUpgradePolicy{
 				ID: "123-456-789",
 			},
