@@ -933,12 +933,12 @@ var (
 	devEnvironment *dev.Environment
 )
 
-func (d Dev) SetupObservabilityOperator(ctx context.Context) error {
-	mg.SerialDeps(
-		Dev.Setup,
-	)
+func (d Dev) deployObservabilityOperator(ctx context.Context, cluster *dev.Cluster) error {
+	return cluster.CreateAndWaitFromFolders(ctx, []string{"config/deploy/observability-operator"})
+}
 
-	return devEnvironment.Cluster.CreateAndWaitFromFolders(ctx, []string{"config/deploy/observability-operator"})
+func (d Dev) deployPrometheusRemoteStorageMock(ctx context.Context, cluster *dev.Cluster) error {
+	return cluster.CreateAndWaitFromFolders(ctx, []string{"config/deploy/prometheus-remote-storage-mock/k8s"})
 }
 
 func (d Dev) Setup(ctx context.Context) error {
@@ -981,7 +981,7 @@ func (d Dev) Integration(ctx context.Context) error {
 	os.Setenv("KUBECONFIG", devEnvironment.Cluster.Kubeconfig())
 	os.Setenv("ENABLE_WEBHOOK", "true")
 	os.Setenv("ENABLE_API_MOCK", "true")
-	os.Setenv("ENABLE_REMOTE_STORAGE_MOCK", "true")
+	os.Setenv("ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK", "true")
 
 	mg.SerialDeps(Test.Integration)
 	return nil
@@ -1026,7 +1026,14 @@ func (d Dev) Deploy(ctx context.Context) error {
 func (d Dev) deploy(
 	ctx context.Context, cluster *dev.Cluster,
 ) error {
-	if err := d.deployAPIMock(ctx, cluster); err != nil {
+	if enableApiMock, ok := os.LookupEnv("ENABLE_API_MOCK"); ok &&
+		enableApiMock == "true" {
+		if err := d.deployAPIMock(ctx, cluster); err != nil {
+			return err
+		}
+	}
+
+	if err := d.deployObservabilityOperator(ctx, cluster); err != nil {
 		return err
 	}
 
@@ -1041,15 +1048,13 @@ func (d Dev) deploy(
 		}
 	}
 
-	ctx = dev.ContextWithLogger(ctx, logger)
-
-	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
-		"config/deploy/prometheus-remote-storage-mock/k8s/namespace.yaml",
-		"config/deploy/prometheus-remote-storage-mock/k8s/deployment.yaml",
-		"config/deploy/prometheus-remote-storage-mock/k8s/service.yaml",
-	}); err != nil {
-		return fmt.Errorf("deploy Prometheus remote storage mock: %w", err)
+	if enablePrometheusRemoveStorageMock, ok := os.LookupEnv("ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK"); ok &&
+		enablePrometheusRemoveStorageMock == "true" {
+		if err := d.deployPrometheusRemoteStorageMock(ctx, cluster); err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
@@ -1311,7 +1316,7 @@ func (d Dev) init() error {
 		},
 	}
 
-	if os.Getenv("ENABLE_REMOTE_STORAGE_MOCK") == "true" {
+	if os.Getenv("ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK") == "true" {
 		clusterInitializers = append(clusterInitializers, dev.ClusterLoadObjectsFromFiles{
 			// Setup Prometheus remote mock
 			"config/deploy/prometheus-remote-storage-mock/namespace.yaml",
