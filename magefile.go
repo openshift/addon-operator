@@ -933,6 +933,14 @@ var (
 	devEnvironment *dev.Environment
 )
 
+func (d Dev) SetupObservabilityOperator(ctx context.Context) error {
+	mg.SerialDeps(
+		Dev.Setup,
+	)
+
+	return devEnvironment.Cluster.CreateAndWaitFromFolders(ctx, []string{"config/deploy/observability-operator"})
+}
+
 func (d Dev) Setup(ctx context.Context) error {
 	if err := d.init(); err != nil {
 		return err
@@ -1284,22 +1292,22 @@ func (d Dev) init() error {
 			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
 		},
 		dev.ClusterLoadObjectsFromHttp{
-			// Install Monitoring CRDs for MSO.
-			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml",
-			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml",
-			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml",
-			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml",
-			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml",
-			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml",
-			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml",
-			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml",
+			// Install Monitoring CRDs for Observability Operator.
+			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml",
+			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml",
+			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml",
+			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml",
+			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml",
+			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml",
+			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml",
+			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml",
 		},
 		dev.ClusterLoadObjectsFromFiles{
-			// Install MSO using OLM.
-			"config/deploy/mso/namespace.yaml",
-			"config/deploy/mso/operator-group.yaml",
-			"config/deploy/mso/catalog-source.yaml",
-			"config/deploy/mso/subscription.yaml",
+			// Install Observability Operator using OLM.
+			"config/deploy/observability-operator/namespace.yaml",
+			"config/deploy/observability-operator/operator-group.yaml",
+			"config/deploy/observability-operator/catalog-source.yaml",
+			"config/deploy/observability-operator/subscription.yaml",
 		},
 	}
 
