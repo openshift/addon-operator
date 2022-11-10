@@ -536,7 +536,7 @@ func (Build) imageExists(ctx context.Context, name string) (bool, error) {
 }
 
 func imageURL(name string) string {
-	// Build.init must be run before this function to set `imageOrg`
+	// Build.init must be run before this function to set `imageOrg` variable
 	envvar := strings.ReplaceAll(strings.ToUpper(name), "-", "_") + "_IMAGE"
 	if url := os.Getenv(envvar); len(url) != 0 {
 		return url
