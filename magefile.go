@@ -403,8 +403,6 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 			"-o", imageCacheDir + ".tar", imageTag},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
-			fmt.Println("here")
-			fmt.Println(err)
 			return err
 		}
 	}
@@ -563,19 +561,6 @@ func (Generate) code() error {
 	if err := manifestsCmd.Run(); err != nil {
 		return fmt.Errorf("generating kubernetes manifests: %w", err)
 	}
-
-	copyCommand := exec.Command("bash", "-c", "cp config/deploy/addons.managed.openshift.io_*.yaml config/package/crds/")
-	if err := copyCommand.Run(); err != nil {
-		return fmt.Errorf("copying crds: %w", err)
-	}
-
-	//manifestsCmd = exec.Command("controller-gen",
-	//	"crd:crdVersions=v1", "rbac:roleName=addon-operator-manager",
-	//	"paths=./...", "output:crd:artifacts:config=../config/package/crds") // TODO: Add annotations
-	//manifestsCmd.Dir = workDir + "/apis"
-	//if err := manifestsCmd.Run(); err != nil {
-	//	return fmt.Errorf("generating kubernetes manifests for package: %w", err)
-	//}
 
 	// code gen
 	codeCmd := exec.Command("controller-gen", "object", "paths=./...")
