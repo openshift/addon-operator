@@ -382,20 +382,27 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 
 	manifestsDir := path.Join(imageCacheDir, "manifests")
 	metadataDir := path.Join(imageCacheDir, "metadata")
+	tmpDir := path.Join(imageCacheDir, "tmp")
 	for _, command := range [][]string{
 		{"mkdir", "-p", manifestsDir},
 		{"mkdir", "-p", metadataDir},
+		{"mkdir", "-p", tmpDir},
 
 		// Copy files for build environment
 		{"cp", "-a",
 			"config/docker/addon-operator-package.Dockerfile",
 			imageCacheDir + "/Dockerfile"},
-
 		{"cp", "-a", "config/package/deployment/addon-operator.yaml", manifestsDir},
 		{"bash", "-c", fmt.Sprintf("cp -a config/package/*.yaml %s", manifestsDir)},
 
-		// patch and copy CRDs
-		{"kustomize", "build", "config/package/crds/", "-o", manifestsDir},
+		// Create CRD files
+		// Move CRDs and kubstomize file to tmp directory
+		{"bash", "-c", fmt.Sprintf("cp config/deploy/addons.managed.openshift.io_*.yaml %s", tmpDir)},
+		{"cp", "-a", "config/package/crds/kustomization.yaml", tmpDir},
+		// Create the CRDs with phase annotation
+		{"kustomize", "build", tmpDir, "-o", manifestsDir},
+		// remove tmp directory
+		{"rm", "-r", tmpDir},
 
 		// Build image!
 		{containerRuntime, "build", "-t", imageTag, imageCacheDir},
