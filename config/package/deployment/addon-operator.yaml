@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: addon-operator
   annotations:
-    packages.thetechnick.ninja/phase: deploy
+    package-operator.run/phase: deploy
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,6 @@ spec:
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app.kubernetes.io/name: addon-operator
     spec:
