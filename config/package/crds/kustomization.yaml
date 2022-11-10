@@ -1,0 +1,6 @@
+commonAnnotations:
+  package-operator.run/phase: namespace-crds
+resources:
+  - addons.managed.openshift.io_addoninstances.yaml
+  - addons.managed.openshift.io_addonoperators.yaml
+  - addons.managed.openshift.io_addons.yaml

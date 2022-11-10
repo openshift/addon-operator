@@ -191,7 +191,7 @@ func (Build) cmd(cmd, goos, goarch string) error {
 
 	bin := path.Join("bin", cmd)
 	if len(goos) != 0 && len(goarch) != 0 {
-		// change bin path to point to a sudirectory when cross compiling
+		// change bin path to point to a subdirectory when cross compiling
 		bin = path.Join("bin", goos+"_"+goarch, cmd)
 		env["GOOS"] = goos
 		env["GOARCH"] = goarch
@@ -222,6 +222,7 @@ func (Build) BuildImages() {
 		mg.F(Build.ImageBuild, "addon-operator-webhook"),
 		mg.F(Build.ImageBuild, "api-mock"),
 		mg.F(Build.ImageBuild, "addon-operator-index"), // also pushes bundle
+		mg.F(Build.ImageBuild, "addon-operator-package"),
 	)
 }
 
@@ -230,6 +231,7 @@ func (Build) PushImages() {
 		mg.F(Build.imagePush, "addon-operator-manager"),
 		mg.F(Build.imagePush, "addon-operator-webhook"),
 		mg.F(Build.imagePush, "addon-operator-index"), // also pushes bundle
+		mg.F(Build.imagePush, "addon-operator-package"),
 	)
 }
 
@@ -238,6 +240,7 @@ func (Build) PushImagesOnce() {
 		mg.F(Build.imagePushOnce, "addon-operator-manager"),
 		mg.F(Build.imagePushOnce, "addon-operator-webhook"),
 		mg.F(Build.imagePushOnce, "addon-operator-index"), // also pushes bundle
+		mg.F(Build.imagePushOnce, "addon-operator-package"),
 	)
 }
 
@@ -252,10 +255,10 @@ func (b Build) ImageBuild(cmd string) error {
 	// clean/prepare cache directory
 	imageCacheDir := path.Join(cacheDir, "image", cmd)
 	if err := os.RemoveAll(imageCacheDir); err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("deleting image cache: %w", err)
+		return fmt.Errorf("deleting image cache dir: %w", err)
 	}
 	if err := os.Remove(imageCacheDir + ".tar"); err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("deleting image cache: %w", err)
+		return fmt.Errorf("deleting image tar: %w", err)
 	}
 	if err := os.MkdirAll(imageCacheDir, os.ModePerm); err != nil {
 		return fmt.Errorf("create image cache dir: %w", err)
@@ -267,6 +270,9 @@ func (b Build) ImageBuild(cmd string) error {
 
 	case "addon-operator-bundle":
 		return b.buildOLMBundleImage(imageCacheDir)
+
+	case "addon-operator-package":
+		return b.buildPackageOperatorImage(imageCacheDir)
 
 	default:
 		mg.Deps(
@@ -311,7 +317,7 @@ func (b Build) buildOLMIndexImage(imageCacheDir string) error {
 		"--container-tool", containerRuntime,
 		"--bundles", imageURL("addon-operator-bundle"),
 		"--tag", imageURL("addon-operator-index")); err != nil {
-		return fmt.Errorf("runnign opm: %w", err)
+		return fmt.Errorf("running opm: %w", err)
 	}
 	return nil
 }
@@ -360,6 +366,46 @@ func (b Build) buildOLMBundleImage(imageCacheDir string) error {
 			"-o", imageCacheDir + ".tar", imageTag},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
+	mg.Deps(
+		Build.init,
+		Dependency.Kustomize,
+	)
+
+	imageTag := imageURL("addon-operator-package")
+
+	manifestsDir := path.Join(imageCacheDir, "manifests")
+	metadataDir := path.Join(imageCacheDir, "metadata")
+	for _, command := range [][]string{
+		{"mkdir", "-p", manifestsDir},
+		{"mkdir", "-p", metadataDir},
+
+		// Copy files for build environment
+		{"cp", "-a",
+			"config/docker/addon-operator-package.Dockerfile",
+			imageCacheDir + "/Dockerfile"},
+
+		{"cp", "-a", "config/package/deployment/addon-operator.yaml", manifestsDir},
+		{"cp", "-a", "config/package/namespace.yaml", manifestsDir},
+		{"cp", "-a", "config/package/manifest.yaml", manifestsDir},
+
+		// patch and copy CRDs
+		{"kustomize", "build", "config/package/crds/", "-o", manifestsDir},
+
+		// Build image!
+		{containerRuntime, "build", "-t", imageTag, imageCacheDir},
+		{containerRuntime, "image", "save",
+			"-o", imageCacheDir + ".tar", imageTag},
+	} {
+		if err := sh.RunV(command[0], command[1:]...); err != nil {
+			fmt.Println("here")
+			fmt.Println(err)
 			return err
 		}
 	}
@@ -486,6 +532,7 @@ func (Build) imageExists(ctx context.Context, name string) (bool, error) {
 }
 
 func imageURL(name string) string {
+	// Build.init must be run before this function to set `imageOrg`
 	envvar := strings.ReplaceAll(strings.ToUpper(name), "-", "_") + "_IMAGE"
 	if url := os.Getenv(envvar); len(url) != 0 {
 		return url
@@ -516,6 +563,14 @@ func (Generate) code() error {
 	manifestsCmd.Dir = workDir + "/apis"
 	if err := manifestsCmd.Run(); err != nil {
 		return fmt.Errorf("generating kubernetes manifests: %w", err)
+	}
+
+	manifestsCmd = exec.Command("controller-gen",
+		"crd:crdVersions=v1", "rbac:roleName=addon-operator-manager",
+		"paths=./...", "output:crd:artifacts:config=../config/package/crds") // TODO: Add annotations
+	manifestsCmd.Dir = workDir + "/apis"
+	if err := manifestsCmd.Run(); err != nil {
+		return fmt.Errorf("generating kubernetes manifests for package: %w", err)
 	}
 
 	// code gen
@@ -654,6 +709,7 @@ func (Test) IntegrationShort() error {
 const (
 	controllerGenVersion = "0.6.2"
 	kindVersion          = "0.11.1"
+	kustomizeVersion     = "4.5.7"
 	yqVersion            = "4.12.0"
 	goimportsVersion     = "0.1.5"
 	golangciLintVersion  = "1.46.2"
@@ -680,6 +736,11 @@ func (d Dependency) All() {
 func (d Dependency) Kind() error {
 	return depsDir.GoInstall("kind",
 		"sigs.k8s.io/kind", kindVersion)
+}
+
+func (d Dependency) Kustomize() error {
+	return depsDir.GoInstall("kustomize",
+		"sigs.k8s.io/kustomize/kustomize/v4", kustomizeVersion)
 }
 
 // Ensure controller-gen - kubebuilder code and manifest generator.
