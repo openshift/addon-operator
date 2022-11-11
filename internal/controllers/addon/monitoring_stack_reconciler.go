@@ -54,6 +54,10 @@ func (r *monitoringStackReconciler) Reconcile(ctx context.Context,
 func (r *monitoringStackReconciler) ensureMonitoringStack(ctx context.Context,
 	addon *addonsv1alpha1.Addon) error {
 
+	if !HasMonitoringStack(addon) {
+		return nil
+	}
+
 	// create desired MonitoringStack
 	desiredMonitoringStack, err := r.getDesiredMonitoringStack(ctx, addon)
 	if err != nil {

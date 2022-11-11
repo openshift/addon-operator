@@ -335,6 +335,12 @@ func HasMonitoringFederation(addon *addonsv1alpha1.Addon) bool {
 	return addon.Spec.Monitoring != nil && addon.Spec.Monitoring.Federation != nil
 }
 
+// HasMonitoringStack is a helper to determine if a given addon's spec
+// defines a Monitoring.Stack.
+func HasMonitoringStack(addon *addonsv1alpha1.Addon) bool {
+	return addon.Spec.Monitoring != nil && addon.Spec.Monitoring.MonitoringStack != nil
+}
+
 // HasAdditionalCatalogSources determines whether the passed addon's spec
 // contains additional catalog sources
 func HasAdditionalCatalogSources(addon *addonsv1alpha1.Addon) bool {
