@@ -239,7 +239,9 @@ func (r *AddonReconciler) Reconcile(
 		if err != nil {
 			return
 		}
-		err = r.handleUpgradePolicyStatusReporting(ctx, log, addon)
+		err = r.handleUpgradePolicyStatusReporting(
+			ctx, log.WithName("UpgradePolicyStatusReporter"), addon,
+		)
 
 		// Finally, update the Status back to the kube-api
 		// This is the only place where Status is being reported.

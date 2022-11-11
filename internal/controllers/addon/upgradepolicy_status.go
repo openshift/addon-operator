@@ -6,9 +6,8 @@ import (
 
 	"github.com/openshift/addon-operator/internal/ocm"
 
-	"github.com/prometheus/client_golang/prometheus"
-
 	"github.com/go-logr/logr"
+	"github.com/prometheus/client_golang/prometheus"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
@@ -18,6 +17,10 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 	log logr.Logger,
 	addon *addonsv1alpha1.Addon,
 ) error {
+	if !requiresReporting(addon) {
+		return nil
+	}
+
 	r.ocmClientMux.RLock()
 	defer r.ocmClientMux.RUnlock()
 
@@ -32,54 +35,79 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 		return nil
 	}
 
-	if addon.Spec.Version == "" {
-		return nil
-	}
-
-	if addon.Spec.UpgradePolicy == nil {
-		return nil
-	}
-
-	if addon.UpgradeCompleteForCurrentVersion() {
-		return nil
-	}
-
-	if addon.Status.UpgradePolicy == nil {
-		return r.reportUpgradeStarted(ctx, addon)
-	}
-
-	var (
-		policyID = addon.Spec.UpgradePolicy.ID
+	log = log.WithValues(
+		"UpgradePolicy", addon.Spec.UpgradePolicy,
+		"Version", addon.Spec.Version,
 	)
 
+	if addon.Status.UpgradePolicy == nil {
+		log.Info("UpgradePolicy status unknown; reporting upgrade as started")
+
+		return r.reportUpgradeStarted(ctx, addon)
+	}
 	if addon.Status.UpgradePolicy.Version == "" {
-		req := ocm.UpgradePolicyGetRequest{
-			ID: addon.Spec.UpgradePolicy.ID,
-		}
-		response, err := r.handleGetUpgradePolicyState(ctx, req)
-		if err != nil {
-			return fmt.Errorf(
-				"getting UpgradePolicy %q state: %w", policyID, err,
-			)
-		}
-		if response.Value == ocm.UpgradePolicyValueCompleted {
-			// When the upgrade policy is "completed" in the OCM API but we don't have
-			// a version in our status, we just have to populate the current version to our
-			// status as the "version" was just recently introduced
-			addon.SetUpgradePolicyStatus(addonsv1alpha1.AddonUpgradePolicyValueCompleted)
+		log.Info("previous upgrade version unknown; retrieving status from OCM")
+
+		if complete, err := r.handleUnknownPreviousVersion(ctx, log, addon); err != nil {
+			return fmt.Errorf("handling UpgradePolicy with unknown previous version: %w", err)
+		} else if complete {
 			return nil
 		}
 	}
-
 	if addon.Status.UpgradePolicy.Version != addon.Spec.Version {
+		prevVer := addon.Status.UpgradePolicy.Version
+
+		log.Info(
+			fmt.Sprintf(
+				"version %q from UpgradePolicy status is stale; reporting upgrade for version %q as started",
+				prevVer,
+				addon.Spec.Version,
+			),
+		)
+
 		return r.reportUpgradeStarted(ctx, addon)
 	}
-
 	if addon.IsAvailable() {
+		log.Info("reporting upgrade as completed")
+
 		return r.reportUpgradeCompleted(ctx, addon)
 	}
 
 	return nil
+}
+
+func requiresReporting(addon *addonsv1alpha1.Addon) bool {
+	return addon.Spec.Version != "" &&
+		addon.Spec.UpgradePolicy != nil &&
+		!addon.UpgradeCompleteForCurrentVersion()
+}
+
+func (r *AddonReconciler) handleUnknownPreviousVersion(ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (bool, error) {
+	policyID := addon.Spec.UpgradePolicy.ID
+	req := ocm.UpgradePolicyGetRequest{
+		ID: policyID,
+	}
+
+	res, err := r.handleGetUpgradePolicyState(ctx, req)
+	if err != nil {
+		return false, fmt.Errorf(
+			"getting UpgradePolicy %q state: %w", policyID, err,
+		)
+	}
+
+	if res.Value == ocm.UpgradePolicyValueCompleted {
+		log.Info("previous upgrade completed; setting UpgradePolicy status to complete")
+		// When the upgrade policy is "completed" in the OCM API but we don't have
+		// a version in our status, we just have to populate the current version to our
+		// status as the "version" was just recently introduced
+		addon.SetUpgradePolicyStatus(addonsv1alpha1.AddonUpgradePolicyValueCompleted)
+
+		return true, nil
+	}
+
+	log.Info(fmt.Sprintf("found current upgrade with state %q", string(res.Value)))
+
+	return false, nil
 }
 
 func (r *AddonReconciler) reportUpgradeStarted(ctx context.Context, addon *addonsv1alpha1.Addon) error {
@@ -128,26 +156,25 @@ func (r *AddonReconciler) reportUpgradeCompleted(ctx context.Context, addon *add
 	return nil
 }
 
-// reconciler-facing wrapper around ocm.PatchUpgradePolicy that makes it
-// easier to record OCM API metrics, and unit test the instrumentation.
-// This also allows us to re-use the Recorder in AddonReconciler for recording
-// OCM API metrics, rather than passing it down to the ocmClient object.
 func (r *AddonReconciler) handlePatchUpgradePolicy(ctx context.Context,
-	req ocm.UpgradePolicyPatchRequest) error {
-	if r.Recorder != nil {
-		// TODO: do not count metrics when API returns 5XX response
-		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
-			us := v * 1000000 // convert to microseconds
-			r.Recorder.RecordOCMAPIRequests(us)
-		}))
-		defer timer.ObserveDuration()
-	}
-	_, err := r.ocmClient.PatchUpgradePolicy(ctx, req)
-	return err
+	req ocm.UpgradePolicyPatchRequest) (err error) {
+	r.recordOCMRequestDuration(func() {
+		_, err = r.ocmClient.PatchUpgradePolicy(ctx, req)
+	})
+
+	return
 }
 
 func (r *AddonReconciler) handleGetUpgradePolicyState(ctx context.Context,
-	req ocm.UpgradePolicyGetRequest) (ocm.UpgradePolicyGetResponse, error) {
+	req ocm.UpgradePolicyGetRequest) (res ocm.UpgradePolicyGetResponse, err error) {
+	r.recordOCMRequestDuration(func() {
+		res, err = r.ocmClient.GetUpgradePolicy(ctx, req)
+	})
+
+	return
+}
+
+func (r *AddonReconciler) recordOCMRequestDuration(reqFunc func()) {
 	if r.Recorder != nil {
 		// TODO: do not count metrics when API returns 5XX response
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
@@ -156,6 +183,6 @@ func (r *AddonReconciler) handleGetUpgradePolicyState(ctx context.Context,
 		}))
 		defer timer.ObserveDuration()
 	}
-	response, err := r.ocmClient.GetUpgradePolicy(ctx, req)
-	return response, err
+
+	reqFunc()
 }
