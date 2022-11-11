@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
-	msov1alpha1 "github.com/rhobs/monitoring-stack-operator/pkg/apis/v1alpha1"
+	monv1 "github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring/v1"
+	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/equality"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -75,7 +75,7 @@ func (r *monitoringStackReconciler) ensureMonitoringStack(ctx context.Context,
 
 // helper function to generate desired MonitoringStack object
 func (r *monitoringStackReconciler) getDesiredMonitoringStack(ctx context.Context,
-	addon *addonsv1alpha1.Addon) (*msov1alpha1.MonitoringStack, error) {
+	addon *addonsv1alpha1.Addon) (*obov1alpha1.MonitoringStack, error) {
 
 	commonConfig, stop := parseAddonInstallConfig(controllers.LoggerFromContext(ctx), addon)
 	if stop {
@@ -95,19 +95,19 @@ func (r *monitoringStackReconciler) getDesiredMonitoringStack(ctx context.Contex
 		writeRelabelConfig = getWriteRelabelConfigFromAllowlist(rhobsRemoteWriteConfig.Allowlist)
 	}
 
-	desiredMonitoringStack := &msov1alpha1.MonitoringStack{
+	desiredMonitoringStack := &obov1alpha1.MonitoringStack{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      getMonitoringStackName(addon.Name),
 			Namespace: commonConfig.Namespace,
 		},
-		Spec: msov1alpha1.MonitoringStackSpec{
+		Spec: obov1alpha1.MonitoringStackSpec{
 			Retention: "30d",
 			ResourceSelector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
 					controllers.MSOLabel: addon.Name,
 				},
 			},
-			PrometheusConfig: &msov1alpha1.PrometheusConfig{
+			PrometheusConfig: &obov1alpha1.PrometheusConfig{
 				RemoteWrite: []monv1.RemoteWriteSpec{
 					{
 						URL:                 remoteWriteURL,
@@ -137,10 +137,10 @@ func getMonitoringStackName(addonName string) string {
 }
 
 func (r *monitoringStackReconciler) reconcileMonitoringStack(ctx context.Context,
-	desiredMonitoringStack *msov1alpha1.MonitoringStack) (*msov1alpha1.MonitoringStack, error) {
+	desiredMonitoringStack *obov1alpha1.MonitoringStack) (*obov1alpha1.MonitoringStack, error) {
 
 	// get existing MonitoringStack
-	currentMonitoringStack := &msov1alpha1.MonitoringStack{}
+	currentMonitoringStack := &obov1alpha1.MonitoringStack{}
 	if err := r.client.Get(ctx, client.ObjectKey{
 		Name:      desiredMonitoringStack.Name,
 		Namespace: desiredMonitoringStack.Namespace,

@@ -14,7 +14,7 @@ import (
 	utilpointer "k8s.io/utils/pointer"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	msov1alpha1 "github.com/rhobs/monitoring-stack-operator/pkg/apis/v1alpha1"
+	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 )
 
 func NewTestSchemeWithAddonsv1alpha1() *runtime.Scheme {
@@ -26,7 +26,7 @@ func NewTestSchemeWithAddonsv1alpha1() *runtime.Scheme {
 func NewTestSchemeWithAddonsv1alpha1AndMsov1alpha1() *runtime.Scheme {
 	testScheme := runtime.NewScheme()
 	_ = addonsv1alpha1.AddToScheme(testScheme)
-	_ = msov1alpha1.AddToScheme(testScheme)
+	_ = obov1alpha1.AddToScheme(testScheme)
 
 	return testScheme
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	msov1alpha1 "github.com/rhobs/monitoring-stack-operator/pkg/apis/v1alpha1"
+	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -61,9 +61,9 @@ func TestEnsureMonitoringStack_MonitoringStackPresentInSpec_NotPresentInCluster(
 	addon := testutil.NewTestAddonWithMonitoringStack()
 	ctx := context.Background()
 
-	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&msov1alpha1.MonitoringStack{}), mock.Anything).
+	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&obov1alpha1.MonitoringStack{}), mock.Anything).
 		Return(testutil.NewTestErrNotFound())
-	c.On("Create", testutil.IsContext, mock.IsType(&msov1alpha1.MonitoringStack{}), mock.Anything).
+	c.On("Create", testutil.IsContext, mock.IsType(&obov1alpha1.MonitoringStack{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			commonConfig, stop := parseAddonInstallConfig(controllers.LoggerFromContext(ctx), addon)
 			assert.False(t, stop)
@@ -90,13 +90,13 @@ func TestEnsureMonitoringStack_MonitoringStackPresentInSpec_PresentInCluster(t *
 	addon := testutil.NewTestAddonWithMonitoringStack()
 
 	ctx := context.Background()
-	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&msov1alpha1.MonitoringStack{}), mock.Anything).
+	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&obov1alpha1.MonitoringStack{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			namespacedName := args.Get(1).(types.NamespacedName)
 			assert.Equal(t, getMonitoringStackName(addon.Name), namespacedName.Name)
 		}).
 		Return(nil)
-	c.On("Update", testutil.IsContext, mock.IsType(&msov1alpha1.MonitoringStack{}), mock.Anything).
+	c.On("Update", testutil.IsContext, mock.IsType(&obov1alpha1.MonitoringStack{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			commonConfig, stop := parseAddonInstallConfig(controllers.LoggerFromContext(ctx), addon)
 			assert.False(t, stop)
