@@ -29,6 +29,7 @@ import (
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/yaml"
 )
 
@@ -588,6 +589,36 @@ func (Test) Integration() error {
 		"-timeout=20m", "./integration/...")
 }
 
+// Target to prepare the CI-CD environment before installing the operator.
+func (t Test) IntegrationCIPrepare(ctx context.Context) error {
+	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
+	if err != nil {
+		return fmt.Errorf("creating cluster client: %w", err)
+	}
+
+	ctx = dev.ContextWithLogger(ctx, logger)
+	return labelNodesWithInfraRole(ctx, cluster)
+}
+
+func labelNodesWithInfraRole(ctx context.Context, cluster *dev.Cluster) error {
+	nodeList := &corev1.NodeList{}
+	if err := cluster.CtrlClient.List(ctx, nodeList); err != nil {
+		return fmt.Errorf("listing nodes: %w", err)
+	}
+	for i := range nodeList.Items {
+		node := &nodeList.Items[i]
+		if node.Labels == nil {
+			node.Labels = map[string]string{}
+		}
+		node.Labels["node-role.kubernetes.io/infra"] = "True"
+		if err := cluster.CtrlClient.Update(ctx, node); err != nil {
+			return fmt.Errorf("adding infra role to all nodes: %w", err)
+		}
+	}
+	return nil
+}
+
 // Target to run within OpenShift CI, where the Addon Operator and webhook is already deployed via the framework.
 // This target will additionally deploy the API Mock before starting the integration test suite.
 func (t Test) IntegrationCI(ctx context.Context) error {
@@ -785,6 +816,11 @@ func (d Dev) Deploy(ctx context.Context) error {
 	mg.Deps(
 		Dev.Setup, // setup is a pre-requesite and needs to run before we can load images.
 	)
+
+	if err := labelNodesWithInfraRole(ctx, devEnvironment.Cluster); err != nil {
+		return err
+	}
+
 	mg.Deps(
 		mg.F(Dev.LoadImage, "api-mock"),
 		mg.F(Dev.LoadImage, "addon-operator-manager"),
