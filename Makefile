@@ -166,10 +166,6 @@ test-integration:
 
 # legacy alias for CI/CD
 test-e2e:
-ifdef ADO_RUN_OPTIONAL_OPERATORS_SUBSCRIBE_STEP
-	./mage test:integrationciprepare
-	./hack/optional-operators-subscribe.sh
-endif
 	./mage test:integrationci
 .PHONY: test-e2e
 
