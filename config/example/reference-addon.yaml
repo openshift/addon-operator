@@ -12,7 +12,7 @@ spec:
       namespace: reference-addon
       packageName: reference-addon
       channel: alpha
-      catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:0e61590e15f7e9c71b9a43a60392b2e8a396fd36a86100939c1bb9358fe42d7a
+      catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:2403bcb6d6f61ba3cd9d3a4653edeb852026a1edc0c49f416d3df5008dad37e8
       additionalCatalogSources:
       - name: test-1
         image: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
