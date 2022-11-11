@@ -23,17 +23,6 @@ spec:
     monitoringStack:
       rhobsRemoteWriteConfig:
         url: prometheus-remote-storage-mock.prometheus-remote-storage-mock:1234
-      serviceMonitorConfig:
-        namespaceSelector:
-          matchNames:
-          - reference-addon
-        selector:
-          matchLabels:
-            app.kubernetes.io/name: reference-addon
-        endpoints:
-        - port: http
-          interval: 10s
-          path: /metrics
     federation:
       namespace: "reference-addon"
       matchNames:

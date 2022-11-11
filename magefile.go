@@ -29,6 +29,7 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
@@ -824,14 +825,15 @@ func (Test) IntegrationShort() error {
 
 // Dependency Versions
 const (
-	controllerGenVersion = "0.6.2"
-	kindVersion          = "0.11.1"
-	yqVersion            = "4.12.0"
-	goimportsVersion     = "0.1.5"
-	golangciLintVersion  = "1.46.2"
-	olmVersion           = "0.20.0"
-	opmVersion           = "1.24.0"
-	helmVersion          = "3.7.2"
+	controllerGenVersion         = "0.6.2"
+	kindVersion                  = "0.11.1"
+	yqVersion                    = "4.12.0"
+	goimportsVersion             = "0.1.5"
+	golangciLintVersion          = "1.46.2"
+	olmVersion                   = "0.20.0"
+	opmVersion                   = "1.24.0"
+	helmVersion                  = "3.7.2"
+	observabilityOperatorVersion = "0.0.15"
 )
 
 type Dependency mg.Namespace
@@ -933,12 +935,47 @@ var (
 	devEnvironment *dev.Environment
 )
 
-func (d Dev) deployObservabilityOperator(ctx context.Context, cluster *dev.Cluster) error {
-	return cluster.CreateAndWaitFromFolders(ctx, []string{"config/deploy/observability-operator"})
+func renderObservabilityOperatorCatalogSource(ctx context.Context, cluster *dev.Cluster) (*operatorsv1alpha1.CatalogSource, error) {
+	objs, err := dev.LoadKubernetesObjectsFromFile("config/deploy/observability-operator/catalog-source.yaml.tpl")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load the prometheus-remote-storage-mock deployment.yaml.tpl: %w", err)
+	}
+
+	// Replace version
+	observabilityOperatorCatalogSource := &operatorsv1alpha1.CatalogSource{}
+	if err := cluster.Scheme.Convert(&objs[0], observabilityOperatorCatalogSource, ctx); err != nil {
+		return nil, fmt.Errorf("failed to convert the catalog source: %w", err)
+	}
+
+	observabilityOperatorCatalogSourceImage := fmt.Sprintf("quay.io/rhobs/observability-operator-catalog:%s", observabilityOperatorVersion)
+	observabilityOperatorCatalogSource.Spec.Image = observabilityOperatorCatalogSourceImage
+
+	return observabilityOperatorCatalogSource, nil
 }
 
-func (d Dev) deployPrometheusRemoteStorageMock(ctx context.Context, cluster *dev.Cluster) error {
-	return cluster.CreateAndWaitFromFolders(ctx, []string{"config/deploy/prometheus-remote-storage-mock/k8s"})
+func (d Dev) deployObservabilityOperator(ctx context.Context, cluster *dev.Cluster) error {
+	observabilityOperatorCatalogSource, err := renderObservabilityOperatorCatalogSource(ctx, cluster)
+	if err != nil {
+		return fmt.Errorf("failed to render the observability operator catalog source from its template: %w", err)
+	}
+
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		"config/deploy/observability-operator/namespace.yaml",
+	}); err != nil {
+		return fmt.Errorf("failed to load the namespace for observability-operator: %w", err)
+	}
+
+	if err := cluster.CreateAndWaitForReadiness(ctx, observabilityOperatorCatalogSource); err != nil {
+		return fmt.Errorf("failed to load the catalog source for observability-operator: %w", err)
+	}
+
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		"config/deploy/observability-operator/operator-group.yaml",
+		"config/deploy/observability-operator/subscription.yaml",
+	}); err != nil {
+		return fmt.Errorf("failed to load the operator-group/subscription for observability-operator: %w", err)
+	}
+	return nil
 }
 
 func (d Dev) Setup(ctx context.Context) error {
@@ -1014,6 +1051,7 @@ func (d Dev) Deploy(ctx context.Context) error {
 		mg.F(Dev.LoadImage, "api-mock"),
 		mg.F(Dev.LoadImage, "addon-operator-manager"),
 		mg.F(Dev.LoadImage, "addon-operator-webhook"),
+		mg.F(Dev.LoadImage, "prometheus-remote-storage-mock"),
 	)
 
 	if err := d.deploy(ctx, devEnvironment.Cluster); err != nil {
@@ -1032,7 +1070,6 @@ func (d Dev) deploy(
 			return err
 		}
 	}
-
 	if err := d.deployObservabilityOperator(ctx, cluster); err != nil {
 		return err
 	}
@@ -1055,6 +1092,52 @@ func (d Dev) deploy(
 		}
 	}
 
+	return nil
+}
+
+func renderPrometheusRemoteStorageMockDeployment(ctx context.Context, cluster *dev.Cluster) (*appsv1.Deployment, error) {
+	objs, err := dev.LoadKubernetesObjectsFromFile("config/deploy/prometheus-remote-storage-mock/deployment.yaml.tpl")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load the prometheus-remote-storage-mock deployment.yaml.tpl: %w", err)
+	}
+
+	// Replace image
+	prometheusRemoteStorageMockDeployment := &appsv1.Deployment{}
+	if err := cluster.Scheme.Convert(&objs[0], prometheusRemoteStorageMockDeployment, ctx); err != nil {
+		return nil, fmt.Errorf("failed to convert the deployment: %w", err)
+	}
+
+	prometheusRemoteStorageMockImage := os.Getenv("PROMETHEUS_REMOTE_STORAGE_MOCK_IMAGE")
+	if len(prometheusRemoteStorageMockImage) == 0 {
+		prometheusRemoteStorageMockImage = imageURL("prometheus-remote-storage-mock")
+	}
+	for i := range prometheusRemoteStorageMockDeployment.Spec.Template.Spec.Containers {
+		container := &prometheusRemoteStorageMockDeployment.Spec.Template.Spec.Containers[i]
+
+		if container.Name == "mock" {
+			container.Image = prometheusRemoteStorageMockImage
+			break
+		}
+	}
+	return prometheusRemoteStorageMockDeployment, nil
+}
+
+func (d Dev) deployPrometheusRemoteStorageMock(ctx context.Context, cluster *dev.Cluster) error {
+	prometheusRemoteStorageMockDeployment, err := renderPrometheusRemoteStorageMockDeployment(ctx, cluster)
+	if err != nil {
+		return fmt.Errorf("failed to render the prometheus remote storage mock deployment from its deployment template: %w", err)
+	}
+
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		"config/deploy/prometheus-remote-storage-mock/namespace.yaml",
+		"config/deploy/prometheus-remote-storage-mock/service.yaml",
+	}); err != nil {
+		return fmt.Errorf("failed to load the prometheus-remote-storage-mock's namespace/service: %w", err)
+	}
+
+	if err := cluster.CreateAndWaitForReadiness(ctx, prometheusRemoteStorageMockDeployment); err != nil {
+		return fmt.Errorf("failed to setup the prometheus-remote-storage-mock deployment: %w", err)
+	}
 	return nil
 }
 
@@ -1281,6 +1364,22 @@ func (d Dev) init() error {
 	)
 
 	clusterInitializers := dev.WithClusterInitializers{
+		dev.ClusterLoadObjectsFromHttp{
+			// Install Monitoring CRDs for Observability Operator.
+			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml", observabilityOperatorVersion),
+			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml", observabilityOperatorVersion),
+			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml", observabilityOperatorVersion),
+			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml", observabilityOperatorVersion),
+			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml", observabilityOperatorVersion),
+			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml", observabilityOperatorVersion),
+			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml", observabilityOperatorVersion),
+			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml", observabilityOperatorVersion),
+		},
+		dev.ClusterLoadObjectsFromHttp{
+			// Install OLM.
+			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
+			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
+		},
 		dev.ClusterLoadObjectsFromFiles{
 			// OCP APIs required by the AddonOperator.
 			"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
@@ -1291,39 +1390,6 @@ func (d Dev) init() error {
 			// OpenShift console to interact with OLM.
 			"hack/openshift-console.yaml",
 		},
-		dev.ClusterLoadObjectsFromHttp{
-			// Install OLM.
-			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
-			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
-		},
-		dev.ClusterLoadObjectsFromHttp{
-			// Install Monitoring CRDs for Observability Operator.
-			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml",
-			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml",
-			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml",
-			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml",
-			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml",
-			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml",
-			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml",
-			"https://raw.githubusercontent.com/rhobs/observability-operator/v0.0.15/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml",
-		},
-		dev.ClusterLoadObjectsFromFiles{
-			// Install Observability Operator using OLM.
-			"config/deploy/observability-operator/namespace.yaml",
-			"config/deploy/observability-operator/operator-group.yaml",
-			"config/deploy/observability-operator/catalog-source.yaml",
-			"config/deploy/observability-operator/subscription.yaml",
-		},
-	}
-
-	if os.Getenv("ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK") == "true" {
-		clusterInitializers = append(clusterInitializers, dev.ClusterLoadObjectsFromFiles{
-			// Setup Prometheus remote mock
-			"config/deploy/prometheus-remote-storage-mock/namespace.yaml",
-			"config/deploy/prometheus-remote-storage-mock/deployment.yaml",
-			"config/deploy/prometheus-remote-storage-mock/service.yaml",
-		},
-		)
 	}
 
 	devEnvironment = dev.NewEnvironment(
@@ -1333,7 +1399,7 @@ func (d Dev) init() error {
 			dev.WithWaitOptions([]dev.WaitOption{
 				dev.WithTimeout(2 * time.Minute),
 			}),
-			dev.WithSchemeBuilder(aoapisv1alpha1.SchemeBuilder),
+			dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
 		}),
 		dev.WithContainerRuntime(containerRuntime),
 		clusterInitializers,

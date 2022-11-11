@@ -16,8 +16,8 @@ spec:
         app.kubernetes.io/name: prometheus-remote-storage-mock
     spec:
       containers:
-      - name: manager
-        image: docker.io/mayankshah1607/prometheus-remote-storage-mock:latest
+      - name: mock
+        image: quay.io/app-sre/prometheus-remote-storage-mock:${VERSION}
         ports:
         - containerPort: 1234
         resources:
