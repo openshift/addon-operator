@@ -380,25 +380,54 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 
 	imageTag := imageURL("addon-operator-package")
 
+	// Replace image in deployment manifest template
+	deploymentTemplate, err := ioutil.ReadFile("config/package/addon-operator.yaml.tpl")
+	if err != nil {
+		return fmt.Errorf("reading deployment template: %w", err)
+	}
+
+	var deployment appsv1.Deployment
+	if err := yaml.Unmarshal(deploymentTemplate, &deployment); err != nil {
+		return err
+	}
+
+	// replace image
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		if container.Name == "manager" {
+			container.Image = imageURL("addon-operator-manager")
+			break
+		}
+	}
+	// write deployment manifest
+	deploymentBytes, err := yaml.Marshal(deployment)
+	if err != nil {
+		return err
+	}
+	if err = ioutil.WriteFile("config/package/addon-operator.yaml",
+		deploymentBytes, os.ModePerm); err != nil {
+		return err
+	}
+
+	// Create directories
 	manifestsDir := path.Join(imageCacheDir, "manifests")
-	metadataDir := path.Join(imageCacheDir, "metadata")
 	tmpDir := path.Join(imageCacheDir, "tmp")
 	for _, command := range [][]string{
 		{"mkdir", "-p", manifestsDir},
-		{"mkdir", "-p", metadataDir},
 		{"mkdir", "-p", tmpDir},
 
 		// Copy files for build environment
 		{"cp", "-a",
 			"config/docker/addon-operator-package.Dockerfile",
 			imageCacheDir + "/Dockerfile"},
-		{"cp", "-a", "config/package/deployment/addon-operator.yaml", manifestsDir},
-		{"bash", "-c", fmt.Sprintf("cp -a config/package/*.yaml %s", manifestsDir)},
+
+		{"cp", "-a", "config/package/addon-operator.yaml", manifestsDir},
+		{"cp", "-a", "config/package/manifest.yaml", manifestsDir},
+		{"cp", "-a", "config/package/namespace.yaml", manifestsDir},
 
 		// Create CRD files
 		// Move CRDs and kubstomize file to tmp directory
-		{"bash", "-c", fmt.Sprintf("cp config/deploy/addons.managed.openshift.io_*.yaml %s", tmpDir)},
-		{"cp", "-a", "config/package/crds-kustomization.yaml", path.Join(tmpDir, "kustomization.yaml")},
+		{"bash", "-c", "cp config/deploy/addons.managed.openshift.io_*.yaml " + tmpDir},
+		{"cp", "-a", "config/package/crds-kustomization.yaml", tmpDir + "/kustomization.yaml"},
 		// Create the CRDs with phase annotation
 		{"kustomize", "build", tmpDir, "-o", manifestsDir},
 		// remove tmp directory
@@ -429,29 +458,25 @@ func (b Build) TemplateAddonOperatorCSV() error {
 	}
 
 	// replace images
-	for i := range csv.Spec.
+	for _, deploy := range csv.Spec.
 		InstallStrategy.StrategySpec.DeploymentSpecs {
-		deploy := &csv.Spec.
-			InstallStrategy.StrategySpec.DeploymentSpecs[i]
 
 		switch deploy.Name {
 		case "addon-operator-manager":
-			for i := range deploy.Spec.
+			for _, container := range deploy.Spec.
 				Template.Spec.Containers {
-				container := &deploy.Spec.Template.Spec.Containers[i]
-				switch container.Name {
-				case "manager":
+				if container.Name == "manager" {
 					container.Image = imageURL("addon-operator-manager")
+					break
 				}
 			}
 
 		case "addon-operator-webhooks":
-			for i := range deploy.Spec.
+			for _, container := range deploy.Spec.
 				Template.Spec.Containers {
-				container := &deploy.Spec.Template.Spec.Containers[i]
-				switch container.Name {
-				case "webhook":
+				if container.Name == "webhook" {
 					container.Image = imageURL("addon-operator-webhook")
+					break
 				}
 			}
 		}
