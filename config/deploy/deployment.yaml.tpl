@@ -18,12 +18,11 @@ spec:
       serviceAccountName: addon-operator
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - preference:
-              matchExpressions:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
               - key: node-role.kubernetes.io/infra
                 operator: Exists
-            weight: 100
       tolerations:
       - effect: NoSchedule
         key: node-role.kubernetes.io/infra
