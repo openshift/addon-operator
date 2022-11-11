@@ -398,7 +398,7 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 		// Create CRD files
 		// Move CRDs and kubstomize file to tmp directory
 		{"bash", "-c", fmt.Sprintf("cp config/deploy/addons.managed.openshift.io_*.yaml %s", tmpDir)},
-		{"cp", "-a", "config/package/crds/kustomization.yaml", tmpDir},
+		{"cp", "-a", "config/package/crds-kustomization.yaml", path.Join(tmpDir, "kustomization.yaml")},
 		// Create the CRDs with phase annotation
 		{"kustomize", "build", tmpDir, "-o", manifestsDir},
 		// remove tmp directory
