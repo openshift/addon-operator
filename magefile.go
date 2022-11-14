@@ -392,65 +392,63 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 		}
 	}
 
-	// Replace image in deployment manifest template
 	deploymentTemplate, err := ioutil.ReadFile("config/package/addon-operator.yaml.tpl")
 	if err != nil {
 		return fmt.Errorf("reading deployment template: %w", err)
 	}
 
-	var deployment appsv1.Deployment
-	if err := yaml.Unmarshal(deploymentTemplate, &deployment); err != nil {
-		return err
-	}
-
-	// replace image
-	for i := range deployment.Spec.Template.Spec.Containers {
-		container := &deployment.Spec.Template.Spec.Containers[i]
-		if container.Name == "manager" {
-			container.Image = imageURL("addon-operator-manager")
-			break
-		}
-	}
-
-	deploymentBytes, err := yaml.Marshal(deployment)
+	templatedDeployment, err := replaceManagerContainerImage(deploymentTemplate, imageURL("addon-operator-manager"))
 	if err != nil {
 		return err
 	}
 
-	// write deployment manifest
 	if err = ioutil.WriteFile(manifestsDir+"/addon-operator.yaml",
-		deploymentBytes, os.ModePerm); err != nil {
+		templatedDeployment, os.ModePerm); err != nil {
 		return err
 	}
 
 	for _, command := range [][]string{
-		// Copy files for build environment
-		{"cp", "-a",
-			"config/docker/addon-operator-package.Dockerfile",
-			imageCacheDir + "/Dockerfile"},
-
 		{"cp", "-a", "config/package/manifest.yaml", manifestsDir},
 		{"cp", "-a", "config/package/namespace.yaml", manifestsDir},
 
-		// Create CRD files
-		// Move CRDs and kustomize file to tmp directory
+		// Build the CRDs with phase annotation
 		{"bash", "-c", "cp config/deploy/addons.managed.openshift.io_*.yaml " + tmpDir},
 		{"cp", "-a", "config/package/crds-kustomization.yaml", tmpDir + "/kustomization.yaml"},
-		// Create the CRDs with phase annotation
 		{"kustomize", "build", tmpDir, "-o", manifestsDir},
-		// remove tmp directory
 		{"rm", "-r", tmpDir},
 
-		// Build image!
+		// Build image
+		{"cp", "-a", "config/docker/addon-operator-package.Dockerfile", imageCacheDir + "/Dockerfile"},
 		{containerRuntime, "build", "-t", imageTag, imageCacheDir},
-		{containerRuntime, "image", "save",
-			"-o", imageCacheDir + ".tar", imageTag},
+		{containerRuntime, "image", "save", "-o", imageCacheDir + ".tar", imageTag},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func replaceManagerContainerImage(template []byte, image string) ([]byte, error) {
+	var deployment appsv1.Deployment
+	if err := yaml.Unmarshal(template, &deployment); err != nil {
+		return nil, err
+	}
+
+	// replace image
+	for i := range deployment.Spec.Template.Spec.Containers {
+		container := &deployment.Spec.Template.Spec.Containers[i]
+		if container.Name == "manager" {
+			container.Image = image
+			break
+		}
+	}
+
+	deploymentBytes, err := yaml.Marshal(deployment)
+	if err != nil {
+		return nil, err
+	}
+	return deploymentBytes, nil
 }
 
 func (b Build) TemplateAddonOperatorCSV() error {
