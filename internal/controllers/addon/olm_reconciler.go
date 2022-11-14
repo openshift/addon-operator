@@ -19,6 +19,7 @@ const OLM_RECONCILER_NAME = "olmReconciler"
 type olmReconciler struct {
 	scheme          *runtime.Scheme
 	client          client.Client
+	uncachedClient  client.Client
 	csvEventHandler csvEventHandler
 }
 
