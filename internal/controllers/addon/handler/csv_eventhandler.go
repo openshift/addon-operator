@@ -47,29 +47,25 @@ func (h *CSVEventHandler) Free(addon *addonsv1alpha1.Addon) {
 // as incomming events might be dropped before this method completes and the event mapping is updated.
 // Calling code needs to make sure to reenqueue the Addon object for _every_ mapping change or CSV events might not be processed.
 func (h *CSVEventHandler) ReplaceMap(
-	addon *addonsv1alpha1.Addon, csvKeys ...client.ObjectKey,
+	addon *addonsv1alpha1.Addon, newCSVKeys ...client.ObjectKey,
 ) (changed bool) {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 
 	addonKey := client.ObjectKeyFromObject(addon)
-	h.addonKeytoCSVKeys[addonKey] = csvKeys
+	prevAddonToCSVsMapping := h.addonKeytoCSVKeys[addonKey]
+	h.addonKeytoCSVKeys[addonKey] = newCSVKeys
 
-	// Ensure all new CSV keys are present in our mapping
-	// and remember all keys that we actually want.
-	wantedCSVKeys := map[client.ObjectKey]struct{}{}
-	for _, csvKey := range csvKeys {
+	for _, csvKey := range newCSVKeys {
 		if _, ok := h.csvKeyToAddon[csvKey]; !ok {
 			changed = true
 		}
 		h.csvKeyToAddon[csvKey] = addonKey
-		wantedCSVKeys[csvKey] = struct{}{}
 	}
 
-	// Remove all keys from our mapping that we don't need.
-	for csvKey := range h.csvKeyToAddon {
-		if _, ok := wantedCSVKeys[csvKey]; !ok {
-			delete(h.csvKeyToAddon, csvKey)
+	for _, key := range prevAddonToCSVsMapping {
+		if !keyIsInKeys(key, h.addonKeytoCSVKeys[addonKey]) {
+			delete(h.csvKeyToAddon, key)
 			changed = true
 		}
 	}
@@ -109,4 +105,13 @@ func (h *CSVEventHandler) enqueueObject(obj client.Object, q workqueue.RateLimit
 	}
 
 	q.Add(reconcile.Request{NamespacedName: addonKey})
+}
+
+func keyIsInKeys(key client.ObjectKey, keys []client.ObjectKey) bool {
+	for _, k := range keys {
+		if k == key {
+			return true
+		}
+	}
+	return false
 }
