@@ -3,8 +3,6 @@ package testutil
 import (
 	"context"
 
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
@@ -26,9 +24,10 @@ var (
 	IsNetworkingV1NetworkPolicyPtr = mock.IsType(&networkingv1.NetworkPolicy{})
 
 	// olm
-	IsOperatorsV1OperatorGroupPtr       = mock.IsType(&operatorsv1.OperatorGroup{})
-	IsOperatorsV1Alpha1CatalogSourcePtr = mock.IsType(&operatorsv1alpha1.CatalogSource{})
-	IsOperatorsV1Alpha1SubscriptionPtr  = mock.IsType(&operatorsv1alpha1.Subscription{})
+	IsOperatorsV1OperatorGroupPtr               = mock.IsType(&operatorsv1.OperatorGroup{})
+	IsOperatorsV1Alpha1CatalogSourcePtr         = mock.IsType(&operatorsv1alpha1.CatalogSource{})
+	IsOperatorsV1Alpha1ClusterServiceVersionPtr = mock.IsType(&operatorsv1alpha1.ClusterServiceVersion{})
+	IsOperatorsV1Alpha1SubscriptionPtr          = mock.IsType(&operatorsv1alpha1.Subscription{})
 
 	// prom
 	IsMonitoringV1ServiceMonitorPtr = mock.IsType(&monitoringv1.ServiceMonitor{})
@@ -40,7 +39,6 @@ var (
 	IsAddonsv1alpha1AddonOperatorListPtr = mock.IsType(&addonsv1alpha1.AddonOperatorList{})
 
 	// misc
-	IsContext                     = mock.IsType(context.TODO())
-	IsObjectKey                   = mock.IsType(client.ObjectKey{})
-	IsUnstructuredUnstructuredPtr = mock.IsType(&unstructured.Unstructured{})
+	IsContext   = mock.IsType(context.TODO())
+	IsObjectKey = mock.IsType(client.ObjectKey{})
 )

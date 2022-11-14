@@ -105,6 +105,7 @@ func NewAddonReconciler(
 			// Step 4: Reconcile OLM objects
 			&olmReconciler{
 				client:          client,
+				uncachedClient:  uncachedClient,
 				scheme:          scheme,
 				csvEventHandler: csvEventHandler,
 			},
