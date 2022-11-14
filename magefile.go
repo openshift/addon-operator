@@ -380,6 +380,18 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 
 	imageTag := imageURL("addon-operator-package")
 
+	// Create directories
+	manifestsDir := path.Join(imageCacheDir, "manifests")
+	tmpDir := path.Join(imageCacheDir, "tmp")
+	for _, command := range [][]string{
+		{"mkdir", "-p", manifestsDir},
+		{"mkdir", "-p", tmpDir},
+	} {
+		if err := sh.RunV(command[0], command[1:]...); err != nil {
+			return err
+		}
+	}
+
 	// Replace image in deployment manifest template
 	deploymentTemplate, err := ioutil.ReadFile("config/package/addon-operator.yaml.tpl")
 	if err != nil {
@@ -392,40 +404,36 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	}
 
 	// replace image
-	for _, container := range deployment.Spec.Template.Spec.Containers {
+	for i := range deployment.Spec.Template.Spec.Containers {
+		container := &deployment.Spec.Template.Spec.Containers[i]
 		if container.Name == "manager" {
 			container.Image = imageURL("addon-operator-manager")
 			break
 		}
 	}
-	// write deployment manifest
+
 	deploymentBytes, err := yaml.Marshal(deployment)
 	if err != nil {
 		return err
 	}
-	if err = ioutil.WriteFile("config/package/addon-operator.yaml",
+
+	// write deployment manifest
+	if err = ioutil.WriteFile(manifestsDir+"/addon-operator.yaml",
 		deploymentBytes, os.ModePerm); err != nil {
 		return err
 	}
 
-	// Create directories
-	manifestsDir := path.Join(imageCacheDir, "manifests")
-	tmpDir := path.Join(imageCacheDir, "tmp")
 	for _, command := range [][]string{
-		{"mkdir", "-p", manifestsDir},
-		{"mkdir", "-p", tmpDir},
-
 		// Copy files for build environment
 		{"cp", "-a",
 			"config/docker/addon-operator-package.Dockerfile",
 			imageCacheDir + "/Dockerfile"},
 
-		{"cp", "-a", "config/package/addon-operator.yaml", manifestsDir},
 		{"cp", "-a", "config/package/manifest.yaml", manifestsDir},
 		{"cp", "-a", "config/package/namespace.yaml", manifestsDir},
 
 		// Create CRD files
-		// Move CRDs and kubstomize file to tmp directory
+		// Move CRDs and kustomize file to tmp directory
 		{"bash", "-c", "cp config/deploy/addons.managed.openshift.io_*.yaml " + tmpDir},
 		{"cp", "-a", "config/package/crds-kustomization.yaml", tmpDir + "/kustomization.yaml"},
 		// Create the CRDs with phase annotation
@@ -458,25 +466,29 @@ func (b Build) TemplateAddonOperatorCSV() error {
 	}
 
 	// replace images
-	for _, deploy := range csv.Spec.
+	for i := range csv.Spec.
 		InstallStrategy.StrategySpec.DeploymentSpecs {
+		deploy := &csv.Spec.
+			InstallStrategy.StrategySpec.DeploymentSpecs[i]
 
 		switch deploy.Name {
 		case "addon-operator-manager":
-			for _, container := range deploy.Spec.
+			for i := range deploy.Spec.
 				Template.Spec.Containers {
-				if container.Name == "manager" {
+				container := &deploy.Spec.Template.Spec.Containers[i]
+				switch container.Name {
+				case "manager":
 					container.Image = imageURL("addon-operator-manager")
-					break
 				}
 			}
 
 		case "addon-operator-webhooks":
-			for _, container := range deploy.Spec.
+			for i := range deploy.Spec.
 				Template.Spec.Containers {
-				if container.Name == "webhook" {
+				container := &deploy.Spec.Template.Spec.Containers[i]
+				switch container.Name {
+				case "webhook":
 					container.Image = imageURL("addon-operator-webhook")
-					break
 				}
 			}
 		}
