@@ -61,7 +61,7 @@ spec:
               readOnly: true
         - args:
             - --enable-leader-election
-          image: quay.io/openshift/addon-operator:latest
+          image: quay.io/app-sre/addon-operator-manager:replaced-in-pipeline
           livenessProbe:
             httpGet:
               path: /healthz
