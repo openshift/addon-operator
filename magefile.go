@@ -386,36 +386,38 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	for _, command := range [][]string{
 		{"mkdir", "-p", manifestsDir},
 		{"mkdir", "-p", tmpDir},
+		{"cp", "-a", "config/package/addon-operator-kustomization.yaml", tmpDir + "/kustomization.yaml"},
+		{"cp", "-a", "config/package/addon-operator.tpl.yaml", tmpDir},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
 			return err
 		}
 	}
 
-	deploymentTemplate, err := ioutil.ReadFile("config/package/addon-operator.yaml.tpl")
-	if err != nil {
-		return fmt.Errorf("reading deployment template: %w", err)
-	}
-
-	templatedDeployment, err := replaceManagerContainerImage(deploymentTemplate, imageURL("addon-operator-manager"))
-	if err != nil {
-		return err
-	}
-
-	if err = ioutil.WriteFile(manifestsDir+"/addon-operator.yaml",
-		templatedDeployment, os.ModePerm); err != nil {
+	// Set image in kustomization file
+	cmd := exec.Command("kustomize", "edit", "set", "image", imageURL("addon-operator-manager"))
+	cmd.Dir = tmpDir // cannot provide a path to edit https://github.com/kubernetes-sigs/kustomize/issues/2803
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	if err := cmd.Run(); err != nil {
 		return err
 	}
 
 	for _, command := range [][]string{
-		{"cp", "-a", "config/package/manifest.yaml", manifestsDir},
-		{"cp", "-a", "config/package/namespace.yaml", manifestsDir},
+		// template deployment manifest
+		{"kustomize", "build", tmpDir, "-o", manifestsDir},
+
+		// clean up tmp Dir
+		{"bash", "-c", "rm " + tmpDir + "/*"},
 
 		// Build the CRDs with phase annotation
 		{"bash", "-c", "cp config/deploy/addons.managed.openshift.io_*.yaml " + tmpDir},
 		{"cp", "-a", "config/package/crds-kustomization.yaml", tmpDir + "/kustomization.yaml"},
 		{"kustomize", "build", tmpDir, "-o", manifestsDir},
 		{"rm", "-r", tmpDir},
+
+		{"cp", "-a", "config/package/manifest.yaml", manifestsDir},
+		{"cp", "-a", "config/package/namespace.yaml", manifestsDir},
 
 		// Build image
 		{"cp", "-a", "config/docker/addon-operator-package.Dockerfile", imageCacheDir + "/Dockerfile"},
@@ -427,28 +429,6 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 		}
 	}
 	return nil
-}
-
-func replaceManagerContainerImage(template []byte, image string) ([]byte, error) {
-	var deployment appsv1.Deployment
-	if err := yaml.Unmarshal(template, &deployment); err != nil {
-		return nil, err
-	}
-
-	// replace image
-	for i := range deployment.Spec.Template.Spec.Containers {
-		container := &deployment.Spec.Template.Spec.Containers[i]
-		if container.Name == "manager" {
-			container.Image = image
-			break
-		}
-	}
-
-	deploymentBytes, err := yaml.Marshal(deployment)
-	if err != nil {
-		return nil, err
-	}
-	return deploymentBytes, nil
 }
 
 func (b Build) TemplateAddonOperatorCSV() error {
