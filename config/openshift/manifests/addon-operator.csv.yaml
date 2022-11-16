@@ -4,11 +4,11 @@ metadata:
   annotations:
     capabilities: Full Lifecycle
     containerImage: quay.io/openshift/addon-operator:latest
-    olm.skipRange: '>=0.0.1 <1.5.8'
+    olm.skipRange: '>=0.0.1 <1.5.9'
     repository: https://github.com/openshift/addon-operator
     support: "false"
   creationTimestamp: null
-  name: addon-operator.v1.5.8
+  name: addon-operator.v1.5.9
 spec:
   apiservicedefinitions: {}
   cleanup:
@@ -330,7 +330,7 @@ spec:
   provider:
     name: Red Hat
     url: www.redhat.com
-  version: 1.5.8
+  version: 1.5.9
   webhookdefinitions:
   - admissionReviewVersions:
     - v1
