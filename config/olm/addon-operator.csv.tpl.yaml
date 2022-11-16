@@ -229,7 +229,7 @@ spec:
                   secretName: metrics-server-cert
       - name: addon-operator-webhooks
         spec:
-          replicas: 3
+          replicas: 2
           selector:
             matchLabels:
               app.kubernetes.io/name: addon-operator-webhook-server
@@ -248,16 +248,14 @@ spec:
                       - key: node-role.kubernetes.io/infra
                         operator: Exists
                 podAntiAffinity:
-                  preferredDuringSchedulingIgnoredDuringExecution:
-                  - podAffinityTerm:
-                      labelSelector:
-                        matchExpressions:
-                        - key: app.kubernetes.io/name
-                          operator: In
-                          values:
-                          - addon-operator-webhook-server
-                      topologyKey: kubernetes.io/hostname
-                    weight: 100
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchExpressions:
+                      - key: app.kubernetes.io/name
+                        operator: In
+                        values:
+                        - addon-operator-webhook-server
+                    topologyKey: "kubernetes.io/hostname"
               containers:
               - image: quay.io/openshift/addon-operator-webhook:latest
                 livenessProbe:

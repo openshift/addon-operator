@@ -24,16 +24,14 @@ spec:
               - key: node-role.kubernetes.io/infra
                 operator: Exists
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values:
-                  - addon-operator-webhook-server
-              topologyKey: "kubernetes.io/hostname"
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                - addon-operator-webhook-server
+            topologyKey: "kubernetes.io/hostname"
       tolerations:
         - effect: NoSchedule
           key: node-role.kubernetes.io/infra
