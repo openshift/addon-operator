@@ -3,7 +3,7 @@ kind: Addon
 metadata:
   name: reference-addon
 spec:
-  displayName: An amazing example addon!
+  displayName: An aimazing example addon!
   namespaces:
   - name: reference-addon
   install:

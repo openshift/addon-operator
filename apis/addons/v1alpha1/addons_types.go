@@ -259,7 +259,10 @@ const (
 	AddonReasonUnreadyNamespaces = "UnreadyNamespaces"
 
 	// Addon has unready metrics federation
-	AddonReasonUnreadyMonitoring = "UnreadyMonitoringFederation"
+	AddonReasonUnreadyMonitoringFederation = "UnreadyMonitoringFederation"
+
+	// Addon has unready metrics federation
+	AddonReasonUnreadyMonitoringStack = "UnreadyMonitoringStack"
 
 	// Addon has unready CSV
 	AddonReasonUnreadyCSV = "UnreadyCSV"

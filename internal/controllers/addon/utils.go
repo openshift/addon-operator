@@ -213,9 +213,14 @@ func reportUnreadyCSV(addon *addonsv1alpha1.Addon, message string) {
 		fmt.Sprintf("ClusterServiceVersion is not ready: %s", message))
 }
 
-func reportUnreadyMonitoring(addon *addonsv1alpha1.Addon, message string) {
-	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyMonitoring,
-		fmt.Sprintf("Monitoring Federation is not ready: %s", message))
+func reportUnreadyMonitoringFederation(addon *addonsv1alpha1.Addon, message string) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyMonitoringFederation,
+		fmt.Sprintf("Monitoring Stack is not ready: %s", message))
+}
+
+func reportUnreadyMonitoringStack(addon *addonsv1alpha1.Addon, message string) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyMonitoringStack,
+		fmt.Sprintf("Monitoring Stack is not ready: %s", message))
 }
 
 func reportPendingStatus(addon *addonsv1alpha1.Addon, reason, msg string) {

@@ -2,6 +2,7 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -23,6 +24,8 @@ import (
 
 const MONITORING_STACK_RECONCILER_NAME = "monitoringStackReconciler"
 
+var errMonitoringStackSpecNotFound = fmt.Errorf("monitoring stack spec not found")
+
 type monitoringStackReconciler struct {
 	client client.Client
 	scheme *runtime.Scheme
@@ -35,42 +38,77 @@ func (r monitoringStackReconciler) Name() string {
 func (r *monitoringStackReconciler) Reconcile(ctx context.Context,
 	addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 
-	if addon.Spec.Monitoring == nil {
-		return reconcile.Result{}, nil
-	}
-
-	if addon.Spec.Monitoring.MonitoringStack == nil {
-		return reconcile.Result{}, nil
-	}
-
 	// ensure creation of MonitoringStack object
-	if err := r.ensureMonitoringStack(ctx, addon); err != nil {
+	latestMonitoringStack, err := r.ensureMonitoringStack(ctx, addon)
+	if err != nil {
+		if errors.Is(err, errMonitoringStackSpecNotFound) {
+			return reconcile.Result{}, nil
+		}
 		return reconcile.Result{}, err
+	}
+
+	// propagate the recently reconciled (created/updated) monitoring stack's status to the owner Addon
+	if monitoringStackAvailable := r.propagateMonitoringStackStatusToAddon(latestMonitoringStack, addon); !monitoringStackAvailable {
+		return handleExit(resultRetry), nil
 	}
 
 	return reconcile.Result{}, nil
 }
 
 func (r *monitoringStackReconciler) ensureMonitoringStack(ctx context.Context,
-	addon *addonsv1alpha1.Addon) error {
-
+	addon *addonsv1alpha1.Addon) (*obov1alpha1.MonitoringStack, error) {
 	if !HasMonitoringStack(addon) {
-		return nil
+		return nil, errMonitoringStackSpecNotFound
 	}
-
 	// create desired MonitoringStack
 	desiredMonitoringStack, err := r.getDesiredMonitoringStack(ctx, addon)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// returns observed MonitoringStack object
-	_, err = r.reconcileMonitoringStack(ctx, desiredMonitoringStack)
+	reconciledMonitoringStack, err := r.reconcileMonitoringStack(ctx, desiredMonitoringStack)
+	if err != nil {
+		return nil, err
+	}
+	return reconciledMonitoringStack, nil
+}
 
-	// TODO: Read the Status of the observed MonitoringStack and:
-	// 1. Report it to Addon CR Status
-	// 2. Expose corresponding metrics
-	return err
+func (r *monitoringStackReconciler) propagateMonitoringStackStatusToAddon(monitoringStack *obov1alpha1.MonitoringStack, addon *addonsv1alpha1.Addon) (monitoringStackStackAvailable bool) {
+	availableCondition, reconciledCondition := obov1alpha1.Condition{}, obov1alpha1.Condition{}
+	availableConditionFound, reconciledConditionFound := false, false
+
+	for _, cond := range monitoringStack.Status.Conditions {
+		cond := cond
+		if cond.Type == obov1alpha1.AvailableCondition {
+			availableCondition = cond
+			availableConditionFound = true
+		} else if cond.Type == obov1alpha1.ReconciledCondition {
+			reconciledCondition = cond
+			reconciledConditionFound = true
+		}
+		if availableConditionFound && reconciledConditionFound {
+			break
+		}
+	}
+
+	if availableConditionFound && availableCondition.Status == obov1alpha1.ConditionTrue {
+		return true
+	}
+
+	if availableConditionFound && availableCondition.Status != obov1alpha1.ConditionTrue {
+		reportUnreadyMonitoringStack(addon, fmt.Sprintf("MonitoringStack Unavailable: %s", availableCondition.Message))
+	} else if reconciledConditionFound {
+		if reconciledCondition.Status == obov1alpha1.ConditionTrue {
+			reportUnreadyMonitoringStack(addon, "MonitoringStack successfully reconciled: Pending MonitoringStack to be Available")
+		} else {
+			reportUnreadyMonitoringStack(addon, fmt.Sprintf("MonitoringStack failed to reconcile: %s", reconciledCondition.Message))
+		}
+	} else {
+		reportUnreadyMonitoringStack(addon, "MonitoringStack pending to get reconciled")
+	}
+
+	return false
 }
 
 // helper function to generate desired MonitoringStack object

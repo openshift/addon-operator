@@ -113,7 +113,7 @@ func (r *monitoringFederationReconciler) ensureMonitoringNamespace(
 		return ctrl.Result{}, nil
 	}
 
-	reportUnreadyMonitoring(addon, fmt.Sprintf("namespace %q is not active", actual.Name))
+	reportUnreadyMonitoringFederation(addon, fmt.Sprintf("namespace %q is not active", actual.Name))
 
 	// Previously this would trigger exit and move on to the next phase.
 	// However, given that the reconciliation is not complete an error should
