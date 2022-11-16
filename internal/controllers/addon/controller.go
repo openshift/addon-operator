@@ -106,17 +106,17 @@ func NewAddonReconciler(
 				client: client,
 				scheme: scheme,
 			},
-			// Step 4: Reconcile MonitoringStack
-			&monitoringStackReconciler{
-				client: client,
-				scheme: scheme,
-			},
-			// Step 5: Reconcile OLM objects
+			// Step 4: Reconcile OLM objects
 			&olmReconciler{
 				client:                  client,
 				uncachedClient:          uncachedClient,
 				scheme:                  scheme,
 				operatorResourceHandler: operatorResourceHandler,
+			},
+			// Step 5: Reconcile MonitoringStack
+			&monitoringStackReconciler{
+				client: client,
+				scheme: scheme,
 			},
 			// Step 6: Reconcile Monitoring Federation
 			&monitoringFederationReconciler{

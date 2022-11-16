@@ -8,9 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
 )
@@ -42,17 +44,19 @@ func TestEnsureMonitoringStack_MissingConfig(t *testing.T) {
 			addon = testutil.NewTestAddonWithCatalogSourceImage()
 			addon.Spec.Monitoring = testutil.NewTestAddonWithMonitoringFederation().Spec.Monitoring
 		}
-
 		assert.NotNil(t, addon)
 
-		err := r.ensureMonitoringStack(ctx, addon)
-		require.NoError(t, err)
+		_, err := r.ensureMonitoringStack(ctx, addon)
+		if tc.missingMonitoringFullConfig || tc.missingMonitoringStackConfig {
+			require.ErrorIs(t, err, errMonitoringStackSpecNotFound)
+		} else {
+			require.NoError(t, err)
+		}
 	}
 }
 
 func TestEnsureMonitoringStack_MonitoringStackPresentInSpec_NotPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
-
 	r := &monitoringStackReconciler{
 		client: c,
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
@@ -72,7 +76,7 @@ func TestEnsureMonitoringStack_MonitoringStackPresentInSpec_NotPresentInCluster(
 		}).
 		Return(nil)
 
-	err := r.ensureMonitoringStack(ctx, addon)
+	_, err := r.ensureMonitoringStack(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", 1)
@@ -91,10 +95,6 @@ func TestEnsureMonitoringStack_MonitoringStackPresentInSpec_PresentInCluster(t *
 
 	ctx := context.Background()
 	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&obov1alpha1.MonitoringStack{}), mock.Anything).
-		Run(func(args mock.Arguments) {
-			namespacedName := args.Get(1).(types.NamespacedName)
-			assert.Equal(t, getMonitoringStackName(addon.Name), namespacedName.Name)
-		}).
 		Return(nil)
 	c.On("Update", testutil.IsContext, mock.IsType(&obov1alpha1.MonitoringStack{}), mock.Anything).
 		Run(func(args mock.Arguments) {
@@ -105,9 +105,136 @@ func TestEnsureMonitoringStack_MonitoringStackPresentInSpec_PresentInCluster(t *
 		}).
 		Return(nil)
 
-	err := r.ensureMonitoringStack(ctx, addon)
+	_, err := r.ensureMonitoringStack(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", 1)
 	c.AssertNumberOfCalls(t, "Update", 1)
+}
+
+func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
+	testCases := []struct {
+		name                               string
+		monitoringStackStatusFound         obov1alpha1.MonitoringStackStatus
+		expectedAvailableStatusToPropagate bool
+		expectedAddonStatusMessage         string
+	}{
+		{
+			name: "available-true-condition",
+			monitoringStackStatusFound: obov1alpha1.MonitoringStackStatus{
+				Conditions: []obov1alpha1.Condition{
+					{
+						Type:    obov1alpha1.AvailableCondition,
+						Status:  obov1alpha1.ConditionTrue,
+						Message: "foo",
+					},
+				},
+			},
+			expectedAvailableStatusToPropagate: true,
+		},
+		{
+			name: "available-false-condition",
+			monitoringStackStatusFound: obov1alpha1.MonitoringStackStatus{
+				Conditions: []obov1alpha1.Condition{
+					{
+						Type:    obov1alpha1.AvailableCondition,
+						Status:  obov1alpha1.ConditionFalse,
+						Message: "foo",
+					},
+				},
+			},
+			expectedAvailableStatusToPropagate: false,
+			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack Unavailable: foo",
+		},
+		{
+			name: "available-unknown-condition",
+			monitoringStackStatusFound: obov1alpha1.MonitoringStackStatus{
+				Conditions: []obov1alpha1.Condition{
+					{
+						Type:    obov1alpha1.AvailableCondition,
+						Status:  obov1alpha1.ConditionUnknown,
+						Message: "foo",
+					},
+				},
+			},
+			expectedAvailableStatusToPropagate: false,
+			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack Unavailable: foo",
+		},
+		{
+			name: "available-nonexistent-reconciled-true-condition",
+			monitoringStackStatusFound: obov1alpha1.MonitoringStackStatus{
+				Conditions: []obov1alpha1.Condition{
+					{
+						Type:    obov1alpha1.ReconciledCondition,
+						Status:  obov1alpha1.ConditionTrue,
+						Message: "foo",
+					},
+				},
+			},
+			expectedAvailableStatusToPropagate: false,
+			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack successfully reconciled: Pending MonitoringStack to be Available",
+		},
+		{
+			name: "available-nonexistent-reconciled-false-condition",
+			monitoringStackStatusFound: obov1alpha1.MonitoringStackStatus{
+				Conditions: []obov1alpha1.Condition{
+					{
+						Type:    obov1alpha1.ReconciledCondition,
+						Status:  obov1alpha1.ConditionFalse,
+						Message: "foo",
+					},
+				},
+			},
+			expectedAvailableStatusToPropagate: false,
+			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack failed to reconcile: foo",
+		},
+		{
+			name: "available-nonexistent-reconciled-unknown-condition",
+			monitoringStackStatusFound: obov1alpha1.MonitoringStackStatus{
+				Conditions: []obov1alpha1.Condition{
+					{
+						Type:    obov1alpha1.ReconciledCondition,
+						Status:  obov1alpha1.ConditionUnknown,
+						Message: "foo",
+					},
+				},
+			},
+			expectedAvailableStatusToPropagate: false,
+			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack failed to reconcile: foo",
+		},
+		{
+			name: "no-condition",
+			monitoringStackStatusFound: obov1alpha1.MonitoringStackStatus{
+				Conditions: []obov1alpha1.Condition{},
+			},
+			expectedAvailableStatusToPropagate: false,
+			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack pending to get reconciled",
+		},
+	}
+
+	c := testutil.NewClient()
+
+	r := &monitoringStackReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	}
+
+	for _, tc := range testCases {
+		addon := testutil.NewTestAddonWithMonitoringStack()
+		monitoringStack := &obov1alpha1.MonitoringStack{
+			Status: tc.monitoringStackStatusFound,
+		}
+		isMonitoringStackAvailable := r.propagateMonitoringStackStatusToAddon(monitoringStack, addon)
+		require.Equal(t, tc.expectedAvailableStatusToPropagate, isMonitoringStackAvailable)
+
+		if !isMonitoringStackAvailable {
+			require.Equal(t, addonsv1alpha1.AddonReasonUnreadyMonitoringStack, addon.Status.Conditions[0].Reason)
+			require.Equal(t, metav1.ConditionFalse, addon.Status.Conditions[0].Status)
+			require.Equal(t, tc.expectedAddonStatusMessage, addon.Status.Conditions[0].Message)
+			require.Equal(t, addonsv1alpha1.PhasePending, addon.Status.Phase)
+		} else {
+			require.Zero(t, len(addon.Status.Conditions))
+		}
+
+	}
 }
