@@ -34,6 +34,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 
+	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
+
 	aoapis "github.com/openshift/addon-operator/apis"
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/ocm"
@@ -68,6 +70,7 @@ func init() {
 		operatorsv1alpha1.AddToScheme,
 		configv1.AddToScheme,
 		monitoringv1.AddToScheme,
+		obov1alpha1.AddToScheme,
 	}
 	if err := AddToSchemes.AddToScheme(Scheme); err != nil {
 		panic(fmt.Errorf("could not load schemes: %w", err))
