@@ -10,6 +10,11 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: addon-operator-webhook-server
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       labels:
