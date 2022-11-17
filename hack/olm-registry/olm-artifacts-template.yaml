@@ -61,7 +61,6 @@ objects:
             annotations:
               olm.operatorframework.io/exclude-global-namespace-resolution: "true"
           spec:
-            upgradeStrategy: TechPreviewUnsafeFailForward
             targetNamespaces:
               - openshift-addon-operator
         - apiVersion: operators.coreos.com/v1alpha1
