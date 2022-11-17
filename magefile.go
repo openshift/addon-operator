@@ -32,6 +32,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
+	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/yaml"
 
 	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -667,7 +668,7 @@ func (t Test) IntegrationCIInjectEnvVariable(ctx context.Context) error {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
 
-	ctx = dev.ContextWithLogger(ctx, logger)
+	ctx = logr.NewContext(ctx, logger)
 	if err = injectStatusReportingEnvironmentVariable(ctx, cluster); err != nil {
 		return fmt.Errorf("Inject ENV into CSV failed: %w", err)
 	}
@@ -1030,7 +1031,7 @@ func (d Dev) LoadImage(ctx context.Context, image string) error {
 	)
 
 	imageTar := path.Join(cacheDir, "image", image+".tar")
-	if err := devEnvironment.LoadImageFromTar(ctx, imageTar); err != nil {
+	if err := devEnvironment.LoadImageFromTar(imageTar); err != nil {
 		return fmt.Errorf("load image from tar: %w", err)
 	}
 	return nil
@@ -1402,6 +1403,19 @@ func (d Dev) init() error {
 			dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
 		}),
 		dev.WithContainerRuntime(containerRuntime),
+		dev.WithKindClusterConfig(kindv1alpha4.Cluster{
+			Nodes: []kindv1alpha4.Node{
+				{
+					Role: kindv1alpha4.ControlPlaneRole,
+				},
+				{
+					Role: kindv1alpha4.WorkerRole,
+				},
+				{
+					Role: kindv1alpha4.WorkerRole,
+				},
+			},
+		}),
 		clusterInitializers,
 	)
 	return nil
