@@ -1,11 +1,7 @@
 name: Testing
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-    - main
-  pull_request:
+  push
 
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
@@ -63,9 +59,18 @@ jobs:
           ${{ runner.os }}-go-
 
     - name: Test environment boostrap
-      run: ./mage dev:setup && make setup-monitoring
+      run: ./mage dev:setup
       env:
         CONTAINER_RUNTIME: docker
+
+    - name: Setup monitoring stack
+      run: |
+        set -e
+        export KUBECONFIG=$GITHUB_WORKSPACE/.cache/dev-env/kubeconfig.yaml
+        make setup-monitoring
+      env:
+        CONTAINER_RUNTIME: docker
+      continue-on-error: true
 
     - name: Deploy the mock and all
       run: ./mage dev:deploy
