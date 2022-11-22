@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -67,7 +66,7 @@ func CurrentNamespace() (namespace string, err error) {
 	}
 
 	// Load the namespace file and return its content
-	namespaceBytes, err := ioutil.ReadFile(inClusterNamespacePath)
+	namespaceBytes, err := os.ReadFile(inClusterNamespacePath)
 	if err != nil {
 		return "", fmt.Errorf("error reading namespace file: %w", err)
 	}

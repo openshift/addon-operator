@@ -222,10 +222,9 @@ setup-monitoring: helm
 	@(kubectl create ns monitoring)
 	@(helm repo add prometheus-community https://prometheus-community.github.io/helm-charts)
 	@(helm repo update)
-	@(helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring \
-     --set grafana.enabled=false \
-     --set kubeStateMetrics.enabled=false \
-     --set nodeExporter.enabled=false)
+	-helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring --set grafana.enabled=false --set kubeStateMetrics.enabled=false --set nodeExporter.enabled=false
+	@(kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.60.1/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml)
+	@(helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring --set grafana.enabled=false --set kubeStateMetrics.enabled=false --set nodeExporter.enabled=false)
 
 ## Loads and installs the Addon Operator into the currently selected cluster.
 setup-addon-operator:

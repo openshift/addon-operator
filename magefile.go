@@ -6,7 +6,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -79,7 +78,7 @@ func setupContainerRuntime() {
 
 // Prepare a new release of the Addon Operator.
 func Prepare_Release() error {
-	versionBytes, err := ioutil.ReadFile(path.Join(workDir, "VERSION"))
+	versionBytes, err := os.ReadFile(path.Join(workDir, "VERSION"))
 	if err != nil {
 		return fmt.Errorf("reading VERSION file: %w", err)
 	}
@@ -91,7 +90,7 @@ func Prepare_Release() error {
 	}
 
 	// read CSV
-	csvTemplate, err := ioutil.ReadFile(path.Join(workDir, "config/olm/addon-operator.csv.tpl.yaml"))
+	csvTemplate, err := os.ReadFile(path.Join(workDir, "config/olm/addon-operator.csv.tpl.yaml"))
 	if err != nil {
 		return fmt.Errorf("reading CSV template: %w", err)
 	}
@@ -111,7 +110,7 @@ func Prepare_Release() error {
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile("config/olm/addon-operator.csv.tpl.yaml",
+	if err := os.WriteFile("config/olm/addon-operator.csv.tpl.yaml",
 		csvBytes, os.ModePerm); err != nil {
 		return err
 	}
@@ -369,7 +368,7 @@ func (b Build) buildOLMBundleImage(imageCacheDir string) error {
 
 func (b Build) TemplateAddonOperatorCSV() error {
 	// convert unstructured.Unstructured to CSV
-	csvTemplate, err := ioutil.ReadFile(path.Join(workDir, "config/olm/addon-operator.csv.tpl.yaml"))
+	csvTemplate, err := os.ReadFile(path.Join(workDir, "config/olm/addon-operator.csv.tpl.yaml"))
 	if err != nil {
 		return fmt.Errorf("reading CSV template: %w", err)
 	}
@@ -414,7 +413,7 @@ func (b Build) TemplateAddonOperatorCSV() error {
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile("config/olm/addon-operator.csv.yaml",
+	if err := os.WriteFile("config/olm/addon-operator.csv.yaml",
 		csvBytes, os.ModePerm); err != nil {
 		return err
 	}
@@ -934,6 +933,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 		"config/deploy/addons.managed.openshift.io_addoninstances.yaml",
 		"config/deploy/addons.managed.openshift.io_addonoperators.yaml",
 		"config/deploy/addons.managed.openshift.io_addons.yaml",
+		"config/deploy/metrics.service.yaml",
 		"config/deploy/rbac.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
@@ -1018,18 +1018,6 @@ func (d Dev) init() error {
 				// Install OLM.
 				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
 				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
-			},
-			dev.ClusterHelmInstall{
-				RepoName:    "prometheus-community",
-				RepoURL:     "https://prometheus-community.github.io/helm-charts",
-				PackageName: "kube-prometheus-stack",
-				ReleaseName: "prometheus",
-				Namespace:   "monitoring",
-				SetVars: []string{
-					"grafana.enabled=false",
-					"kubeStateMetrics.enabled=false",
-					"nodeExporter.enabled=false",
-				},
 			},
 		})
 	return nil
