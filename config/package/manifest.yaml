@@ -4,7 +4,7 @@ metadata:
   name: addon-operator
 spec:
   scopes:
-    - Cluster
+    - Namespaced
   phases:
     - name: namespace-crds
       class: hosted-cluster

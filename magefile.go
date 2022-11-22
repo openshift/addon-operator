@@ -28,6 +28,7 @@ import (
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
+	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/yaml"
 )
@@ -375,53 +376,38 @@ func (b Build) buildOLMBundleImage(imageCacheDir string) error {
 func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	mg.Deps(
 		Build.init,
-		Dependency.Kustomize,
 	)
 
-	imageTag := imageURL("addon-operator-package")
-
-	// Create directories
-	manifestsDir := path.Join(imageCacheDir, "manifests")
-	tmpDir := path.Join(imageCacheDir, "tmp")
-	for _, command := range [][]string{
-		{"mkdir", "-p", manifestsDir},
-		{"mkdir", "-p", tmpDir},
-		{"cp", "-a", "config/package/addon-operator-kustomization.yaml", tmpDir + "/kustomization.yaml"},
-		{"cp", "-a", "config/package/addon-operator.tpl.yaml", tmpDir},
-	} {
-		if err := sh.RunV(command[0], command[1:]...); err != nil {
-			return err
-		}
+	deployment := &appsv1.Deployment{}
+	err := loadAndUnmarshalIntoObject("config/package/hcp/addon-operator.yaml.tpl", deployment)
+	if err != nil {
+		return fmt.Errorf("loading addon-operator.yaml.tpl: %w", err)
 	}
 
-	// Set image in kustomization file
-	cmd := exec.Command("kustomize", "edit", "set", "image", imageURL("addon-operator-manager"))
-	cmd.Dir = tmpDir // cannot provide a path to edit https://github.com/kubernetes-sigs/kustomize/issues/2803
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	if err := cmd.Run(); err != nil {
+	// Replace image
+	patchDeployment(deployment, "addon-operator-manager", "manager")
+
+	depBytes, err := yaml.Marshal(deployment)
+	if err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile("config/package/hcp/addon-operator.yaml",
+		depBytes, os.ModePerm); err != nil {
 		return err
 	}
 
+	imageTag := imageURL("addon-operator-package")
+
+	manifestsDir := path.Join(imageCacheDir, "manifests")
+
 	for _, command := range [][]string{
-		// template deployment manifest
-		{"kustomize", "build", tmpDir, "-o", manifestsDir},
+		{"mkdir", "-p", manifestsDir},
+		{"bash", "-c", "cp config/package/hc/*.yaml " + manifestsDir},
+		{"cp", "config/package/hcp/addon-operator.yaml", manifestsDir},
+		{"cp", "config/package/manifest.yaml", manifestsDir},
 
-		// clean up tmp Dir
-		{"bash", "-c", "rm " + tmpDir + "/*"},
-
-		// Build the CRDs with phase annotation
-		{"bash", "-c", "cp config/deploy/addons.managed.openshift.io_*.yaml " + tmpDir},
-		{"cp", "-a", "config/package/crds-kustomization.yaml", tmpDir + "/kustomization.yaml"},
-		{"kustomize", "build", tmpDir, "-o", manifestsDir},
-		{"rm", "-r", tmpDir},
-
-		{"cp", "-a", "config/package/manifest.yaml", manifestsDir},
-		{"cp", "-a", "config/package/namespace.yaml", manifestsDir},
-
-		// Build image
-		{"cp", "-a", "config/docker/addon-operator-package.Dockerfile", imageCacheDir + "/Dockerfile"},
-		{containerRuntime, "build", "-t", imageTag, imageCacheDir},
+		{"cp", "config/package/addon-operator-package.Containerfile", manifestsDir},
+		{containerRuntime, "build", "-t", imageTag, "-f", manifestsDir + "/addon-operator-package.Containerfile"},
 		{containerRuntime, "image", "save", "-o", imageCacheDir + ".tar", imageTag},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
@@ -551,7 +537,7 @@ func (Build) imageExists(ctx context.Context, name string) (bool, error) {
 }
 
 func imageURL(name string) string {
-	// Build.init must be run before this function to set `imageOrg` variable
+	// Build.init must be run before this function to set `imageOrg` and `version` variables
 	envvar := strings.ReplaceAll(strings.ToUpper(name), "-", "_") + "_IMAGE"
 	if url := os.Getenv(envvar); len(url) != 0 {
 		return url
@@ -720,7 +706,6 @@ func (Test) IntegrationShort() error {
 const (
 	controllerGenVersion = "0.6.2"
 	kindVersion          = "0.11.1"
-	kustomizeVersion     = "4.5.7"
 	yqVersion            = "4.12.0"
 	goimportsVersion     = "0.1.5"
 	golangciLintVersion  = "1.46.2"
@@ -747,11 +732,6 @@ func (d Dependency) All() {
 func (d Dependency) Kind() error {
 	return depsDir.GoInstall("kind",
 		"sigs.k8s.io/kind", kindVersion)
-}
-
-func (d Dependency) Kustomize() error {
-	return depsDir.GoInstall("kustomize",
-		"sigs.k8s.io/kustomize/kustomize/v4", kustomizeVersion)
 }
 
 // Ensure controller-gen - kubebuilder code and manifest generator.
@@ -970,30 +950,14 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 
 // deploy the Addon Operator Manager from local files.
 func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluster) error {
-	objs, err := dev.LoadKubernetesObjectsFromFile(
-		"config/deploy/deployment.yaml.tpl")
+	deployment := &appsv1.Deployment{}
+	err := loadAndConvertIntoObject(cluster.Scheme, "config/deploy/deployment.yaml.tpl", deployment)
 	if err != nil {
 		return fmt.Errorf("loading addon-operator-manager deployment.yaml.tpl: %w", err)
 	}
 
 	// Replace image
-	addonOperatorDeployment := &appsv1.Deployment{}
-	if err := cluster.Scheme.Convert(
-		&objs[0], addonOperatorDeployment, nil); err != nil {
-		return fmt.Errorf("converting to Deployment: %w", err)
-	}
-	addonOperatorManagerImage := os.Getenv("ADDON_OPERATOR_MANAGER_IMAGE")
-	if len(addonOperatorManagerImage) == 0 {
-		addonOperatorManagerImage = imageURL("addon-operator-manager")
-	}
-	for i := range addonOperatorDeployment.Spec.Template.Spec.Containers {
-		container := &addonOperatorDeployment.Spec.Template.Spec.Containers[i]
-
-		switch container.Name {
-		case "manager":
-			container.Image = addonOperatorManagerImage
-		}
-	}
+	patchDeployment(deployment, "addon-operator-manager", "manager")
 
 	ctx = dev.ContextWithLogger(ctx, logger)
 
@@ -1010,7 +974,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorDeployment); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, deployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager: %w", err)
 	}
 	return nil
@@ -1018,30 +982,14 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 
 // Addon Operator Webhook server from local files.
 func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluster) error {
-	objs, err := dev.LoadKubernetesObjectsFromFile(
-		"config/deploy/webhook/deployment.yaml.tpl")
+	deployment := &appsv1.Deployment{}
+	err := loadAndConvertIntoObject(cluster.Scheme, "config/deploy/webhook/deployment.yaml.tpl", deployment)
 	if err != nil {
 		return fmt.Errorf("loading addon-operator-webhook deployment.yaml.tpl: %w", err)
 	}
 
 	// Replace image
-	addonOperatorWebhookDeployment := &appsv1.Deployment{}
-	if err := cluster.Scheme.Convert(
-		&objs[0], addonOperatorWebhookDeployment, nil); err != nil {
-		return fmt.Errorf("converting to Deployment: %w", err)
-	}
-	addonOperatorWebhookImage := os.Getenv("ADDON_OPERATOR_WEBHOOK_IMAGE")
-	if len(addonOperatorWebhookImage) == 0 {
-		addonOperatorWebhookImage = imageURL("addon-operator-webhook")
-	}
-	for i := range addonOperatorWebhookDeployment.Spec.Template.Spec.Containers {
-		container := &addonOperatorWebhookDeployment.Spec.Template.Spec.Containers[i]
-
-		switch container.Name {
-		case "webhook":
-			container.Image = addonOperatorWebhookImage
-		}
-	}
+	patchDeployment(deployment, "addon-operator-webhook", "webhook")
 
 	dev.ContextWithLogger(ctx, logger)
 
@@ -1054,8 +1002,58 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
 	}
-	if err := cluster.CreateAndWaitForReadiness(ctx, addonOperatorWebhookDeployment); err != nil {
+	if err := cluster.CreateAndWaitForReadiness(ctx, deployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhooks: %w", err)
+	}
+	return nil
+}
+
+// Replaces `container`'s image.
+func patchDeployment(deployment *appsv1.Deployment, name string, container string) {
+	image := getImageName(name)
+
+	// replace image
+	for i := range deployment.Spec.Template.Spec.Containers {
+		containerObj := &deployment.Spec.Template.Spec.Containers[i]
+
+		if containerObj.Name == container {
+			containerObj.Image = image
+			break
+		}
+	}
+}
+
+func getImageName(name string) string {
+	envVar := strings.ToUpper(name) + "_IMAGE"
+
+	var image string
+	if len(os.Getenv(envVar)) > 0 {
+		image = os.Getenv(envVar)
+	} else {
+		image = imageURL(name)
+	}
+	return image
+}
+
+func loadAndConvertIntoObject(scheme *k8sruntime.Scheme, filePath string, out interface{}) error {
+	objs, err := dev.LoadKubernetesObjectsFromFile(filePath)
+	if err != nil {
+		return fmt.Errorf("loading object from file: %w", err)
+	}
+	if err := scheme.Convert(&objs[0], out, nil); err != nil {
+		return fmt.Errorf("converting: %w", err)
+	}
+	return nil
+}
+
+func loadAndUnmarshalIntoObject(filePath string, out interface{}) error {
+	obj, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("reading file: %w", err)
+	}
+
+	if err = yaml.Unmarshal(obj, &out); err != nil {
+		return err
 	}
 	return nil
 }

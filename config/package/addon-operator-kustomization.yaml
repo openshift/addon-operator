@@ -1,6 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-resources:
-  - addon-operator.tpl.yaml
-# quay.io/app-sre/addon-operator-manager image tag set in pipeline
