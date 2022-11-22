@@ -63,11 +63,6 @@ jobs:
       env:
         CONTAINER_RUNTIME: docker
 
-    - name: Test environment boostrap
-      run: ./mage dev:setup
-      env:
-        CONTAINER_RUNTIME: docker
-
     - name: Deploy the mock and all
       run: ENABLE_API_MOCK=true ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK=true ENABLE_WEBHOOK=true ./mage dev:deploy
       env:
