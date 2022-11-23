@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
+	ioutil "io"
 	"net/http"
 	"net/url"
 	"strings"
