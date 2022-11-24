@@ -8,6 +8,10 @@ import (
 	"os"
 	"time"
 
+	"k8s.io/apimachinery/pkg/types"
+
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/metrics"
 
@@ -27,9 +31,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	aoapis "github.com/openshift/addon-operator/apis"
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 	aictrl "github.com/openshift/addon-operator/internal/controllers/addoninstance"
 	aocontroller "github.com/openshift/addon-operator/internal/controllers/addonoperator"
+	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
 
 var (
@@ -46,7 +52,7 @@ func init() {
 	_ = monitoringv1.AddToScheme(scheme)
 }
 
-func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) error {
+func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool, addonOperatorInCluster addonsv1alpha1.AddonOperator, opts ...addoncontroller.AddonReconcilerOptions) error {
 	ctx := context.Background()
 
 	// Create a client that does not cache resources cluster-wide.
@@ -78,20 +84,22 @@ func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) er
 		recorder,
 		clusterExternalID,
 		namespace,
+		opts...,
 	)
 	if err := addonReconciler.SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create Addon controller: %w", err)
 	}
 
 	if err := (&aocontroller.AddonOperatorReconciler{
-		Client:             mgr.GetClient(),
-		UncachedClient:     uncachedClient,
-		Log:                ctrl.Log.WithName("controllers").WithName("AddonOperator"),
-		Scheme:             mgr.GetScheme(),
-		GlobalPauseManager: addonReconciler,
-		OCMClientManager:   addonReconciler,
-		Recorder:           recorder,
-		ClusterExternalID:  clusterExternalID,
+		Client:              mgr.GetClient(),
+		UncachedClient:      uncachedClient,
+		Log:                 ctrl.Log.WithName("controllers").WithName("AddonOperator"),
+		Scheme:              mgr.GetScheme(),
+		GlobalPauseManager:  addonReconciler,
+		OCMClientManager:    addonReconciler,
+		Recorder:            recorder,
+		ClusterExternalID:   clusterExternalID,
+		FeatureTogglesState: addonOperatorInCluster.Spec.FeatureToggles,
 	}).SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create AddonOperator controller: %w", err)
 	}
@@ -158,6 +166,43 @@ func initPprof(mgr ctrl.Manager, addr string) {
 }
 
 func setup() error {
+	// Create a client that does not cache resources cluster-wide.
+	uncachedClient, err := client.New(
+		ctrl.GetConfigOrDie(), client.Options{Scheme: scheme})
+	if err != nil {
+		return fmt.Errorf("unable to set up uncached client: %w", err)
+	}
+
+	ctx := context.Background()
+
+	addonOperatorObjectInCluster := addonsv1alpha1.AddonOperator{}
+	if err := uncachedClient.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &addonOperatorObjectInCluster); err != nil {
+		if !apierrors.IsNotFound(err) {
+			return fmt.Errorf("failed to GET the AddonOperator object: %w", err)
+		}
+		addonOperatorObjectInCluster = addonsv1alpha1.AddonOperator{}
+	}
+
+	addonReconcilerOptions := []addoncontroller.AddonReconcilerOptions{}
+
+	// feature toggle handlers ADO intends to support
+	featureToggleHandlers := []featuretoggle.FeatureToggleHandler{
+		&featuretoggle.MonitoringStackFeatureToggle{
+			FeatureTogglesInCluster:     addonOperatorObjectInCluster.Spec.FeatureToggles,
+			SchemeToUpdate:              scheme,
+			AddonReconcilerOptsToUpdate: &addonReconcilerOptions,
+		},
+	}
+
+	for _, featureToggleHandler := range featureToggleHandlers {
+		if !featureToggleHandler.IsEnabled() {
+			continue
+		}
+		if err := featureToggleHandler.PreManagerSetupHandle(ctx); err != nil {
+			return fmt.Errorf("failed to handle the feature '%s' before the manager's creation", featureToggleHandler.Name())
+		}
+	}
+
 	opts := options{
 		MetricsAddr:           ":8080",
 		ProbeAddr:             ":8081",
@@ -200,6 +245,15 @@ func setup() error {
 		return fmt.Errorf("unable to start manager: %w", err)
 	}
 
+	for _, featureToggleHandler := range featureToggleHandlers {
+		if !featureToggleHandler.IsEnabled() {
+			continue
+		}
+		if err := featureToggleHandler.PostManagerSetupHandle(ctx, mgr); err != nil {
+			return fmt.Errorf("failed to handle the feature '%s' after the manager's creation", featureToggleHandler.Name())
+		}
+	}
+
 	// PPROF
 	if len(opts.PprofAddr) > 0 {
 		initPprof(mgr, opts.PprofAddr)
@@ -212,7 +266,7 @@ func setup() error {
 		return fmt.Errorf("unable to set up ready check: %w", err)
 	}
 
-	if err := initReconcilers(mgr, opts.Namespace, opts.EnableMetricsRecorder); err != nil {
+	if err := initReconcilers(mgr, opts.Namespace, opts.EnableMetricsRecorder, addonOperatorObjectInCluster, addonReconcilerOptions...); err != nil {
 		return fmt.Errorf("init reconcilers: %w", err)
 	}
 

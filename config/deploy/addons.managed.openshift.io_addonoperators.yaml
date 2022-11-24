@@ -43,6 +43,15 @@ spec:
           spec:
             description: AddonOperatorSpec defines the desired state of Addon operator.
             properties:
+              feature_toggles:
+                description: Specification of the feature toggles supported by the
+                  addon-operator
+                properties:
+                  experimental_features:
+                    description: Feature toggle for enabling/disabling experimental
+                      features in the addon-operator
+                    type: boolean
+                type: object
               ocm:
                 description: OCM specific configuration. Setting this subconfig will
                   enable deeper OCM integration. e.g. push status reporting, etc.

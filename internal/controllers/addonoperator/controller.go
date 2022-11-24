@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/openshift/addon-operator/internal/metrics"
@@ -42,6 +43,8 @@ type AddonOperatorReconciler struct {
 	OCMClientManager   ocmClientManager
 	Recorder           *metrics.Recorder
 	ClusterExternalID  string
+
+	FeatureTogglesState addonsv1alpha1.AddonOperatorFeatureToggles // no need to guard this with a mutex considering the fact that no two goroutines would ever try to update it as this is only initialized at startup
 }
 
 func (r *AddonOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
@@ -85,6 +88,11 @@ func (r *AddonOperatorReconciler) Reconcile(
 	}
 	if err != nil {
 		return ctrl.Result{}, err
+	}
+
+	if r.FeatureTogglesState != addonOperator.Spec.FeatureToggles {
+		log.Info("found a different state of feature toggles, exiting AddonOperator")
+		os.Exit(0)
 	}
 
 	if err := r.handleGlobalPause(ctx, addonOperator); err != nil {
