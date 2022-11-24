@@ -6,9 +6,9 @@ spec:
   scopes:
     - Namespaced
   phases:
-    - name: namespace-crds
+    - name: hosted-cluster
       class: hosted-cluster
-    - name: deploy
+    - name: hosted-control-plane
   availabilityProbes:
     - probes:
         - condition:

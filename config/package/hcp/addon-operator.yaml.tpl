@@ -2,11 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: addon-operator-manager
-  namespace: openshift-addon-operator
   labels:
     app.kubernetes.io/name: addon-operator
   annotations:
-    package-operator.run/phase: deploy
+    package-operator.run/phase: hosted-control-plane
 spec:
   replicas: 1
   selector:
@@ -18,14 +17,6 @@ spec:
       labels:
         app.kubernetes.io/name: addon-operator
     spec:
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - preference:
-                matchExpressions:
-                  - key: node-role.kubernetes.io/infra
-                    operator: Exists
-              weight: 100
       containers:
         - args:
             - --secure-listen-address=0.0.0.0:8443
@@ -61,6 +52,11 @@ spec:
               readOnly: true
         - args:
             - --enable-leader-election
+          env:
+			- name: KUBECONFIG
+			  value: /etc/openshift/kubeconfig/kubeconfig
+			- name: ADDON_OPERATOR_NAMESPACE
+			  value: addon-operator
           image: quay.io/app-sre/addon-operator-manager:replaced-in-pipeline
           livenessProbe:
             httpGet:
@@ -82,11 +78,15 @@ spec:
             requests:
               cpu: 100m
               memory: 300Mi
-      serviceAccountName: addon-operator
-      tolerations:
-        - effect: NoSchedule
-          key: node-role.kubernetes.io/infra
+          volumeMounts:
+		    - mountPath: /etc/openshift/kubeconfig
+			  name: kubeconfig
+			  readOnly: true
       volumes:
+		- name: kubeconfig
+		  secret:
+			defaultMode: 420
+			secretName: admin-kubeconfig
         - name: tls
           secret:
             secretName: metrics-server-cert

@@ -5,7 +5,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.6.2
-    package-operator.run/phase: namespace-crds
+    package-operator.run/phase: hosted-cluster
   name: addons.addons.managed.openshift.io
 spec:
   group: addons.managed.openshift.io
