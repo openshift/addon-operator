@@ -671,6 +671,13 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	}); err != nil {
 		return fmt.Errorf("failed to apply the Observability Operator APIs: %w", err)
 	}
+	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
+		// Install OLM.
+		"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
+		"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
+	}); err != nil {
+		return fmt.Errorf("failed to install OLM: %w", err)
+	}
 	if err := deployObservabilityOperator(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to deploy observability operator: %w", err)
 	}
