@@ -1,0 +1,31 @@
+apiVersion: manifests.package-operator.run/v1alpha1
+kind: PackageManifest
+metadata:
+  name: addon-operator
+spec:
+  scopes:
+    - Namespaced
+  phases:
+    - name: hosted-cluster
+      class: hosted-cluster
+    - name: hosted-control-plane
+  availabilityProbes:
+    - probes:
+        - condition:
+            type: Available
+            status: "True"
+        - fieldsEqual:
+            fieldA: .status.updatedReplicas
+            fieldB: .status.replicas
+      selector:
+        kind:
+          group: apps
+          kind: Deployment
+    - probes:
+        - condition:
+            type: Established
+            status: "True"
+      selector:
+        kind:
+          group: apiextensions.k8s.io
+          kind: CustomResourceDefinition
