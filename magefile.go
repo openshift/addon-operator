@@ -656,7 +656,25 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	}
 
 	ctx = logr.NewContext(ctx, logger)
-	return labelNodesWithInfraRole(ctx, cluster)
+	if err := labelNodesWithInfraRole(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
+	}
+	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
+		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml", observabilityOperatorVersion),
+		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml", observabilityOperatorVersion),
+		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml", observabilityOperatorVersion),
+		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml", observabilityOperatorVersion),
+		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml", observabilityOperatorVersion),
+		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml", observabilityOperatorVersion),
+		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml", observabilityOperatorVersion),
+		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml", observabilityOperatorVersion),
+	}); err != nil {
+		return fmt.Errorf("failed to apply the Observability Operator APIs: %w", err)
+	}
+	if err := deployObservabilityOperator(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to deploy observability operator: %w", err)
+	}
+	return nil
 }
 
 // Target to inject the addon status reporting environment variable
@@ -954,7 +972,7 @@ func renderObservabilityOperatorCatalogSource(ctx context.Context, cluster *dev.
 	return observabilityOperatorCatalogSource, nil
 }
 
-func (d Dev) deployObservabilityOperator(ctx context.Context, cluster *dev.Cluster) error {
+func deployObservabilityOperator(ctx context.Context, cluster *dev.Cluster) error {
 	observabilityOperatorCatalogSource, err := renderObservabilityOperatorCatalogSource(ctx, cluster)
 	if err != nil {
 		return fmt.Errorf("failed to render the observability operator catalog source from its template: %w", err)
@@ -1071,7 +1089,7 @@ func (d Dev) deploy(
 			return err
 		}
 	}
-	if err := d.deployObservabilityOperator(ctx, cluster); err != nil {
+	if err := deployObservabilityOperator(ctx, cluster); err != nil {
 		return err
 	}
 
