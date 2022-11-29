@@ -1140,6 +1140,21 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	// Replace image
 	patchDeployment(deployment, "addon-operator-manager", "manager")
 
+	availableFeatureToggles := []featuretoggle.FeatureToggleHandler{
+		featuretoggle.MonitoringStackFeatureToggle{
+			SchemeToUpdate: cluster.Scheme,
+		},
+	}
+
+	for _, featTog := range availableFeatureToggles {
+		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
+		if featTog.IsEnabled() {
+			if err := featTog.EnableOnAddonOperatorDeployment(addonOperatorDeployment); err != nil {
+				return fmt.Errorf("failed to set the feature toggle '%s': %w", featTog.Name(), err)
+			}
+		}
+	}
+
 	ctx = logr.NewContext(ctx, logger)
 
 	// Deploy
