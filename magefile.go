@@ -1149,7 +1149,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	for _, featTog := range availableFeatureToggles {
 		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
 		if featTog.IsEnabled() {
-			if err := featTog.EnableOnAddonOperatorDeployment(addonOperatorDeployment); err != nil {
+			if err := featTog.EnableOnAddonOperatorDeployment(deployment); err != nil {
 				return fmt.Errorf("failed to set the feature toggle '%s': %w", featTog.Name(), err)
 			}
 		}
