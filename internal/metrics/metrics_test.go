@@ -127,17 +127,11 @@ func TestAddonMetrics_AddonHealth(t *testing.T) {
 			addon := tc.addon.DeepCopy()
 			addon.Name = fmt.Sprintf("%s-%d", addonNamePrefix, i)
 
-			healthReason := ""
-			if len(addon.Status.Conditions) == 0 {
-				healthReason = "Unknown"
-			}
-
 			recorder.recordAddonHealthInfo(addon)
 			assert.Equal(t, float64(tc.expected), testutil.ToFloat64(
 				recorder.addonHealthInfo.WithLabelValues(
 					addon.Name,
 					"0.0.0",
-					healthReason,
 				),
 			))
 		})

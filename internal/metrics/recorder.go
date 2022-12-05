@@ -76,7 +76,7 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 			Name:        "addon_operator_addon_health_info",
 			Help:        "Addon Health information",
 			ConstLabels: prometheus.Labels{"_id": clusterId},
-		}, []string{"name", "version", "reason"},
+		}, []string{"name", "version"},
 	)
 
 	// Register metrics if `register` is true
@@ -224,14 +224,11 @@ func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
 	var (
 		// `healthStatus` defaults to unknown unless status conditions say otherwise
 		healthStatus = 2
-		healthReason = "Unknown"
 		healthCond   = meta.FindStatusCondition(addon.Status.Conditions,
 			addonsv1alpha1.Available)
 	)
 
 	if healthCond != nil {
-		healthReason = healthCond.Reason
-
 		switch healthCond.Status {
 		case metav1.ConditionFalse:
 			healthStatus = 0
@@ -250,6 +247,5 @@ func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
 
 	r.addonHealthInfo.WithLabelValues(addon.Name,
 		addonVersion,
-		healthReason,
 	).Set(float64(healthStatus))
 }
