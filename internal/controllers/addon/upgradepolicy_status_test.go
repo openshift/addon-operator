@@ -102,6 +102,16 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 		}
 
 		ocmClient.
+			On("GetUpgradePolicy", mock.Anything, ocm.UpgradePolicyGetRequest{
+				ID: "1234",
+			}).
+			Return(
+				ocm.UpgradePolicyGetResponse{
+					Value: ocm.UpgradePolicyValueScheduled,
+				}, nil,
+			)
+
+		ocmClient.
 			On("PatchUpgradePolicy", mock.Anything, ocm.UpgradePolicyPatchRequest{
 				ID:          "1234",
 				Value:       ocm.UpgradePolicyValueStarted,
@@ -136,6 +146,16 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 
 	t.Run("noop when upgrade started, but Addon not Available", func(t *testing.T) {
 		ocmClient := ocmtest.NewClient()
+		ocmClient.
+			On("GetUpgradePolicy", mock.Anything, ocm.UpgradePolicyGetRequest{
+				ID: "1234",
+			}).
+			Return(
+				ocm.UpgradePolicyGetResponse{
+					Value: ocm.UpgradePolicyValueStarted,
+				}, nil,
+			)
+
 		r := &AddonReconciler{
 			ocmClient: ocmClient,
 		}
@@ -206,6 +226,15 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 			},
 		}
 
+		ocmClient.
+			On("GetUpgradePolicy", mock.Anything, ocm.UpgradePolicyGetRequest{
+				ID: "1234",
+			}).
+			Return(
+				ocm.UpgradePolicyGetResponse{
+					Value: ocm.UpgradePolicyValueStarted,
+				}, nil,
+			)
 		ocmClient.
 			On("PatchUpgradePolicy", mock.Anything, ocm.UpgradePolicyPatchRequest{
 				ID:          "1234",

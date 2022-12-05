@@ -35,7 +35,13 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 		return nil
 	}
 
+	stateVal, err := r.getPreviousUpgradePolicyStateValue(ctx, addon.Spec.UpgradePolicy.ID)
+	if err != nil {
+		return fmt.Errorf("getting previous UpgradePolicy state value: %w", err)
+	}
+
 	log = log.WithValues(
+		"PreviousStateValue", stateVal,
 		"UpgradePolicy", addon.Spec.UpgradePolicy,
 		"Version", addon.Spec.Version,
 	)
@@ -46,11 +52,17 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 		return r.reportUpgradeStarted(ctx, addon)
 	}
 	if addon.Status.UpgradePolicy.Version == "" {
-		log.Info("previous upgrade version unknown; retrieving status from OCM")
+		log.Info("previous upgrade version unknown")
 
-		if complete, err := r.handleUnknownPreviousVersion(ctx, log, addon); err != nil {
-			return fmt.Errorf("handling UpgradePolicy with unknown previous version: %w", err)
-		} else if complete {
+		if stateVal == ocm.UpgradePolicyValueCompleted || stateVal == ocm.UpgradePolicyValuePending {
+			log.Info("previous upgrade completed; setting UpgradePolicy status to complete")
+			// When the upgrade policy is "completed" in the OCM API but we don't have
+			// a version in our status, we just have to populate the current version to our
+			// status as the "version" was just recently introduced. We must also do this
+			// when the upgrade policy is "pending" since automatic upgrade policies move
+			// to "pending" once "completed".
+			addon.SetUpgradePolicyStatus(addonsv1alpha1.AddonUpgradePolicyValueCompleted)
+
 			return nil
 		}
 	}
@@ -68,6 +80,14 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 		return r.reportUpgradeStarted(ctx, addon)
 	}
 	if addon.IsAvailable() {
+		if stateVal == ocm.UpgradePolicyValueScheduled {
+			log.Info("UpgradePolicy in scheduled state; reporting upgrade as started before completed")
+
+			if err := r.reportUpgradeStarted(ctx, addon); err != nil {
+				return fmt.Errorf("reporting upgrade as started: %w", err)
+			}
+		}
+
 		log.Info("reporting upgrade as completed")
 
 		return r.reportUpgradeCompleted(ctx, addon)
@@ -82,32 +102,19 @@ func requiresReporting(addon *addonsv1alpha1.Addon) bool {
 		!addon.UpgradeCompleteForCurrentVersion()
 }
 
-func (r *AddonReconciler) handleUnknownPreviousVersion(ctx context.Context, log logr.Logger, addon *addonsv1alpha1.Addon) (bool, error) {
-	policyID := addon.Spec.UpgradePolicy.ID
+func (r *AddonReconciler) getPreviousUpgradePolicyStateValue(ctx context.Context, policyID string) (ocm.UpgradePolicyValue, error) {
 	req := ocm.UpgradePolicyGetRequest{
 		ID: policyID,
 	}
 
 	res, err := r.handleGetUpgradePolicyState(ctx, req)
 	if err != nil {
-		return false, fmt.Errorf(
+		return ocm.UpgradePolicyValueNone, fmt.Errorf(
 			"getting UpgradePolicy %q state: %w", policyID, err,
 		)
 	}
 
-	if res.Value == ocm.UpgradePolicyValueCompleted {
-		log.Info("previous upgrade completed; setting UpgradePolicy status to complete")
-		// When the upgrade policy is "completed" in the OCM API but we don't have
-		// a version in our status, we just have to populate the current version to our
-		// status as the "version" was just recently introduced
-		addon.SetUpgradePolicyStatus(addonsv1alpha1.AddonUpgradePolicyValueCompleted)
-
-		return true, nil
-	}
-
-	log.Info(fmt.Sprintf("found current upgrade with state %q", string(res.Value)))
-
-	return false, nil
+	return res.Value, nil
 }
 
 func (r *AddonReconciler) reportUpgradeStarted(ctx context.Context, addon *addonsv1alpha1.Addon) error {
