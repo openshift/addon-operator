@@ -27,6 +27,12 @@ func (s *integrationTestSuite) TestUpgradePolicyReporting() {
 		s.addonCleanup(addon, ctx)
 	})
 
+	_, err = integration.OCMClient.PatchUpgradePolicy(ctx, ocm.UpgradePolicyPatchRequest{
+		ID:    addon.Spec.UpgradePolicy.ID,
+		Value: ocm.UpgradePolicyValueScheduled,
+	})
+	s.Require().NoError(err)
+
 	// wait until Addon is available
 	err = integration.WaitForObject(
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",

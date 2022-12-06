@@ -10,6 +10,9 @@ import (
 type UpgradePolicyValue string
 
 const (
+	UpgradePolicyValueNone      UpgradePolicyValue = ""
+	UpgradePolicyValuePending   UpgradePolicyValue = "pending"
+	UpgradePolicyValueScheduled UpgradePolicyValue = "scheduled"
 	UpgradePolicyValueStarted   UpgradePolicyValue = "started"
 	UpgradePolicyValueCompleted UpgradePolicyValue = "completed"
 )
