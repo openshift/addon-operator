@@ -37,12 +37,16 @@ func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
 	// but currently the addon workload creates the monitoring stack by itself
 	// thus we want to create the service monitor as late as possible to ensure that
 	// cluster-monitoring prom does not try to scrape a non-existent addon prometheus.
-	if err := r.ensureMonitoringFederation(ctx, addon); errors.Is(err, controllers.ErrNotOwnedByUs) {
+
+	result, err := r.ensureMonitoringFederation(ctx, addon)
+	if errors.Is(err, controllers.ErrNotOwnedByUs) {
 		log.Info("stopping", "reason", "monitoring federation namespace or serviceMonitor owned by something else")
 
 		return ctrl.Result{}, nil
 	} else if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure ServiceMonitor: %w", err)
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// Remove possibly unwanted monitoring federation
@@ -59,51 +63,54 @@ func (r *monitoringFederationReconciler) Name() string {
 // ensureMonitoringFederation inspects an addon's MonitoringFederation specification
 // and if it exists ensures that a ServiceMonitor is present in the desired monitoring
 // namespace.
-func (r *monitoringFederationReconciler) ensureMonitoringFederation(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+func (r *monitoringFederationReconciler) ensureMonitoringFederation(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	if !HasMonitoringFederation(addon) {
-		return nil
+		return ctrl.Result{}, nil
 	}
 
-	if err := r.ensureMonitoringNamespace(ctx, addon); err != nil {
-		return fmt.Errorf("ensuring monitoring Namespace: %w", err)
+	result, err := r.ensureMonitoringNamespace(ctx, addon)
+	if err != nil {
+		return ctrl.Result{}, fmt.Errorf("ensuring monitoring Namespace: %w", err)
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	if err := r.ensureServiceMonitor(ctx, addon); err != nil {
-		return fmt.Errorf("ensuring ServiceMonitor: %w", err)
+		return ctrl.Result{}, fmt.Errorf("ensuring ServiceMonitor: %w", err)
 	}
 
-	return nil
+	return ctrl.Result{}, nil
 }
 
 func (r *monitoringFederationReconciler) ensureMonitoringNamespace(
-	ctx context.Context, addon *addonsv1alpha1.Addon) error {
+	ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	desired, err := r.desiredMonitoringNamespace(addon)
 	if err != nil {
-		return err
+		return ctrl.Result{}, err
 	}
 
 	actual, err := r.actualMonitoringNamespace(ctx, addon)
 	if k8sApiErrors.IsNotFound(err) {
-		return r.client.Create(ctx, desired)
+		return ctrl.Result{}, r.client.Create(ctx, desired)
 	} else if err != nil {
-		return fmt.Errorf("getting monitoring namespace: %w", err)
+		return ctrl.Result{}, fmt.Errorf("getting monitoring namespace: %w", err)
 	}
 
 	ownedByAddon := controllers.HasSameController(actual, desired)
 	labelsChanged := !equality.Semantic.DeepEqual(actual.Labels, desired.Labels)
 
 	if ownedByAddon && !labelsChanged {
-		return nil
+		return ctrl.Result{}, nil
 	}
 
 	actual.OwnerReferences, actual.Labels = desired.OwnerReferences, desired.Labels
 
 	if err := r.client.Update(ctx, actual); err != nil {
-		return fmt.Errorf("updating monitoring namespace: %w", err)
+		return ctrl.Result{}, fmt.Errorf("updating monitoring namespace: %w", err)
 	}
 
 	if actual.Status.Phase == corev1.NamespaceActive {
-		return nil
+		return ctrl.Result{}, nil
 	}
 
 	reportUnreadyMonitoring(addon, fmt.Sprintf("namespace %q is not active", actual.Name))
@@ -111,7 +118,7 @@ func (r *monitoringFederationReconciler) ensureMonitoringNamespace(
 	// Previously this would trigger exit and move on to the next phase.
 	// However, given that the reconciliation is not complete an error should
 	// be returned to requeue the work.
-	return fmt.Errorf("monitoring namespace is not active")
+	return ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil
 }
 
 func (r *monitoringFederationReconciler) desiredMonitoringNamespace(addon *addonsv1alpha1.Addon) (*corev1.Namespace, error) {

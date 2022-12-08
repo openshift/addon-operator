@@ -31,7 +31,7 @@ func TestEnsureMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInClu
 	}
 
 	ctx := context.Background()
-	err := r.ensureMonitoringFederation(ctx, addon)
+	_, err := r.ensureMonitoringFederation(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 }
@@ -70,7 +70,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(
 		Return(nil)
 
 	ctx := context.Background()
-	err := r.ensureMonitoringFederation(ctx, addon)
+	_, err := r.ensureMonitoringFederation(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", 2)
@@ -152,7 +152,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 		Return(nil)
 
 	ctx := context.Background()
-	err := r.ensureMonitoringFederation(ctx, addon)
+	_, err := r.ensureMonitoringFederation(ctx, addon)
 	require.NoError(t, err)
 }
 
@@ -227,7 +227,7 @@ func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
 
 			addonCopy := addon.DeepCopy()
 
-			err := rec.ensureMonitoringFederation(context.Background(), addonCopy)
+			_, err := rec.ensureMonitoringFederation(context.Background(), addonCopy)
 			assert.NoError(t, err)
 
 			c.AssertExpectations(t)
