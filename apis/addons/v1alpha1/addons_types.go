@@ -229,6 +229,9 @@ const (
 
 	// Addon cannot find a referenced secret to propagate
 	AddonReasonMissingSecretForPropagation = "MissingSecretForPropagation"
+
+	// Addon is being upgraded.
+	AddonReasonUpgrading = "AddonUpgrading"
 )
 
 type AddonNamespace struct {
@@ -251,6 +254,9 @@ const (
 
 	// Paused condition indicates that the reconciliation of resources for the Addon(s) has paused
 	Paused = "Paused"
+
+	// Upgrading condition indicates that the addon is is being upgraded.
+	Upgrading = "Upgrading"
 )
 
 // AddonStatus defines the observed state of Addon
@@ -269,6 +275,9 @@ type AddonStatus struct {
 	// Observed version of the Addon on the cluster, only present when .spec.version is populated.
 	// +optional
 	ObservedVersion string `json:"observedVersion,omitempty"`
+	// Name of the csv(available) that was last observed
+	// +optional
+	LastObservedAvailableCSV string `json:"lastObservedAvailableCSV,omitempty"`
 }
 
 type AddonPhase string

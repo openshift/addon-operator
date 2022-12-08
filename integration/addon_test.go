@@ -10,6 +10,7 @@ import (
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -201,6 +202,82 @@ func (s *integrationTestSuite) TestAddon() {
 			}, currentNamespace)
 			s.Assert().True(k8sApiErrors.IsNotFound(err), "Namespace not deleted: %s", namespace.Name)
 		}
+	})
+}
+
+func (s *integrationTestSuite) TestAddonConditions() {
+	ctx := context.Background()
+
+	addon := addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorking)
+
+	err := integration.Client.Create(ctx, addon)
+	s.Require().NoError(err)
+	// wait until Addon is available
+	err = integration.WaitForObject(
+		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
+		func(obj client.Object) (done bool, err error) {
+			a := obj.(*addonsv1alpha1.Addon)
+			return meta.IsStatusConditionTrue(
+				a.Status.Conditions, addonsv1alpha1.Available), nil
+		})
+	s.Require().NoError(err)
+
+	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+	s.Require().NoError(err)
+
+	s.Run("test_upgrading_condition", func() {
+		updatedAddon := addonWithVersion("v0.2.0", anotherReferenceAddonCatalogSourceImageWorking)
+		updatedAddon.ResourceVersion = addon.ResourceVersion
+		err := integration.Client.Update(ctx, updatedAddon)
+		s.Require().NoError(err)
+
+		// wait until upgrading condition is reported as true.
+		err = integration.WaitForObject(
+			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report upgrading condition=true",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.Upgrading), nil
+			},
+		)
+		s.Require().NoError(err)
+
+		// Because we are upgrading, the addon should transition to available = false.
+		err = integration.WaitForObject(
+			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report available condition=false",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionFalse(
+					a.Status.Conditions, addonsv1alpha1.Available), nil
+			},
+		)
+		s.Require().NoError(err)
+
+		// After a while upgrading condition should have transitioned to false
+		// (When the new version is available)
+		err = integration.WaitForObject(
+			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report upgrading condition=false",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionFalse(
+					a.Status.Conditions, addonsv1alpha1.Upgrading), nil
+			},
+		)
+		s.Require().NoError(err)
+
+		// At this point the addon should be available too.
+		err = integration.Client.Get(ctx,
+			types.NamespacedName{
+				Namespace: updatedAddon.Namespace,
+				Name:      updatedAddon.Name,
+			},
+			updatedAddon)
+		s.Require().NoError(err)
+		s.Require().True(meta.IsStatusConditionTrue(updatedAddon.Status.Conditions, addonsv1alpha1.Available))
+	})
+
+	s.T().Cleanup(func() {
+		s.addonCleanup(addon, ctx)
 	})
 }
 

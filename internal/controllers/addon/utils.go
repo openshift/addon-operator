@@ -85,6 +85,12 @@ func reportReadinessStatus(addon *addonsv1alpha1.Addon) {
 	addon.Status.ObservedVersion = addon.Spec.Version
 }
 
+func reportObservedVersion(addon *addonsv1alpha1.Addon) {
+	// When everything is ready, we are also operating on the current version of the Addon.
+	// Otherwise we would be in a pending or error state.
+	addon.Status.ObservedVersion = addon.Spec.Version
+}
+
 // Report Addon status to communicate that the Addon is terminating
 func reportTerminationStatus(addon *addonsv1alpha1.Addon) {
 	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
@@ -126,6 +132,54 @@ func reportAddonPauseStatus(addon *addonsv1alpha1.Addon,
 func (r *AddonReconciler) removeAddonPauseCondition(addon *addonsv1alpha1.Addon) {
 	meta.RemoveStatusCondition(&addon.Status.Conditions, addonsv1alpha1.Paused)
 	addon.Status.ObservedGeneration = addon.Generation
+}
+
+func reportAddonUpgradingConditionTrue(addon *addonsv1alpha1.Addon) {
+	meta.SetStatusCondition(&addon.Status.Conditions,
+		metav1.Condition{
+			Type:               addonsv1alpha1.Upgrading,
+			Status:             metav1.ConditionTrue,
+			Reason:             addonsv1alpha1.AddonReasonUpgrading,
+			Message:            "Addon is being upgraded.",
+			ObservedGeneration: addon.Generation,
+		})
+	addon.Status.ObservedGeneration = addon.Generation
+}
+
+func reportLastObservedAvailableCSV(addon *addonsv1alpha1.Addon, csvName string) {
+	addon.Status.LastObservedAvailableCSV = csvName
+}
+
+func reportAddonUpgradingConditionFalse(addon *addonsv1alpha1.Addon) {
+	upgradingCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Upgrading)
+	// Only set upgrading condition to false, if the condition is already present.
+	if upgradingCond != nil {
+		meta.SetStatusCondition(&addon.Status.Conditions,
+			metav1.Condition{
+				Type:               addonsv1alpha1.Upgrading,
+				Status:             metav1.ConditionFalse,
+				Reason:             addonsv1alpha1.AddonReasonUpgrading,
+				Message:            "Addon upgrade has concluded.",
+				ObservedGeneration: addon.Generation,
+			})
+		addon.Status.ObservedGeneration = addon.Generation
+	}
+}
+
+func addonUpgradingConditionTrue(addon *addonsv1alpha1.Addon) bool {
+	upgradingCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Upgrading)
+	if upgradingCond != nil {
+		return upgradingCond.Status == metav1.ConditionTrue
+	}
+	return false
+}
+
+func addonIsBeingUpgraded(addon *addonsv1alpha1.Addon) bool {
+	if len(addon.Spec.Version) != 0 &&
+		len(addon.Status.ObservedVersion) != 0 {
+		return addon.Spec.Version != addon.Status.ObservedVersion
+	}
+	return false
 }
 
 // Marks Addon as unavailable because the CatalogSource is unready

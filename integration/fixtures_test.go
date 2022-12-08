@@ -18,6 +18,9 @@ var (
 	// Version: v0.1.0
 	referenceAddonCatalogSourceImageWorking = "quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd"
 
+	// version v0.6.7
+	anotherReferenceAddonCatalogSourceImageWorking = "quay.io/osd-addons/reference-addon-index@sha256:5e19fa26ab71861ec8522b0e56a92c61fc84718c6a794e57db307164ce05a90f"
+
 	// The latest bundle in this index image deploys a version of our referene-addon where InstallPlan and CSV never succeed
 	// because the deployed operator pod is deliberately broken through invalid readiness and liveness probes.
 	// Version: v0.1.3
@@ -86,6 +89,36 @@ func addon_OwnNamespace() *addonsv1alpha1.Addon {
 					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
 						Namespace:          "namespace-onbgdions",
 						CatalogSourceImage: referenceAddonCatalogSourceImageWorking,
+						Channel:            "alpha",
+						PackageName:        "reference-addon",
+						Config: &addonsv1alpha1.SubscriptionConfig{
+							EnvironmentVariables: referenceAddonConfigEnvObjects,
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func addonWithVersion(version string, catalogSrc string) *addonsv1alpha1.Addon {
+	return &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-oisafbo12",
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			Version:     version,
+			DisplayName: "addon-oisafbo12",
+			Namespaces: []addonsv1alpha1.AddonNamespace{
+				{Name: "namespace-onbgdions"},
+				{Name: "namespace-pioghfndb"},
+			},
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace:          "namespace-onbgdions",
+						CatalogSourceImage: catalogSrc,
 						Channel:            "alpha",
 						PackageName:        "reference-addon",
 						Config: &addonsv1alpha1.SubscriptionConfig{

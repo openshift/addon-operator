@@ -19,6 +19,11 @@ func (r *olmReconciler) observeCurrentCSV(
 	if err := r.uncachedClient.Get(ctx, csvKey, csv); err != nil {
 		return resultNil, fmt.Errorf("getting installed CSV: %w", err)
 	}
+	// If the addon was being upgraded, we mark the upgrade as
+	// concluded.
+	if addonUpgradeConcluded(addon, csv) {
+		reportAddonUpgradingConditionFalse(addon)
+	}
 
 	var message string
 	switch csv.Status.Phase {
@@ -36,4 +41,14 @@ func (r *olmReconciler) observeCurrentCSV(
 	}
 
 	return resultNil, nil
+}
+
+func addonUpgradeConcluded(addon *addonsv1alpha1.Addon, currentCSV *operatorsv1alpha1.ClusterServiceVersion) bool {
+	// Upgrading has concluded if a new CSV(compared to the last known available) has come up and is
+	// in the succeeded phase.
+	if addonUpgradingConditionTrue(addon) {
+		return currentCSV.Name != addon.Status.LastObservedAvailableCSV &&
+			currentCSV.Status.Phase == operatorsv1alpha1.CSVPhaseSucceeded
+	}
+	return false
 }
