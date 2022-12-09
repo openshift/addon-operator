@@ -134,42 +134,49 @@ func (r *AddonReconciler) removeAddonPauseCondition(addon *addonsv1alpha1.Addon)
 	addon.Status.ObservedGeneration = addon.Generation
 }
 
-func reportAddonUpgradingConditionTrue(addon *addonsv1alpha1.Addon) {
-	meta.SetStatusCondition(&addon.Status.Conditions,
-		metav1.Condition{
-			Type:               addonsv1alpha1.Upgrading,
-			Status:             metav1.ConditionTrue,
-			Reason:             addonsv1alpha1.AddonReasonUpgrading,
-			Message:            "Addon is being upgraded.",
-			ObservedGeneration: addon.Generation,
-		})
-	addon.Status.ObservedGeneration = addon.Generation
-}
-
 func reportLastObservedAvailableCSV(addon *addonsv1alpha1.Addon, csvName string) {
 	addon.Status.LastObservedAvailableCSV = csvName
 }
 
-func reportAddonUpgradingConditionFalse(addon *addonsv1alpha1.Addon) {
-	upgradingCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Upgrading)
-	// Only set upgrading condition to false, if the condition is already present.
-	if upgradingCond != nil {
+func reportAddonUpgradeSucceeded(addon *addonsv1alpha1.Addon) {
+	upgradeStartedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.UpgradeStarted)
+	// Only set upgrade condition to succeeded, if UpgradeStarted condition is already present.
+	if upgradeStartedCond != nil {
+		// Remove the upgrade started condition
+		meta.RemoveStatusCondition(&addon.Status.Conditions, addonsv1alpha1.UpgradeStarted)
 		meta.SetStatusCondition(&addon.Status.Conditions,
 			metav1.Condition{
-				Type:               addonsv1alpha1.Upgrading,
-				Status:             metav1.ConditionFalse,
-				Reason:             addonsv1alpha1.AddonReasonUpgrading,
-				Message:            "Addon upgrade has concluded.",
+				Type:               addonsv1alpha1.UpgradeSucceeded,
+				Status:             metav1.ConditionTrue,
+				Reason:             addonsv1alpha1.AddonReasonUpgradeSucceeded,
+				Message:            "Addon upgrade has succeeded.",
 				ObservedGeneration: addon.Generation,
 			})
 		addon.Status.ObservedGeneration = addon.Generation
 	}
 }
 
-func addonUpgradingConditionTrue(addon *addonsv1alpha1.Addon) bool {
-	upgradingCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Upgrading)
-	if upgradingCond != nil {
-		return upgradingCond.Status == metav1.ConditionTrue
+func reportAddonUpgradeStarted(addon *addonsv1alpha1.Addon) {
+	// If upgrade succeeded status was previously set, remove it.
+	upgradeSucceededCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.UpgradeSucceeded)
+	if upgradeSucceededCond != nil {
+		meta.RemoveStatusCondition(&addon.Status.Conditions, addonsv1alpha1.UpgradeSucceeded)
+	}
+	meta.SetStatusCondition(&addon.Status.Conditions,
+		metav1.Condition{
+			Type:               addonsv1alpha1.UpgradeStarted,
+			Status:             metav1.ConditionTrue,
+			Reason:             addonsv1alpha1.AddonReasonUpgradeStarted,
+			Message:            "Addon upgrade has started.",
+			ObservedGeneration: addon.Generation,
+		})
+	addon.Status.ObservedGeneration = addon.Generation
+}
+
+func addonUpgradeStarted(addon *addonsv1alpha1.Addon) bool {
+	upgradeStartedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.UpgradeStarted)
+	if upgradeStartedCond != nil {
+		return upgradeStartedCond.Status == metav1.ConditionTrue
 	}
 	return false
 }

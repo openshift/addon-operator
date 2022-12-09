@@ -22,7 +22,7 @@ func (r *olmReconciler) observeCurrentCSV(
 	// If the addon was being upgraded, we mark the upgrade as
 	// concluded.
 	if addonUpgradeConcluded(addon, csv) {
-		reportAddonUpgradingConditionFalse(addon)
+		reportAddonUpgradeSucceeded(addon)
 	}
 
 	var message string
@@ -46,7 +46,7 @@ func (r *olmReconciler) observeCurrentCSV(
 func addonUpgradeConcluded(addon *addonsv1alpha1.Addon, currentCSV *operatorsv1alpha1.ClusterServiceVersion) bool {
 	// Upgrading has concluded if a new CSV(compared to the last known available) has come up and is
 	// in the succeeded phase.
-	if addonUpgradingConditionTrue(addon) {
+	if addonUpgradeStarted(addon) {
 		return currentCSV.Name != addon.Status.LastObservedAvailableCSV &&
 			currentCSV.Status.Phase == operatorsv1alpha1.CSVPhaseSucceeded
 	}

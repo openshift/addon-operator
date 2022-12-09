@@ -282,7 +282,7 @@ func (r *AddonReconciler) Reconcile(
 	// Check if the addon is being upgraded
 	// by comparing spec.version and status.ObservedVersion.
 	if addonIsBeingUpgraded(addon) {
-		reportAddonUpgradingConditionTrue(addon)
+		reportAddonUpgradeStarted(addon)
 		return ctrl.Result{}, nil
 	}
 

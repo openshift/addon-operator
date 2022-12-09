@@ -226,18 +226,20 @@ func (s *integrationTestSuite) TestAddonConditions() {
 	s.Require().NoError(err)
 
 	s.Run("test_upgrading_condition", func() {
-		updatedAddon := addonWithVersion("v0.2.0", anotherReferenceAddonCatalogSourceImageWorking)
+		// Upgrade to v5
+		// -------------------------------------
+		updatedAddon := addonWithVersion("v0.5.0", referenceAddonCatalogSourceImageWorkingv5)
 		updatedAddon.ResourceVersion = addon.ResourceVersion
 		err := integration.Client.Update(ctx, updatedAddon)
 		s.Require().NoError(err)
 
-		// wait until upgrading condition is reported as true.
+		// wait until upgrade started condition is reported as true.
 		err = integration.WaitForObject(
-			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report upgrading condition=true",
+			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report upgrade started condition=true",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)
 				return meta.IsStatusConditionTrue(
-					a.Status.Conditions, addonsv1alpha1.Upgrading), nil
+					a.Status.Conditions, addonsv1alpha1.UpgradeStarted), nil
 			},
 		)
 		s.Require().NoError(err)
@@ -253,19 +255,18 @@ func (s *integrationTestSuite) TestAddonConditions() {
 		)
 		s.Require().NoError(err)
 
-		// After a while upgrading condition should have transitioned to false
+		// wait until upgrade succeeded condition is reported as true
 		// (When the new version is available)
 		err = integration.WaitForObject(
-			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report upgrading condition=false",
+			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report upgrade succeeded condition=true",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)
-				return meta.IsStatusConditionFalse(
-					a.Status.Conditions, addonsv1alpha1.Upgrading), nil
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.UpgradeSucceeded), nil
 			},
 		)
 		s.Require().NoError(err)
 
-		// At this point the addon should be available too.
 		err = integration.Client.Get(ctx,
 			types.NamespacedName{
 				Namespace: updatedAddon.Namespace,
@@ -273,7 +274,37 @@ func (s *integrationTestSuite) TestAddonConditions() {
 			},
 			updatedAddon)
 		s.Require().NoError(err)
+		// At this point the addon should be available.
 		s.Require().True(meta.IsStatusConditionTrue(updatedAddon.Status.Conditions, addonsv1alpha1.Available))
+		// upgrade started condition should go away
+		s.Require().Nil(meta.FindStatusCondition(updatedAddon.Status.Conditions, addonsv1alpha1.UpgradeStarted))
+
+		// ------------------------------------------------------
+		// Start the upgrade to v6
+		addonV6 := addonWithVersion("v0.6.0", referenceAddonCatalogSourceImageWorkingv6)
+		addonV6.ResourceVersion = updatedAddon.ResourceVersion
+		err = integration.Client.Update(ctx, addonV6)
+		s.Require().NoError(err)
+
+		// wait until upgrade started condition is reported as true.
+		err = integration.WaitForObject(
+			s.T(), defaultAddonAvailabilityTimeout, addonV6, "to report upgrade started condition=true",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.UpgradeStarted), nil
+			},
+		)
+		s.Require().NoError(err)
+		// At this point, the previous upgrade succeeded status should go away.
+		err = integration.Client.Get(ctx,
+			types.NamespacedName{
+				Namespace: addonV6.Namespace,
+				Name:      addonV6.Name,
+			},
+			addonV6)
+		s.Require().NoError(err)
+		s.Require().Nil(meta.FindStatusCondition(addonV6.Status.Conditions, addonsv1alpha1.UpgradeSucceeded))
 	})
 
 	s.T().Cleanup(func() {

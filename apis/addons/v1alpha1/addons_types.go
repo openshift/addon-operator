@@ -230,8 +230,11 @@ const (
 	// Addon cannot find a referenced secret to propagate
 	AddonReasonMissingSecretForPropagation = "MissingSecretForPropagation"
 
-	// Addon is being upgraded.
-	AddonReasonUpgrading = "AddonUpgrading"
+	// Addon upgrade has started.
+	AddonReasonUpgradeStarted = "AddonUpgradeStarted"
+
+	// Addon upgrade has succeeded.
+	AddonReasonUpgradeSucceeded = "AddonUpgradeSucceeded"
 )
 
 type AddonNamespace struct {
@@ -255,8 +258,11 @@ const (
 	// Paused condition indicates that the reconciliation of resources for the Addon(s) has paused
 	Paused = "Paused"
 
-	// Upgrading condition indicates that the addon is is being upgraded.
-	Upgrading = "Upgrading"
+	// UpgradeStarted condition indicates that the addon upgrade has started.
+	UpgradeStarted = "UpgradeStarted"
+
+	// UpgradeSucceeded condition indicates that the addon upgrade has succeeded.
+	UpgradeSucceeded = "UpgradeSucceeded"
 )
 
 // AddonStatus defines the observed state of Addon
@@ -298,18 +304,22 @@ const (
 // apiVersion: addons.managed.openshift.io/v1alpha1
 // kind: Addon
 // metadata:
-//   name: reference-addon
+//
+//	name: reference-addon
+//
 // spec:
-//   displayName: An amazing example addon!
-//   namespaces:
-//   - name: reference-addon
-//   install:
-//     type: OLMOwnNamespace
-//     olmOwnNamespace:
-//       namespace: reference-addon
-//       packageName: reference-addon
-//       channel: alpha
-//       catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+//
+//	displayName: An amazing example addon!
+//	namespaces:
+//	- name: reference-addon
+//	install:
+//	  type: OLMOwnNamespace
+//	  olmOwnNamespace:
+//	    namespace: reference-addon
+//	    packageName: reference-addon
+//	    channel: alpha
+//	    catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+//
 // ```
 //
 // +kubebuilder:object:root=true
