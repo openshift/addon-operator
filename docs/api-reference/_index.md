@@ -154,18 +154,22 @@ Addon is the Schema for the Addons API
 apiVersion: addons.managed.openshift.io/v1alpha1
 kind: Addon
 metadata:
-  name: reference-addon
+
+	name: reference-addon
+
 spec:
-  displayName: An amazing example addon!
-  namespaces:
-  - name: reference-addon
-  install:
-    type: OLMOwnNamespace
-    olmOwnNamespace:
-      namespace: reference-addon
-      packageName: reference-addon
-      channel: alpha
-      catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+
+	displayName: An amazing example addon!
+	namespaces:
+	- name: reference-addon
+	install:
+	  type: OLMOwnNamespace
+	  olmOwnNamespace:
+	    namespace: reference-addon
+	    packageName: reference-addon
+	    channel: alpha
+	    catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+
 ```
 
 | Field | Description | Scheme | Required |
@@ -265,6 +269,8 @@ AddonSpec defines the desired state of Addon.
 | version | Version of the Addon to deploy. Used for reporting via status and metrics. | string | false |
 | pause | Pause reconciliation of Addon when set to True | bool | true |
 | namespaces | Defines a list of Kubernetes Namespaces that belong to this Addon. Namespaces listed here will be created prior to installation of the Addon and will be removed from the cluster when the Addon is deleted. Collisions with existing Namespaces will result in the existing Namespaces being adopted. | [][AddonNamespace.addons.managed.openshift.io/v1alpha1](#addonnamespaceaddonsmanagedopenshiftiov1alpha1) | false |
+| commonLabels | Labels to be applied to all resources. | map[string]string | false |
+| commonAnnotations | Annotations to be applied to all resources. | map[string]string | false |
 | install | Defines how an Addon is installed. This field is immutable. | [AddonInstallSpec.addons.managed.openshift.io/v1alpha1](#addoninstallspecaddonsmanagedopenshiftiov1alpha1) | true |
 | upgradePolicy | UpgradePolicy enables status reporting via upgrade policies. | *[AddonUpgradePolicy.addons.managed.openshift.io/v1alpha1](#addonupgradepolicyaddonsmanagedopenshiftiov1alpha1) | false |
 | monitoring | Defines how an addon is monitored. | *[MonitoringSpec.addons.managed.openshift.io/v1alpha1](#monitoringspecaddonsmanagedopenshiftiov1alpha1) | false |

@@ -28,6 +28,12 @@ type AddonSpec struct {
 	// being adopted.
 	Namespaces []AddonNamespace `json:"namespaces,omitempty"`
 
+	// Labels to be applied to all resources.
+	CommonLabels map[string]string `json:"commonLabels,omitempty"`
+
+	// Annotations to be applied to all resources.
+	CommonAnnotations map[string]string `json:"commonAnnotations,omitempty"`
+
 	// Defines how an Addon is installed.
 	// This field is immutable.
 	Install AddonInstallSpec `json:"install"`
@@ -289,18 +295,22 @@ const (
 // apiVersion: addons.managed.openshift.io/v1alpha1
 // kind: Addon
 // metadata:
-//   name: reference-addon
+//
+//	name: reference-addon
+//
 // spec:
-//   displayName: An amazing example addon!
-//   namespaces:
-//   - name: reference-addon
-//   install:
-//     type: OLMOwnNamespace
-//     olmOwnNamespace:
-//       namespace: reference-addon
-//       packageName: reference-addon
-//       channel: alpha
-//       catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+//
+//	displayName: An amazing example addon!
+//	namespaces:
+//	- name: reference-addon
+//	install:
+//	  type: OLMOwnNamespace
+//	  olmOwnNamespace:
+//	    namespace: reference-addon
+//	    packageName: reference-addon
+//	    channel: alpha
+//	    catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+//
 // ```
 //
 // +kubebuilder:object:root=true
