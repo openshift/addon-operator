@@ -88,6 +88,7 @@ func (r *addonSecretPropagationReconciler) getDestinationSecretsWithoutNamespace
 			Type: srcSecret.Type,
 		}
 		controllers.AddCommonLabels(destSecret, addon)
+		controllers.AddCommonAnnotations(destSecret, addon)
 		if err := controllerutil.SetControllerReference(addon, destSecret, r.scheme); err != nil {
 			return nil, ctrl.Result{}, fmt.Errorf("setting owner reference: %w", err)
 		}

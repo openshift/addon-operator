@@ -37,6 +37,7 @@ func (r *olmReconciler) ensureOperatorGroup(
 	}
 
 	controllers.AddCommonLabels(desiredOperatorGroup, addon)
+	controllers.AddCommonAnnotations(desiredOperatorGroup, addon)
 	if err := controllerutil.SetControllerReference(addon, desiredOperatorGroup, r.scheme); err != nil {
 		return resultNil, fmt.Errorf("setting controller reference: %w", err)
 	}

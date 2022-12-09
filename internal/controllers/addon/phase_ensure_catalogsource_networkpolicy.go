@@ -108,6 +108,7 @@ func (r *olmReconciler) desiredCatalogSourcesNetworkPolicy(ctx context.Context, 
 	}
 
 	controllers.AddCommonLabels(np, addon)
+	controllers.AddCommonAnnotations(np, addon)
 	if err := controllerutil.SetControllerReference(addon, np, r.scheme); err != nil {
 		return nil, fmt.Errorf("setting controller reference: %w", err)
 	}

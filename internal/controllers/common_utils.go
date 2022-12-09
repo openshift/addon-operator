@@ -6,6 +6,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	k8slabels "k8s.io/apimachinery/pkg/labels"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
@@ -27,7 +28,22 @@ func AddCommonLabels(obj metav1.Object, addon *addonsv1alpha1.Addon) {
 	labels[CommonManagedByLabel] = CommonManagedByValue
 	labels[CommonCacheLabel] = CommonCacheValue
 	labels[CommonInstanceLabel] = addon.Name
+	if len(addon.Spec.CommonLabels) != 0 {
+		labels = k8slabels.Merge(labels, addon.Spec.CommonLabels)
+	}
 	obj.SetLabels(labels)
+}
+
+func AddCommonAnnotations(obj metav1.Object, addon *addonsv1alpha1.Addon) {
+	if len(addon.Spec.CommonAnnotations) == 0 {
+		return
+	}
+	annotations := obj.GetAnnotations()
+	if annotations == nil {
+		annotations = map[string]string{}
+	}
+	annotations = k8slabels.Merge(annotations, addon.Spec.CommonAnnotations)
+	obj.SetAnnotations(annotations)
 }
 
 func CommonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) labels.Selector {
