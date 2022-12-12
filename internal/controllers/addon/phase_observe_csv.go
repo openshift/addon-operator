@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -17,6 +18,10 @@ func (r *olmReconciler) observeCurrentCSV(
 ) (requeueResult, error) {
 	csv := &operatorsv1alpha1.ClusterServiceVersion{}
 	if err := r.uncachedClient.Get(ctx, csvKey, csv); err != nil {
+		if k8serrors.IsNotFound(err) {
+			return resultRetry, nil
+		}
+
 		return resultNil, fmt.Errorf("getting installed CSV: %w", err)
 	}
 
