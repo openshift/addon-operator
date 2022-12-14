@@ -146,6 +146,7 @@ func (r *namespaceReconciler) ensureNamespace(ctx context.Context, addon *addons
 		opt(namespace)
 	}
 	controllers.AddCommonLabels(namespace, addon)
+	controllers.AddCommonAnnotations(namespace, addon)
 	err := controllerutil.SetControllerReference(addon, namespace, r.scheme)
 	if err != nil {
 		return nil, err

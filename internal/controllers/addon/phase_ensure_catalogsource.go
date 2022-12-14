@@ -50,6 +50,7 @@ func (r *olmReconciler) ensureCatalogSource(
 	}
 
 	controllers.AddCommonLabels(catalogSource, addon)
+	controllers.AddCommonAnnotations(catalogSource, addon)
 
 	if err := controllerutil.SetControllerReference(addon, catalogSource, r.scheme); err != nil {
 		return resultNil, nil, err
@@ -116,6 +117,8 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 		}
 
 		controllers.AddCommonLabels(currentCatalogSrc, addon)
+		controllers.AddCommonAnnotations(currentCatalogSrc, addon)
+
 		if err := controllerutil.SetControllerReference(addon, currentCatalogSrc, r.scheme); err != nil {
 			return resultNil, err
 		}

@@ -63,6 +63,7 @@ func (r *olmReconciler) ensureSubscription(
 		},
 	}
 	controllers.AddCommonLabels(desiredSubscription, addon)
+	controllers.AddCommonAnnotations(desiredSubscription, addon)
 	if err := controllerutil.SetControllerReference(addon, desiredSubscription, r.scheme); err != nil {
 		return resultNil, client.ObjectKey{}, fmt.Errorf("setting controller reference: %w", err)
 	}

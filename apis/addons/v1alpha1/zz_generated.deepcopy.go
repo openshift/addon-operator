@@ -457,6 +457,20 @@ func (in *AddonSpec) DeepCopyInto(out *AddonSpec) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.CommonLabels != nil {
+		in, out := &in.CommonLabels, &out.CommonLabels
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
+	if in.CommonAnnotations != nil {
+		in, out := &in.CommonAnnotations, &out.CommonAnnotations
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
 	in.Install.DeepCopyInto(&out.Install)
 	if in.UpgradePolicy != nil {
 		in, out := &in.UpgradePolicy, &out.UpgradePolicy
