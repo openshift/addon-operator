@@ -28,8 +28,11 @@ type namespaceReconciler struct {
 func (r *namespaceReconciler) Reconcile(ctx context.Context,
 	addon *addonsv1alpha1.Addon) (reconcile.Result, error) {
 	// Ensure wanted namespaces
-	if err := r.ensureWantedNamespaces(ctx, addon); err != nil {
+	result, err := r.ensureWantedNamespaces(ctx, addon)
+	if err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to ensure wanted Namespaces: %w", err)
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// Ensure unwanted namespaces are removed
@@ -113,13 +116,13 @@ func getOwnedNamespacesViaCommonLabels(
 // Ensure existence of Namespaces specified in the given Addon resource
 // returns a bool that signals the caller to stop reconciliation and retry later
 func (r *namespaceReconciler) ensureWantedNamespaces(
-	ctx context.Context, addon *addonsv1alpha1.Addon) error {
+	ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	var unreadyNamespaces []string
 
 	for _, namespace := range addon.Spec.Namespaces {
 		ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name, WithNamespaceLabels(namespace.Labels), WithNamespaceAnnotations(namespace.Annotations))
 		if err != nil {
-			return err
+			return ctrl.Result{}, err
 		}
 
 		if ensuredNamespace.Status.Phase != corev1.NamespaceActive {
@@ -129,9 +132,10 @@ func (r *namespaceReconciler) ensureWantedNamespaces(
 
 	if len(unreadyNamespaces) > 0 {
 		reportUnreadyNamespaces(addon, unreadyNamespaces)
+		return ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil
 	}
 
-	return nil
+	return ctrl.Result{}, nil
 }
 
 // Ensure a single Namespace for the given Addon resource
