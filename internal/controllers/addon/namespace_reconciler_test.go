@@ -27,7 +27,7 @@ func TestEnsureWantedNamespaces_AddonWithoutNamespaces(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithoutNamespace())
+	_, err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithoutNamespace())
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 }
@@ -49,7 +49,7 @@ func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Adoption(t *testing.T) 
 
 	ctx := context.Background()
 	addon := testutil.NewTestAddonWithSingleNamespace()
-	err := r.ensureWantedNamespaces(ctx, addon)
+	_, err := r.ensureWantedNamespaces(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr)
@@ -75,7 +75,7 @@ func TestEnsureWantedNamespaces_AddonWithSingleNamespace_Create(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithSingleNamespace())
+	_, err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithSingleNamespace())
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertCalled(t, "Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr)
@@ -98,7 +98,7 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_Create(t *testing.T)
 	}
 
 	ctx := context.Background()
-	err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithMultipleNamespaces())
+	_, err := r.ensureWantedNamespaces(ctx, testutil.NewTestAddonWithMultipleNamespaces())
 	require.NoError(t, err)
 	// every namespace should have been created
 	namespaceCount := len(testutil.NewTestAddonWithMultipleNamespaces().Spec.Namespaces)
@@ -139,7 +139,7 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_SingleAdoption(t *te
 	ctx := context.Background()
 	addon := testutil.NewTestAddonWithMultipleNamespaces()
 	addonCopy := addon.DeepCopy()
-	err := r.ensureWantedNamespaces(ctx, addon)
+	_, err := r.ensureWantedNamespaces(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", len(addonCopy.Spec.Namespaces))
@@ -166,7 +166,7 @@ func TestEnsureWantedNamespaces_AddonWithMultipleNamespaces_MultipleAdoptions(t 
 	ctx := context.Background()
 	addon := testutil.NewTestAddonWithMultipleNamespaces()
 	addonCopy := addon.DeepCopy()
-	err := r.ensureWantedNamespaces(ctx, addon)
+	_, err := r.ensureWantedNamespaces(ctx, addon)
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", len(addonCopy.Spec.Namespaces))
