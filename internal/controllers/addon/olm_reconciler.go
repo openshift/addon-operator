@@ -86,7 +86,7 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 	} else if requeueResult != resultNil {
 		return handleExit(requeueResult), nil
 	}
-	reportLastObservedAvailableCSV(addon, currentCSVKey.Name)
+	reportLastObservedAvailableCSV(addon, currentCSVKey.String())
 	return reconcile.Result{}, nil
 }
 

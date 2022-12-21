@@ -32,15 +32,21 @@ type AddonInstanceStatus struct {
 // apiVersion: addons.managed.openshift.io/v1alpha1
 // kind: AddonInstance
 // metadata:
-//   name: addon-instance
-//   namespace: my-addon-namespace
+//
+//	name: addon-instance
+//	namespace: my-addon-namespace
+//
 // spec:
-//   heartbeatUpdatePeriod: 30s
+//
+//	heartbeatUpdatePeriod: 30s
+//
 // status:
-//   lastHeartbeatTime: 2021-10-11T08:14:50Z
-//   conditions:
-//   - type: addons.managed.openshift.io/Healthy
-//     status: "True"
+//
+//	lastHeartbeatTime: 2021-10-11T08:14:50Z
+//	conditions:
+//	- type: addons.managed.openshift.io/Healthy
+//	  status: "True"
+//
 // ```
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status

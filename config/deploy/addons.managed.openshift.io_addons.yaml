@@ -413,7 +413,7 @@ spec:
                   type: object
                 type: array
               lastObservedAvailableCSV:
-                description: Name of the csv(available) that was last observed
+                description: Namespaced name of the csv(available) that was last observed.
                 type: string
               observedGeneration:
                 description: The most recent generation observed by the controller.

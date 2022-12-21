@@ -47,7 +47,7 @@ func addonUpgradeConcluded(addon *addonsv1alpha1.Addon, currentCSV *operatorsv1a
 	// Upgrading has concluded if a new CSV(compared to the last known available) has come up and is
 	// in the succeeded phase.
 	if addonUpgradeStarted(addon) {
-		return currentCSV.Name != addon.Status.LastObservedAvailableCSV &&
+		return namespacedName(currentCSV) != addon.Status.LastObservedAvailableCSV &&
 			currentCSV.Status.Phase == operatorsv1alpha1.CSVPhaseSucceeded
 	}
 	return false

@@ -46,15 +46,21 @@ AddonInstance is a managed service facing interface to get configuration and rep
 apiVersion: addons.managed.openshift.io/v1alpha1
 kind: AddonInstance
 metadata:
-  name: addon-instance
-  namespace: my-addon-namespace
+
+	name: addon-instance
+	namespace: my-addon-namespace
+
 spec:
-  heartbeatUpdatePeriod: 30s
+
+	heartbeatUpdatePeriod: 30s
+
 status:
-  lastHeartbeatTime: 2021-10-11T08:14:50Z
-  conditions:
-  - type: addons.managed.openshift.io/Healthy
-    status: "True"
+
+	lastHeartbeatTime: 2021-10-11T08:14:50Z
+	conditions:
+	- type: addons.managed.openshift.io/Healthy
+	  status: "True"
+
 ```
 
 | Field | Description | Scheme | Required |
@@ -287,7 +293,7 @@ AddonStatus defines the observed state of Addon
 | phase | DEPRECATED: This field is not part of any API contract it will go away as soon as kubectl can print conditions! Human readable status - please use .Conditions from code | AddonPhase.addons.managed.openshift.io/v1alpha1 | false |
 | upgradePolicy | Tracks last reported upgrade policy status. | *[AddonUpgradePolicyStatus.addons.managed.openshift.io/v1alpha1](#addonupgradepolicystatusaddonsmanagedopenshiftiov1alpha1) | false |
 | observedVersion | Observed version of the Addon on the cluster, only present when .spec.version is populated. | string | false |
-| lastObservedAvailableCSV | Name of the csv(available) that was last observed | string | false |
+| lastObservedAvailableCSV | Namespaced name of the csv(available) that was last observed. | string | false |
 
 [Back to Group]()
 

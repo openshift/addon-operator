@@ -281,7 +281,7 @@ type AddonStatus struct {
 	// Observed version of the Addon on the cluster, only present when .spec.version is populated.
 	// +optional
 	ObservedVersion string `json:"observedVersion,omitempty"`
-	// Name of the csv(available) that was last observed
+	// Namespaced name of the csv(available) that was last observed.
 	// +optional
 	LastObservedAvailableCSV string `json:"lastObservedAvailableCSV,omitempty"`
 }
