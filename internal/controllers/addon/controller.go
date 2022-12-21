@@ -249,6 +249,9 @@ func (r *AddonReconciler) Reconcile(
 		if err != nil {
 			return
 		}
+		// We report the observed version regardless of whether the addon
+		// is available or not.
+		reportObservedVersion(addon)
 		err = r.Status().Update(ctx, addon)
 	}()
 
@@ -275,6 +278,13 @@ func (r *AddonReconciler) Reconcile(
 
 	// Make sure Pause condition is removed
 	r.removeAddonPauseCondition(addon)
+
+	// Check if the addon is being upgraded
+	// by comparing spec.version and status.ObservedVersion.
+	if addonIsBeingUpgraded(addon) {
+		reportAddonUpgradeStarted(addon)
+		return ctrl.Result{}, nil
+	}
 
 	// Ensure cache finalizer
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {

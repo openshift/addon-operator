@@ -420,6 +420,9 @@ spec:
                   - type
                   type: object
                 type: array
+              lastObservedAvailableCSV:
+                description: Namespaced name of the csv(available) that was last observed.
+                type: string
               observedGeneration:
                 description: The most recent generation observed by the controller.
                 format: int64

@@ -10,8 +10,10 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -85,6 +87,12 @@ func reportReadinessStatus(addon *addonsv1alpha1.Addon) {
 	addon.Status.ObservedVersion = addon.Spec.Version
 }
 
+func reportObservedVersion(addon *addonsv1alpha1.Addon) {
+	// When everything is ready, we are also operating on the current version of the Addon.
+	// Otherwise we would be in a pending or error state.
+	addon.Status.ObservedVersion = addon.Spec.Version
+}
+
 // Report Addon status to communicate that the Addon is terminating
 func reportTerminationStatus(addon *addonsv1alpha1.Addon) {
 	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
@@ -126,6 +134,68 @@ func reportAddonPauseStatus(addon *addonsv1alpha1.Addon,
 func (r *AddonReconciler) removeAddonPauseCondition(addon *addonsv1alpha1.Addon) {
 	meta.RemoveStatusCondition(&addon.Status.Conditions, addonsv1alpha1.Paused)
 	addon.Status.ObservedGeneration = addon.Generation
+}
+
+func reportLastObservedAvailableCSV(addon *addonsv1alpha1.Addon, csvName string) {
+	addon.Status.LastObservedAvailableCSV = csvName
+}
+
+func reportAddonUpgradeSucceeded(addon *addonsv1alpha1.Addon) {
+	upgradeStartedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.UpgradeStarted)
+	// Only set upgrade condition to succeeded, if UpgradeStarted condition is already present.
+	if upgradeStartedCond != nil {
+		// Remove the upgrade started condition
+		meta.RemoveStatusCondition(&addon.Status.Conditions, addonsv1alpha1.UpgradeStarted)
+		meta.SetStatusCondition(&addon.Status.Conditions,
+			metav1.Condition{
+				Type:               addonsv1alpha1.UpgradeSucceeded,
+				Status:             metav1.ConditionTrue,
+				Reason:             addonsv1alpha1.AddonReasonUpgradeSucceeded,
+				Message:            "Addon upgrade has succeeded.",
+				ObservedGeneration: addon.Generation,
+			})
+		addon.Status.ObservedGeneration = addon.Generation
+	}
+}
+
+func reportAddonUpgradeStarted(addon *addonsv1alpha1.Addon) {
+	// If upgrade succeeded status was previously set, remove it.
+	upgradeSucceededCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.UpgradeSucceeded)
+	if upgradeSucceededCond != nil {
+		meta.RemoveStatusCondition(&addon.Status.Conditions, addonsv1alpha1.UpgradeSucceeded)
+	}
+	meta.SetStatusCondition(&addon.Status.Conditions,
+		metav1.Condition{
+			Type:               addonsv1alpha1.UpgradeStarted,
+			Status:             metav1.ConditionTrue,
+			Reason:             addonsv1alpha1.AddonReasonUpgradeStarted,
+			Message:            "Addon upgrade has started.",
+			ObservedGeneration: addon.Generation,
+		})
+	addon.Status.ObservedGeneration = addon.Generation
+}
+
+func addonUpgradeStarted(addon *addonsv1alpha1.Addon) bool {
+	upgradeStartedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.UpgradeStarted)
+	if upgradeStartedCond != nil {
+		return upgradeStartedCond.Status == metav1.ConditionTrue
+	}
+	return false
+}
+
+func namespacedName(object client.Object) string {
+	return types.NamespacedName{
+		Name:      object.GetName(),
+		Namespace: object.GetNamespace(),
+	}.String()
+}
+
+func addonIsBeingUpgraded(addon *addonsv1alpha1.Addon) bool {
+	if len(addon.Spec.Version) != 0 &&
+		len(addon.Status.ObservedVersion) != 0 {
+		return addon.Spec.Version != addon.Status.ObservedVersion
+	}
+	return false
 }
 
 // Marks Addon as unavailable because the CatalogSource is unready
