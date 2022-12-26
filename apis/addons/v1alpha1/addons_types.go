@@ -36,7 +36,7 @@ type AddonSpec struct {
 
 	// Correlation ID for co-relating current AddonCR revision and reported status.
 	// +optional
-	CorrelationId string `json:"correlation_id,omitempty"`
+	CorrelationID string `json:"correlation_id,omitempty"`
 
 	// Defines how an Addon is installed.
 	// This field is immutable.
