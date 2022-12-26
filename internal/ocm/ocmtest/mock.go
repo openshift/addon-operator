@@ -42,3 +42,31 @@ func (c *Client) GetCluster(
 	return args.Get(0).(ocm.ClusterGetResponse),
 		args.Error(1)
 }
+
+func (c *Client) PostAddOnStatus(
+	ctx context.Context,
+	req ocm.AddOnStatusPostRequest,
+) (ocm.AddOnStatusResponse, error) {
+	args := c.Called(ctx, req)
+	return args.Get(0).(ocm.AddOnStatusResponse),
+		args.Error(1)
+}
+
+func (c *Client) PatchAddOnStatus(
+	ctx context.Context,
+	addonID string,
+	req ocm.AddOnStatusPatchRequest,
+) (ocm.AddOnStatusResponse, error) {
+	args := c.Called(ctx, addonID, req)
+	return args.Get(0).(ocm.AddOnStatusResponse),
+		args.Error(1)
+}
+
+func (c *Client) GetAddOnStatus(
+	ctx context.Context,
+	addonID string,
+) (ocm.AddOnStatusResponse, error) {
+	args := c.Called(ctx, addonID)
+	return args.Get(0).(ocm.AddOnStatusResponse),
+		args.Error(1)
+}
