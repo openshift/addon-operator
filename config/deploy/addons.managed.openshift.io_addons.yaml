@@ -59,6 +59,10 @@ spec:
                   type: string
                 description: Labels to be applied to all resources.
                 type: object
+              correlation_id:
+                description: Correlation ID for co-relating current AddonCR revision
+                  and reported status.
+                type: string
               displayName:
                 description: Human readable name for this addon.
                 minLength: 1
@@ -438,6 +442,42 @@ spec:
                   it will go away as soon as kubectl can print conditions! Human readable
                   status - please use .Conditions from code'
                 type: string
+              reportedStatus:
+                description: Tracks the last reported addon status.
+                properties:
+                  addon_id:
+                    description: ID of the addon.
+                    type: string
+                  correlation_id:
+                    description: Correlation ID for co-relating current AddonCR revision
+                      and reported status.
+                    type: string
+                  observedGeneration:
+                    description: The most recent generation a status update was based
+                      on.
+                    format: int64
+                    type: integer
+                  status_conditions:
+                    description: Reported addon status conditions
+                    items:
+                      properties:
+                        reason:
+                          type: string
+                        status_type:
+                          type: string
+                        status_value:
+                          type: string
+                      required:
+                      - reason
+                      - status_type
+                      - status_value
+                      type: object
+                    type: array
+                required:
+                - addon_id
+                - observedGeneration
+                - status_conditions
+                type: object
               upgradePolicy:
                 description: Tracks last reported upgrade policy status.
                 properties:
