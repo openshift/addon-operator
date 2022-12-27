@@ -10,6 +10,7 @@ import (
 	"github.com/go-logr/logr"
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/ocm"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 func (r *AddonReconciler) handleOCMAddOnStatusReporting(
@@ -40,7 +41,7 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 			setLastReportedStatus(addon)
 		}
 	}()
-	currentOCMAddonStatus, err := r.ocmClient.GetAddOnStatus(ctx, addon.Name)
+	currentOCMAddonStatus, err := r.getAddonStatus(ctx, addon.Name)
 	if err != nil {
 		ocmErr, ok := err.(ocm.OCMError)
 		// OCM doesnt yet have the status for this addon.
@@ -69,29 +70,35 @@ func setLastReportedStatus(addon *addonsv1alpha1.Addon) {
 	}
 }
 
-func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon, log logr.Logger) error {
+func (r *AddonReconciler) getAddonStatus(ctx context.Context, addonID string) (res ocm.AddOnStatusResponse, err error) {
+	r.recordASRequestDuration(func() {
+		res, err = r.ocmClient.GetAddOnStatus(ctx, addonID)
+	})
+	return
+}
+
+func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon, log logr.Logger) (err error) {
 	statusPayload := ocm.AddOnStatusPostRequest{
 		AddonID:          addon.Name,
 		CorrelationID:    addon.Spec.CorrelationID,
 		StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
 	}
-	_, err := r.ocmClient.PostAddOnStatus(ctx, statusPayload)
-	if err != nil {
-		return err
-	}
-	return nil
+	r.recordASRequestDuration(func() {
+		_, err = r.ocmClient.PostAddOnStatus(ctx, statusPayload)
+	})
+	return
 }
 
-func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon, log logr.Logger) error {
+func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon, log logr.Logger) (err error) {
 	if currentStatusChangedFromPrevious(addon) {
 		payload := ocm.AddOnStatusPatchRequest{
 			CorrelationID:    addon.Spec.CorrelationID,
 			StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
 		}
-		_, err := r.ocmClient.PatchAddOnStatus(ctx, addon.Name, payload)
-		if err != nil {
-			return err
-		}
+		r.recordASRequestDuration(func() {
+			_, err = r.ocmClient.PatchAddOnStatus(ctx, addon.Name, payload)
+		})
+		return
 	}
 	return nil
 }
@@ -131,4 +138,16 @@ func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {
 
 func statusReportingRequired(addon *addonsv1alpha1.Addon) bool {
 	return currentStatusChangedFromPrevious(addon)
+}
+
+func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
+	if r.Recorder != nil {
+		// TODO: do not count metrics when API returns 5XX response
+		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
+			us := v * 1000000 // convert to microseconds
+			r.Recorder.RecordAddonServiceAPIRequests(us)
+		}))
+		defer timer.ObserveDuration()
+	}
+	reqFunc()
 }
