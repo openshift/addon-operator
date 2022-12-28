@@ -19,6 +19,11 @@ type globalPauseManager interface {
 	DisableGlobalPause(ctx context.Context) error
 }
 
+type statusReportingManager interface {
+	EnableAddonStatusReporting(ctx context.Context) error
+	DisableAddonStatusReporting(ctx context.Context) error
+}
+
 type ocmClientManager interface {
 	InjectOCMClient(ctx context.Context, c *ocm.Client) error
 }
@@ -72,10 +77,34 @@ func (r *AddonOperatorReconciler) reportAddonOperatorPauseStatus(
 	return r.Status().Update(ctx, addonOperator)
 }
 
+// Add addon operator status reporting condition to the set of conditions.
+func (r *AddonOperatorReconciler) reportAddonOperatorStatusReportingCondition(
+	ctx context.Context,
+	addonOperator *addonsv1alpha1.AddonOperator) error {
+	meta.SetStatusCondition(&addonOperator.Status.Conditions, metav1.Condition{
+		Type:               addonsv1alpha1.AddonOperatorStatusReportingEnabled,
+		Status:             metav1.ConditionTrue,
+		Reason:             addonsv1alpha1.AddonOperatorReasonStatusReportingEnabled,
+		Message:            "Addon operator status reporting enabled.",
+		ObservedGeneration: addonOperator.Generation,
+	})
+	addonOperator.Status.ObservedGeneration = addonOperator.Generation
+	addonOperator.Status.LastHeartbeatTime = metav1.Now()
+	return r.Status().Update(ctx, addonOperator)
+}
+
 // remove Paused condition from AddonOperator
 func (r *AddonOperatorReconciler) removeAddonOperatorPauseCondition(
 	ctx context.Context, addonOperator *addonsv1alpha1.AddonOperator) error {
 	meta.RemoveStatusCondition(&addonOperator.Status.Conditions, addonsv1alpha1.Paused)
+	addonOperator.Status.ObservedGeneration = addonOperator.Generation
+	return r.Status().Update(ctx, addonOperator)
+}
+
+// remove AddonOperatorStatusReportingEnabled condition from AddonOperator
+func (r *AddonOperatorReconciler) removeAddonOperatorStatusReportingCondition(
+	ctx context.Context, addonOperator *addonsv1alpha1.AddonOperator) error {
+	meta.RemoveStatusCondition(&addonOperator.Status.Conditions, addonsv1alpha1.AddonOperatorStatusReportingEnabled)
 	addonOperator.Status.ObservedGeneration = addonOperator.Generation
 	return r.Status().Update(ctx, addonOperator)
 }

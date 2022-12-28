@@ -43,6 +43,10 @@ spec:
           spec:
             description: AddonOperatorSpec defines the desired state of Addon operator.
             properties:
+              enableStatusReporting:
+                description: Send addon statuses to the addon service status API when
+                  set to true.
+                type: boolean
               ocm:
                 description: OCM specific configuration. Setting this subconfig will
                   enable deeper OCM integration. e.g. push status reporting, etc.
