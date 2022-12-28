@@ -31,11 +31,11 @@ type Recorder struct {
 	addonState *addonState
 
 	// metrics
-	addonsCount                     *prometheus.GaugeVec
-	addonOperatorPaused             prometheus.Gauge // 0 - Not paused , 1 - Paused
-	ocmAPIRequestDuration           prometheus.Summary
-	addonServicesAPIRequestDuration prometheus.Summary
-	addonHealthInfo                 *prometheus.GaugeVec
+	addonsCount                    *prometheus.GaugeVec
+	addonOperatorPaused            prometheus.Gauge // 0 - Not paused , 1 - Paused
+	ocmAPIRequestDuration          prometheus.Summary
+	addonServiceAPIRequestDuration prometheus.Summary
+	addonHealthInfo                *prometheus.GaugeVec
 	// .. TODO: More metrics!
 }
 
@@ -107,11 +107,11 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 		addonState: &addonState{
 			conditionMap: map[string]addonConditions{},
 		},
-		addonsCount:                     addonsCount,
-		addonOperatorPaused:             addonOperatorPaused,
-		ocmAPIRequestDuration:           ocmAPIReqDuration,
-		addonServicesAPIRequestDuration: addonServiceAPIReqDuration,
-		addonHealthInfo:                 addonHealthInfo,
+		addonsCount:                    addonsCount,
+		addonOperatorPaused:            addonOperatorPaused,
+		ocmAPIRequestDuration:          ocmAPIReqDuration,
+		addonServiceAPIRequestDuration: addonServiceAPIReqDuration,
+		addonHealthInfo:                addonHealthInfo,
 	}
 }
 
@@ -119,6 +119,10 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 // Useful while writing tests
 func (r *Recorder) InjectOCMAPIRequestDuration(s prometheus.Summary) {
 	r.ocmAPIRequestDuration = s
+}
+
+func (r *Recorder) InjectAddonServiceAPIRequestDuration(s prometheus.Summary) {
+	r.addonServiceAPIRequestDuration = s
 }
 
 func (r *Recorder) increaseAvailableAddonsCount() {
@@ -150,7 +154,7 @@ func (r *Recorder) RecordOCMAPIRequests(us float64) {
 }
 
 func (r *Recorder) RecordAddonServiceAPIRequests(us float64) {
-	r.addonServicesAPIRequestDuration.Observe(us)
+	r.addonServiceAPIRequestDuration.Observe(us)
 }
 
 // SetAddonOperatorPaused sets the `addon_operator_paused` metric

@@ -18,8 +18,8 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 	log logr.Logger,
 	addon *addonsv1alpha1.Addon,
 ) (err error) {
-	if !statusReportingRequired(addon) {
-		log.Info("status reporting not required at the moment")
+	if !r.statusReportingRequired(addon) {
+		log.Info("skipping status reporting")
 		return nil
 	}
 
@@ -61,15 +61,6 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 	return nil
 }
 
-func setLastReportedStatus(addon *addonsv1alpha1.Addon) {
-	addon.Status.ReportedStatus = &addonsv1alpha1.OCMAddOnStatus{
-		AddonID:            addon.Name,
-		CorrelationID:      addon.Spec.CorrelationID,
-		StatusConditions:   mapAddonStatusConditions(addon.Status.Conditions),
-		ObservedGeneration: addon.Generation,
-	}
-}
-
 func (r *AddonReconciler) getAddonStatus(ctx context.Context, addonID string) (res ocm.AddOnStatusResponse, err error) {
 	r.recordASRequestDuration(func() {
 		res, err = r.ocmClient.GetAddOnStatus(ctx, addonID)
@@ -101,6 +92,27 @@ func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1a
 		return
 	}
 	return nil
+}
+
+func (r *AddonReconciler) statusReportingRequired(addon *addonsv1alpha1.Addon) bool {
+	return r.statusReportingEnabled() && currentStatusChangedFromPrevious(addon)
+}
+
+func (r *AddonReconciler) statusReportingEnabled() bool {
+	r.addonstatusReporting.RLock()
+	defer r.addonstatusReporting.RUnlock()
+	return r.addonstatusReporting.enabled
+}
+
+func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
+	if r.Recorder != nil {
+		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
+			us := v * 1000000 // convert to microseconds
+			r.Recorder.RecordAddonServiceAPIRequests(us)
+		}))
+		defer timer.ObserveDuration()
+	}
+	reqFunc()
 }
 
 func mapAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatusCondition {
@@ -136,18 +148,11 @@ func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {
 	return true
 }
 
-func statusReportingRequired(addon *addonsv1alpha1.Addon) bool {
-	return currentStatusChangedFromPrevious(addon)
-}
-
-func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
-	if r.Recorder != nil {
-		// TODO: do not count metrics when API returns 5XX response
-		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
-			us := v * 1000000 // convert to microseconds
-			r.Recorder.RecordAddonServiceAPIRequests(us)
-		}))
-		defer timer.ObserveDuration()
+func setLastReportedStatus(addon *addonsv1alpha1.Addon) {
+	addon.Status.ReportedStatus = &addonsv1alpha1.OCMAddOnStatus{
+		AddonID:            addon.Name,
+		CorrelationID:      addon.Spec.CorrelationID,
+		StatusConditions:   mapAddonStatusConditions(addon.Status.Conditions),
+		ObservedGeneration: addon.Generation,
 	}
-	reqFunc()
 }

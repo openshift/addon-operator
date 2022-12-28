@@ -35,13 +35,14 @@ const (
 
 type AddonOperatorReconciler struct {
 	client.Client
-	UncachedClient     client.Client
-	Log                logr.Logger
-	Scheme             *runtime.Scheme
-	GlobalPauseManager globalPauseManager
-	OCMClientManager   ocmClientManager
-	Recorder           *metrics.Recorder
-	ClusterExternalID  string
+	UncachedClient         client.Client
+	Log                    logr.Logger
+	Scheme                 *runtime.Scheme
+	StatusReportingManager statusReportingManager
+	GlobalPauseManager     globalPauseManager
+	OCMClientManager       ocmClientManager
+	Recorder               *metrics.Recorder
+	ClusterExternalID      string
 }
 
 func (r *AddonOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
@@ -93,6 +94,10 @@ func (r *AddonOperatorReconciler) Reconcile(
 
 	if err := r.handleOCMClient(ctx, log, addonOperator); err != nil {
 		return ctrl.Result{}, fmt.Errorf("handling OCM client: %w", err)
+	}
+
+	if err := r.handleExternalStatusReporting(ctx, addonOperator); err != nil {
+		return ctrl.Result{}, fmt.Errorf("handling external status reporting: %w", err)
 	}
 
 	// TODO: This is where all the checking / validation happens
@@ -178,6 +183,37 @@ func (r *AddonOperatorReconciler) handleGlobalPause(
 	}
 	if err := r.removeAddonOperatorPauseCondition(ctx, addonOperator); err != nil {
 		return fmt.Errorf("remove AddonOperator paused: %w", err)
+	}
+	return nil
+}
+
+func (r *AddonOperatorReconciler) handleExternalStatusReporting(
+	ctx context.Context, addonOperator *addonsv1alpha1.AddonOperator) error {
+	if addonOperator.Spec.EnableStatusReporting {
+		// Do nothing if AddonOperatorStatusReportingEnabled is already true.
+		if meta.IsStatusConditionTrue(addonOperator.Status.Conditions,
+			addonsv1alpha1.AddonOperatorStatusReportingEnabled) {
+			return nil
+		}
+		if err := r.StatusReportingManager.EnableAddonStatusReporting(ctx); err != nil {
+			return fmt.Errorf("enabling status reporting: %w", err)
+		}
+		if err := r.reportAddonOperatorStatusReportingCondition(ctx, addonOperator); err != nil {
+			return fmt.Errorf("report AddonOperator status reporting condition: %w", err)
+		}
+		return nil
+	}
+
+	// Disable status reporting only if the current reported condition is true.
+	if !meta.IsStatusConditionTrue(addonOperator.Status.Conditions,
+		addonsv1alpha1.AddonOperatorStatusReportingEnabled) {
+		return nil
+	}
+	if err := r.StatusReportingManager.DisableAddonStatusReporting(ctx); err != nil {
+		return fmt.Errorf("disabling status reporting: %w", err)
+	}
+	if err := r.removeAddonOperatorStatusReportingCondition(ctx, addonOperator); err != nil {
+		return fmt.Errorf("remove AddonOperatorStatusReportingEnabled condition: %w", err)
 	}
 	return nil
 }

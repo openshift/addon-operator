@@ -48,6 +48,7 @@ type AddonReconciler struct {
 	operatorResourceHandler operatorResourceHandler
 	globalPause             bool
 	globalPauseMux          sync.RWMutex
+	addonstatusReporting    statusReporting
 	addonRequeueCh          chan event.GenericEvent
 
 	ocmClient    ocmClient
@@ -57,6 +58,11 @@ type AddonReconciler struct {
 	// Reconcilers will run  serially
 	// in the order in which they appear in this slice.
 	subReconcilers []addonReconciler
+}
+
+type statusReporting struct {
+	enabled bool
+	sync.RWMutex
 }
 
 type addonReconciler interface {
@@ -171,6 +177,25 @@ func (r *AddonReconciler) EnableGlobalPause(ctx context.Context) error {
 // Unpauses reconcilation of all Addon objects. Concurrency safe.
 func (r *AddonReconciler) DisableGlobalPause(ctx context.Context) error {
 	return r.setGlobalPause(ctx, false)
+}
+
+func (r *AddonReconciler) EnableAddonStatusReporting(ctx context.Context) error {
+	r.addonstatusReporting.Lock()
+	defer r.addonstatusReporting.Unlock()
+	r.addonstatusReporting.enabled = true
+
+	if err := r.requeueAllAddons(ctx); err != nil {
+		return fmt.Errorf("requeue all Addons: %w", err)
+	}
+	return nil
+}
+
+func (r *AddonReconciler) DisableAddonStatusReporting(ctx context.Context) error {
+	r.addonstatusReporting.Lock()
+	defer r.addonstatusReporting.Unlock()
+	r.addonstatusReporting.enabled = false
+	// On disable, we don't need to requeue.
+	return nil
 }
 
 func (r *AddonReconciler) setGlobalPause(ctx context.Context, paused bool) error {
