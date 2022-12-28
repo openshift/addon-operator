@@ -137,6 +137,7 @@ AddonOperatorSpec defines the desired state of Addon operator.
 | ----- | ----------- | ------ | -------- |
 | pause | Pause reconciliation on all Addons in the cluster when set to True | bool | true |
 | feature_toggles | Specification of the feature toggles supported by the addon-operator | [AddonOperatorFeatureToggles.addons.managed.openshift.io/v1alpha1](#addonoperatorfeaturetogglesaddonsmanagedopenshiftiov1alpha1) | false |
+| enableStatusReporting | Send addon statuses to the addon service status API when set to true. | bool | true |
 | ocm | OCM specific configuration. Setting this subconfig will enable deeper OCM integration. e.g. push status reporting, etc. | *[AddonOperatorOCM.addons.managed.openshift.io/v1alpha1](#addonoperatorocmaddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()
