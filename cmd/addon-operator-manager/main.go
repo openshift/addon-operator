@@ -86,14 +86,15 @@ func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) er
 	}
 
 	if err := (&aocontroller.AddonOperatorReconciler{
-		Client:             mgr.GetClient(),
-		UncachedClient:     uncachedClient,
-		Log:                ctrl.Log.WithName("controllers").WithName("AddonOperator"),
-		Scheme:             mgr.GetScheme(),
-		GlobalPauseManager: addonReconciler,
-		OCMClientManager:   addonReconciler,
-		Recorder:           recorder,
-		ClusterExternalID:  clusterExternalID,
+		Client:                 mgr.GetClient(),
+		UncachedClient:         uncachedClient,
+		Log:                    ctrl.Log.WithName("controllers").WithName("AddonOperator"),
+		Scheme:                 mgr.GetScheme(),
+		GlobalPauseManager:     addonReconciler,
+		StatusReportingManager: addonReconciler,
+		OCMClientManager:       addonReconciler,
+		Recorder:               recorder,
+		ClusterExternalID:      clusterExternalID,
 	}).SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create AddonOperator controller: %w", err)
 	}
