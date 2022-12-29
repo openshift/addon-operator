@@ -638,7 +638,7 @@ func (Test) Unit() error {
 func (Test) Integration() error {
 	return sh.Run("go", "test", "-v",
 		"-count=1", // will force a new run, instead of using the cache
-		"-timeout=20m", "./integration/...")
+		"-timeout=25m", "./integration/...")
 }
 
 // Target to prepare the CI-CD environment before installing the operator.
