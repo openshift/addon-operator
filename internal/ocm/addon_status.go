@@ -40,7 +40,7 @@ func (c *Client) GetAddOnStatus(ctx context.Context, addonID string) (AddOnStatu
 	err := c.do(
 		ctx,
 		http.MethodGet,
-		fmt.Sprintf("/api/addons_mgmt/v1/clusters/%s/status/%s/", c.opts.ClusterID, addonID),
+		fmt.Sprintf("/api/addons_mgmt/v1/clusters/%s/status/%s", c.opts.ClusterID, addonID),
 		url.Values{},
 		AddOnStatusGetRequest{},
 		res,
@@ -56,7 +56,7 @@ func (c *Client) PostAddOnStatus(ctx context.Context, payload AddOnStatusPostReq
 	err := c.do(
 		ctx,
 		http.MethodPost,
-		fmt.Sprintf("/api/addons_mgmt/v1/clusters/%s/status/", c.opts.ClusterID),
+		fmt.Sprintf("/api/addons_mgmt/v1/clusters/%s/status", c.opts.ClusterID),
 		url.Values{},
 		payload,
 		res,
@@ -72,7 +72,7 @@ func (c *Client) PatchAddOnStatus(ctx context.Context, addonID string, payload A
 	err := c.do(
 		ctx,
 		http.MethodPatch,
-		fmt.Sprintf("/api/addons_mgmt/v1/clusters/%s/status/%s/", c.opts.ClusterID, addonID),
+		fmt.Sprintf("/api/addons_mgmt/v1/clusters/%s/status/%s", c.opts.ClusterID, addonID),
 		url.Values{},
 		payload,
 		res,
