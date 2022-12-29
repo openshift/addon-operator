@@ -8,9 +8,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/go-logr/logr"
+	"github.com/prometheus/client_golang/prometheus"
+
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/ocm"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 func (r *AddonReconciler) handleOCMAddOnStatusReporting(
@@ -43,19 +44,19 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 	}()
 	currentOCMAddonStatus, err := r.getAddonStatus(ctx, addon.Name)
 	if err != nil {
-		ocmErr, ok := err.(ocm.OCMError)
+		ocmErr, ok := err.(ocm.OCMError) //nolint
 		// OCM doesnt yet have the status for this addon.
 		// We go ahead and create it.
 		if ok && ocmErr.StatusCode == http.StatusNotFound {
 			log.Info("reporting addon status for the first time.")
-			err = r.postAddonStatus(ctx, addon, log)
+			err = r.postAddonStatus(ctx, addon)
 		}
 		return
 	}
 
 	if OCMAddOnStatusDifferentFromInClusterAddonStatus(currentOCMAddonStatus, addon) {
 		log.Info("patching addon status.")
-		err = r.patchAddonStatus(ctx, addon, log)
+		err = r.patchAddonStatus(ctx, addon)
 		return
 	}
 	return nil
@@ -68,7 +69,7 @@ func (r *AddonReconciler) getAddonStatus(ctx context.Context, addonID string) (r
 	return
 }
 
-func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon, log logr.Logger) (err error) {
+func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (err error) {
 	statusPayload := ocm.AddOnStatusPostRequest{
 		AddonID:          addon.Name,
 		CorrelationID:    addon.Spec.CorrelationID,
@@ -80,7 +81,7 @@ func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1al
 	return
 }
 
-func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon, log logr.Logger) (err error) {
+func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (err error) {
 	if currentStatusChangedFromPrevious(addon) {
 		payload := ocm.AddOnStatusPatchRequest{
 			CorrelationID:    addon.Spec.CorrelationID,
