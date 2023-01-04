@@ -11,19 +11,6 @@ import (
 	"github.com/openshift/addon-operator/internal/ocm"
 )
 
-// globalPauseManager is an interface used for coordinating
-// the global pause mutex between AddonReconciler
-// and AddopOperatorReconciler
-type globalPauseManager interface {
-	EnableGlobalPause(ctx context.Context) error
-	DisableGlobalPause(ctx context.Context) error
-}
-
-type statusReportingManager interface {
-	EnableAddonStatusReporting(ctx context.Context) error
-	DisableAddonStatusReporting(ctx context.Context) error
-}
-
 type ocmClientManager interface {
 	InjectOCMClient(ctx context.Context, c *ocm.Client) error
 }

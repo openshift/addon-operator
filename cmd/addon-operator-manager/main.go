@@ -32,6 +32,7 @@ import (
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 	aictrl "github.com/openshift/addon-operator/internal/controllers/addoninstance"
 	aocontroller "github.com/openshift/addon-operator/internal/controllers/addonoperator"
+	"github.com/openshift/addon-operator/internal/controllers/runtimeoptions"
 )
 
 var (
@@ -72,6 +73,12 @@ func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) er
 		recorder = metrics.NewRecorder(true, clusterExternalID)
 	}
 
+	// Runtime options for the controller.
+	var (
+		globalpauseOption     = runtimeoptions.NewGlobalPauseOption()
+		statusReportingOption = runtimeoptions.NewstatusReportingOption()
+	)
+
 	addonReconciler := addoncontroller.NewAddonReconciler(
 		mgr.GetClient(),
 		uncachedClient,
@@ -80,21 +87,24 @@ func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) er
 		recorder,
 		clusterExternalID,
 		namespace,
+		globalpauseOption,
+		statusReportingOption,
 	)
+
 	if err := addonReconciler.SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create Addon controller: %w", err)
 	}
 
 	if err := (&aocontroller.AddonOperatorReconciler{
-		Client:                 mgr.GetClient(),
-		UncachedClient:         uncachedClient,
-		Log:                    ctrl.Log.WithName("controllers").WithName("AddonOperator"),
-		Scheme:                 mgr.GetScheme(),
-		GlobalPauseManager:     addonReconciler,
-		StatusReportingManager: addonReconciler,
-		OCMClientManager:       addonReconciler,
-		Recorder:               recorder,
-		ClusterExternalID:      clusterExternalID,
+		Client:                      mgr.GetClient(),
+		UncachedClient:              uncachedClient,
+		Log:                         ctrl.Log.WithName("controllers").WithName("AddonOperator"),
+		Scheme:                      mgr.GetScheme(),
+		GlobalPauseOptionManager:    globalpauseOption,
+		StatusReportingOptionManger: statusReportingOption,
+		OCMClientManager:            addonReconciler,
+		Recorder:                    recorder,
+		ClusterExternalID:           clusterExternalID,
 	}).SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create AddonOperator controller: %w", err)
 	}

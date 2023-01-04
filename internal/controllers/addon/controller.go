@@ -9,6 +9,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 
 	"github.com/openshift/addon-operator/internal/controllers"
+
 	"github.com/openshift/addon-operator/internal/metrics"
 
 	"github.com/go-logr/logr"
@@ -26,6 +27,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	internalhandler "github.com/openshift/addon-operator/internal/controllers/addon/handler"
+	"github.com/openshift/addon-operator/internal/controllers/runtimeoptions"
 	"github.com/openshift/addon-operator/internal/ocm"
 )
 
@@ -45,11 +47,10 @@ type AddonReconciler struct {
 	// Namespace the AddonOperator is deployed into
 	AddonOperatorNamespace string
 
-	csvEventHandler      csvEventHandler
-	globalPause          bool
-	globalPauseMux       sync.RWMutex
-	addonstatusReporting statusReporting
-	addonRequeueCh       chan event.GenericEvent
+	csvEventHandler       csvEventHandler
+	globalPauseOption     runtimeoptions.OptionConsumer
+	statusReportingOption runtimeoptions.OptionConsumer
+	addonRequeueCh        chan event.GenericEvent
 
 	ocmClient    ocmClient
 	ocmClientMux sync.RWMutex
@@ -59,12 +60,6 @@ type AddonReconciler struct {
 	// in the order in which they appear in this slice.
 	subReconcilers []addonReconciler
 }
-
-type statusReporting struct {
-	enabled bool
-	sync.RWMutex
-}
-
 type addonReconciler interface {
 	Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error)
 	Name() string
@@ -78,9 +73,12 @@ func NewAddonReconciler(
 	recorder *metrics.Recorder,
 	clusterExternalID string,
 	addonOperatorNamespace string,
+	globalPauseOption runtimeoptions.OptionConsumer,
+	statusReportingOption runtimeoptions.OptionConsumer,
+
 ) *AddonReconciler {
 	csvEventHandler := internalhandler.NewCSVEventHandler()
-	return &AddonReconciler{
+	r := &AddonReconciler{
 		Client:                 client,
 		UncachedClient:         uncachedClient,
 		Log:                    log,
@@ -122,6 +120,14 @@ func NewAddonReconciler(
 			},
 		},
 	}
+	// Set controller action for runtime options
+	globalPauseOption.SetControllerActionOnEnable(r.requeueAllAddons)
+	globalPauseOption.SetControllerActionOnDisable(r.requeueAllAddons)
+	statusReportingOption.SetControllerActionOnEnable(r.requeueAllAddons)
+
+	r.globalPauseOption = globalPauseOption
+	r.statusReportingOption = statusReportingOption
+	return r
 }
 
 type ocmClient interface {
@@ -166,46 +172,6 @@ func (r *AddonReconciler) InjectOCMClient(ctx context.Context, c *ocm.Client) er
 	}
 
 	r.ocmClient = c
-	return nil
-}
-
-// Pauses reconcilation of all Addon objects. Concurrency safe.
-func (r *AddonReconciler) EnableGlobalPause(ctx context.Context) error {
-	return r.setGlobalPause(ctx, true)
-}
-
-// Unpauses reconcilation of all Addon objects. Concurrency safe.
-func (r *AddonReconciler) DisableGlobalPause(ctx context.Context) error {
-	return r.setGlobalPause(ctx, false)
-}
-
-func (r *AddonReconciler) EnableAddonStatusReporting(ctx context.Context) error {
-	r.addonstatusReporting.Lock()
-	defer r.addonstatusReporting.Unlock()
-	r.addonstatusReporting.enabled = true
-
-	if err := r.requeueAllAddons(ctx); err != nil {
-		return fmt.Errorf("requeue all Addons: %w", err)
-	}
-	return nil
-}
-
-func (r *AddonReconciler) DisableAddonStatusReporting(ctx context.Context) error {
-	r.addonstatusReporting.Lock()
-	defer r.addonstatusReporting.Unlock()
-	r.addonstatusReporting.enabled = false
-	// On disable, we don't need to requeue.
-	return nil
-}
-
-func (r *AddonReconciler) setGlobalPause(ctx context.Context, paused bool) error {
-	r.globalPauseMux.Lock()
-	defer r.globalPauseMux.Unlock()
-	r.globalPause = paused
-
-	if err := r.requeueAllAddons(ctx); err != nil {
-		return fmt.Errorf("requeue all Addons: %w", err)
-	}
 	return nil
 }
 
@@ -307,9 +273,7 @@ func (r *AddonReconciler) Reconcile(
 	}
 
 	// check for global pause
-	r.globalPauseMux.RLock()
-	defer r.globalPauseMux.RUnlock()
-	if r.globalPause {
+	if r.globalPauseOption.Enabled() {
 		reportAddonPauseStatus(addon, addonsv1alpha1.AddonOperatorReasonPaused)
 		// TODO: figure out how we can continue to report status
 		return ctrl.Result{}, nil

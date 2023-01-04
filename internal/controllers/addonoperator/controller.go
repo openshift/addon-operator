@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/openshift/addon-operator/internal/controllers/runtimeoptions"
 	"github.com/openshift/addon-operator/internal/metrics"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -35,14 +36,14 @@ const (
 
 type AddonOperatorReconciler struct {
 	client.Client
-	UncachedClient         client.Client
-	Log                    logr.Logger
-	Scheme                 *runtime.Scheme
-	StatusReportingManager statusReportingManager
-	GlobalPauseManager     globalPauseManager
-	OCMClientManager       ocmClientManager
-	Recorder               *metrics.Recorder
-	ClusterExternalID      string
+	UncachedClient              client.Client
+	Log                         logr.Logger
+	Scheme                      *runtime.Scheme
+	GlobalPauseOptionManager    runtimeoptions.OptionManager
+	StatusReportingOptionManger runtimeoptions.OptionManager
+	OCMClientManager            ocmClientManager
+	Recorder                    *metrics.Recorder
+	ClusterExternalID           string
 }
 
 func (r *AddonOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
@@ -163,7 +164,7 @@ func (r *AddonOperatorReconciler) handleGlobalPause(
 			addonsv1alpha1.AddonOperatorPaused) {
 			return nil
 		}
-		if err := r.GlobalPauseManager.EnableGlobalPause(ctx); err != nil {
+		if err := r.GlobalPauseOptionManager.Enable(ctx); err != nil {
 			return fmt.Errorf("setting global pause: %w", err)
 		}
 		if err := r.reportAddonOperatorPauseStatus(ctx, addonOperator); err != nil {
@@ -178,7 +179,7 @@ func (r *AddonOperatorReconciler) handleGlobalPause(
 		addonsv1alpha1.AddonOperatorPaused) {
 		return nil
 	}
-	if err := r.GlobalPauseManager.DisableGlobalPause(ctx); err != nil {
+	if err := r.GlobalPauseOptionManager.Disable(ctx); err != nil {
 		return fmt.Errorf("removing global pause: %w", err)
 	}
 	if err := r.removeAddonOperatorPauseCondition(ctx, addonOperator); err != nil {
@@ -195,7 +196,7 @@ func (r *AddonOperatorReconciler) handleExternalStatusReporting(
 			addonsv1alpha1.AddonOperatorStatusReportingEnabled) {
 			return nil
 		}
-		if err := r.StatusReportingManager.EnableAddonStatusReporting(ctx); err != nil {
+		if err := r.StatusReportingOptionManger.Enable(ctx); err != nil {
 			return fmt.Errorf("enabling status reporting: %w", err)
 		}
 		if err := r.reportAddonOperatorStatusReportingCondition(ctx, addonOperator); err != nil {
@@ -209,7 +210,7 @@ func (r *AddonOperatorReconciler) handleExternalStatusReporting(
 		addonsv1alpha1.AddonOperatorStatusReportingEnabled) {
 		return nil
 	}
-	if err := r.StatusReportingManager.DisableAddonStatusReporting(ctx); err != nil {
+	if err := r.StatusReportingOptionManger.Disable(ctx); err != nil {
 		return fmt.Errorf("disabling status reporting: %w", err)
 	}
 	if err := r.removeAddonOperatorStatusReportingCondition(ctx, addonOperator); err != nil {

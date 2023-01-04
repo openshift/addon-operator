@@ -10,6 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers/runtimeoptions/runtimeoptionstest"
 	"github.com/openshift/addon-operator/internal/metrics"
 	"github.com/openshift/addon-operator/internal/ocm"
 	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
@@ -18,8 +19,11 @@ import (
 
 func TestHandleAddonStatusReporting(t *testing.T) {
 	t.Run("noop when ocm client is not initialized", func(t *testing.T) {
-		r := AddonReconciler{}
-		r.addonstatusReporting.enabled = true
+		statusReportingOption := &runtimeoptionstest.RuntimeOptionMock{}
+		statusReportingOption.On("Enabled").Return(true)
+		r := AddonReconciler{
+			statusReportingOption: statusReportingOption,
+		}
 		addon := &addonsv1alpha1.Addon{}
 		log := testutil.NewLogger(t)
 		err := r.handleOCMAddOnStatusReporting(context.Background(), log, addon)
@@ -27,8 +31,11 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 	})
 
 	t.Run("noop when current addon status is equal to the last reported status", func(t *testing.T) {
-		r := AddonReconciler{}
-		r.addonstatusReporting.enabled = true
+		statusReportingOption := &runtimeoptionstest.RuntimeOptionMock{}
+		statusReportingOption.On("Enabled").Return(true)
+		r := AddonReconciler{
+			statusReportingOption: statusReportingOption,
+		}
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -65,11 +72,13 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 	t.Run("noop when status reporting is disabled", func(t *testing.T) {
 		client := testutil.NewClient()
 		ocmClient := ocmtest.NewClient()
+		statusReportingOption := &runtimeoptionstest.RuntimeOptionMock{}
+		statusReportingOption.On("Enabled").Return(false)
 		r := AddonReconciler{
-			Client:    client,
-			ocmClient: ocmClient,
+			Client:                client,
+			ocmClient:             ocmClient,
+			statusReportingOption: statusReportingOption,
 		}
-		r.addonstatusReporting.enabled = false
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -98,14 +107,17 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		ocmClient := ocmtest.NewClient()
 		recorder := metrics.NewRecorder(false, "asa346546dfew143")
 		mockSummary := testutil.NewSummaryMock()
+		statusReportingOption := &runtimeoptionstest.RuntimeOptionMock{}
+		statusReportingOption.On("Enabled").Return(true)
 		recorder.InjectAddonServiceAPIRequestDuration(mockSummary)
 		log := testutil.NewLogger(t)
 		r := &AddonReconciler{
-			Client:    client,
-			ocmClient: ocmClient,
-			Recorder:  recorder,
+			Client:                client,
+			ocmClient:             ocmClient,
+			Recorder:              recorder,
+			statusReportingOption: statusReportingOption,
 		}
-		r.addonstatusReporting.enabled = true
+
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -162,13 +174,16 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		recorder := metrics.NewRecorder(false, "asa346546dfew143")
 		mockSummary := testutil.NewSummaryMock()
 		recorder.InjectAddonServiceAPIRequestDuration(mockSummary)
+		statusReportingOption := &runtimeoptionstest.RuntimeOptionMock{}
+		statusReportingOption.On("Enabled").Return(true)
 		log := testutil.NewLogger(t)
 		r := &AddonReconciler{
-			Client:    client,
-			ocmClient: ocmClient,
-			Recorder:  recorder,
+			Client:                client,
+			ocmClient:             ocmClient,
+			Recorder:              recorder,
+			statusReportingOption: statusReportingOption,
 		}
-		r.addonstatusReporting.enabled = true
+
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -250,13 +265,16 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		recorder := metrics.NewRecorder(false, "asa346546dfew143")
 		mockSummary := testutil.NewSummaryMock()
 		recorder.InjectAddonServiceAPIRequestDuration(mockSummary)
+		statusReportingOption := &runtimeoptionstest.RuntimeOptionMock{}
+		statusReportingOption.On("Enabled").Return(true)
 		log := testutil.NewLogger(t)
 		r := &AddonReconciler{
-			Client:    client,
-			ocmClient: ocmClient,
-			Recorder:  recorder,
+			Client:                client,
+			ocmClient:             ocmClient,
+			Recorder:              recorder,
+			statusReportingOption: statusReportingOption,
 		}
-		r.addonstatusReporting.enabled = true
+
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -336,13 +354,16 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		recorder := metrics.NewRecorder(false, "asa346546dfew143")
 		mockSummary := testutil.NewSummaryMock()
 		recorder.InjectAddonServiceAPIRequestDuration(mockSummary)
+		statusReportingOption := &runtimeoptionstest.RuntimeOptionMock{}
+		statusReportingOption.On("Enabled").Return(true)
 		log := testutil.NewLogger(t)
 		r := &AddonReconciler{
-			Client:    client,
-			ocmClient: ocmClient,
-			Recorder:  recorder,
+			Client:                client,
+			ocmClient:             ocmClient,
+			Recorder:              recorder,
+			statusReportingOption: statusReportingOption,
 		}
-		r.addonstatusReporting.enabled = true
+
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",

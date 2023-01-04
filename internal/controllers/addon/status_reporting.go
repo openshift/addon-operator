@@ -100,9 +100,7 @@ func (r *AddonReconciler) statusReportingRequired(addon *addonsv1alpha1.Addon) b
 }
 
 func (r *AddonReconciler) statusReportingEnabled() bool {
-	r.addonstatusReporting.RLock()
-	defer r.addonstatusReporting.RUnlock()
-	return r.addonstatusReporting.enabled
+	return r.statusReportingOption.Enabled()
 }
 
 func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
