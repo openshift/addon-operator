@@ -973,6 +973,7 @@ func (d Dev) Integration(ctx context.Context) error {
 	os.Setenv("KUBECONFIG", devEnvironment.Cluster.Kubeconfig())
 	os.Setenv("ENABLE_WEBHOOK", "true")
 	os.Setenv("ENABLE_API_MOCK", "true")
+	os.Setenv("ENABLE_REMOTE_STORAGE_MOCK", "true")
 
 	mg.SerialDeps(Test.Integration)
 	return nil
@@ -1030,6 +1031,14 @@ func (d Dev) deploy(
 		if err := d.deployAddonOperatorWebhook(ctx, cluster); err != nil {
 			return err
 		}
+	}
+
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		"config/deploy/prometheus-remote-storage-mock/k8s/namespace.yaml",
+		"config/deploy/prometheus-remote-storage-mock/k8s/deployment.yaml",
+		"config/deploy/prometheus-remote-storage-mock/k8s/service.yaml",
+	}); err != nil {
+		return fmt.Errorf("deploy Prometheus remote storage mock: %w", err)
 	}
 	return nil
 }
@@ -1139,21 +1148,6 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 
 	// Replace image
 	patchDeployment(deployment, "addon-operator-manager", "manager")
-
-	availableFeatureToggles := []featuretoggle.FeatureToggleHandler{
-		featuretoggle.MonitoringStackFeatureToggle{
-			SchemeToUpdate: cluster.Scheme,
-		},
-	}
-
-	for _, featTog := range availableFeatureToggles {
-		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
-		if featTog.IsEnabled() {
-			if err := featTog.EnableOnAddonOperatorDeployment(deployment); err != nil {
-				return fmt.Errorf("failed to set the feature toggle '%s': %w", featTog.Name(), err)
-			}
-		}
-	}
 
 	ctx = logr.NewContext(ctx, logger)
 
@@ -1271,6 +1265,52 @@ func (d Dev) init() error {
 		Dependency.Kind,
 	)
 
+	clusterInitializers := dev.WithClusterInitializers{
+		dev.ClusterLoadObjectsFromFiles{
+			// OCP APIs required by the AddonOperator.
+			"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
+			"config/ocp/config-operator_01_proxy.crd.yaml",
+			"config/ocp/cluster-version.yaml",
+			"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
+
+			// OpenShift console to interact with OLM.
+			"hack/openshift-console.yaml",
+		},
+		dev.ClusterLoadObjectsFromHttp{
+			// Install OLM.
+			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
+			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
+		},
+		dev.ClusterLoadObjectsFromHttp{
+			// Install Monitoring CRDs for MSO.
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml",
+			"https://raw.githubusercontent.com/rhobs/monitoring-stack-operator/fd6b78c5faeb45c02551edb36ac139754c68ac07/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml",
+		},
+		dev.ClusterLoadObjectsFromFiles{
+			// Install MSO using OLM.
+			"config/deploy/mso/namespace.yaml",
+			"config/deploy/mso/operator-group.yaml",
+			"config/deploy/mso/catalog-source.yaml",
+			"config/deploy/mso/subscription.yaml",
+		},
+	}
+
+	if os.Getenv("ENABLE_REMOTE_STORAGE_MOCK") == "true" {
+		clusterInitializers = append(clusterInitializers, dev.ClusterLoadObjectsFromFiles{
+			// Setup Prometheus remote mock
+			"config/deploy/prometheus-remote-storage-mock/namespace.yaml",
+			"config/deploy/prometheus-remote-storage-mock/deployment.yaml",
+			"config/deploy/prometheus-remote-storage-mock/service.yaml",
+		},
+		)
+	}
+
 	devEnvironment = dev.NewEnvironment(
 		"addon-operator-dev",
 		path.Join(cacheDir, "dev-env"),
@@ -1281,23 +1321,8 @@ func (d Dev) init() error {
 			dev.WithSchemeBuilder(aoapisv1alpha1.SchemeBuilder),
 		}),
 		dev.WithContainerRuntime(containerRuntime),
-		dev.WithClusterInitializers{
-			dev.ClusterLoadObjectsFromFiles{
-				// OCP APIs required by the AddonOperator.
-				"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
-				"config/ocp/config-operator_01_proxy.crd.yaml",
-				"config/ocp/cluster-version.yaml",
-				"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
-
-				// OpenShift console to interact with OLM.
-				"hack/openshift-console.yaml",
-			},
-			dev.ClusterLoadObjectsFromHttp{
-				// Install OLM.
-				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
-				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
-			},
-		})
+		clusterInitializers,
+	)
 	return nil
 }
 
