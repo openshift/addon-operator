@@ -242,7 +242,8 @@ func (r *monitoringFederationReconciler) ensureDeletionOfUnwantedMonitoringFeder
 	}
 
 	for _, serviceMonitor := range currentServiceMonitors {
-		if serviceMonitor.Name == wantedServiceMonitorName {
+		if serviceMonitor.Name == wantedServiceMonitorName ||
+			serviceMonitor.Name == getServiceMonitorName(addon.Name) {
 			// don't delete
 			continue
 		}

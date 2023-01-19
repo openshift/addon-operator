@@ -15,9 +15,10 @@ require (
 	github.com/openshift/addon-operator/apis v0.0.0-20220111092509-93ca25c9359f
 	github.com/openshift/api v0.0.0-20211122204231-b094ceff1955
 	github.com/operator-framework/api v0.8.1
-	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.51.2
+	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.56.2
 	github.com/prometheus/client_golang v1.12.1
 	github.com/prometheus/client_model v0.2.0
+	github.com/rhobs/monitoring-stack-operator v0.0.8-0.20220517000611-e9e78612d82f
 	github.com/stretchr/testify v1.8.0
 	k8s.io/api v0.24.2
 	k8s.io/apiextensions-apiserver v0.24.2
@@ -46,9 +47,9 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/gnostic v0.5.7-v3refs // indirect
-	github.com/google/go-cmp v0.5.5 // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
-	github.com/google/uuid v1.1.2 // indirect
+	github.com/google/uuid v1.2.0 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -66,7 +67,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
-	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.19.1 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
@@ -89,6 +90,3 @@ require (
 )
 
 replace github.com/openshift/addon-operator/apis => ./apis
-
-// tracks github.com/openshift/prometheus-operator/pkg/apis/monitoring release-4.8
-replace github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring => github.com/openshift/prometheus-operator/pkg/apis/monitoring v0.0.0-20210811191557-8f4efab9e7fa
