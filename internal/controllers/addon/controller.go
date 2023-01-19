@@ -305,5 +305,9 @@ func (r *AddonReconciler) Reconcile(
 
 	// After last phase and if everything is healthy
 	reportReadinessStatus(addon)
+	// Addon Installed Condition status reporting
+	if addon.IsAvailable() && addon.Status.LastObservedAvailableCSV != "" {
+		reportAddonInstalledCondition(addon)
+	}
 	return ctrl.Result{}, nil
 }

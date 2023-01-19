@@ -140,6 +140,22 @@ func reportLastObservedAvailableCSV(addon *addonsv1alpha1.Addon, csvName string)
 	addon.Status.LastObservedAvailableCSV = csvName
 }
 
+func reportAddonInstalledCondition(addon *addonsv1alpha1.Addon) {
+	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
+		Type:               addonsv1alpha1.Installed,
+		Status:             metav1.ConditionTrue,
+		Reason:             addonsv1alpha1.AddonReasonFullyReconciled,
+		Message:            "Addon is installed successfully",
+		ObservedGeneration: addon.Generation,
+	})
+	addon.Status.ObservedGeneration = addon.Generation
+	addon.Status.Phase = addonsv1alpha1.PhaseReady
+
+	// When everything is ready, we are also operating on the current version of the Addon.
+	// Otherwise we would be in a pending or error state.
+	addon.Status.ObservedVersion = addon.Spec.Version
+}
+
 func reportAddonUpgradeSucceeded(addon *addonsv1alpha1.Addon) {
 	upgradeStartedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.UpgradeStarted)
 	// Only set upgrade condition to succeeded, if UpgradeStarted condition is already present.

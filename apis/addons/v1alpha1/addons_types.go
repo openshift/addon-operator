@@ -269,6 +269,9 @@ const (
 
 	// UpgradeSucceeded condition indicates that the addon upgrade has succeeded.
 	UpgradeSucceeded = "UpgradeSucceeded"
+
+	// Installed condition indicates that the addon has installed succesfully
+	Installed = "Installed"
 )
 
 // AddonStatus defines the observed state of Addon
