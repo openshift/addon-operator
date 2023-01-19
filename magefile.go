@@ -27,6 +27,9 @@ import (
 	imageparser "github.com/novln/docker-parser"
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+
+	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -660,26 +663,14 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
 	}
 	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
-		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml", observabilityOperatorVersion),
-		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml", observabilityOperatorVersion),
-		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml", observabilityOperatorVersion),
-		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml", observabilityOperatorVersion),
-		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml", observabilityOperatorVersion),
-		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml", observabilityOperatorVersion),
-		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml", observabilityOperatorVersion),
-		fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml", observabilityOperatorVersion),
-	}); err != nil {
-		return fmt.Errorf("failed to apply the Observability Operator APIs: %w", err)
-	}
-	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
 		// Install OLM.
 		"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
 		"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
 	}); err != nil {
 		return fmt.Errorf("failed to install OLM: %w", err)
 	}
-	if err := deployObservabilityOperator(ctx, cluster); err != nil {
-		return fmt.Errorf("failed to deploy observability operator: %w", err)
+	if err := postClusterCreationFeatureToggleSetup(ctx, devEnvironment.Cluster); err != nil {
+		return err
 	}
 	return nil
 }
@@ -851,15 +842,14 @@ func (Test) IntegrationShort() error {
 
 // Dependency Versions
 const (
-	controllerGenVersion         = "0.6.2"
-	kindVersion                  = "0.11.1"
-	yqVersion                    = "4.12.0"
-	goimportsVersion             = "0.1.5"
-	golangciLintVersion          = "1.46.2"
-	olmVersion                   = "0.20.0"
-	opmVersion                   = "1.24.0"
-	helmVersion                  = "3.7.2"
-	observabilityOperatorVersion = "0.0.15"
+	controllerGenVersion = "0.6.2"
+	kindVersion          = "0.11.1"
+	yqVersion            = "4.12.0"
+	goimportsVersion     = "0.1.5"
+	golangciLintVersion  = "1.46.2"
+	olmVersion           = "0.20.0"
+	opmVersion           = "1.24.0"
+	helmVersion          = "3.7.2"
 )
 
 type Dependency mg.Namespace
@@ -961,49 +951,6 @@ var (
 	devEnvironment *dev.Environment
 )
 
-func renderObservabilityOperatorCatalogSource(ctx context.Context, cluster *dev.Cluster) (*operatorsv1alpha1.CatalogSource, error) {
-	objs, err := dev.LoadKubernetesObjectsFromFile("config/deploy/observability-operator/catalog-source.yaml.tpl")
-	if err != nil {
-		return nil, fmt.Errorf("failed to load the prometheus-remote-storage-mock deployment.yaml.tpl: %w", err)
-	}
-
-	// Replace version
-	observabilityOperatorCatalogSource := &operatorsv1alpha1.CatalogSource{}
-	if err := cluster.Scheme.Convert(&objs[0], observabilityOperatorCatalogSource, ctx); err != nil {
-		return nil, fmt.Errorf("failed to convert the catalog source: %w", err)
-	}
-
-	observabilityOperatorCatalogSourceImage := fmt.Sprintf("quay.io/rhobs/observability-operator-catalog:%s", observabilityOperatorVersion)
-	observabilityOperatorCatalogSource.Spec.Image = observabilityOperatorCatalogSourceImage
-
-	return observabilityOperatorCatalogSource, nil
-}
-
-func deployObservabilityOperator(ctx context.Context, cluster *dev.Cluster) error {
-	observabilityOperatorCatalogSource, err := renderObservabilityOperatorCatalogSource(ctx, cluster)
-	if err != nil {
-		return fmt.Errorf("failed to render the observability operator catalog source from its template: %w", err)
-	}
-
-	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
-		"config/deploy/observability-operator/namespace.yaml",
-	}); err != nil {
-		return fmt.Errorf("failed to load the namespace for observability-operator: %w", err)
-	}
-
-	if err := cluster.CreateAndWaitForReadiness(ctx, observabilityOperatorCatalogSource); err != nil {
-		return fmt.Errorf("failed to load the catalog source for observability-operator: %w", err)
-	}
-
-	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
-		"config/deploy/observability-operator/operator-group.yaml",
-		"config/deploy/observability-operator/subscription.yaml",
-	}); err != nil {
-		return fmt.Errorf("failed to load the operator-group/subscription for observability-operator: %w", err)
-	}
-	return nil
-}
-
 func (d Dev) Setup(ctx context.Context) error {
 	if err := d.init(); err != nil {
 		return err
@@ -1095,9 +1042,6 @@ func (d Dev) deploy(
 		if err := d.deployAPIMock(ctx, cluster); err != nil {
 			return err
 		}
-	}
-	if err := deployObservabilityOperator(ctx, cluster); err != nil {
-		return err
 	}
 
 	if err := d.deployAddonOperatorManager(ctx, cluster); err != nil {
@@ -1391,17 +1335,6 @@ func (d Dev) init() error {
 
 	clusterInitializers := dev.WithClusterInitializers{
 		dev.ClusterLoadObjectsFromHttp{
-			// Install Monitoring CRDs for Observability Operator.
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml", observabilityOperatorVersion),
-		},
-		dev.ClusterLoadObjectsFromHttp{
 			// Install OLM.
 			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
 			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
@@ -1423,7 +1356,7 @@ func (d Dev) init() error {
 		path.Join(cacheDir, "dev-env"),
 		dev.WithClusterOptions([]dev.ClusterOption{
 			dev.WithWaitOptions([]dev.WaitOption{
-				dev.WithTimeout(2 * time.Minute),
+				dev.WithTimeout(10 * time.Minute),
 			}),
 			dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
 		}),

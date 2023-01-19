@@ -15,7 +15,6 @@ import (
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
-	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -113,12 +112,7 @@ func NewAddonReconciler(
 				scheme:                  scheme,
 				operatorResourceHandler: operatorResourceHandler,
 			},
-			// Step 5: Reconcile MonitoringStack
-			&monitoringStackReconciler{
-				client: client,
-				scheme: scheme,
-			},
-			// Step 6: Reconcile Monitoring Federation
+			// Step 5: Reconcile Monitoring Federation
 			&monitoringFederationReconciler{
 				client: client,
 				scheme: scheme,

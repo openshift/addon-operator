@@ -19,7 +19,6 @@ import (
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
-	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -51,7 +50,6 @@ func init() {
 	_ = operatorsv1alpha1.AddToScheme(scheme)
 	_ = configv1.AddToScheme(scheme)
 	_ = monitoringv1.AddToScheme(scheme)
-	_ = obov1alpha1.AddToScheme(scheme)
 }
 
 func initReconcilers(mgr ctrl.Manager,
