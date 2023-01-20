@@ -669,7 +669,7 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	}); err != nil {
 		return fmt.Errorf("failed to install OLM: %w", err)
 	}
-	if err := postClusterCreationFeatureToggleSetup(ctx, devEnvironment.Cluster); err != nil {
+	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
 		return err
 	}
 	return nil
