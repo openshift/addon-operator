@@ -8,8 +8,6 @@ import (
 	"os"
 	"time"
 
-	"k8s.io/apimachinery/pkg/selection"
-
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/metrics"
 
@@ -179,13 +177,6 @@ func setup() error {
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
-	csvSelector := labels.NewSelector()
-	csvRequirement, err := labels.NewRequirement("olm.copiedFrom", selection.DoesNotExist, []string{})
-	if err != nil {
-		return fmt.Errorf("error creating requirement for csv selector: %w", err)
-	}
-	csvSelector.Add(*csvRequirement)
-
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                     scheme,
 		MetricsBindAddress:         opts.MetricsAddr,
@@ -201,9 +192,6 @@ func setup() error {
 					Label: labels.SelectorFromSet(labels.Set{
 						controllers.CommonCacheLabel: controllers.CommonCacheValue,
 					}),
-				},
-				&operatorsv1alpha1.ClusterServiceVersion{}: {
-					Label: csvSelector,
 				},
 			},
 		}),

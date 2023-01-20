@@ -10,10 +10,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -61,7 +59,7 @@ func (r *AddonReconciler) handleAddonDeletion(
 	reportTerminationStatus(addon)
 
 	// Clear from CSV Event Handler
-	r.csvEventHandler.Free(addon)
+	r.operatorResourceHandler.Free(addon)
 
 	controllerutil.RemoveFinalizer(addon, cacheFinalizer)
 	if err := r.Update(ctx, addon); err != nil {
@@ -181,13 +179,6 @@ func addonUpgradeStarted(addon *addonsv1alpha1.Addon) bool {
 		return upgradeStartedCond.Status == metav1.ConditionTrue
 	}
 	return false
-}
-
-func namespacedName(object client.Object) string {
-	return types.NamespacedName{
-		Name:      object.GetName(),
-		Namespace: object.GetNamespace(),
-	}.String()
 }
 
 func addonIsBeingUpgraded(addon *addonsv1alpha1.Addon) bool {

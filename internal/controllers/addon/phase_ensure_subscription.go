@@ -96,21 +96,9 @@ func (r *olmReconciler) ensureSubscription(
 		return resultRetry, client.ObjectKey{}, nil
 	}
 
-	installedCSVKey := client.ObjectKey{
-		Name:      observedSubscription.Status.InstalledCSV,
-		Namespace: commonInstallOptions.Namespace,
-	}
 	currentCSVKey := client.ObjectKey{
 		Name:      observedSubscription.Status.CurrentCSV,
 		Namespace: commonInstallOptions.Namespace,
-	}
-
-	changed := r.csvEventHandler.ReplaceMap(addon, installedCSVKey, currentCSVKey)
-	if changed {
-		// Mapping changes need to requeue, because we could have lost events before or during
-		// setting up the mapping, see csvEventHandler implementation for a longer description.
-		log.Info("requeue", "reason", "csv-addon mapping changed")
-		return resultRetry, client.ObjectKey{}, nil
 	}
 
 	return resultNil, currentCSVKey, nil

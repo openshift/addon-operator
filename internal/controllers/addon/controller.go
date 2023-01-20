@@ -45,10 +45,10 @@ type AddonReconciler struct {
 	// Namespace the AddonOperator is deployed into
 	AddonOperatorNamespace string
 
-	csvEventHandler csvEventHandler
-	globalPause     bool
-	globalPauseMux  sync.RWMutex
-	addonRequeueCh  chan event.GenericEvent
+	operatorResourceHandler operatorResourceHandler
+	globalPause             bool
+	globalPauseMux          sync.RWMutex
+	addonRequeueCh          chan event.GenericEvent
 
 	ocmClient    ocmClient
 	ocmClientMux sync.RWMutex
@@ -73,16 +73,16 @@ func NewAddonReconciler(
 	clusterExternalID string,
 	addonOperatorNamespace string,
 ) *AddonReconciler {
-	csvEventHandler := internalhandler.NewCSVEventHandler()
+	operatorResourceHandler := internalhandler.NewOperatorResourceHandler()
 	return &AddonReconciler{
-		Client:                 client,
-		UncachedClient:         uncachedClient,
-		Log:                    log,
-		Scheme:                 scheme,
-		Recorder:               recorder,
-		ClusterExternalID:      clusterExternalID,
-		AddonOperatorNamespace: addonOperatorNamespace,
-		csvEventHandler:        csvEventHandler,
+		Client:                  client,
+		UncachedClient:          uncachedClient,
+		Log:                     log,
+		Scheme:                  scheme,
+		Recorder:                recorder,
+		ClusterExternalID:       clusterExternalID,
+		AddonOperatorNamespace:  addonOperatorNamespace,
+		operatorResourceHandler: operatorResourceHandler,
 
 		subReconcilers: []addonReconciler{
 			// Step 1: Reconcile Namespace
@@ -104,10 +104,10 @@ func NewAddonReconciler(
 			},
 			// Step 4: Reconcile OLM objects
 			&olmReconciler{
-				client:          client,
-				uncachedClient:  uncachedClient,
-				scheme:          scheme,
-				csvEventHandler: csvEventHandler,
+				client:                  client,
+				uncachedClient:          uncachedClient,
+				scheme:                  scheme,
+				operatorResourceHandler: operatorResourceHandler,
 			},
 			// Step 5: Reconcile Monitoring Federation
 			&monitoringFederationReconciler{
@@ -183,15 +183,15 @@ func (r *AddonReconciler) requeueAllAddons(ctx context.Context) error {
 	return nil
 }
 
-type csvEventHandler interface {
+type operatorResourceHandler interface {
 	handler.EventHandler
 	Free(addon *addonsv1alpha1.Addon)
-	ReplaceMap(addon *addonsv1alpha1.Addon, csvKeys ...client.ObjectKey) (changed bool)
+	UpdateMap(addon *addonsv1alpha1.Addon, operatorKey client.ObjectKey) (changed bool)
 }
 
 func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	if r.csvEventHandler == nil {
-		return fmt.Errorf("csvEventHandler cannot be nil")
+	if r.operatorResourceHandler == nil {
+		return fmt.Errorf("operatorResourceHandler cannot be nil")
 	}
 
 	r.addonRequeueCh = make(chan event.GenericEvent)
@@ -210,8 +210,8 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			IsController: false, // We don't "control" the source secret, so we are only adding ourselves as owner/watcher
 		}).
 		Watches(&source.Kind{
-			Type: &operatorsv1alpha1.ClusterServiceVersion{},
-		}, r.csvEventHandler, builder.OnlyMetadata).
+			Type: &operatorsv1.Operator{},
+		}, r.operatorResourceHandler, builder.OnlyMetadata).
 		Watches(&source.Channel{ // Requeue everything when entering/leaving global pause.
 			Source: r.addonRequeueCh,
 		}, &handler.EnqueueRequestForObject{}).

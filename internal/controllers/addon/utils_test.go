@@ -30,18 +30,18 @@ func TestHandleAddonDeletion(t *testing.T) {
 
 		c := testutil.NewClient()
 
-		csvEventHandlerMock := &csvEventHandlerMock{}
+		operatorResourceHandlerMock := &operatorResourceHandlerMock{}
 		r := &AddonReconciler{
-			Client:          c,
-			Log:             testutil.NewLogger(t),
-			Scheme:          testutil.NewTestSchemeWithAddonsv1alpha1(),
-			csvEventHandler: csvEventHandlerMock,
+			Client:                  c,
+			Log:                     testutil.NewLogger(t),
+			Scheme:                  testutil.NewTestSchemeWithAddonsv1alpha1(),
+			operatorResourceHandler: operatorResourceHandlerMock,
 		}
 
 		c.
 			On("Update", mock.Anything, mock.Anything, mock.Anything).
 			Return(nil)
-		csvEventHandlerMock.
+		operatorResourceHandlerMock.
 			On("Free", addonToDelete)
 
 		ctx := context.Background()
@@ -67,12 +67,12 @@ func TestHandleAddonDeletion(t *testing.T) {
 
 		c := testutil.NewClient()
 
-		csvEventHandlerMock := &csvEventHandlerMock{}
+		csvEventHandlerMock := &operatorResourceHandlerMock{}
 		r := &AddonReconciler{
-			Client:          c,
-			Log:             testutil.NewLogger(t),
-			Scheme:          testutil.NewTestSchemeWithAddonsv1alpha1(),
-			csvEventHandler: csvEventHandlerMock,
+			Client:                  c,
+			Log:                     testutil.NewLogger(t),
+			Scheme:                  testutil.NewTestSchemeWithAddonsv1alpha1(),
+			operatorResourceHandler: csvEventHandlerMock,
 		}
 
 		c.
@@ -92,41 +92,41 @@ func TestHandleAddonDeletion(t *testing.T) {
 	})
 }
 
-type csvEventHandlerMock struct {
+type operatorResourceHandlerMock struct {
 	mock.Mock
 }
 
-var _ csvEventHandler = (*csvEventHandlerMock)(nil)
+var _ operatorResourceHandler = (*operatorResourceHandlerMock)(nil)
 
 // Create is called in response to an create event - e.g. Pod Creation.
-func (m *csvEventHandlerMock) Create(e event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Create(e event.CreateEvent, q workqueue.RateLimitingInterface) {
 	m.Called(e, q)
 }
 
 // Update is called in response to an update event -  e.g. Pod Updated.
-func (m *csvEventHandlerMock) Update(e event.UpdateEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Update(e event.UpdateEvent, q workqueue.RateLimitingInterface) {
 	m.Called(e, q)
 }
 
 // Delete is called in response to a delete event - e.g. Pod Deleted.
-func (m *csvEventHandlerMock) Delete(e event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Delete(e event.DeleteEvent, q workqueue.RateLimitingInterface) {
 	m.Called(e, q)
 }
 
 // Generic is called in response to an event of an unknown type or a synthetic event triggered as a cron or
 // external trigger request - e.g. reconcile Autoscaling, or a Webhook.
-func (m *csvEventHandlerMock) Generic(e event.GenericEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Generic(e event.GenericEvent, q workqueue.RateLimitingInterface) {
 	m.Called(e, q)
 }
 
-func (m *csvEventHandlerMock) Free(addon *addonsv1alpha1.Addon) {
+func (m *operatorResourceHandlerMock) Free(addon *addonsv1alpha1.Addon) {
 	m.Called(addon)
 }
 
-func (m *csvEventHandlerMock) ReplaceMap(
-	addon *addonsv1alpha1.Addon, csvKeys ...client.ObjectKey,
+func (m *operatorResourceHandlerMock) UpdateMap(
+	addon *addonsv1alpha1.Addon, operartorKey client.ObjectKey,
 ) (changed bool) {
-	args := m.Called(addon, csvKeys)
+	args := m.Called(addon, operartorKey)
 	return args.Bool(0)
 }
 
