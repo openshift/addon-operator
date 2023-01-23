@@ -48,7 +48,7 @@ type AddonReconciler struct {
 	operatorResourceHandler operatorResourceHandler
 	globalPause             bool
 	globalPauseMux          sync.RWMutex
-	addonstatusReporting    statusReporting
+	statusReportingEnabled  bool
 	addonRequeueCh          chan event.GenericEvent
 
 	ocmClient    ocmClient
@@ -58,11 +58,6 @@ type AddonReconciler struct {
 	// Reconcilers will run  serially
 	// in the order in which they appear in this slice.
 	subReconcilers []addonReconciler
-}
-
-type statusReporting struct {
-	enabled bool
-	sync.RWMutex
 }
 
 type addonReconciler interface {
@@ -78,17 +73,18 @@ func NewAddonReconciler(
 	recorder *metrics.Recorder,
 	clusterExternalID string,
 	addonOperatorNamespace string,
+	enableStatusReporting bool,
 ) *AddonReconciler {
 	operatorResourceHandler := internalhandler.NewOperatorResourceHandler()
 	return &AddonReconciler{
-		Client:                  client,
-		UncachedClient:          uncachedClient,
-		Log:                     log,
-		Scheme:                  scheme,
-		Recorder:                recorder,
-		ClusterExternalID:       clusterExternalID,
-		AddonOperatorNamespace:  addonOperatorNamespace,
-		operatorResourceHandler: operatorResourceHandler,
+		Client:                 client,
+		UncachedClient:         uncachedClient,
+		Log:                    log,
+		Scheme:                 scheme,
+		Recorder:               recorder,
+		ClusterExternalID:      clusterExternalID,
+		AddonOperatorNamespace: addonOperatorNamespace,
+		statusReportingEnabled: enableStatusReporting,
 
 		subReconcilers: []addonReconciler{
 			// Step 1: Reconcile Namespace
@@ -177,25 +173,6 @@ func (r *AddonReconciler) EnableGlobalPause(ctx context.Context) error {
 // Unpauses reconcilation of all Addon objects. Concurrency safe.
 func (r *AddonReconciler) DisableGlobalPause(ctx context.Context) error {
 	return r.setGlobalPause(ctx, false)
-}
-
-func (r *AddonReconciler) EnableAddonStatusReporting(ctx context.Context) error {
-	r.addonstatusReporting.Lock()
-	defer r.addonstatusReporting.Unlock()
-	r.addonstatusReporting.enabled = true
-
-	if err := r.requeueAllAddons(ctx); err != nil {
-		return fmt.Errorf("requeue all Addons: %w", err)
-	}
-	return nil
-}
-
-func (r *AddonReconciler) DisableAddonStatusReporting(ctx context.Context) error {
-	r.addonstatusReporting.Lock()
-	defer r.addonstatusReporting.Unlock()
-	r.addonstatusReporting.enabled = false
-	// On disable, we don't need to requeue.
-	return nil
 }
 
 func (r *AddonReconciler) setGlobalPause(ctx context.Context, paused bool) error {

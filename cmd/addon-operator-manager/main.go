@@ -46,7 +46,10 @@ func init() {
 	_ = monitoringv1.AddToScheme(scheme)
 }
 
-func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) error {
+func initReconcilers(mgr ctrl.Manager,
+	namespace string,
+	enableRecorder bool,
+	enableStatusReporting bool) error {
 	ctx := context.Background()
 
 	// Create a client that does not cache resources cluster-wide.
@@ -78,21 +81,21 @@ func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool) er
 		recorder,
 		clusterExternalID,
 		namespace,
+		enableStatusReporting,
 	)
 	if err := addonReconciler.SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create Addon controller: %w", err)
 	}
 
 	if err := (&aocontroller.AddonOperatorReconciler{
-		Client:                 mgr.GetClient(),
-		UncachedClient:         uncachedClient,
-		Log:                    ctrl.Log.WithName("controllers").WithName("AddonOperator"),
-		Scheme:                 mgr.GetScheme(),
-		GlobalPauseManager:     addonReconciler,
-		StatusReportingManager: addonReconciler,
-		OCMClientManager:       addonReconciler,
-		Recorder:               recorder,
-		ClusterExternalID:      clusterExternalID,
+		Client:             mgr.GetClient(),
+		UncachedClient:     uncachedClient,
+		Log:                ctrl.Log.WithName("controllers").WithName("AddonOperator"),
+		Scheme:             mgr.GetScheme(),
+		GlobalPauseManager: addonReconciler,
+		OCMClientManager:   addonReconciler,
+		Recorder:           recorder,
+		ClusterExternalID:  clusterExternalID,
 	}).SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create AddonOperator controller: %w", err)
 	}
@@ -213,7 +216,7 @@ func setup() error {
 		return fmt.Errorf("unable to set up ready check: %w", err)
 	}
 
-	if err := initReconcilers(mgr, opts.Namespace, opts.EnableMetricsRecorder); err != nil {
+	if err := initReconcilers(mgr, opts.Namespace, opts.EnableMetricsRecorder, opts.StatusReportingEnabled); err != nil {
 		return fmt.Errorf("init reconcilers: %w", err)
 	}
 

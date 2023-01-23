@@ -30,11 +30,6 @@ type AddonOperatorSpec struct {
 	// +optional
 	Paused bool `json:"pause"`
 
-	// Send addon statuses to the addon service status API when set
-	// to true.
-	// +optional
-	EnableStatusReporting bool `json:"enableStatusReporting"`
-
 	// OCM specific configuration.
 	// Setting this subconfig will enable deeper OCM integration.
 	// e.g. push status reporting, etc.

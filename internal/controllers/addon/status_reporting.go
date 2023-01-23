@@ -96,13 +96,7 @@ func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1a
 }
 
 func (r *AddonReconciler) statusReportingRequired(addon *addonsv1alpha1.Addon) bool {
-	return r.statusReportingEnabled() && currentStatusChangedFromPrevious(addon)
-}
-
-func (r *AddonReconciler) statusReportingEnabled() bool {
-	r.addonstatusReporting.RLock()
-	defer r.addonstatusReporting.RUnlock()
-	return r.addonstatusReporting.enabled
+	return r.statusReportingEnabled && currentStatusChangedFromPrevious(addon)
 }
 
 func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
@@ -138,11 +132,11 @@ func OCMAddOnStatusDifferentFromInClusterAddonStatus(in ocm.AddOnStatusResponse,
 }
 
 func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {
-	if addon.Status.ReportedStatus != nil {
+	if addon.Status.OCMReportedStatus != nil {
 		currentConditions := mapAddonStatusConditions(addon.Status.Conditions)
-		prevConditions := addon.Status.ReportedStatus.StatusConditions
+		prevConditions := addon.Status.OCMReportedStatus.StatusConditions
 		statusConditionsChanged := !equality.Semantic.DeepEqual(currentConditions, prevConditions)
-		correlationIDChanged := addon.Spec.CorrelationID != addon.Status.ReportedStatus.CorrelationID
+		correlationIDChanged := addon.Spec.CorrelationID != addon.Status.OCMReportedStatus.CorrelationID
 		return correlationIDChanged || statusConditionsChanged
 	}
 	// If reported status is nil.
@@ -150,7 +144,7 @@ func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {
 }
 
 func setLastReportedStatus(addon *addonsv1alpha1.Addon) {
-	addon.Status.ReportedStatus = &addonsv1alpha1.OCMAddOnStatus{
+	addon.Status.OCMReportedStatus = &addonsv1alpha1.OCMAddOnStatus{
 		AddonID:            addon.Name,
 		CorrelationID:      addon.Spec.CorrelationID,
 		StatusConditions:   mapAddonStatusConditions(addon.Status.Conditions),

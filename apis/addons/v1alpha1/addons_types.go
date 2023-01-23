@@ -288,9 +288,9 @@ type AddonStatus struct {
 	// Tracks last reported upgrade policy status.
 	// +optional
 	UpgradePolicy *AddonUpgradePolicyStatus `json:"upgradePolicy,omitempty"`
-	// Tracks the last reported addon status.
+	// Tracks the last addon status reported to OCM.
 	// +optional
-	ReportedStatus *OCMAddOnStatus `json:"reportedStatus,omitempty"`
+	OCMReportedStatus *OCMAddOnStatus `json:"ocmReportedStatus,omitempty"`
 	// Observed version of the Addon on the cluster, only present when .spec.version is populated.
 	// +optional
 	ObservedVersion string `json:"observedVersion,omitempty"`

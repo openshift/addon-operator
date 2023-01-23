@@ -529,8 +529,8 @@ func (in *AddonStatus) DeepCopyInto(out *AddonStatus) {
 		*out = new(AddonUpgradePolicyStatus)
 		**out = **in
 	}
-	if in.ReportedStatus != nil {
-		in, out := &in.ReportedStatus, &out.ReportedStatus
+	if in.OCMReportedStatus != nil {
+		in, out := &in.OCMReportedStatus, &out.OCMReportedStatus
 		*out = new(OCMAddOnStatus)
 		(*in).DeepCopyInto(*out)
 	}
