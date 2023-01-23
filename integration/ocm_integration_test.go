@@ -59,19 +59,15 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 	}
 	ctx := context.Background()
 
-	// enable status reporting
-	s.setADOstatusReporting(true, ctx)
-
 	addon := addon_OwnNamespace()
 	err := integration.Client.Create(ctx, addon)
 	s.Require().NoError(err)
 
 	s.T().Cleanup(func() {
 		s.addonCleanup(addon, ctx)
-		s.setADOstatusReporting(false, ctx)
 	})
 
-	// wait until Addon is available
+	// wait until Addon is availablez
 	err = integration.WaitForObject(
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
@@ -127,8 +123,8 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		}, addon)
 		s.Require().NoError(err)
 
-		s.Require().NotNil(addon.Status.ReportedStatus)
-		s.Require().Equal(len(addon.Status.ReportedStatus.StatusConditions), 2)
+		s.Require().NotNil(addon.Status.OCMReportedStatus)
+		s.Require().Equal(len(addon.Status.OCMReportedStatus.StatusConditions), 2)
 	})
 
 }

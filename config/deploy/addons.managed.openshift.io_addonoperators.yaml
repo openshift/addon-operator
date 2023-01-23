@@ -43,10 +43,6 @@ spec:
           spec:
             description: AddonOperatorSpec defines the desired state of Addon operator.
             properties:
-              enableStatusReporting:
-                description: Send addon statuses to the addon service status API when
-                  set to true.
-                type: boolean
               feature_toggles:
                 description: Specification of the feature toggles supported by the
                   addon-operator

@@ -19,7 +19,7 @@ import (
 func TestHandleAddonStatusReporting(t *testing.T) {
 	t.Run("noop when ocm client is not initialized", func(t *testing.T) {
 		r := AddonReconciler{}
-		r.addonstatusReporting.enabled = true
+		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{}
 		log := testutil.NewLogger(t)
 		err := r.handleOCMAddOnStatusReporting(context.Background(), log, addon)
@@ -28,7 +28,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 
 	t.Run("noop when current addon status is equal to the last reported status", func(t *testing.T) {
 		r := AddonReconciler{}
-		r.addonstatusReporting.enabled = true
+		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -44,7 +44,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 						Reason: addonsv1alpha1.AddonReasonFullyReconciled,
 					},
 				},
-				ReportedStatus: &addonsv1alpha1.OCMAddOnStatus{
+				OCMReportedStatus: &addonsv1alpha1.OCMAddOnStatus{
 					AddonID:       "addon-1",
 					CorrelationID: "123",
 					StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
@@ -69,7 +69,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			Client:    client,
 			ocmClient: ocmClient,
 		}
-		r.addonstatusReporting.enabled = false
+		r.statusReportingEnabled = false
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -105,7 +105,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			ocmClient: ocmClient,
 			Recorder:  recorder,
 		}
-		r.addonstatusReporting.enabled = true
+		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -149,11 +149,11 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 
 		// Assert that the reported status is indeed stored in the addon's status
 		// block.
-		require.NotNil(t, addon.Status.ReportedStatus)
-		require.Equal(t, addon.Spec.CorrelationID, addon.Status.ReportedStatus.CorrelationID)
-		require.Equal(t, addon.Name, addon.Status.ReportedStatus.AddonID)
+		require.NotNil(t, addon.Status.OCMReportedStatus)
+		require.Equal(t, addon.Spec.CorrelationID, addon.Status.OCMReportedStatus.CorrelationID)
+		require.Equal(t, addon.Name, addon.Status.OCMReportedStatus.AddonID)
 		require.Equal(t, mapAddonStatusConditions(addon.Status.Conditions),
-			addon.Status.ReportedStatus.StatusConditions)
+			addon.Status.OCMReportedStatus.StatusConditions)
 	})
 
 	t.Run("outdated reported status, but current status is equal to OCM status", func(t *testing.T) {
@@ -168,7 +168,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			ocmClient: ocmClient,
 			Recorder:  recorder,
 		}
-		r.addonstatusReporting.enabled = true
+		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -189,7 +189,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 						Reason: addonsv1alpha1.AddonReasonUpgradeStarted,
 					},
 				},
-				ReportedStatus: &addonsv1alpha1.OCMAddOnStatus{
+				OCMReportedStatus: &addonsv1alpha1.OCMAddOnStatus{
 					AddonID:       "addon-1",
 					CorrelationID: "123",
 					StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
@@ -237,11 +237,11 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 
 		// Assert that the reported status is indeed stored in the addon's status
 		// block.
-		require.NotNil(t, addon.Status.ReportedStatus)
-		require.Equal(t, addon.Spec.CorrelationID, addon.Status.ReportedStatus.CorrelationID)
-		require.Equal(t, addon.Name, addon.Status.ReportedStatus.AddonID)
+		require.NotNil(t, addon.Status.OCMReportedStatus)
+		require.Equal(t, addon.Spec.CorrelationID, addon.Status.OCMReportedStatus.CorrelationID)
+		require.Equal(t, addon.Name, addon.Status.OCMReportedStatus.AddonID)
 		require.Equal(t, mapAddonStatusConditions(addon.Status.Conditions),
-			addon.Status.ReportedStatus.StatusConditions)
+			addon.Status.OCMReportedStatus.StatusConditions)
 	})
 
 	t.Run("Correctly patches OCM status with the current addon status", func(t *testing.T) {
@@ -256,7 +256,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			ocmClient: ocmClient,
 			Recorder:  recorder,
 		}
-		r.addonstatusReporting.enabled = true
+		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -277,7 +277,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 						Reason: addonsv1alpha1.AddonReasonUpgradeStarted,
 					},
 				},
-				ReportedStatus: &addonsv1alpha1.OCMAddOnStatus{
+				OCMReportedStatus: &addonsv1alpha1.OCMAddOnStatus{
 					AddonID:       "addon-1",
 					CorrelationID: "123",
 					StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
@@ -323,11 +323,11 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 
 		// Assert that the reported status is indeed stored in the addon's status
 		// block.
-		require.NotNil(t, addon.Status.ReportedStatus)
-		require.Equal(t, addon.Spec.CorrelationID, addon.Status.ReportedStatus.CorrelationID)
-		require.Equal(t, addon.Name, addon.Status.ReportedStatus.AddonID)
+		require.NotNil(t, addon.Status.OCMReportedStatus)
+		require.Equal(t, addon.Spec.CorrelationID, addon.Status.OCMReportedStatus.CorrelationID)
+		require.Equal(t, addon.Name, addon.Status.OCMReportedStatus.AddonID)
 		require.Equal(t, mapAddonStatusConditions(addon.Status.Conditions),
-			addon.Status.ReportedStatus.StatusConditions)
+			addon.Status.OCMReportedStatus.StatusConditions)
 	})
 
 	t.Run("errors are correctly returned and reported status is left untouched", func(t *testing.T) {
@@ -342,7 +342,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			ocmClient: ocmClient,
 			Recorder:  recorder,
 		}
-		r.addonstatusReporting.enabled = true
+		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "addon-1",
@@ -363,7 +363,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 						Reason: addonsv1alpha1.AddonReasonUpgradeStarted,
 					},
 				},
-				ReportedStatus: &addonsv1alpha1.OCMAddOnStatus{
+				OCMReportedStatus: &addonsv1alpha1.OCMAddOnStatus{
 					AddonID:       "addon-1",
 					CorrelationID: "123",
 					StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
@@ -376,7 +376,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 				},
 			},
 		}
-		originalReportedStatus := *addon.Status.ReportedStatus
+		originalReportedStatus := *addon.Status.OCMReportedStatus
 		// setup mock calls
 		ocmClient.On("GetAddOnStatus", mock.Anything, "addon-1").
 			Return(
@@ -412,7 +412,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 
 		// Assert that the reported status is left unchanged because the reconciler
 		// encountered an error.
-		require.NotNil(t, addon.Status.ReportedStatus)
-		require.Equal(t, originalReportedStatus, *addon.Status.ReportedStatus)
+		require.NotNil(t, addon.Status.OCMReportedStatus)
+		require.Equal(t, originalReportedStatus, *addon.Status.OCMReportedStatus)
 	})
 }

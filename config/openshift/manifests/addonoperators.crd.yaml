@@ -50,10 +50,6 @@ spec:
                       features in the addon-operator
                     type: boolean
                 type: object
-              enableStatusReporting:
-                description: Send addon statuses to the addon service status API when
-                  set to true.
-                type: boolean
               ocm:
                 description: OCM specific configuration. Setting this subconfig will
                   enable deeper OCM integration. e.g. push status reporting, etc.

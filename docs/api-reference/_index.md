@@ -137,7 +137,6 @@ AddonOperatorSpec defines the desired state of Addon operator.
 | ----- | ----------- | ------ | -------- |
 | pause | Pause reconciliation on all Addons in the cluster when set to True | bool | true |
 | feature_toggles | Specification of the feature toggles supported by the addon-operator | [AddonOperatorFeatureToggles.addons.managed.openshift.io/v1alpha1](#addonoperatorfeaturetogglesaddonsmanagedopenshiftiov1alpha1) | false |
-| enableStatusReporting | Send addon statuses to the addon service status API when set to true. | bool | true |
 | ocm | OCM specific configuration. Setting this subconfig will enable deeper OCM integration. e.g. push status reporting, etc. | *[AddonOperatorOCM.addons.managed.openshift.io/v1alpha1](#addonoperatorocmaddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()
@@ -322,7 +321,7 @@ AddonStatus defines the observed state of Addon
 | conditions | Conditions is a list of status conditions ths object is in. | []metav1.Condition | false |
 | phase | DEPRECATED: This field is not part of any API contract it will go away as soon as kubectl can print conditions! Human readable status - please use .Conditions from code | AddonPhase.addons.managed.openshift.io/v1alpha1 | false |
 | upgradePolicy | Tracks last reported upgrade policy status. | *[AddonUpgradePolicyStatus.addons.managed.openshift.io/v1alpha1](#addonupgradepolicystatusaddonsmanagedopenshiftiov1alpha1) | false |
-| reportedStatus | Tracks the last reported addon status. | *[OCMAddOnStatus.addons.managed.openshift.io/v1alpha1](#ocmaddonstatusaddonsmanagedopenshiftiov1alpha1) | false |
+| ocmReportedStatus | Tracks the last addon status reported to OCM. | *[OCMAddOnStatus.addons.managed.openshift.io/v1alpha1](#ocmaddonstatusaddonsmanagedopenshiftiov1alpha1) | false |
 | observedVersion | Observed version of the Addon on the cluster, only present when .spec.version is populated. | string | false |
 | lastObservedAvailableCSV | Namespaced name of the csv(available) that was last observed. | string | false |
 

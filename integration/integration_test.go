@@ -45,20 +45,6 @@ func (s *integrationTestSuite) addonCleanup(addon *addonsv1alpha1.Addon,
 	s.Require().NoError(err, "wait for Addon to be deleted")
 }
 
-func (s *integrationTestSuite) setADOstatusReporting(value bool, ctx context.Context) {
-	s.T().Logf("setting status reporting to %v", value)
-	addonOperator := &addonsv1alpha1.AddonOperator{}
-	if err := integration.Client.Get(ctx, client.ObjectKey{
-		Name: addonsv1alpha1.DefaultAddonOperatorName,
-	}, addonOperator); err != nil {
-		s.T().Fatalf("get AddonOperator object: %v", err)
-	}
-	addonOperator.Spec.EnableStatusReporting = value
-	if err := integration.Client.Update(ctx, addonOperator); err != nil {
-		s.T().Fatalf("patch AddonOperator object: %v", err)
-	}
-}
-
 func TestIntegration(t *testing.T) {
 	// Run kube-apiserver proxy during tests
 	apiProxyCloseCh := make(chan struct{})

@@ -15,6 +15,7 @@ type options struct {
 	Namespace               string
 	PprofAddr               string
 	ProbeAddr               string
+	StatusReportingEnabled  bool
 }
 
 // Process retrieves values from flags, environment values,
@@ -94,6 +95,12 @@ func (o *options) processEnv() {
 		if o.LeaderElectionNamespace == "" {
 			o.LeaderElectionNamespace = ns
 		}
+	}
+	enableStatusReporting, ok := os.LookupEnv("ENABLE_STATUS_REPORTING")
+	if ok && enableStatusReporting == "true" {
+		o.StatusReportingEnabled = true
+	} else {
+		o.StatusReportingEnabled = false
 	}
 }
 
