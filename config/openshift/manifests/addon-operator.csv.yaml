@@ -105,6 +105,7 @@ spec:
           - operators.coreos.com
           resources:
           - clusterserviceversions
+          - operators
           verbs:
           - watch
           - get

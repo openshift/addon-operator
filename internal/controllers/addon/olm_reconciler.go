@@ -17,10 +17,10 @@ import (
 const OLM_RECONCILER_NAME = "olmReconciler"
 
 type olmReconciler struct {
-	scheme          *runtime.Scheme
-	client          client.Client
-	uncachedClient  client.Client
-	csvEventHandler csvEventHandler
+	scheme                  *runtime.Scheme
+	client                  client.Client
+	uncachedClient          client.Client
+	operatorResourceHandler operatorResourceHandler
 }
 
 func (r *olmReconciler) Reconcile(ctx context.Context,
@@ -79,9 +79,9 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 		return handleExit(requeueResult), nil
 	}
 
-	// Phase 6.
-	// Observe current csv
-	if requeueResult, err := r.observeCurrentCSV(ctx, addon, currentCSVKey); err != nil {
+	// Phase 6
+	// Observe operator API
+	if requeueResult, err := r.observeOperatorResource(ctx, addon, currentCSVKey); err != nil {
 		return ctrl.Result{}, fmt.Errorf("failed to observe current CSV: %w", err)
 	} else if requeueResult != resultNil {
 		return handleExit(requeueResult), nil
