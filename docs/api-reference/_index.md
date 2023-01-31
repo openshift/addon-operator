@@ -37,6 +37,7 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [MonitoringFederationSpec](#monitoringfederationspecaddonsmanagedopenshiftiov1alpha1)
 	* [MonitoringSpec](#monitoringspecaddonsmanagedopenshiftiov1alpha1)
 	* [OCMAddOnStatus](#ocmaddonstatusaddonsmanagedopenshiftiov1alpha1)
+	* [OCMAddOnStatusHash](#ocmaddonstatushashaddonsmanagedopenshiftiov1alpha1)
 	* [SubscriptionConfig](#subscriptionconfigaddonsmanagedopenshiftiov1alpha1)
 	* [ClusterSecretReference](#clustersecretreferenceaddonsmanagedopenshiftiov1alpha1)
 
@@ -321,7 +322,7 @@ AddonStatus defines the observed state of Addon
 | conditions | Conditions is a list of status conditions ths object is in. | []metav1.Condition | false |
 | phase | DEPRECATED: This field is not part of any API contract it will go away as soon as kubectl can print conditions! Human readable status - please use .Conditions from code | AddonPhase.addons.managed.openshift.io/v1alpha1 | false |
 | upgradePolicy | Tracks last reported upgrade policy status. | *[AddonUpgradePolicyStatus.addons.managed.openshift.io/v1alpha1](#addonupgradepolicystatusaddonsmanagedopenshiftiov1alpha1) | false |
-| ocmReportedStatus | Tracks the last addon status reported to OCM. | *[OCMAddOnStatus.addons.managed.openshift.io/v1alpha1](#ocmaddonstatusaddonsmanagedopenshiftiov1alpha1) | false |
+| ocmReportedStatusHash | Tracks the last addon status reported to OCM. | *[OCMAddOnStatusHash.addons.managed.openshift.io/v1alpha1](#ocmaddonstatushashaddonsmanagedopenshiftiov1alpha1) | false |
 | observedVersion | Observed version of the Addon on the cluster, only present when .spec.version is populated. | string | false |
 | lastObservedAvailableCSV | Namespaced name of the csv(available) that was last observed. | string | false |
 
@@ -386,13 +387,24 @@ Tracks the last state last reported to the Upgrade Policy endpoint.
 
 ### OCMAddOnStatus.addons.managed.openshift.io/v1alpha1
 
+Struct used to hash the reported addon status (along with correlationID).
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| addonID | ID of the addon. | string | true |
+| correlationID | Correlation ID for co-relating current AddonCR revision and reported status. | string | true |
+| statusConditions | Reported addon status conditions | [][AddOnStatusCondition.addons.managed.openshift.io/v1alpha1](#addonstatusconditionaddonsmanagedopenshiftiov1alpha1) | true |
+| observedGeneration | The most recent generation a status update was based on. | int64 | true |
+
+[Back to Group]()
+
+### OCMAddOnStatusHash.addons.managed.openshift.io/v1alpha1
+
 
 
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
-| addon_id | ID of the addon. | string | true |
-| correlation_id | Correlation ID for co-relating current AddonCR revision and reported status. | string | true |
-| status_conditions | Reported addon status conditions | [][AddOnStatusCondition.addons.managed.openshift.io/v1alpha1](#addonstatusconditionaddonsmanagedopenshiftiov1alpha1) | true |
+| statusHash | Hash of the last reported status. | string | true |
 | observedGeneration | The most recent generation a status update was based on. | int64 | true |
 
 [Back to Group]()
