@@ -30,6 +30,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
 )
 
@@ -650,6 +651,121 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 
 	ctx = dev.ContextWithLogger(ctx, logger)
 	return labelNodesWithInfraRole(ctx, cluster)
+}
+
+// Target to inject the addon status reporting environment variable
+// to the addon operator CSV present in the cluster.
+func (t Test) IntegrationCIInjectEnvVariable(ctx context.Context) error {
+	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")), dev.WithSchemeBuilder(operatorsv1alpha1.SchemeBuilder))
+	if err != nil {
+		return fmt.Errorf("creating cluster client: %w", err)
+	}
+
+	ctx = dev.ContextWithLogger(ctx, logger)
+	if err = injectStatusReportingEnvironmentVariable(ctx, cluster); err != nil {
+		return fmt.Errorf("Inject ENV into CSV failed: %w", err)
+	}
+	return nil
+}
+
+func injectStatusReportingEnvironmentVariable(ctx context.Context, cluster *dev.Cluster) error {
+	// OO_INSTALL_NAMESPACE is defined at:
+	// https://github.com/openshift/release/blob/master/ci-operator/config/openshift/addon-operator/openshift-addon-operator-main.yaml#L79
+	// The initial value("!create") is then over-written by the step https://steps.ci.openshift.org/reference/optional-operators-subscribe
+	// to the actual namespace string.
+	addonOperatorNS, found := os.LookupEnv("OO_INSTALL_NAMESPACE")
+	if found && addonOperatorNS != "!create" {
+		CSVList := &operatorsv1alpha1.ClusterServiceVersionList{}
+		err := cluster.CtrlClient.List(ctx, CSVList, ctrlclient.InNamespace(addonOperatorNS))
+		if err != nil {
+			return fmt.Errorf("listing csv's for patching error: %w", err)
+		}
+		if len(CSVList.Items) == 0 {
+			return fmt.Errorf("no csv's found in namespace: %s", addonOperatorNS)
+		}
+
+		addonOperatorCSV, found := findAddonOperatorCSV(CSVList)
+		if !found {
+			return fmt.Errorf("ADO csv missing in the OO_INSTALL_NAMESPACE(%s)", addonOperatorNS)
+		}
+		return patchAddonOperatorCSV(ctx, cluster, &addonOperatorCSV)
+	}
+	return fmt.Errorf("Invalid/Missing namespace value in OO_INSTALL_NAMESPACE: Got: %s", addonOperatorNS)
+}
+
+func findAddonOperatorCSV(csvList *operatorsv1alpha1.ClusterServiceVersionList) (operatorsv1alpha1.ClusterServiceVersion, bool) {
+	for _, csv := range csvList.Items {
+		if strings.HasPrefix(csv.Name, "addon-operator") {
+			return csv, true
+		}
+	}
+	return operatorsv1alpha1.ClusterServiceVersion{}, false
+}
+
+func patchAddonOperatorCSV(ctx context.Context,
+	cluster *dev.Cluster,
+	operatorCSV *operatorsv1alpha1.ClusterServiceVersion) error {
+	for i := range operatorCSV.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
+		currentDeployment := &operatorCSV.
+			Spec.
+			InstallStrategy.
+			StrategySpec.DeploymentSpecs[i]
+		// Find the addon operator deployment.
+		if currentDeployment.Name == "addon-operator-manager" {
+			for i := range currentDeployment.Spec.Template.Spec.Containers {
+				containerObj := &currentDeployment.Spec.Template.Spec.Containers[i]
+				// Find the addon operator manager container from the pod.
+				if containerObj.Name == "manager" {
+					if containerObj.Env == nil {
+						containerObj.Env = []corev1.EnvVar{}
+					}
+					// Set status reporting env variable to true.
+					containerObj.Env = append(containerObj.Env, corev1.EnvVar{
+						Name:  "ENABLE_STATUS_REPORTING",
+						Value: "true"},
+					)
+					break
+				}
+			}
+			break
+		}
+	}
+	if err := cluster.CtrlClient.Update(ctx, operatorCSV); err != nil {
+		return fmt.Errorf("patching ADO csv to inject env variable: %w", err)
+	}
+	// Wait for the newly patched deployment under the CSV to be ready
+	deploymentObj := &appsv1.Deployment{}
+	deploymentObj.SetName("addon-operator-manager")
+	deploymentObj.SetNamespace(operatorCSV.Namespace)
+	cluster.Waiter.WaitForObject(
+		ctx,
+		deploymentObj,
+		"waiting for deployment to be ready and have status reporting env variable",
+		func(obj ctrlclient.Object) (done bool, err error) {
+			adoDeployment, ok := obj.(*appsv1.Deployment)
+			if !ok {
+				return false, fmt.Errorf("failed to type assert addon operator deployment")
+			}
+			// Wait for deployment to be ready
+			if err := cluster.Waiter.WaitForReadiness(ctx, adoDeployment); err != nil {
+				return false, nil
+			}
+			// Check if the deployment indeed has the env variable
+			for _, container := range adoDeployment.Spec.Template.Spec.Containers {
+				if container.Name == "manager" {
+					for _, envObj := range container.Env {
+						if envObj.Name == "ENABLE_STATUS_REPORTING" && envObj.Value == "true" {
+							return true, nil
+						}
+					}
+					break
+				}
+			}
+			return false, nil
+		},
+	)
+	return nil
 }
 
 func labelNodesWithInfraRole(ctx context.Context, cluster *dev.Cluster) error {
