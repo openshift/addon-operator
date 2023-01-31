@@ -657,7 +657,7 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 // to the addon operator CSV present in the cluster.
 func (t Test) IntegrationCIInjectEnvVariable(ctx context.Context) error {
 	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
-		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")), dev.WithSchemeBuilder(operatorsv1alpha1.SchemeBuilder))
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
