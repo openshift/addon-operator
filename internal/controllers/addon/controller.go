@@ -77,14 +77,15 @@ func NewAddonReconciler(
 ) *AddonReconciler {
 	operatorResourceHandler := internalhandler.NewOperatorResourceHandler()
 	return &AddonReconciler{
-		Client:                 client,
-		UncachedClient:         uncachedClient,
-		Log:                    log,
-		Scheme:                 scheme,
-		Recorder:               recorder,
-		ClusterExternalID:      clusterExternalID,
-		AddonOperatorNamespace: addonOperatorNamespace,
-		statusReportingEnabled: enableStatusReporting,
+		Client:                  client,
+		UncachedClient:          uncachedClient,
+		Log:                     log,
+		Scheme:                  scheme,
+		Recorder:                recorder,
+		ClusterExternalID:       clusterExternalID,
+		AddonOperatorNamespace:  addonOperatorNamespace,
+		statusReportingEnabled:  enableStatusReporting,
+		operatorResourceHandler: operatorResourceHandler,
 
 		subReconcilers: []addonReconciler{
 			// Step 1: Reconcile Namespace

@@ -290,7 +290,7 @@ type AddonStatus struct {
 	UpgradePolicy *AddonUpgradePolicyStatus `json:"upgradePolicy,omitempty"`
 	// Tracks the last addon status reported to OCM.
 	// +optional
-	OCMReportedStatus *OCMAddOnStatus `json:"ocmReportedStatus,omitempty"`
+	OCMReportedStatusHash *OCMAddOnStatusHash `json:"ocmReportedStatusHash,omitempty"`
 	// Observed version of the Addon on the cluster, only present when .spec.version is populated.
 	// +optional
 	ObservedVersion string `json:"observedVersion,omitempty"`
@@ -305,14 +305,21 @@ type AddOnStatusCondition struct {
 	Reason      string                 `json:"reason"`
 }
 
+type OCMAddOnStatusHash struct {
+	// Hash of the last reported status.
+	StatusHash string `json:"statusHash"`
+	// The most recent generation a status update was based on.
+	ObservedGeneration int64 `json:"observedGeneration"`
+}
+
+// Struct used to hash the reported addon status (along with correlationID).
 type OCMAddOnStatus struct {
 	// ID of the addon.
-	AddonID string `json:"addon_id"`
+	AddonID string `json:"addonID"`
 	// Correlation ID for co-relating current AddonCR revision and reported status.
-	// +optional
-	CorrelationID string `json:"correlation_id"`
+	CorrelationID string `json:"correlationID"`
 	// Reported addon status conditions
-	StatusConditions []AddOnStatusCondition `json:"status_conditions"`
+	StatusConditions []AddOnStatusCondition `json:"statusConditions"`
 	// The most recent generation a status update was based on.
 	ObservedGeneration int64 `json:"observedGeneration"`
 }

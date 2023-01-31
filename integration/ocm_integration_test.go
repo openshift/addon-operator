@@ -10,6 +10,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
+	addonutils "github.com/openshift/addon-operator/internal/controllers/addon"
 	"github.com/openshift/addon-operator/internal/ocm"
 	"github.com/openshift/addon-operator/internal/testutil"
 )
@@ -116,15 +117,15 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		}
 
 		// Assert that the addon object correctly updates its status block with the
-		// last reported status.
+		// last reported status hash.
 		err = integration.Client.Get(ctx, types.NamespacedName{
 			Name:      addon.Name,
 			Namespace: addon.Namespace,
 		}, addon)
 		s.Require().NoError(err)
 
-		s.Require().NotNil(addon.Status.OCMReportedStatus)
-		s.Require().Equal(len(addon.Status.OCMReportedStatus.StatusConditions), 2)
+		s.Require().NotNil(addon.Status.OCMReportedStatusHash)
+		s.Require().Equal(addon.Status.OCMReportedStatusHash.StatusHash, addonutils.HashCurrentAddonStatus(addon))
 	})
 
 }

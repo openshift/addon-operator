@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"k8s.io/apimachinery/pkg/api/equality"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/go-logr/logr"
@@ -123,31 +122,25 @@ func mapAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatu
 }
 
 func OCMAddOnStatusDifferentFromInClusterAddonStatus(in ocm.AddOnStatusResponse, addon *addonsv1alpha1.Addon) bool {
-	currentInClusterConditions := mapAddonStatusConditions(addon.Status.Conditions)
-	currentOCMConditions := in.StatusConditions
-
-	correlationIDChanged := addon.Spec.CorrelationID != in.CorrelationID
-	statusConditionsChanged := !equality.Semantic.DeepEqual(currentInClusterConditions, currentOCMConditions)
-	return correlationIDChanged || statusConditionsChanged
+	incomingStatusHash := hashOCMAddonStatus(addonsv1alpha1.OCMAddOnStatus{
+		AddonID:          in.AddonID,
+		CorrelationID:    in.CorrelationID,
+		StatusConditions: in.StatusConditions,
+	})
+	return incomingStatusHash != HashCurrentAddonStatus(addon)
 }
 
 func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {
-	if addon.Status.OCMReportedStatus != nil {
-		currentConditions := mapAddonStatusConditions(addon.Status.Conditions)
-		prevConditions := addon.Status.OCMReportedStatus.StatusConditions
-		statusConditionsChanged := !equality.Semantic.DeepEqual(currentConditions, prevConditions)
-		correlationIDChanged := addon.Spec.CorrelationID != addon.Status.OCMReportedStatus.CorrelationID
-		return correlationIDChanged || statusConditionsChanged
+	if addon.Status.OCMReportedStatusHash != nil {
+		return addon.Status.OCMReportedStatusHash.StatusHash != HashCurrentAddonStatus(addon)
 	}
 	// If reported status is nil.
 	return true
 }
 
 func setLastReportedStatus(addon *addonsv1alpha1.Addon) {
-	addon.Status.OCMReportedStatus = &addonsv1alpha1.OCMAddOnStatus{
-		AddonID:            addon.Name,
-		CorrelationID:      addon.Spec.CorrelationID,
-		StatusConditions:   mapAddonStatusConditions(addon.Status.Conditions),
+	addon.Status.OCMReportedStatusHash = &addonsv1alpha1.OCMAddOnStatusHash{
+		StatusHash:         HashCurrentAddonStatus(addon),
 		ObservedGeneration: addon.Generation,
 	}
 }

@@ -435,41 +435,20 @@ spec:
                 description: Observed version of the Addon on the cluster, only present
                   when .spec.version is populated.
                 type: string
-              ocmReportedStatus:
+              ocmReportedStatusHash:
                 description: Tracks the last addon status reported to OCM.
                 properties:
-                  addon_id:
-                    description: ID of the addon.
-                    type: string
-                  correlation_id:
-                    description: Correlation ID for co-relating current AddonCR revision
-                      and reported status.
-                    type: string
                   observedGeneration:
                     description: The most recent generation a status update was based
                       on.
                     format: int64
                     type: integer
-                  status_conditions:
-                    description: Reported addon status conditions
-                    items:
-                      properties:
-                        reason:
-                          type: string
-                        status_type:
-                          type: string
-                        status_value:
-                          type: string
-                      required:
-                      - reason
-                      - status_type
-                      - status_value
-                      type: object
-                    type: array
+                  statusHash:
+                    description: Hash of the last reported status.
+                    type: string
                 required:
-                - addon_id
                 - observedGeneration
-                - status_conditions
+                - statusHash
                 type: object
               phase:
                 description: 'DEPRECATED: This field is not part of any API contract
