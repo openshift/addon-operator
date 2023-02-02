@@ -32,6 +32,8 @@ import (
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
+
+	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
 
 const (
@@ -649,7 +651,7 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
 
-	ctx = dev.ContextWithLogger(ctx, logger)
+	ctx = logr.NewContext(ctx, logger)
 	return labelNodesWithInfraRole(ctx, cluster)
 }
 
@@ -795,7 +797,7 @@ func (t Test) IntegrationCI(ctx context.Context) error {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
 
-	ctx = dev.ContextWithLogger(ctx, logger)
+	ctx = logr.NewContext(ctx, logger)
 
 	var dev Dev
 	if err := dev.deployAPIMock(ctx, cluster); err != nil {
@@ -934,9 +936,18 @@ func (d Dev) Setup(ctx context.Context) error {
 		return err
 	}
 
+	if err := preClusterCreationFeatureToggleSetup(ctx); err != nil {
+		return err
+	}
+
 	if err := devEnvironment.Init(ctx); err != nil {
 		return fmt.Errorf("initializing dev environment: %w", err)
 	}
+
+	if err := postClusterCreationFeatureToggleSetup(ctx, devEnvironment.Cluster); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -1048,7 +1059,7 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 		}
 	}
 
-	ctx = dev.ContextWithLogger(ctx, logger)
+	ctx = logr.NewContext(ctx, logger)
 
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
@@ -1064,6 +1075,58 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 	return nil
 }
 
+func deployFeatureToggles(ctx context.Context, cluster *dev.Cluster) error {
+	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles(
+		featuretoggle.WithClient{Client: cluster.CtrlClient},
+		featuretoggle.WithSchemeToUpdate{Scheme: cluster.Scheme},
+	)
+
+	for _, featTog := range availableFeatureToggles {
+		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
+		if featTog.IsEnabledOnTestEnv() {
+			if err := featTog.Enable(ctx); err != nil {
+				return fmt.Errorf("failed to enable the feature toggle: %w", err)
+			}
+		} else {
+			if err := featTog.Disable(ctx); err != nil {
+				return fmt.Errorf("failed to disable the feature toggle: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+func preClusterCreationFeatureToggleSetup(ctx context.Context) error {
+	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles()
+
+	for _, featTog := range availableFeatureToggles {
+		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
+		if featTog.IsEnabledOnTestEnv() {
+			if err := featTog.PreClusterCreationSetup(ctx); err != nil {
+				return fmt.Errorf("failed to set the feature toggle before the cluster creation: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+func postClusterCreationFeatureToggleSetup(ctx context.Context, cluster *dev.Cluster) error {
+	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles(
+		featuretoggle.WithClient{Client: cluster.CtrlClient},
+		featuretoggle.WithSchemeToUpdate{Scheme: cluster.Scheme},
+	)
+
+	for _, featTog := range availableFeatureToggles {
+		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
+		if featTog.IsEnabledOnTestEnv() {
+			if err := featTog.PostClusterCreationSetup(ctx, cluster); err != nil {
+				return fmt.Errorf("failed to set the feature toggle after the cluster creation: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
 // deploy the Addon Operator Manager from local files.
 func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluster) error {
 	deployment := &appsv1.Deployment{}
@@ -1075,7 +1138,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	// Replace image
 	patchDeployment(deployment, "addon-operator-manager", "manager")
 
-	ctx = dev.ContextWithLogger(ctx, logger)
+	ctx = logr.NewContext(ctx, logger)
 
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
@@ -1090,8 +1153,12 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
+
 	if err := cluster.CreateAndWaitForReadiness(ctx, deployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager: %w", err)
+	}
+	if err := deployFeatureToggles(ctx, cluster); err != nil {
+		return fmt.Errorf("deploy feature toggles: %w", err)
 	}
 	return nil
 }
@@ -1107,7 +1174,7 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 	// Replace image
 	patchDeployment(deployment, "addon-operator-webhook", "webhook")
 
-	dev.ContextWithLogger(ctx, logger)
+	ctx = logr.NewContext(ctx, logger)
 
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{

@@ -72,9 +72,10 @@ func NewAddonReconciler(
 	recorder *metrics.Recorder,
 	clusterExternalID string,
 	addonOperatorNamespace string,
+	opts ...AddonReconcilerOptions,
 ) *AddonReconciler {
 	operatorResourceHandler := internalhandler.NewOperatorResourceHandler()
-	return &AddonReconciler{
+	adoReconciler := &AddonReconciler{
 		Client:                  client,
 		UncachedClient:          uncachedClient,
 		Log:                     log,
@@ -116,6 +117,11 @@ func NewAddonReconciler(
 			},
 		},
 	}
+
+	for _, opt := range opts {
+		opt.ApplyToAddonReconciler(adoReconciler)
+	}
+	return adoReconciler
 }
 
 type ocmClient interface {
@@ -189,13 +195,13 @@ type operatorResourceHandler interface {
 	UpdateMap(addon *addonsv1alpha1.Addon, operatorKey client.ObjectKey) (changed bool)
 }
 
-func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager, opts ...AddonReconcilerOptions) error {
 	if r.operatorResourceHandler == nil {
 		return fmt.Errorf("operatorResourceHandler cannot be nil")
 	}
 
 	r.addonRequeueCh = make(chan event.GenericEvent)
-	return ctrl.NewControllerManagedBy(mgr).
+	adoControllerBuilder := ctrl.NewControllerManagedBy(mgr).
 		For(&addonsv1alpha1.Addon{}).
 		Owns(&corev1.Namespace{}).
 		Owns(&operatorsv1.OperatorGroup{}).
@@ -214,8 +220,13 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		}, r.operatorResourceHandler, builder.OnlyMetadata).
 		Watches(&source.Channel{ // Requeue everything when entering/leaving global pause.
 			Source: r.addonRequeueCh,
-		}, &handler.EnqueueRequestForObject{}).
-		Complete(r)
+		}, &handler.EnqueueRequestForObject{})
+
+	for _, opt := range opts {
+		opt.ApplyToControllerBuilder(adoControllerBuilder)
+	}
+
+	return adoControllerBuilder.Complete(r)
 }
 
 // AddonReconciler/Controller entrypoint
