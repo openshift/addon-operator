@@ -18,9 +18,6 @@ const (
 
 	// Addon operator has resumed reconciliation
 	AddonOperatorReasonUnpaused = "AddonOperatorUnpaused"
-
-	// Addon operator has enabled external status reporting.
-	AddonOperatorReasonStatusReportingEnabled = "AddonOperatorExternalStatusReportingEnabled"
 )
 
 // AddonOperatorSpec defines the desired state of Addon operator.
@@ -77,10 +74,6 @@ const (
 
 	// Paused condition indicates that the AddonOperator is paused entirely.
 	AddonOperatorPaused = "Paused"
-
-	// AddonOperatorStatusReportingEnabled condition indicates that the AddonOperator
-	// would send addon status information to the addon status API.
-	AddonOperatorStatusReportingEnabled = "StatusReportingEnabled"
 )
 
 // AddonOperator is the Schema for the AddonOperator API

@@ -81,17 +81,14 @@ func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1al
 }
 
 func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (err error) {
-	if currentStatusChangedFromPrevious(addon) {
-		payload := ocm.AddOnStatusPatchRequest{
-			CorrelationID:    addon.Spec.CorrelationID,
-			StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
-		}
-		r.recordASRequestDuration(func() {
-			_, err = r.ocmClient.PatchAddOnStatus(ctx, addon.Name, payload)
-		})
-		return
+	payload := ocm.AddOnStatusPatchRequest{
+		CorrelationID:    addon.Spec.CorrelationID,
+		StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
 	}
-	return nil
+	r.recordASRequestDuration(func() {
+		_, err = r.ocmClient.PatchAddOnStatus(ctx, addon.Name, payload)
+	})
+	return
 }
 
 func (r *AddonReconciler) statusReportingRequired(addon *addonsv1alpha1.Addon) bool {
