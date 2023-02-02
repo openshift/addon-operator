@@ -960,12 +960,10 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 }
 
 func deployFeatureToggles(ctx context.Context, cluster *dev.Cluster) error {
-	availableFeatureToggles := []featuretoggle.TestableFeatureToggleHandler{
-		&featuretoggle.MonitoringStackFeatureToggle{
-			Client:         cluster.CtrlClient,
-			SchemeToUpdate: cluster.Scheme,
-		},
-	}
+	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles(
+		featuretoggle.WithClient{Client: cluster.CtrlClient},
+		featuretoggle.WithSchemeToUpdate{Scheme: cluster.Scheme},
+	)
 
 	for _, featTog := range availableFeatureToggles {
 		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
@@ -983,9 +981,7 @@ func deployFeatureToggles(ctx context.Context, cluster *dev.Cluster) error {
 }
 
 func preClusterCreationFeatureToggleSetup(ctx context.Context) error {
-	availableFeatureToggles := []featuretoggle.TestableFeatureToggleHandler{
-		&featuretoggle.MonitoringStackFeatureToggle{},
-	}
+	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles()
 
 	for _, featTog := range availableFeatureToggles {
 		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
@@ -999,12 +995,10 @@ func preClusterCreationFeatureToggleSetup(ctx context.Context) error {
 }
 
 func postClusterCreationFeatureToggleSetup(ctx context.Context, cluster *dev.Cluster) error {
-	availableFeatureToggles := []featuretoggle.TestableFeatureToggleHandler{
-		&featuretoggle.MonitoringStackFeatureToggle{
-			Client:         cluster.CtrlClient,
-			SchemeToUpdate: cluster.Scheme,
-		},
-	}
+	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles(
+		featuretoggle.WithClient{Client: cluster.CtrlClient},
+		featuretoggle.WithSchemeToUpdate{Scheme: cluster.Scheme},
+	)
 
 	for _, featTog := range availableFeatureToggles {
 		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
