@@ -74,6 +74,7 @@ func NewAddonReconciler(
 	addonOperatorNamespace string,
 ) *AddonReconciler {
 	operatorResourceHandler := internalhandler.NewOperatorResourceHandler()
+
 	return &AddonReconciler{
 		Client:                  client,
 		UncachedClient:          uncachedClient,
