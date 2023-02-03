@@ -666,7 +666,7 @@ func (t Test) IntegrationCIInjectEnvVariable(ctx context.Context) error {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
 
-	ctx = dev.ContextWithLogger(ctx, logger)
+	ctx = logr.NewContext(ctx, logger)
 	if err = injectStatusReportingEnvironmentVariable(ctx, cluster); err != nil {
 		return fmt.Errorf("Inject ENV into CSV failed: %w", err)
 	}
@@ -978,13 +978,13 @@ func (d Dev) Integration(ctx context.Context) error {
 	return nil
 }
 
-func (d Dev) LoadImage(ctx context.Context, image string) error {
+func (d Dev) LoadImage(image string) error {
 	mg.Deps(
 		mg.F(Build.ImageBuild, image),
 	)
 
 	imageTar := path.Join(cacheDir, "image", image+".tar")
-	if err := devEnvironment.LoadImageFromTar(ctx, imageTar); err != nil {
+	if err := devEnvironment.LoadImageFromTar(imageTar); err != nil {
 		return fmt.Errorf("load image from tar: %w", err)
 	}
 	return nil
