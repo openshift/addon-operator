@@ -33,6 +33,8 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
 
+	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+
 	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
 
@@ -1254,6 +1256,7 @@ func (d Dev) init() error {
 			dev.WithWaitOptions([]dev.WaitOption{
 				dev.WithTimeout(2 * time.Minute),
 			}),
+			dev.WithSchemeBuilder(aoapisv1alpha1.SchemeBuilder),
 		}),
 		dev.WithContainerRuntime(containerRuntime),
 		dev.WithClusterInitializers{
