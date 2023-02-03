@@ -29,9 +29,12 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
+
+	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
 	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
@@ -659,7 +662,7 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 // to the addon operator CSV present in the cluster.
 func (t Test) IntegrationCIInjectEnvVariable(ctx context.Context) error {
 	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
-		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")), dev.WithSchemeBuilder(operatorsv1alpha1.SchemeBuilder))
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")), dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}))
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
@@ -1254,6 +1257,7 @@ func (d Dev) init() error {
 			dev.WithWaitOptions([]dev.WaitOption{
 				dev.WithTimeout(2 * time.Minute),
 			}),
+			dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
 		}),
 		dev.WithContainerRuntime(containerRuntime),
 		dev.WithClusterInitializers{
