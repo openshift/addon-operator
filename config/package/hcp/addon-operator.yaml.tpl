@@ -53,10 +53,10 @@ spec:
         - args:
             - --enable-leader-election
           env:
-			- name: KUBECONFIG
-			  value: /etc/openshift/kubeconfig/kubeconfig
-			- name: ADDON_OPERATOR_NAMESPACE
-			  value: addon-operator
+            - name: KUBECONFIG
+              value: /etc/openshift/kubeconfig/kubeconfig
+            - name: ADDON_OPERATOR_NAMESPACE
+              value: addon-operator
           image: quay.io/app-sre/addon-operator-manager:replaced-in-pipeline
           livenessProbe:
             httpGet:
@@ -79,14 +79,14 @@ spec:
               cpu: 100m
               memory: 300Mi
           volumeMounts:
-		    - mountPath: /etc/openshift/kubeconfig
-			  name: kubeconfig
-			  readOnly: true
+            - mountPath: /etc/openshift/kubeconfig
+              name: kubeconfig
+              readOnly: true
       volumes:
-		- name: kubeconfig
-		  secret:
-			defaultMode: 420
-			secretName: admin-kubeconfig
+        - name: kubeconfig
+          secret:
+            defaultMode: 420
+            secretName: admin-kubeconfig
         - name: tls
           secret:
             secretName: metrics-server-cert
