@@ -642,10 +642,28 @@ func (Test) Unit() error {
 	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...", "./pkg/...")
 }
 
-func (Test) Integration() error {
+func (Test) Integration(ctx context.Context) error {
+	workDir, ok := ctx.Value("workDir").(string)
+	if !ok || workDir == "" {
+		workDir = path.Join(cacheDir, "dev-env")
+	}
+	cluster, err := dev.NewCluster(
+		workDir,
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")), dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
+	)
+	if err != nil {
+		return fmt.Errorf("creating cluster client: %w", err)
+	}
+
+	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to perform post-cluster creation setup for the feature toggles: %w", err)
+	}
+	if err := deployFeatureToggles(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to deploy feature toggles: %w", err)
+	}
 	return sh.Run("go", "test", "-v",
 		"-count=1", // will force a new run, instead of using the cache
-		"-timeout=25m", "./integration/...")
+		"-timeout=40m", "./integration/...")
 }
 
 // Target to prepare the CI-CD environment before installing the operator.
@@ -809,7 +827,8 @@ func labelNodesWithInfraRole(ctx context.Context, cluster *dev.Cluster) error {
 // Target to run within OpenShift CI, where the Addon Operator and webhook is already deployed via the framework.
 // This target will additionally deploy the API Mock before starting the integration test suite.
 func (t Test) IntegrationCI(ctx context.Context) error {
-	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
+	workDir := path.Join(cacheDir, "ci")
+	cluster, err := dev.NewCluster(workDir,
 		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
@@ -825,7 +844,8 @@ func (t Test) IntegrationCI(ctx context.Context) error {
 	os.Setenv("ENABLE_WEBHOOK", "true")
 	os.Setenv("ENABLE_API_MOCK", "true")
 
-	return t.Integration()
+	ctx = context.WithValue(ctx, "workDir", workDir)
+	return t.Integration(ctx)
 }
 
 func (Test) IntegrationShort() error {
