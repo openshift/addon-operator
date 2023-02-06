@@ -34,6 +34,10 @@ type AddonSpec struct {
 	// Annotations to be applied to all resources.
 	CommonAnnotations map[string]string `json:"commonAnnotations,omitempty"`
 
+	// Correlation ID for co-relating current AddonCR revision and reported status.
+	// +optional
+	CorrelationID string `json:"correlation_id,omitempty"`
+
 	// Defines how an Addon is installed.
 	// This field is immutable.
 	Install AddonInstallSpec `json:"install"`
@@ -284,12 +288,40 @@ type AddonStatus struct {
 	// Tracks last reported upgrade policy status.
 	// +optional
 	UpgradePolicy *AddonUpgradePolicyStatus `json:"upgradePolicy,omitempty"`
+	// Tracks the last addon status reported to OCM.
+	// +optional
+	OCMReportedStatusHash *OCMAddOnStatusHash `json:"ocmReportedStatusHash,omitempty"`
 	// Observed version of the Addon on the cluster, only present when .spec.version is populated.
 	// +optional
 	ObservedVersion string `json:"observedVersion,omitempty"`
 	// Namespaced name of the csv(available) that was last observed.
 	// +optional
 	LastObservedAvailableCSV string `json:"lastObservedAvailableCSV,omitempty"`
+}
+
+type AddOnStatusCondition struct {
+	StatusType  string                 `json:"status_type"`
+	StatusValue metav1.ConditionStatus `json:"status_value"`
+	Reason      string                 `json:"reason"`
+}
+
+type OCMAddOnStatusHash struct {
+	// Hash of the last reported status.
+	StatusHash string `json:"statusHash"`
+	// The most recent generation a status update was based on.
+	ObservedGeneration int64 `json:"observedGeneration"`
+}
+
+// Struct used to hash the reported addon status (along with correlationID).
+type OCMAddOnStatus struct {
+	// ID of the addon.
+	AddonID string `json:"addonID"`
+	// Correlation ID for co-relating current AddonCR revision and reported status.
+	CorrelationID string `json:"correlationID"`
+	// Reported addon status conditions
+	StatusConditions []AddOnStatusCondition `json:"statusConditions"`
+	// The most recent generation a status update was based on.
+	ObservedGeneration int64 `json:"observedGeneration"`
 }
 
 type AddonPhase string

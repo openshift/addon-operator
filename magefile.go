@@ -642,7 +642,7 @@ func (Test) Unit() error {
 func (Test) Integration() error {
 	return sh.Run("go", "test", "-v",
 		"-count=1", // will force a new run, instead of using the cache
-		"-timeout=20m", "./integration/...")
+		"-timeout=25m", "./integration/...")
 }
 
 // Target to prepare the CI-CD environment before installing the operator.
@@ -1203,6 +1203,13 @@ func patchDeployment(deployment *appsv1.Deployment, name string, container strin
 
 		if containerObj.Name == container {
 			containerObj.Image = image
+			// Set status reporting env variable to true.
+			containerObj.Env = []corev1.EnvVar{
+				{
+					Name:  "ENABLE_STATUS_REPORTING",
+					Value: "true",
+				},
+			}
 			break
 		}
 	}

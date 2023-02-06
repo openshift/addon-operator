@@ -36,14 +36,13 @@ const (
 
 type AddonOperatorReconciler struct {
 	client.Client
-	UncachedClient     client.Client
-	Log                logr.Logger
-	Scheme             *runtime.Scheme
-	GlobalPauseManager globalPauseManager
-	OCMClientManager   ocmClientManager
-	Recorder           *metrics.Recorder
-	ClusterExternalID  string
-
+	UncachedClient      client.Client
+	Log                 logr.Logger
+	Scheme              *runtime.Scheme
+	GlobalPauseManager  globalPauseManager
+	OCMClientManager    ocmClientManager
+	Recorder            *metrics.Recorder
+	ClusterExternalID   string
 	FeatureTogglesState addonsv1alpha1.AddonOperatorFeatureToggles // no need to guard this with a mutex considering the fact that no two goroutines would ever try to update it as this is only initialized at startup
 }
 

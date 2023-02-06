@@ -59,6 +59,10 @@ spec:
                   type: string
                 description: Labels to be applied to all resources.
                 type: object
+              correlation_id:
+                description: Correlation ID for co-relating current AddonCR revision
+                  and reported status.
+                type: string
               displayName:
                 description: Human readable name for this addon.
                 minLength: 1
@@ -433,6 +437,21 @@ spec:
                 description: Observed version of the Addon on the cluster, only present
                   when .spec.version is populated.
                 type: string
+              ocmReportedStatusHash:
+                description: Tracks the last addon status reported to OCM.
+                properties:
+                  observedGeneration:
+                    description: The most recent generation a status update was based
+                      on.
+                    format: int64
+                    type: integer
+                  statusHash:
+                    description: Hash of the last reported status.
+                    type: string
+                required:
+                - observedGeneration
+                - statusHash
+                type: object
               phase:
                 description: 'DEPRECATED: This field is not part of any API contract
                   it will go away as soon as kubectl can print conditions! Human readable

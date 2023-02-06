@@ -52,7 +52,12 @@ func init() {
 	_ = monitoringv1.AddToScheme(scheme)
 }
 
-func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool, addonOperatorInCluster addonsv1alpha1.AddonOperator, opts ...addoncontroller.AddonReconcilerOptions) error {
+func initReconcilers(mgr ctrl.Manager,
+	namespace string,
+	enableRecorder bool,
+	addonOperatorInCluster addonsv1alpha1.AddonOperator,
+	enableStatusReporting bool,
+	opts ...addoncontroller.AddonReconcilerOptions) error {
 	ctx := context.Background()
 
 	// Create a client that does not cache resources cluster-wide.
@@ -84,6 +89,7 @@ func initReconcilers(mgr ctrl.Manager, namespace string, enableRecorder bool, ad
 		recorder,
 		clusterExternalID,
 		namespace,
+		enableStatusReporting,
 		opts...,
 	)
 	if err := addonReconciler.SetupWithManager(mgr); err != nil {
@@ -264,7 +270,8 @@ func setup() error {
 		return fmt.Errorf("unable to set up ready check: %w", err)
 	}
 
-	if err := initReconcilers(mgr, opts.Namespace, opts.EnableMetricsRecorder, addonOperatorObjectInCluster, addonReconcilerOptions...); err != nil {
+	if err := initReconcilers(mgr, opts.Namespace,
+		opts.EnableMetricsRecorder, addonOperatorObjectInCluster, opts.StatusReportingEnabled, addonReconcilerOptions...); err != nil {
 		return fmt.Errorf("init reconcilers: %w", err)
 	}
 

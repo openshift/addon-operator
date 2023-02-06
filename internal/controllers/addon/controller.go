@@ -48,6 +48,7 @@ type AddonReconciler struct {
 	operatorResourceHandler operatorResourceHandler
 	globalPause             bool
 	globalPauseMux          sync.RWMutex
+	statusReportingEnabled  bool
 	addonRequeueCh          chan event.GenericEvent
 
 	ocmClient    ocmClient
@@ -72,6 +73,7 @@ func NewAddonReconciler(
 	recorder *metrics.Recorder,
 	clusterExternalID string,
 	addonOperatorNamespace string,
+	enableStatusReporting bool,
 	opts ...AddonReconcilerOptions,
 ) *AddonReconciler {
 	operatorResourceHandler := internalhandler.NewOperatorResourceHandler()
@@ -84,7 +86,7 @@ func NewAddonReconciler(
 		ClusterExternalID:       clusterExternalID,
 		AddonOperatorNamespace:  addonOperatorNamespace,
 		operatorResourceHandler: operatorResourceHandler,
-
+		statusReportingEnabled:  enableStatusReporting,
 		subReconcilers: []addonReconciler{
 			// Step 1: Reconcile Namespace
 			&namespaceReconciler{
@@ -137,6 +139,19 @@ type ocmClient interface {
 		ctx context.Context,
 		req ocm.UpgradePolicyGetRequest,
 	) (res ocm.UpgradePolicyGetResponse, err error)
+	PostAddOnStatus(
+		ctx context.Context,
+		req ocm.AddOnStatusPostRequest,
+	) (res ocm.AddOnStatusResponse, err error)
+	PatchAddOnStatus(
+		ctx context.Context,
+		addonID string,
+		req ocm.AddOnStatusPatchRequest,
+	) (res ocm.AddOnStatusResponse, err error)
+	GetAddOnStatus(
+		ctx context.Context,
+		addonID string,
+	) (res ocm.AddOnStatusResponse, err error)
 }
 
 func (r *AddonReconciler) InjectOCMClient(ctx context.Context, c *ocm.Client) error {
@@ -255,14 +270,21 @@ func (r *AddonReconciler) Reconcile(
 			ctx, log.WithName("UpgradePolicyStatusReporter"), addon,
 		)
 
-		// Finally, update the Status back to the kube-api
-		// This is the only place where Status is being reported.
+		if err != nil {
+			return
+		}
+
+		err = r.handleOCMAddOnStatusReporting(
+			ctx, log.WithName("AddonStatusReporter"), addon,
+		)
 		if err != nil {
 			return
 		}
 		// We report the observed version regardless of whether the addon
 		// is available or not.
 		reportObservedVersion(addon)
+		// Finally, update the Status back to the kube-api
+		// This is the only place where Status is being reported.
 		err = r.Status().Update(ctx, addon)
 	}()
 

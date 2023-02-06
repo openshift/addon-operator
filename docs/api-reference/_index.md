@@ -19,6 +19,7 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [AddonOperatorOCM](#addonoperatorocmaddonsmanagedopenshiftiov1alpha1)
 	* [AddonOperatorSpec](#addonoperatorspecaddonsmanagedopenshiftiov1alpha1)
 	* [AddonOperatorStatus](#addonoperatorstatusaddonsmanagedopenshiftiov1alpha1)
+	* [AddOnStatusCondition](#addonstatusconditionaddonsmanagedopenshiftiov1alpha1)
 	* [AdditionalCatalogSource](#additionalcatalogsourceaddonsmanagedopenshiftiov1alpha1)
 * [Addon](#addonaddonsmanagedopenshiftiov1alpha1)
 	* [AddonInstallOLMAllNamespaces](#addoninstallolmallnamespacesaddonsmanagedopenshiftiov1alpha1)
@@ -35,6 +36,8 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [EnvObject](#envobjectaddonsmanagedopenshiftiov1alpha1)
 	* [MonitoringFederationSpec](#monitoringfederationspecaddonsmanagedopenshiftiov1alpha1)
 	* [MonitoringSpec](#monitoringspecaddonsmanagedopenshiftiov1alpha1)
+	* [OCMAddOnStatus](#ocmaddonstatusaddonsmanagedopenshiftiov1alpha1)
+	* [OCMAddOnStatusHash](#ocmaddonstatushashaddonsmanagedopenshiftiov1alpha1)
 	* [SubscriptionConfig](#subscriptionconfigaddonsmanagedopenshiftiov1alpha1)
 	* [ClusterSecretReference](#clustersecretreferenceaddonsmanagedopenshiftiov1alpha1)
 
@@ -149,6 +152,18 @@ AddonOperatorStatus defines the observed state of Addon
 | conditions | Conditions is a list of status conditions ths object is in. | []metav1.Condition | false |
 | lastHeartbeatTime | Timestamp of the last reported status check | metav1.Time | true |
 | phase | DEPRECATED: This field is not part of any API contract it will go away as soon as kubectl can print conditions! Human readable status - please use .Conditions from code | AddonPhase.addons.managed.openshift.io/v1alpha1 | false |
+
+[Back to Group]()
+
+### AddOnStatusCondition.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| status_type |  | string | true |
+| status_value |  | metav1.ConditionStatus | true |
+| reason |  | string | true |
 
 [Back to Group]()
 
@@ -289,6 +304,7 @@ AddonSpec defines the desired state of Addon.
 | namespaces | Defines a list of Kubernetes Namespaces that belong to this Addon. Namespaces listed here will be created prior to installation of the Addon and will be removed from the cluster when the Addon is deleted. Collisions with existing Namespaces will result in the existing Namespaces being adopted. | [][AddonNamespace.addons.managed.openshift.io/v1alpha1](#addonnamespaceaddonsmanagedopenshiftiov1alpha1) | false |
 | commonLabels | Labels to be applied to all resources. | map[string]string | false |
 | commonAnnotations | Annotations to be applied to all resources. | map[string]string | false |
+| correlation_id | Correlation ID for co-relating current AddonCR revision and reported status. | string | false |
 | install | Defines how an Addon is installed. This field is immutable. | [AddonInstallSpec.addons.managed.openshift.io/v1alpha1](#addoninstallspecaddonsmanagedopenshiftiov1alpha1) | true |
 | upgradePolicy | UpgradePolicy enables status reporting via upgrade policies. | *[AddonUpgradePolicy.addons.managed.openshift.io/v1alpha1](#addonupgradepolicyaddonsmanagedopenshiftiov1alpha1) | false |
 | monitoring | Defines how an addon is monitored. | *[MonitoringSpec.addons.managed.openshift.io/v1alpha1](#monitoringspecaddonsmanagedopenshiftiov1alpha1) | false |
@@ -306,6 +322,7 @@ AddonStatus defines the observed state of Addon
 | conditions | Conditions is a list of status conditions ths object is in. | []metav1.Condition | false |
 | phase | DEPRECATED: This field is not part of any API contract it will go away as soon as kubectl can print conditions! Human readable status - please use .Conditions from code | AddonPhase.addons.managed.openshift.io/v1alpha1 | false |
 | upgradePolicy | Tracks last reported upgrade policy status. | *[AddonUpgradePolicyStatus.addons.managed.openshift.io/v1alpha1](#addonupgradepolicystatusaddonsmanagedopenshiftiov1alpha1) | false |
+| ocmReportedStatusHash | Tracks the last addon status reported to OCM. | *[OCMAddOnStatusHash.addons.managed.openshift.io/v1alpha1](#ocmaddonstatushashaddonsmanagedopenshiftiov1alpha1) | false |
 | observedVersion | Observed version of the Addon on the cluster, only present when .spec.version is populated. | string | false |
 | lastObservedAvailableCSV | Namespaced name of the csv(available) that was last observed. | string | false |
 
@@ -365,6 +382,30 @@ Tracks the last state last reported to the Upgrade Policy endpoint.
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
 | federation | Configuration parameters to be injected in the ServiceMonitor used for federation. The target prometheus server found by matchLabels needs to serve service-ca signed TLS traffic (https://docs.openshift.com/container-platform/4.6/security/certificate_types_descriptions/service-ca-certificates.html), and it needs to be runing inside the namespace specified by `.monitoring.federation.namespace` with the service name 'prometheus'. | *[MonitoringFederationSpec.addons.managed.openshift.io/v1alpha1](#monitoringfederationspecaddonsmanagedopenshiftiov1alpha1) | false |
+
+[Back to Group]()
+
+### OCMAddOnStatus.addons.managed.openshift.io/v1alpha1
+
+Struct used to hash the reported addon status (along with correlationID).
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| addonID | ID of the addon. | string | true |
+| correlationID | Correlation ID for co-relating current AddonCR revision and reported status. | string | true |
+| statusConditions | Reported addon status conditions | [][AddOnStatusCondition.addons.managed.openshift.io/v1alpha1](#addonstatusconditionaddonsmanagedopenshiftiov1alpha1) | true |
+| observedGeneration | The most recent generation a status update was based on. | int64 | true |
+
+[Back to Group]()
+
+### OCMAddOnStatusHash.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| statusHash | Hash of the last reported status. | string | true |
+| observedGeneration | The most recent generation a status update was based on. | int64 | true |
 
 [Back to Group]()
 

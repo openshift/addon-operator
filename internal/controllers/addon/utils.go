@@ -3,14 +3,17 @@ package addon
 import (
 	"context"
 	"fmt"
+	"hash/fnv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/go-logr/logr"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/apimachinery/pkg/util/rand"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -403,3 +406,25 @@ func SubscriptionName(addon *addonsv1alpha1.Addon) string {
 
 func corev1ProtocolPtr(proto corev1.Protocol) *corev1.Protocol   { return &proto }
 func intOrStringPtr(iors intstr.IntOrString) *intstr.IntOrString { return &iors }
+
+func HashCurrentAddonStatus(addon *addonsv1alpha1.Addon) string {
+	ocmAddonStatus := addonsv1alpha1.OCMAddOnStatus{
+		AddonID:          addon.Name,
+		CorrelationID:    addon.Spec.CorrelationID,
+		StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+	}
+	return hashOCMAddonStatus(ocmAddonStatus)
+}
+
+func hashOCMAddonStatus(ocmAddonStatus addonsv1alpha1.OCMAddOnStatus) string {
+	hasher := fnv.New32a()
+	hasher.Reset()
+	printer := spew.ConfigState{
+		Indent:         " ",
+		SortKeys:       true,
+		DisableMethods: true,
+		SpewKeys:       true,
+	}
+	printer.Fprintf(hasher, "%#v", ocmAddonStatus)
+	return rand.SafeEncodeString(fmt.Sprint(hasher.Sum32()))
+}

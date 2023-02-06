@@ -31,10 +31,11 @@ type Recorder struct {
 	addonState *addonState
 
 	// metrics
-	addonsCount           *prometheus.GaugeVec
-	addonOperatorPaused   prometheus.Gauge // 0 - Not paused , 1 - Paused
-	ocmAPIRequestDuration prometheus.Summary
-	addonHealthInfo       *prometheus.GaugeVec
+	addonsCount                    *prometheus.GaugeVec
+	addonOperatorPaused            prometheus.Gauge // 0 - Not paused , 1 - Paused
+	ocmAPIRequestDuration          prometheus.Summary
+	addonServiceAPIRequestDuration prometheus.Summary
+	addonHealthInfo                *prometheus.GaugeVec
 	// .. TODO: More metrics!
 }
 
@@ -71,6 +72,16 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 			ConstLabels: prometheus.Labels{"_id": clusterId},
 		})
 
+	addonServiceAPIReqDuration := prometheus.NewSummary(
+		prometheus.SummaryOpts{
+			Name: "addon_operator_as_api_requests_durations",
+			Help: "Addon Service API request latencies in microseconds",
+			// p50, p90 and p99 latencies
+			Objectives:  map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
+			ConstLabels: prometheus.Labels{"_id": clusterId},
+		},
+	)
+
 	addonHealthInfo := prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name:        "addon_operator_addon_health_info",
@@ -87,6 +98,7 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 			addonsCount,
 			addonOperatorPaused,
 			ocmAPIReqDuration,
+			addonServiceAPIReqDuration,
 			addonHealthInfo,
 		)
 	}
@@ -95,10 +107,11 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 		addonState: &addonState{
 			conditionMap: map[string]addonConditions{},
 		},
-		addonsCount:           addonsCount,
-		addonOperatorPaused:   addonOperatorPaused,
-		ocmAPIRequestDuration: ocmAPIReqDuration,
-		addonHealthInfo:       addonHealthInfo,
+		addonsCount:                    addonsCount,
+		addonOperatorPaused:            addonOperatorPaused,
+		ocmAPIRequestDuration:          ocmAPIReqDuration,
+		addonServiceAPIRequestDuration: addonServiceAPIReqDuration,
+		addonHealthInfo:                addonHealthInfo,
 	}
 }
 
@@ -106,6 +119,10 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 // Useful while writing tests
 func (r *Recorder) InjectOCMAPIRequestDuration(s prometheus.Summary) {
 	r.ocmAPIRequestDuration = s
+}
+
+func (r *Recorder) InjectAddonServiceAPIRequestDuration(s prometheus.Summary) {
+	r.addonServiceAPIRequestDuration = s
 }
 
 func (r *Recorder) increaseAvailableAddonsCount() {
@@ -134,6 +151,10 @@ func (r *Recorder) decreaseTotalAddonsCount() {
 
 func (r *Recorder) RecordOCMAPIRequests(us float64) {
 	r.ocmAPIRequestDuration.Observe(us)
+}
+
+func (r *Recorder) RecordAddonServiceAPIRequests(us float64) {
+	r.addonServiceAPIRequestDuration.Observe(us)
 }
 
 // SetAddonOperatorPaused sets the `addon_operator_paused` metric
