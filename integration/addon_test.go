@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -305,6 +306,84 @@ func (s *integrationTestSuite) TestAddonConditions() {
 			addonV6)
 		s.Require().NoError(err)
 		s.Require().Nil(meta.FindStatusCondition(addonV6.Status.Conditions, addonsv1alpha1.UpgradeSucceeded))
+	})
+
+	s.Run("test_installed_condition", func() {
+		// remove addon before starting the test.
+		s.addonCleanup(addon, ctx)
+
+		ctx := context.Background()
+
+		addon := addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorking)
+
+		err := integration.Client.Create(ctx, addon)
+		s.Require().NoError(err)
+		// wait until Addon is installed.
+		err = integration.WaitForObject(
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to be installed",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.Installed), nil
+			})
+		s.Require().NoError(err)
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		// assert that the required conditions are present
+		availableCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
+		s.Require().NotNil(availableCond)
+		s.Require().Equal(metav1.ConditionTrue, availableCond.Status)
+		installedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Installed)
+		s.Require().NotNil(installedCond)
+		s.Require().Equal(metav1.ConditionTrue, installedCond.Status)
+
+		// We simulate the uninstallation flow by removing the CSV and creating the delete configmap
+		// in the addon's target namespace.
+		CSVList := &operatorsv1alpha1.ClusterServiceVersionList{}
+		addonTargetNS := addonUtil.GetCommonInstallOptions(addon).Namespace
+		addonPackageName := addonUtil.GetCommonInstallOptions(addon).PackageName
+		err = integration.Client.List(ctx, CSVList, client.InNamespace(addonTargetNS))
+		s.Require().NoError(err)
+		s.Require().NotEmpty(CSVList.Items)
+		// Delete the addon's CSV
+		for i := range CSVList.Items {
+			currCSV := &CSVList.Items[i]
+			if strings.HasPrefix(currCSV.Name, addonPackageName) {
+				err = integration.Client.Delete(ctx, currCSV)
+				s.Require().NoError(err)
+			}
+		}
+		// Create the delete configmap
+		deleteConfigMap := &corev1.ConfigMap{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      addon.Name,
+				Namespace: addonTargetNS,
+				Labels: map[string]string{
+					fmt.Sprintf("api.openshift.com/addon-%v-delete", addon.Name): "",
+				},
+			},
+		}
+		err = integration.Client.Create(ctx, deleteConfigMap)
+		s.Require().NoError(err)
+
+		// wait for installed=false condition to be reported.
+		err = integration.WaitForObject(
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to be uninstalled",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionFalse(
+					a.Status.Conditions, addonsv1alpha1.Installed), nil
+			})
+		s.Require().NoError(err)
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+		// Assert missing CSV reason is reported.
+		availableCond = meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
+		s.Require().NotNil(availableCond)
+		s.Require().Equal(metav1.ConditionFalse, availableCond.Status)
+		s.Require().Equal(addonsv1alpha1.AddonReasonMissingCSV, availableCond.Reason)
 	})
 
 	s.T().Cleanup(func() {

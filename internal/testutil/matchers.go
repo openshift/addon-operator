@@ -19,6 +19,7 @@ var (
 	// core
 	IsCoreV1NamespacePtr     = mock.IsType(&corev1.Namespace{})
 	IsCoreV1NamespaceListPtr = mock.IsType(&corev1.NamespaceList{})
+	IsConfigMapPtr           = mock.IsType(&corev1.ConfigMap{})
 
 	// networking
 	IsNetworkingV1NetworkPolicyPtr = mock.IsType(&networkingv1.NetworkPolicy{})

@@ -78,6 +78,10 @@ func (r *olmReconciler) observeOperatorResource(
 		reportUnreadyCSV(addon, message)
 		return resultRetry, nil
 	}
+
+	// If CSV is present and is in succeeded phase we report
+	// the addon as available.
+	reportReadinessStatus(addon)
 	return resultNil, nil
 }
 
