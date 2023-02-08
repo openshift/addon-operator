@@ -312,8 +312,6 @@ func (s *integrationTestSuite) TestAddonConditions() {
 		// remove addon before starting the test.
 		s.addonCleanup(addon, ctx)
 
-		ctx := context.Background()
-
 		addon := addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorking)
 
 		err := integration.Client.Create(ctx, addon)

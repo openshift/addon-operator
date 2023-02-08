@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
 
 func (r *olmReconciler) handleInstalledCondition(ctx context.Context,
@@ -62,14 +62,4 @@ func (r *olmReconciler) deleteConfigMapPresent(ctx context.Context, addon *addon
 	}
 	_, found := deleteConfigMap.Labels[deleteConfigMapLabel]
 	return found, nil
-}
-
-func addonUpgradeConcluded(addon *addonsv1alpha1.Addon, currentCSV client.ObjectKey, phase operatorsv1alpha1.ClusterServiceVersionPhase) bool {
-	// Upgrading has concluded if a new CSV(compared to the last known available) has come up and is
-	// in the succeeded phase.
-	if addonUpgradeStarted(addon) {
-		return currentCSV.String() != addon.Status.LastObservedAvailableCSV &&
-			phase == operatorsv1alpha1.CSVPhaseSucceeded
-	}
-	return false
 }
