@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -21,15 +20,7 @@ func (r *olmReconciler) observeOperatorResource(
 	addon *addonsv1alpha1.Addon,
 	csvKey client.ObjectKey,
 ) (requeueResult, error) {
-	var commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon
-	switch addon.Spec.Install.Type {
-	case addonsv1alpha1.OLMAllNamespaces:
-		commonInstallOptions = addon.Spec.Install.
-			OLMAllNamespaces.AddonInstallOLMCommon
-	case addonsv1alpha1.OLMOwnNamespace:
-		commonInstallOptions = addon.Spec.Install.
-			OLMOwnNamespace.AddonInstallOLMCommon
-	}
+	commonInstallOptions := GetCommonInstallOptions(addon)
 	operatorName := fmt.Sprintf("%s.%s", commonInstallOptions.PackageName, commonInstallOptions.Namespace)
 	operatorKey := client.ObjectKey{
 		Namespace: "",
@@ -53,8 +44,19 @@ func (r *olmReconciler) observeOperatorResource(
 		return resultNil, fmt.Errorf("getting operator resource: %w", err)
 	}
 
-	var message string
-	phase := csvSucceeded(csvKey, operator)
+	addonCSVRef := findConcernedCSVReference(csvKey, operator)
+
+	// Handle installed Condition.
+	if res, err := r.handleInstalledCondition(ctx, addon, addonCSVRef); err != nil {
+		return resultRetry, err
+	} else if res != resultNil {
+		// handleInstalledCondition asked us to stop further processing in this method,
+		// so we return.
+		return res, nil
+	}
+
+	// If CSV exists in the cluster, we go ahead check its phase.
+	phase := getCSVPhase(addonCSVRef)
 
 	// If the addon was being upgraded, we mark the upgrade as
 	// concluded.
@@ -62,6 +64,7 @@ func (r *olmReconciler) observeOperatorResource(
 		reportAddonUpgradeSucceeded(addon)
 	}
 
+	var message string
 	switch phase {
 	case operatorsv1alpha1.CSVPhaseSucceeded:
 		// do nothing here
@@ -75,43 +78,37 @@ func (r *olmReconciler) observeOperatorResource(
 		reportUnreadyCSV(addon, message)
 		return resultRetry, nil
 	}
-
 	return resultNil, nil
 }
 
-func csvSucceeded(csv client.ObjectKey, operator *operatorsv1.Operator) operatorsv1alpha1.ClusterServiceVersionPhase {
-	components := operator.Status.Components
-	if components == nil {
+func getCSVPhase(csvReference *operatorsv1.RichReference) operatorsv1alpha1.ClusterServiceVersionPhase {
+	if csvReference == nil {
 		return ""
 	}
-	for _, component := range components.Refs {
-		if component.Kind != "ClusterServiceVersion" {
-			continue
-		}
-		if component.Name != csv.Name || component.Namespace != csv.Namespace {
-			continue
-		}
-		compConditions := component.Conditions
-		for _, c := range compConditions {
-			if c.Type == "Succeeded" {
-				if c.Status == "True" {
-					return operatorsv1alpha1.CSVPhaseSucceeded
-				} else {
-					return operatorsv1alpha1.CSVPhaseFailed
-
-				}
+	conditions := csvReference.Conditions
+	for _, c := range conditions {
+		if c.Type == "Succeeded" {
+			if c.Status == "True" {
+				return operatorsv1alpha1.CSVPhaseSucceeded
+			} else {
+				return operatorsv1alpha1.CSVPhaseFailed
 			}
 		}
 	}
 	return ""
 }
 
-func addonUpgradeConcluded(addon *addonsv1alpha1.Addon, currentCSV client.ObjectKey, phase operatorsv1alpha1.ClusterServiceVersionPhase) bool {
-	// Upgrading has concluded if a new CSV(compared to the last known available) has come up and is
-	// in the succeeded phase.
-	if addonUpgradeStarted(addon) {
-		return currentCSV.String() != addon.Status.LastObservedAvailableCSV &&
-			phase == operatorsv1alpha1.CSVPhaseSucceeded
+func findConcernedCSVReference(csv client.ObjectKey, operator *operatorsv1.Operator) *operatorsv1.RichReference {
+	components := operator.Status.Components
+	if components == nil {
+		return nil
 	}
-	return false
+	for _, component := range components.Refs {
+		if component.Kind == "ClusterServiceVersion" &&
+			component.Name == csv.Name &&
+			component.Namespace == csv.Namespace {
+			return &component
+		}
+	}
+	return nil
 }

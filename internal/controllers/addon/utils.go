@@ -176,6 +176,35 @@ func reportAddonUpgradeStarted(addon *addonsv1alpha1.Addon) {
 	addon.Status.ObservedGeneration = addon.Generation
 }
 
+func reportUninstalledCondition(addon *addonsv1alpha1.Addon) {
+	installedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Installed)
+	if installedCond != nil {
+		meta.SetStatusCondition(&addon.Status.Conditions,
+			metav1.Condition{
+				Type:               addonsv1alpha1.Installed,
+				Status:             metav1.ConditionFalse,
+				Reason:             addonsv1alpha1.AddonReasonUninstalled,
+				Message:            "Addon has been uninstalled.",
+				ObservedGeneration: addon.Generation,
+			},
+		)
+		addon.Status.ObservedGeneration = addon.Generation
+	}
+}
+
+func reportInstalledCondition(addon *addonsv1alpha1.Addon) {
+	meta.SetStatusCondition(&addon.Status.Conditions,
+		metav1.Condition{
+			Type:               addonsv1alpha1.Installed,
+			Status:             metav1.ConditionTrue,
+			Reason:             addonsv1alpha1.AddonReasonInstalled,
+			Message:            "Addon has been successfully installed.",
+			ObservedGeneration: addon.Generation,
+		},
+	)
+	addon.Status.ObservedGeneration = addon.Generation
+}
+
 func addonUpgradeStarted(addon *addonsv1alpha1.Addon) bool {
 	upgradeStartedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.UpgradeStarted)
 	if upgradeStartedCond != nil {
@@ -211,6 +240,9 @@ func reportUnreadyNamespaces(addon *addonsv1alpha1.Addon, unreadyNamespaces []st
 func reportUnreadyCSV(addon *addonsv1alpha1.Addon, message string) {
 	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyCSV,
 		fmt.Sprintf("ClusterServiceVersion is not ready: %s", message))
+}
+func reportMissingCSV(addon *addonsv1alpha1.Addon) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonMissingCSV, "ClusterServiceVersion is missing.")
 }
 
 func reportUnreadyMonitoring(addon *addonsv1alpha1.Addon, message string) {
@@ -402,6 +434,18 @@ func CatalogSourceName(addon *addonsv1alpha1.Addon) string {
 
 func SubscriptionName(addon *addonsv1alpha1.Addon) string {
 	return fmt.Sprintf("addon-%s", addon.Name)
+}
+
+func GetCommonInstallOptions(addon *addonsv1alpha1.Addon) (commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon) {
+	switch addon.Spec.Install.Type {
+	case addonsv1alpha1.OLMAllNamespaces:
+		commonInstallOptions = addon.Spec.Install.
+			OLMAllNamespaces.AddonInstallOLMCommon
+	case addonsv1alpha1.OLMOwnNamespace:
+		commonInstallOptions = addon.Spec.Install.
+			OLMOwnNamespace.AddonInstallOLMCommon
+	}
+	return
 }
 
 func corev1ProtocolPtr(proto corev1.Protocol) *corev1.Protocol   { return &proto }
