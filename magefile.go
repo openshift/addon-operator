@@ -400,16 +400,16 @@ func populatePkgCache(imageCacheDir string) error {
 	return nil
 }
 
-func nePkgImageBuildInfo(imageCacheDir string) *dev.ImageBuildInfo {
+func newPackageBuildInfo(imageCacheDir string) *dev.PackageBuildInfo {
 	imageTag := imageURL("addon-operator-package")
 	manifestsDir := path.Join(imageCacheDir, "manifests")
 
-	return &dev.ImageBuildInfo{
-		ImageTag:      imageTag,
-		CacheDir:      imageCacheDir,
-		ContainerFile: manifestsDir + "/addon-operator-package.Containerfile",
-		ContextDir:    "",
-		Runtime:       containerRuntime,
+	return &dev.PackageBuildInfo{
+		ImageTag:   imageTag,
+		CacheDir:   imageCacheDir,
+		SourcePath: manifestsDir,
+		OutputPath: manifestsDir + ".tar",
+		Runtime:    containerRuntime,
 	}
 }
 
@@ -439,8 +439,8 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	deps := []interface{}{
 		mg.F(populatePkgCache, imageCacheDir),
 	}
-	buildInfo := nePkgImageBuildInfo(imageCacheDir)
-	return dev.BuildImage(buildInfo, deps)
+	buildInfo := newPackageBuildInfo(imageCacheDir)
+	return dev.BuildPackage(buildInfo, deps)
 }
 
 func (b Build) TemplateAddonOperatorCSV() error {
