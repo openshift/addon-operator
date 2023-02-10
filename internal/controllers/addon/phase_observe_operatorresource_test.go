@@ -108,7 +108,7 @@ func TestObserveOperatorResource(t *testing.T) {
 				LastObservedAvailableCSV: "reference-addon-prev",
 			},
 			expected: Expected{
-				Conditions: []metav1.Condition{availableCondition()},
+				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue), availableCondition()},
 				Result:     resultNil,
 			},
 		},
@@ -135,9 +135,6 @@ func TestObserveOperatorResource(t *testing.T) {
 						},
 					},
 				},
-			},
-			addonStatus: &addonsv1alpha1.AddonStatus{
-				LastObservedAvailableCSV: "",
 			},
 			expected: Expected{
 				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue), availableCondition()},

@@ -20,9 +20,8 @@ func (r *olmReconciler) handleInstalledCondition(ctx context.Context,
 		return r.handleMissingCSV(ctx, addon)
 	}
 	csvPhase := getCSVPhase(addonCSVRef)
-	// If csv is in the succeeded phase and the last observed CSV is empty, we know that
-	// this CSV is coming up for the first time.
-	if csvPhase == operatorsv1alpha1.CSVPhaseSucceeded && addon.Status.LastObservedAvailableCSV == "" {
+	// If csv is in the succeeded phase we report the addon as installed.
+	if csvPhase == operatorsv1alpha1.CSVPhaseSucceeded {
 		reportInstalledCondition(addon)
 	}
 	return resultNil, nil
