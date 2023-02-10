@@ -26,6 +26,7 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [AddonInstallOLMOwnNamespace](#addoninstallolmownnamespaceaddonsmanagedopenshiftiov1alpha1)
 	* [AddonInstallSpec](#addoninstallspecaddonsmanagedopenshiftiov1alpha1)
 	* [AddonNamespace](#addonnamespaceaddonsmanagedopenshiftiov1alpha1)
+	* [AddonPackageOperator](#addonpackageoperatoraddonsmanagedopenshiftiov1alpha1)
 	* [AddonSecretPropagation](#addonsecretpropagationaddonsmanagedopenshiftiov1alpha1)
 	* [AddonSecretPropagationReference](#addonsecretpropagationreferenceaddonsmanagedopenshiftiov1alpha1)
 	* [AddonSpec](#addonspecaddonsmanagedopenshiftiov1alpha1)
@@ -256,6 +257,16 @@ AddonInstallSpec defines the desired Addon installation type.
 
 [Back to Group]()
 
+### AddonPackageOperator.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| image |  | string | true |
+
+[Back to Group]()
+
 ### AddonSecretPropagation.addons.managed.openshift.io/v1alpha1
 
 
@@ -293,6 +304,7 @@ AddonSpec defines the desired state of Addon.
 | upgradePolicy | UpgradePolicy enables status reporting via upgrade policies. | *[AddonUpgradePolicy.addons.managed.openshift.io/v1alpha1](#addonupgradepolicyaddonsmanagedopenshiftiov1alpha1) | false |
 | monitoring | Defines how an addon is monitored. | *[MonitoringSpec.addons.managed.openshift.io/v1alpha1](#monitoringspecaddonsmanagedopenshiftiov1alpha1) | false |
 | secretPropagation | Settings for propagating secrets from the Addon Operator install namespace into Addon namespaces. | *[AddonSecretPropagation.addons.managed.openshift.io/v1alpha1](#addonsecretpropagationaddonsmanagedopenshiftiov1alpha1) | false |
+| addonPackageOperator | defines the PackageOperator image as part of the addon Spec | *[AddonPackageOperator.addons.managed.openshift.io/v1alpha1](#addonpackageoperatoraddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()
 
