@@ -512,8 +512,8 @@ github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjY
 github.com/monochromegane/go-gitignore v0.0.0-20200626010858-205db1a8cc00/go.mod h1:Pm3mSP3c5uWn86xMLZ5Sa7JB9GsEZySvHYXCTK4E9q4=
 github.com/mt-sre/client v0.2.0 h1:nF6ei3aZ2BHyi+EB/rQBuCIlR0z1QvaYNjZ7RVNsSak=
 github.com/mt-sre/client v0.2.0/go.mod h1:wiYCEamk92vOM1eKkgQDaxYj7ON+m1R/aceSZ+1UDTI=
-github.com/mt-sre/devkube v0.3.0 h1:niizMsjfNOgZLzFnDTDzgA6flCxVO5ikDmOpcUgyOHg=
-github.com/mt-sre/devkube v0.3.0/go.mod h1:j5eICHYZhdIKeZSca2Tz7v5U4bZlnUcqQ8pKEltohYc=
+github.com/mt-sre/devkube v0.6.0 h1:Je3WDMtRpsqyIbswJVsyuNjfEE8oGP7Lgq7vz7VvWME=
+github.com/mt-sre/devkube v0.6.0/go.mod h1:fNaVLv4NoSN42+eXdqCSoEp+CBivYeC7Ic8mrZqq8T4=
 github.com/munnerz/goautoneg v0.0.0-20120707110453-a547fc61f48d/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
