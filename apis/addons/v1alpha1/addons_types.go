@@ -237,6 +237,9 @@ const (
 	// Addon has unready CSV
 	AddonReasonUnreadyCSV = "UnreadyCSV"
 
+	// CSV for the addon is missing
+	AddonReasonMissingCSV = "MissingCSV"
+
 	// Addon cannot find a referenced secret to propagate
 	AddonReasonMissingSecretForPropagation = "MissingSecretForPropagation"
 
@@ -245,6 +248,12 @@ const (
 
 	// Addon upgrade has succeeded.
 	AddonReasonUpgradeSucceeded = "AddonUpgradeSucceeded"
+
+	// Addon has successfully been uninstalled.
+	AddonReasonInstalled = "AddonInstalled"
+
+	// Addon has successfully been uninstalled.
+	AddonReasonUninstalled = "AddonUninstalled"
 )
 
 type AddonNamespace struct {
@@ -273,6 +282,10 @@ const (
 
 	// UpgradeSucceeded condition indicates that the addon upgrade has succeeded.
 	UpgradeSucceeded = "UpgradeSucceeded"
+
+	// Installed condition indicates that the addon has been installed successfully
+	// and was available atleast once.
+	Installed = "Installed"
 )
 
 // AddonStatus defines the observed state of Addon
