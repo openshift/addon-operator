@@ -211,7 +211,7 @@ func (Build) cmd(cmd, goos, goarch string) error {
 	return nil
 }
 
-// Default build target for CI/CD
+// Default build target for CI/CD to build binaries
 func (Build) All() {
 	mg.Deps(
 		mg.F(Build.cmd, "addon-operator-manager", "linux", "amd64"),
@@ -419,9 +419,9 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	)
 
 	deployment := &appsv1.Deployment{}
-	err := loadAndUnmarshalIntoObject("config/package/hcp/addon-operator.yaml.tpl", deployment)
+	err := loadAndUnmarshalIntoObject("config/package/hcp/addon-operator-template.yaml", deployment)
 	if err != nil {
-		return fmt.Errorf("loading addon-operator.yaml.tpl: %w", err)
+		return fmt.Errorf("loading addon-operator-template.yaml: %w", err)
 	}
 
 	// Replace image

@@ -19,7 +19,7 @@ parameters:
     value: http://api-mock.api-mock.svc.cluster.local
     required: true
   - name: EXPERIMENTAL_FEATURES
-    value: false
+    value: "false"
     required: true
 objects:
   - apiVersion: hive.openshift.io/v1

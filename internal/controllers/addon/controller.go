@@ -335,8 +335,5 @@ func (r *AddonReconciler) Reconcile(
 			return result, nil
 		}
 	}
-
-	// After last phase and if everything is healthy
-	reportReadinessStatus(addon)
 	return ctrl.Result{}, nil
 }

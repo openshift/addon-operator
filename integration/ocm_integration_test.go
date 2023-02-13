@@ -82,9 +82,16 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		res, err := integration.OCMClient.GetAddOnStatus(ctx, addon.Name)
 		s.Require().NoError(err)
 		s.Require().Equal(addon.Name, res.AddonID)
-		s.Require().Equal(len(res.StatusConditions), 1)
-		s.Require().Equal(res.StatusConditions[0].StatusType, addonsv1alpha1.Available)
-		s.Require().Equal(res.StatusConditions[0].StatusValue, metav1.ConditionTrue)
+		s.Require().Equal(len(res.StatusConditions), 2)
+
+		expectedConditions := map[string]string{
+			addonsv1alpha1.Available: string(metav1.ConditionTrue),
+			addonsv1alpha1.Installed: string(metav1.ConditionTrue),
+		}
+		for _, condition := range res.StatusConditions {
+			expectedVal, found := expectedConditions[condition.StatusType]
+			s.Require().True(found && expectedVal == string(condition.StatusValue))
+		}
 	})
 
 	s.Run("patches the addon status API when new conditions are reported", func() {
@@ -105,9 +112,10 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		res, err := integration.OCMClient.GetAddOnStatus(ctx, addon.Name)
 		s.Require().NoError(err)
 		s.Require().Equal(addon.Name, res.AddonID)
-		s.Require().Equal(len(res.StatusConditions), 2)
+		s.Require().Equal(len(res.StatusConditions), 3)
 		expectedConditions := map[string]string{
 			addonsv1alpha1.Available: string(metav1.ConditionTrue),
+			addonsv1alpha1.Installed: string(metav1.ConditionTrue),
 			addonsv1alpha1.Paused:    string(metav1.ConditionTrue),
 		}
 
