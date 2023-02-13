@@ -35,6 +35,8 @@ import (
 	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/yaml"
 
+	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
+
 	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
 	"github.com/openshift/addon-operator/internal/featuretoggle"
@@ -654,7 +656,9 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
-
+	_ = operatorsv1alpha1.AddToScheme(cluster.Scheme)
+	_ = aoapisv1alpha1.AddToScheme(cluster.Scheme)
+	_ = obov1alpha1.AddToScheme(cluster.Scheme)
 	ctx = logr.NewContext(ctx, logger)
 	if err := labelNodesWithInfraRole(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
