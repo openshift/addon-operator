@@ -678,13 +678,6 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	if err := labelNodesWithInfraRole(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
 	}
-	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
-		// Install OLM.
-		"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
-		"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
-	}); err != nil {
-		return fmt.Errorf("failed to install OLM: %w", err)
-	}
 	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
 		return err
 	}
