@@ -41,11 +41,11 @@ spec:
           spec:
             description: AddonOperatorSpec defines the desired state of Addon operator.
             properties:
-              feature_toggles:
+              featureToggles:
                 description: Specification of the feature toggles supported by the
                   addon-operator
                 properties:
-                  experimental_features:
+                  experimentalFeatures:
                     description: Feature toggle for enabling/disabling experimental
                       features in the addon-operator
                     type: boolean

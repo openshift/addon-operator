@@ -117,7 +117,7 @@ AddonOperator is the Schema for the AddonOperator API
 
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
-| experimental_features | Feature toggle for enabling/disabling experimental features in the addon-operator | bool | false |
+| experimentalFeatures | Feature toggle for enabling/disabling experimental features in the addon-operator | bool | true |
 
 [Back to Group]()
 
@@ -139,7 +139,7 @@ AddonOperatorSpec defines the desired state of Addon operator.
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
 | pause | Pause reconciliation on all Addons in the cluster when set to True | bool | true |
-| feature_toggles | Specification of the feature toggles supported by the addon-operator | [AddonOperatorFeatureToggles.addons.managed.openshift.io/v1alpha1](#addonoperatorfeaturetogglesaddonsmanagedopenshiftiov1alpha1) | false |
+| featureToggles | Specification of the feature toggles supported by the addon-operator | [AddonOperatorFeatureToggles.addons.managed.openshift.io/v1alpha1](#addonoperatorfeaturetogglesaddonsmanagedopenshiftiov1alpha1) | true |
 | ocm | OCM specific configuration. Setting this subconfig will enable deeper OCM integration. e.g. push status reporting, etc. | *[AddonOperatorOCM.addons.managed.openshift.io/v1alpha1](#addonoperatorocmaddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()

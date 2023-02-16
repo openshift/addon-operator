@@ -126,10 +126,10 @@ func (r *monitoringStackReconciler) getDesiredMonitoringStack(ctx context.Contex
 		writeRelabelConfig []monv1.RelabelConfig
 	)
 
-	rhobsRemoteWriteConfig := addon.Spec.Monitoring.MonitoringStack.RHOBSRemoteWriteConfig.DeepCopy()
+	rhobsRemoteWriteConfig := addon.Spec.Monitoring.MonitoringStack.RHOBSRemoteWriteConfig
 	if rhobsRemoteWriteConfig != nil {
 		remoteWriteURL = rhobsRemoteWriteConfig.URL
-		oauthConfig = rhobsRemoteWriteConfig.OAuth2.DeepCopy()
+		oauthConfig = rhobsRemoteWriteConfig.OAuth2
 		writeRelabelConfig = getWriteRelabelConfigFromAllowlist(rhobsRemoteWriteConfig.Allowlist)
 	}
 
