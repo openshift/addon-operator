@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -24,10 +25,11 @@ import (
 var _ FeatureToggleHandler = (*MonitoringStackFeatureToggle)(nil)
 
 var observabilityOperatorVersion = "0.0.15"
+var monitoringStackFeatureToggle = "EXPERIMENTAL_FEATURES"
 
 type MonitoringStackFeatureToggle struct {
 	Client                      client.Client
-	FeatureTogglesInCluster     addonsv1alpha1.AddonOperatorFeatureToggles
+	FeatureTogglesInCluster     []string
 	SchemeToUpdate              *runtime.Scheme
 	AddonReconcilerOptsToUpdate *[]addoncontroller.AddonReconcilerOptions
 }
@@ -37,7 +39,16 @@ func (m MonitoringStackFeatureToggle) Name() string {
 }
 
 func (m MonitoringStackFeatureToggle) IsEnabled() bool {
-	return m.FeatureTogglesInCluster.ExperimentalFeatures
+	return stringPresentInSlice(monitoringStackFeatureToggle, m.FeatureTogglesInCluster)
+}
+
+func stringPresentInSlice(target string, slice []string) bool {
+	for _, v := range slice {
+		if v == target {
+			return true
+		}
+	}
+	return false
 }
 
 func (m MonitoringStackFeatureToggle) IsEnabledOnTestEnv() bool {
@@ -54,28 +65,28 @@ func (m *MonitoringStackFeatureToggle) Enable(ctx context.Context) error {
 					Name: addonsv1alpha1.DefaultAddonOperatorName,
 				},
 				Spec: addonsv1alpha1.AddonOperatorSpec{
-					FeatureToggles: addonsv1alpha1.AddonOperatorFeatureToggles{
-						ExperimentalFeatures: true,
-					},
+					FeatureToggles: monitoringStackFeatureToggle,
 				},
 			}
 			if err := m.Client.Create(ctx, &adoObject); err != nil {
 				return err
 			}
-			m.FeatureTogglesInCluster = adoObject.Spec.FeatureToggles
+			m.FeatureTogglesInCluster = strings.Split(adoObject.Spec.FeatureToggles, ",")
 			return nil
 		}
 		return err
 	}
 	// no need to do anything if its already enabled
-	if adoInCluster.Spec.FeatureToggles.ExperimentalFeatures {
+	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
+	isMonitoringStackAlreadyEnabled := stringPresentInSlice(monitoringStackFeatureToggle, existingFeatureToggles)
+	if isMonitoringStackAlreadyEnabled {
 		return nil
 	}
-	adoInCluster.Spec.FeatureToggles.ExperimentalFeatures = true
+	adoInCluster.Spec.FeatureToggles += "," + monitoringStackFeatureToggle
 	if err := m.Client.Update(ctx, &adoInCluster); err != nil {
 		return fmt.Errorf("failed to enable the feature toggle in the AddonOperator object: %w", err)
 	}
-	m.FeatureTogglesInCluster = adoInCluster.Spec.FeatureToggles
+	m.FeatureTogglesInCluster = strings.Split(adoInCluster.Spec.FeatureToggles, ",")
 	return nil
 }
 
@@ -135,28 +146,38 @@ func (m *MonitoringStackFeatureToggle) Disable(ctx context.Context) error {
 					Name: addonsv1alpha1.DefaultAddonOperatorName,
 				},
 				Spec: addonsv1alpha1.AddonOperatorSpec{
-					FeatureToggles: addonsv1alpha1.AddonOperatorFeatureToggles{
-						ExperimentalFeatures: false,
-					},
+					FeatureToggles: "",
 				},
 			}
 			if err := m.Client.Create(ctx, &adoObject); err != nil {
 				return err
 			}
-			m.FeatureTogglesInCluster = adoObject.Spec.FeatureToggles
+			m.FeatureTogglesInCluster = strings.Split(adoObject.Spec.FeatureToggles, ",")
 			return nil
 		}
 		return err
 	}
 	// no need to do anything if its already disabled
-	if !adoInCluster.Spec.FeatureToggles.ExperimentalFeatures {
+	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
+	isMonitoringStackAlreadyEnabled := stringPresentInSlice(monitoringStackFeatureToggle, existingFeatureToggles)
+	if !isMonitoringStackAlreadyEnabled {
 		return nil
 	}
-	adoInCluster.Spec.FeatureToggles.ExperimentalFeatures = false
+	updatedFeatureToggles := ""
+	for _, featTog := range existingFeatureToggles {
+		if featTog == monitoringStackFeatureToggle {
+			continue
+		}
+		updatedFeatureToggles += "," + featTog
+	}
+	if len(updatedFeatureToggles) != 0 {
+		updatedFeatureToggles = updatedFeatureToggles[1:]
+	}
+	adoInCluster.Spec.FeatureToggles = updatedFeatureToggles
 	if err := m.Client.Update(ctx, &adoInCluster); err != nil {
 		return fmt.Errorf("failed to enable the feature toggle in the AddonOperator object: %w", err)
 	}
-	m.FeatureTogglesInCluster = adoInCluster.Spec.FeatureToggles
+	m.FeatureTogglesInCluster = strings.Split(adoInCluster.Spec.FeatureToggles, ",")
 	return nil
 }
 

@@ -1,10 +1,11 @@
 package featuretoggle
 
 import (
+	"strings"
+
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
@@ -30,7 +31,7 @@ type availableFeatureTogglesGetterOpts interface {
 
 type availableFeatureToggleGetterParams struct {
 	client                      client.Client
-	featureTogglesInCluster     addonsv1alpha1.AddonOperatorFeatureToggles
+	featureTogglesInCluster     []string
 	schemeToUpdate              *runtime.Scheme
 	addonReconcilerOptsToUpdate *[]addoncontroller.AddonReconcilerOptions
 }
@@ -51,10 +52,10 @@ func (w WithSchemeToUpdate) apply(a *availableFeatureToggleGetterParams) {
 	a.schemeToUpdate = w.Scheme
 }
 
-type WithFeatureTogglesInCluster addonsv1alpha1.AddonOperatorFeatureToggles
+type WithCommaSeparatedFeatureTogglesInCluster string
 
-func (w WithFeatureTogglesInCluster) apply(a *availableFeatureToggleGetterParams) {
-	a.featureTogglesInCluster = addonsv1alpha1.AddonOperatorFeatureToggles(w)
+func (w WithCommaSeparatedFeatureTogglesInCluster) apply(a *availableFeatureToggleGetterParams) {
+	a.featureTogglesInCluster = strings.Split(string(w), ",")
 }
 
 type WithAddonReconcilerOptsToUpdate struct {
