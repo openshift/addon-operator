@@ -166,10 +166,6 @@ func (r *monitoringStackReconciler) getDesiredMonitoringStack(ctx context.Contex
 	return desiredMonitoringStack, nil
 }
 
-func getServiceMonitorName(addonName string) string {
-	return fmt.Sprintf("%s-service-monitor", addonName)
-}
-
 func getMonitoringStackName(addonName string) string {
 	return fmt.Sprintf("%s-monitoring-stack", addonName)
 }
