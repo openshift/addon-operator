@@ -148,6 +148,18 @@ spec:
           - get
           - list
           - patch
+        - apiGroups:
+          - monitoring.rhobs
+          resources:
+          - monitoringstacks
+          verbs:
+          - create
+          - delete
+          - update
+          - watch
+          - get
+          - list
+          - patch
         serviceAccountName: addon-operator
       deployments:
       - name: addon-operator-manager
