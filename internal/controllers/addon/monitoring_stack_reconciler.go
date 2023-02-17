@@ -78,36 +78,37 @@ func (r *monitoringStackReconciler) propagateMonitoringStackStatusToAddon(monito
 	availableCondition, reconciledCondition := obov1alpha1.Condition{}, obov1alpha1.Condition{}
 	availableConditionFound, reconciledConditionFound := false, false
 
-	for _, cond := range monitoringStack.Status.Conditions {
-		cond := cond
-		if cond.Type == obov1alpha1.AvailableCondition {
+	// iterate until all conditions have been traversed or both `available` and `reconcile` conditions have been found
+	for i := 0; (i < len(monitoringStack.Status.Conditions)) && !(availableConditionFound && reconciledConditionFound); i++ {
+		cond := monitoringStack.Status.Conditions[i]
+		switch cond.Type {
+		case obov1alpha1.AvailableCondition:
 			availableCondition = cond
 			availableConditionFound = true
-		} else if cond.Type == obov1alpha1.ReconciledCondition {
+		case obov1alpha1.ReconciledCondition:
 			reconciledCondition = cond
 			reconciledConditionFound = true
 		}
-		if availableConditionFound && reconciledConditionFound {
-			break
+	}
+
+	if availableConditionFound {
+		if availableCondition.Status == obov1alpha1.ConditionTrue {
+			return true
 		}
-	}
-
-	if availableConditionFound && availableCondition.Status == obov1alpha1.ConditionTrue {
-		return true
-	}
-
-	if availableConditionFound && availableCondition.Status != obov1alpha1.ConditionTrue {
 		reportUnreadyMonitoringStack(addon, fmt.Sprintf("MonitoringStack Unavailable: %s", availableCondition.Message))
-	} else if reconciledConditionFound {
+		return false
+	}
+
+	if reconciledConditionFound {
 		if reconciledCondition.Status == obov1alpha1.ConditionTrue {
 			reportUnreadyMonitoringStack(addon, "MonitoringStack successfully reconciled: Pending MonitoringStack to be Available")
 		} else {
 			reportUnreadyMonitoringStack(addon, fmt.Sprintf("MonitoringStack failed to reconcile: %s", reconciledCondition.Message))
 		}
-	} else {
-		reportUnreadyMonitoringStack(addon, "MonitoringStack pending to get reconciled")
+		return false
 	}
 
+	reportUnreadyMonitoringStack(addon, "MonitoringStack pending to get reconciled")
 	return false
 }
 
