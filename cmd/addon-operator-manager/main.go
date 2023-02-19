@@ -194,13 +194,12 @@ func setup() error {
 
 	// feature toggle handlers ADO intends to support
 	featureToggleHandlers := featuretoggle.GetAvailableFeatureToggles(
-		featuretoggle.WithCommaSeparatedFeatureTogglesInCluster(addonOperatorObjectInCluster.Spec.FeatureToggles),
 		featuretoggle.WithSchemeToUpdate{Scheme: scheme},
 		featuretoggle.WithAddonReconcilerOptsToUpdate{AddonReconcilerOptsToUpdate: &addonReconcilerOptions},
 	)
 
 	for _, featureToggleHandler := range featureToggleHandlers {
-		if !featureToggleHandler.IsEnabled() {
+		if !featuretoggle.IsEnabled(featureToggleHandler, addonOperatorObjectInCluster) {
 			continue
 		}
 		if err := featureToggleHandler.PreManagerSetupHandle(ctx); err != nil {
@@ -251,7 +250,7 @@ func setup() error {
 	}
 
 	for _, featureToggleHandler := range featureToggleHandlers {
-		if !featureToggleHandler.IsEnabled() {
+		if !featuretoggle.IsEnabled(featureToggleHandler, addonOperatorObjectInCluster) {
 			continue
 		}
 		if err := featureToggleHandler.PostManagerSetupHandle(ctx, mgr); err != nil {

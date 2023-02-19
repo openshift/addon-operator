@@ -1,8 +1,6 @@
 package featuretoggle
 
 import (
-	"strings"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -18,7 +16,6 @@ func GetAvailableFeatureToggles(opts ...availableFeatureTogglesGetterOpts) []Fea
 	return []FeatureToggleHandler{
 		&MonitoringStackFeatureToggle{
 			Client:                      params.client,
-			FeatureTogglesInCluster:     params.featureTogglesInCluster,
 			SchemeToUpdate:              params.schemeToUpdate,
 			AddonReconcilerOptsToUpdate: params.addonReconcilerOptsToUpdate,
 		},
@@ -31,7 +28,6 @@ type availableFeatureTogglesGetterOpts interface {
 
 type availableFeatureToggleGetterParams struct {
 	client                      client.Client
-	featureTogglesInCluster     []string
 	schemeToUpdate              *runtime.Scheme
 	addonReconcilerOptsToUpdate *[]addoncontroller.AddonReconcilerOptions
 }
@@ -50,12 +46,6 @@ type WithSchemeToUpdate struct {
 
 func (w WithSchemeToUpdate) apply(a *availableFeatureToggleGetterParams) {
 	a.schemeToUpdate = w.Scheme
-}
-
-type WithCommaSeparatedFeatureTogglesInCluster string
-
-func (w WithCommaSeparatedFeatureTogglesInCluster) apply(a *availableFeatureToggleGetterParams) {
-	a.featureTogglesInCluster = strings.Split(string(w), ",")
 }
 
 type WithAddonReconcilerOptsToUpdate struct {
