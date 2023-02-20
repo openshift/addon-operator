@@ -160,6 +160,7 @@ test-unit: generate
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster
 test-integration: export ENABLE_WEBHOOK=true
 test-integration: export ENABLE_API_MOCK=true
+test-integration: export EXPERIMENTAL_FEATURES=true
 test-integration:
 	@echo "running integration tests..."
 	./mage test:integration

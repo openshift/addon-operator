@@ -1003,6 +1003,7 @@ func (d Dev) Integration(ctx context.Context) error {
 	os.Setenv("ENABLE_WEBHOOK", "true")
 	os.Setenv("ENABLE_API_MOCK", "true")
 	os.Setenv("ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK", "true")
+	os.Setenv("EXPERIMENTAL_FEATURES", "true")
 
 	mg.SerialDeps(Test.Integration)
 	return nil
