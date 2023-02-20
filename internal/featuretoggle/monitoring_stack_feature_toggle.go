@@ -101,51 +101,29 @@ func renderObservabilityOperatorCatalogSource(ctx context.Context, cluster *dev.
 	return observabilityOperatorCatalogSource, nil
 }
 
-func deployObservabilityOperator(ctx context.Context, cluster *dev.Cluster) error {
-	observabilityOperatorCatalogSource, err := renderObservabilityOperatorCatalogSource(ctx, cluster)
+func (m *MonitoringStackFeatureToggle) PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error {
+	observabilityOperatorCatalogSource, err := renderObservabilityOperatorCatalogSource(ctx, clusterCreated)
 	if err != nil {
 		return fmt.Errorf("failed to render the observability operator catalog source from its template: %w", err)
 	}
 
-	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+	if err := clusterCreated.CreateAndWaitFromFiles(ctx, []string{
 		"config/deploy/observability-operator/namespace.yaml",
 	}); err != nil {
 		return fmt.Errorf("failed to load the namespace for observability-operator: %w", err)
 	}
 
-	if err := cluster.CreateAndWaitForReadiness(ctx, observabilityOperatorCatalogSource); err != nil {
+	if err := clusterCreated.CreateAndWaitForReadiness(ctx, observabilityOperatorCatalogSource); err != nil {
 		return fmt.Errorf("failed to load the catalog source for observability-operator: %w", err)
 	}
 
-	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+	if err := clusterCreated.CreateAndWaitFromFiles(ctx, []string{
 		"config/deploy/observability-operator/operator-group.yaml",
 		"config/deploy/observability-operator/subscription.yaml",
 	}); err != nil {
 		return fmt.Errorf("failed to load the operator-group/subscription for observability-operator: %w", err)
 	}
 	return nil
-}
-
-func (m *MonitoringStackFeatureToggle) PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error {
-	err := clusterCreated.CreateAndWaitFromHttp(ctx,
-		// Install Monitoring CRDs for Observability Operator.
-		[]string{
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagerconfigs.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_alertmanagers.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_podmonitors.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_probes.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheuses.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_prometheusrules.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_servicemonitors.yaml", observabilityOperatorVersion),
-			fmt.Sprintf("https://raw.githubusercontent.com/rhobs/observability-operator/v%s/deploy/crds/kubernetes/monitoring.coreos.com_thanosrulers.yaml", observabilityOperatorVersion),
-		},
-	)
-
-	if err != nil {
-		return err
-	}
-
-	return deployObservabilityOperator(ctx, clusterCreated)
 }
 
 func (m *MonitoringStackFeatureToggle) Disable(ctx context.Context) error {
