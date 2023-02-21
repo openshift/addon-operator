@@ -16,7 +16,7 @@ import (
 	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
 
-func (s *integrationTestSuite) XXXTestMonitoringStack_MonitoringInPlaceAtCreationWithAvailableState() {
+func (s *integrationTestSuite) TestMonitoringStack_MonitoringInPlaceAtCreationWithAvailableState() {
 	if !(featuretoggle.MonitoringStackFeatureToggle{}).IsEnabledOnTestEnv() {
 		s.T().Skip("skipping Monitoring Stack Integration tests as the feature toggle for it is disabled in the test environment")
 	}
