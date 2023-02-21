@@ -17,7 +17,7 @@ import (
 )
 
 func (s *integrationTestSuite) TestMonitoringStack_MonitoringInPlaceAtCreationWithAvailableState() {
-	if !(featuretoggle.MonitoringStackFeatureToggle{}).IsEnabledOnTestEnv() {
+	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.MonitoringStackFeatureToggle{}) {
 		s.T().Skip("skipping Monitoring Stack Integration tests as the feature toggle for it is disabled in the test environment")
 	}
 
