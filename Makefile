@@ -43,7 +43,8 @@ export SKIP_TEARDOWN?=
 KIND_CLUSTER_NAME:="addon-operator" # name of the kind cluster for local development.
 ENABLE_API_MOCK?="false"
 ENABLE_WEBHOOK?="false"
-ENABLE_MONITORING?="true"
+ENABLE_MONITORING?="false"
+ENABLE_REMOTE_STORAGE_MOCK="true"
 WEBHOOK_PORT?=8080
 
 # Container
@@ -159,6 +160,7 @@ test-unit: generate
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster
 test-integration: export ENABLE_WEBHOOK=true
 test-integration: export ENABLE_API_MOCK=true
+test-integration: export EXPERIMENTAL_FEATURES=true
 test-integration:
 	@echo "running integration tests..."
 	./mage test:integration

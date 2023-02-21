@@ -13,12 +13,22 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	utilpointer "k8s.io/utils/pointer"
 
+	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
+
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
 
 func NewTestSchemeWithAddonsv1alpha1() *runtime.Scheme {
 	testScheme := runtime.NewScheme()
 	_ = addonsv1alpha1.AddToScheme(testScheme)
+	return testScheme
+}
+
+func NewTestSchemeWithAddonsv1alpha1AndMsov1alpha1() *runtime.Scheme {
+	testScheme := runtime.NewScheme()
+	_ = addonsv1alpha1.AddToScheme(testScheme)
+	_ = obov1alpha1.AddToScheme(testScheme)
+
 	return testScheme
 }
 
@@ -197,6 +207,34 @@ func NewTestAddonWithMonitoringFederation() *addonsv1alpha1.Addon {
 					MatchNames: []string{"foo"},
 					MatchLabels: map[string]string{
 						"foo": "bar",
+					},
+				},
+			},
+		},
+	}
+}
+
+func NewTestAddonWithMonitoringStack() *addonsv1alpha1.Addon {
+	return &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-foo",
+			UID:  types.UID("addon-foo-id"),
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						CatalogSourceImage: "quay.io/osd-addons/test:sha256:04864220677b2ed6244f2e0d421166df908986700647595ffdb6fd9ca4e5098a",
+						Namespace:          "addon-1",
+						PullSecretName:     "test-pull-secret",
+					},
+				},
+			},
+			Monitoring: &addonsv1alpha1.MonitoringSpec{
+				MonitoringStack: &addonsv1alpha1.MonitoringStackSpec{
+					RHOBSRemoteWriteConfig: &addonsv1alpha1.RHOBSRemoteWriteConfigSpec{
+						URL: "prometheus-remote-storage-mock.prometheus-remote-storage-mock.svc:1234",
 					},
 				},
 			},

@@ -245,9 +245,14 @@ func reportMissingCSV(addon *addonsv1alpha1.Addon) {
 	reportPendingStatus(addon, addonsv1alpha1.AddonReasonMissingCSV, "ClusterServiceVersion is missing.")
 }
 
-func reportUnreadyMonitoring(addon *addonsv1alpha1.Addon, message string) {
-	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyMonitoring,
-		fmt.Sprintf("Monitoring Federation is not ready: %s", message))
+func reportUnreadyMonitoringFederation(addon *addonsv1alpha1.Addon, message string) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyMonitoringFederation,
+		fmt.Sprintf("Monitoring Stack is not ready: %s", message))
+}
+
+func reportUnreadyMonitoringStack(addon *addonsv1alpha1.Addon, message string) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyMonitoringStack,
+		fmt.Sprintf("Monitoring Stack is not ready: %s", message))
 }
 
 func reportPendingStatus(addon *addonsv1alpha1.Addon, reason, msg string) {
@@ -365,6 +370,12 @@ func parseAddonInstallConfigForAdditionalCatalogSources(
 // defines a Monitoring.Federation.
 func HasMonitoringFederation(addon *addonsv1alpha1.Addon) bool {
 	return addon.Spec.Monitoring != nil && addon.Spec.Monitoring.Federation != nil
+}
+
+// HasMonitoringStack is a helper to determine if a given addon's spec
+// defines a Monitoring.Stack.
+func HasMonitoringStack(addon *addonsv1alpha1.Addon) bool {
+	return addon.Spec.Monitoring != nil && addon.Spec.Monitoring.MonitoringStack != nil
 }
 
 // HasAdditionalCatalogSources determines whether the passed addon's spec
