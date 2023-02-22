@@ -24,9 +24,6 @@ objects:
             name: addon-operator-hypershift
             namespace: openshift-acm-policies
           spec:
-            clusterConditions:
-              - status: "True"
-                type: ManagedClusterConditionAvailable
             clusterSelector:
               matchExpressions:
                 - key: hypershift.open-cluster-management.io/management-cluster
