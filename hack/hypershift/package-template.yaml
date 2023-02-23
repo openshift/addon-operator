@@ -58,11 +58,12 @@ objects:
                   metadata:
                     name: addon-operator-hypershift
                   spec:
-                    matchLabels:
-                      hypershift.openshift.io/hosted-control-plane: "true"
+                    namespaceSelector:
+                      matchLabels:
+                        hypershift.openshift.io/hosted-control-plane: "true"
                     pruneObjectBehavior: DeleteIfCreated
                     object-templates:
-                      - complianceType: musthave
+                      - complianceType: MustHave
                         objectDefinition:
                           apiVersion: package-operator.run/v1alpha1
                           kind: Package
