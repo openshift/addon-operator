@@ -6,7 +6,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/blang/semver/v4"
 	"net/http"
 	"net/url"
 	"os"
@@ -16,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/blang/semver/v4"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/stdr"
 	"github.com/magefile/mage/mg"
@@ -874,7 +874,7 @@ const (
 	controllerGenVersion = "0.6.2"
 	kindVersion          = "0.11.1"
 	yqVersion            = "4.12.0"
-	goimportsVersion     = "0.1.5"
+	goimportsVersion     = "0.2.0"
 	golangciLintVersion  = "1.46.2"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.24.0"
