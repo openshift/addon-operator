@@ -86,5 +86,5 @@ objects:
               secret:
                 name: pull-secret
                 namespace: openshift-config
-            feature_toggles:
-              experimental_features: ${EXPERIMENTAL_FEATURES}
+            featureToggles:
+              experimentalFeatures: ${{EXPERIMENTAL_FEATURES}}

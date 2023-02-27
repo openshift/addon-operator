@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	monv1 "github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -95,6 +96,32 @@ type MonitoringSpec struct {
 	// and it needs to be runing inside the namespace specified by `.monitoring.federation.namespace`
 	// with the service name 'prometheus'.
 	Federation *MonitoringFederationSpec `json:"federation,omitempty"`
+
+	// Settings For Monitoring Stack
+	// +optional
+	MonitoringStack *MonitoringStackSpec `json:"monitoringStack,omitempty"`
+}
+
+type MonitoringStackSpec struct {
+	// Settings for RHOBS Remote Write
+	// +optional
+	RHOBSRemoteWriteConfig *RHOBSRemoteWriteConfigSpec `json:"rhobsRemoteWriteConfig,omitempty"`
+}
+
+type RHOBSRemoteWriteConfigSpec struct {
+	// RHOBS endpoints where your data is sent to
+	// It varies by environment:
+	// - Staging: https://observatorium-mst.stage.api.openshift.com/api/metrics/v1/<tenant id>/api/v1/receive
+	// - Production: https://observatorium-mst.api.openshift.com/api/metrics/v1/<tenant id>/api/v1/receive
+	URL string `json:"url"`
+
+	// OAuth2 config for the remote write URL
+	// +optional
+	OAuth2 *monv1.OAuth2 `json:"oauth2,omitempty"`
+
+	// List of metrics to push to RHOBS.
+	// Any metric not listed here is dropped.
+	Allowlist []string `json:"allowlist,omitempty"`
 }
 
 type MonitoringFederationSpec struct {
@@ -232,7 +259,10 @@ const (
 	AddonReasonUnreadyNamespaces = "UnreadyNamespaces"
 
 	// Addon has unready metrics federation
-	AddonReasonUnreadyMonitoring = "UnreadyMonitoringFederation"
+	AddonReasonUnreadyMonitoringFederation = "UnreadyMonitoringFederation"
+
+	// Addon has unready metrics federation
+	AddonReasonUnreadyMonitoringStack = "UnreadyMonitoringStack"
 
 	// Addon has unready CSV
 	AddonReasonUnreadyCSV = "UnreadyCSV"

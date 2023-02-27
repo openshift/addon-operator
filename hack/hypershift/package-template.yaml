@@ -22,20 +22,19 @@ objects:
           kind: PlacementRule
           metadata:
             name: addon-operator-hypershift
+            namespace: openshift-acm-policies
           spec:
-            clusterConditions:
-              - status: "True"
-                type: ManagedClusterConditionAvailable
             clusterSelector:
               matchExpressions:
-                - key: cluster.open-cluster-management.io/clusterset
+                - key: hypershift.open-cluster-management.io/management-cluster
                   operator: In
                   values:
-                    - "hypershift-management-clusters"
+                    - "true"
         - apiVersion: policy.open-cluster-management.io/v1
           kind: PlacementBinding
           metadata:
             name: addon-operator-hypershift
+            namespace: openshift-acm-policies
           placementRef:
             name: addon-operator-hypershift
             kind: PlacementRule
@@ -48,7 +47,7 @@ objects:
           kind: Policy
           metadata:
             name: addon-operator-hypershift
-            namespace: policies
+            namespace: openshift-acm-policies
           spec:
             remediationAction: enforce
             disabled: false
@@ -60,10 +59,11 @@ objects:
                     name: addon-operator-hypershift
                   spec:
                     namespaceSelector:
-                      include: ["clusters-*"]
+                      matchLabels:
+                        hypershift.openshift.io/hosted-control-plane: "true"
                     pruneObjectBehavior: DeleteIfCreated
                     object-templates:
-                      - complianceType: musthave
+                      - complianceType: MustHave
                         objectDefinition:
                           apiVersion: package-operator.run/v1alpha1
                           kind: Package

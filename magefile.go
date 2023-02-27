@@ -26,10 +26,13 @@ import (
 	imageparser "github.com/novln/docker-parser"
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
+	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/yaml"
 
 	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -657,10 +660,28 @@ func (Test) Unit() error {
 	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...", "./pkg/...")
 }
 
-func (Test) Integration() error {
+func (Test) Integration(ctx context.Context) error {
+	workDir, ok := ctx.Value("workDir").(string)
+	if !ok || workDir == "" {
+		workDir = path.Join(cacheDir, "dev-env")
+	}
+	cluster, err := dev.NewCluster(
+		workDir,
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")), dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
+	)
+	if err != nil {
+		return fmt.Errorf("creating cluster client: %w", err)
+	}
+
+	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to perform post-cluster creation setup for the feature toggles: %w", err)
+	}
+	if err := deployFeatureToggles(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to deploy feature toggles: %w", err)
+	}
 	return sh.Run("go", "test", "-v",
 		"-count=1", // will force a new run, instead of using the cache
-		"-timeout=25m", "./integration/...")
+		"-timeout=40m", "./integration/...")
 }
 
 // Target to prepare the CI-CD environment before installing the operator.
@@ -672,7 +693,13 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	}
 
 	ctx = logr.NewContext(ctx, logger)
-	return labelNodesWithInfraRole(ctx, cluster)
+	if err := labelNodesWithInfraRole(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
+	}
+	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Target to inject the addon status reporting environment variable
@@ -811,7 +838,8 @@ func labelNodesWithInfraRole(ctx context.Context, cluster *dev.Cluster) error {
 // Target to run within OpenShift CI, where the Addon Operator and webhook is already deployed via the framework.
 // This target will additionally deploy the API Mock before starting the integration test suite.
 func (t Test) IntegrationCI(ctx context.Context) error {
-	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
+	workDir := path.Join(cacheDir, "ci")
+	cluster, err := dev.NewCluster(workDir,
 		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
@@ -827,7 +855,8 @@ func (t Test) IntegrationCI(ctx context.Context) error {
 	os.Setenv("ENABLE_WEBHOOK", "true")
 	os.Setenv("ENABLE_API_MOCK", "true")
 
-	return t.Integration()
+	ctx = context.WithValue(ctx, "workDir", workDir)
+	return t.Integration(ctx)
 }
 
 func (Test) IntegrationShort() error {
@@ -991,6 +1020,8 @@ func (d Dev) Integration(ctx context.Context) error {
 	os.Setenv("KUBECONFIG", devEnvironment.Cluster.Kubeconfig())
 	os.Setenv("ENABLE_WEBHOOK", "true")
 	os.Setenv("ENABLE_API_MOCK", "true")
+	os.Setenv("ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK", "true")
+	os.Setenv("EXPERIMENTAL_FEATURES", "true")
 
 	mg.SerialDeps(Test.Integration)
 	return nil
@@ -1023,6 +1054,7 @@ func (d Dev) Deploy(ctx context.Context) error {
 		mg.F(Dev.LoadImage, "api-mock"),
 		mg.F(Dev.LoadImage, "addon-operator-manager"),
 		mg.F(Dev.LoadImage, "addon-operator-webhook"),
+		mg.F(Dev.LoadImage, "prometheus-remote-storage-mock"),
 	)
 
 	if err := d.deploy(ctx, devEnvironment.Cluster); err != nil {
@@ -1035,8 +1067,11 @@ func (d Dev) Deploy(ctx context.Context) error {
 func (d Dev) deploy(
 	ctx context.Context, cluster *dev.Cluster,
 ) error {
-	if err := d.deployAPIMock(ctx, cluster); err != nil {
-		return err
+	if enableApiMock, ok := os.LookupEnv("ENABLE_API_MOCK"); ok &&
+		enableApiMock == "true" {
+		if err := d.deployAPIMock(ctx, cluster); err != nil {
+			return err
+		}
 	}
 
 	if err := d.deployAddonOperatorManager(ctx, cluster); err != nil {
@@ -1048,6 +1083,60 @@ func (d Dev) deploy(
 		if err := d.deployAddonOperatorWebhook(ctx, cluster); err != nil {
 			return err
 		}
+	}
+
+	if enablePrometheusRemoveStorageMock, ok := os.LookupEnv("ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK"); ok &&
+		enablePrometheusRemoveStorageMock == "true" {
+		if err := d.deployPrometheusRemoteStorageMock(ctx, cluster); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func renderPrometheusRemoteStorageMockDeployment(ctx context.Context, cluster *dev.Cluster) (*appsv1.Deployment, error) {
+	objs, err := dev.LoadKubernetesObjectsFromFile("config/deploy/prometheus-remote-storage-mock/deployment.yaml.tpl")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load the prometheus-remote-storage-mock deployment.yaml.tpl: %w", err)
+	}
+
+	// Replace image
+	prometheusRemoteStorageMockDeployment := &appsv1.Deployment{}
+	if err := cluster.Scheme.Convert(&objs[0], prometheusRemoteStorageMockDeployment, ctx); err != nil {
+		return nil, fmt.Errorf("failed to convert the deployment: %w", err)
+	}
+
+	prometheusRemoteStorageMockImage := os.Getenv("PROMETHEUS_REMOTE_STORAGE_MOCK_IMAGE")
+	if len(prometheusRemoteStorageMockImage) == 0 {
+		prometheusRemoteStorageMockImage = imageURL("prometheus-remote-storage-mock")
+	}
+	for i := range prometheusRemoteStorageMockDeployment.Spec.Template.Spec.Containers {
+		container := &prometheusRemoteStorageMockDeployment.Spec.Template.Spec.Containers[i]
+
+		if container.Name == "mock" {
+			container.Image = prometheusRemoteStorageMockImage
+			break
+		}
+	}
+	return prometheusRemoteStorageMockDeployment, nil
+}
+
+func (d Dev) deployPrometheusRemoteStorageMock(ctx context.Context, cluster *dev.Cluster) error {
+	prometheusRemoteStorageMockDeployment, err := renderPrometheusRemoteStorageMockDeployment(ctx, cluster)
+	if err != nil {
+		return fmt.Errorf("failed to render the prometheus remote storage mock deployment from its deployment template: %w", err)
+	}
+
+	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
+		"config/deploy/prometheus-remote-storage-mock/namespace.yaml",
+		"config/deploy/prometheus-remote-storage-mock/service.yaml",
+	}); err != nil {
+		return fmt.Errorf("failed to load the prometheus-remote-storage-mock's namespace/service: %w", err)
+	}
+
+	if err := cluster.CreateAndWaitForReadiness(ctx, prometheusRemoteStorageMockDeployment); err != nil {
+		return fmt.Errorf("failed to setup the prometheus-remote-storage-mock deployment: %w", err)
 	}
 	return nil
 }
@@ -1274,33 +1363,49 @@ func (d Dev) init() error {
 		Dependency.Kind,
 	)
 
+	clusterInitializers := dev.WithClusterInitializers{
+		dev.ClusterLoadObjectsFromHttp{
+			// Install OLM.
+			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
+			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
+		},
+		dev.ClusterLoadObjectsFromFiles{
+			// OCP APIs required by the AddonOperator.
+			"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
+			"config/ocp/config-operator_01_proxy.crd.yaml",
+			"config/ocp/cluster-version.yaml",
+			"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
+
+			// OpenShift console to interact with OLM.
+			"hack/openshift-console.yaml",
+		},
+	}
+
 	devEnvironment = dev.NewEnvironment(
 		"addon-operator-dev",
 		path.Join(cacheDir, "dev-env"),
 		dev.WithClusterOptions([]dev.ClusterOption{
 			dev.WithWaitOptions([]dev.WaitOption{
-				dev.WithTimeout(2 * time.Minute),
+				dev.WithTimeout(10 * time.Minute),
 			}),
-			dev.WithSchemeBuilder(aoapisv1alpha1.SchemeBuilder),
+			dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
 		}),
 		dev.WithContainerRuntime(containerRuntime),
-		dev.WithClusterInitializers{
-			dev.ClusterLoadObjectsFromFiles{
-				// OCP APIs required by the AddonOperator.
-				"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
-				"config/ocp/config-operator_01_proxy.crd.yaml",
-				"config/ocp/cluster-version.yaml",
-				"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
-
-				// OpenShift console to interact with OLM.
-				"hack/openshift-console.yaml",
+		dev.WithKindClusterConfig(kindv1alpha4.Cluster{
+			Nodes: []kindv1alpha4.Node{
+				{
+					Role: kindv1alpha4.ControlPlaneRole,
+				},
+				{
+					Role: kindv1alpha4.WorkerRole,
+				},
+				{
+					Role: kindv1alpha4.WorkerRole,
+				},
 			},
-			dev.ClusterLoadObjectsFromHttp{
-				// Install OLM.
-				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
-				"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
-			},
-		})
+		}),
+		clusterInitializers,
+	)
 	return nil
 }
 
