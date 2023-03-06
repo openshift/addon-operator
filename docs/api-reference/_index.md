@@ -304,7 +304,7 @@ AddonSpec defines the desired state of Addon.
 | upgradePolicy | UpgradePolicy enables status reporting via upgrade policies. | *[AddonUpgradePolicy.addons.managed.openshift.io/v1alpha1](#addonupgradepolicyaddonsmanagedopenshiftiov1alpha1) | false |
 | monitoring | Defines how an addon is monitored. | *[MonitoringSpec.addons.managed.openshift.io/v1alpha1](#monitoringspecaddonsmanagedopenshiftiov1alpha1) | false |
 | secretPropagation | Settings for propagating secrets from the Addon Operator install namespace into Addon namespaces. | *[AddonSecretPropagation.addons.managed.openshift.io/v1alpha1](#addonsecretpropagationaddonsmanagedopenshiftiov1alpha1) | false |
-| addonPackageOperator | defines the PackageOperator image as part of the addon Spec | *[AddonPackageOperator.addons.managed.openshift.io/v1alpha1](#addonpackageoperatoraddonsmanagedopenshiftiov1alpha1) | false |
+| packageOperator | defines the PackageOperator image as part of the addon Spec | *[AddonPackageOperator.addons.managed.openshift.io/v1alpha1](#addonpackageoperatoraddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()
 
