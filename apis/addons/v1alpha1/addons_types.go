@@ -51,6 +51,12 @@ type AddonSpec struct {
 
 	// Settings for propagating secrets from the Addon Operator install namespace into Addon namespaces.
 	SecretPropagation *AddonSecretPropagation `json:"secretPropagation,omitempty"`
+	// defines the PackageOperator image as part of the addon Spec
+	AddonPackageOperator *AddonPackageOperator `json:"packageOperator,omitempty"`
+}
+
+type AddonPackageOperator struct {
+	Image string `json:"image"`
 }
 
 type AddonSecretPropagation struct {
