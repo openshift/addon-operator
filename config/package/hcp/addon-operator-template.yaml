@@ -86,7 +86,7 @@ spec:
       - name: kubeconfig
         secret:
           defaultMode: 420
-          secretName: admin-kubeconfig
+          secretName: service-network-admin-kubeconfig
       - name: tls
         secret:
           secretName: metrics-server-cert
