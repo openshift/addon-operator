@@ -995,15 +995,14 @@ func (d Dev) Teardown(ctx context.Context) error {
 
 // Setup local dev environment with the addon operator installed and run the integration test suite.
 func (d Dev) Integration(ctx context.Context) error {
-	mg.SerialDeps(
-		Dev.Deploy,
-	)
-
-	os.Setenv("KUBECONFIG", devEnvironment.Cluster.Kubeconfig())
 	os.Setenv("ENABLE_WEBHOOK", "true")
 	os.Setenv("ENABLE_API_MOCK", "true")
 	os.Setenv("ENABLE_PROMETHEUS_REMOTE_STORAGE_MOCK", "true")
 	os.Setenv("EXPERIMENTAL_FEATURES", "true")
+
+	mg.SerialDeps(Dev.Deploy)
+
+	os.Setenv("KUBECONFIG", devEnvironment.Cluster.Kubeconfig())
 
 	mg.SerialDeps(Test.Integration)
 	return nil

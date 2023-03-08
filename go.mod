@@ -27,9 +27,10 @@ require (
 	k8s.io/apiextensions-apiserver v0.26.2
 	k8s.io/apimachinery v0.26.2
 	k8s.io/client-go v0.26.2
-	k8s.io/kubectl v0.26.2
+	k8s.io/kubectl v0.24.2
 	k8s.io/utils v0.0.0-20230308161112-d77c459e9343
-	sigs.k8s.io/controller-runtime v0.14.5
+	package-operator.run/apis v0.0.0-20230308203531-e393cd570c1f
+	sigs.k8s.io/controller-runtime v0.14.4
 	sigs.k8s.io/kind v0.17.0
 	sigs.k8s.io/yaml v1.3.0
 )

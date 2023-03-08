@@ -117,6 +117,10 @@ func NewAddonReconciler(
 				client: client,
 				scheme: scheme,
 			},
+			&PackageOperatorReconciler{
+				Client: client,
+				Scheme: scheme,
+			},
 		},
 	}
 
