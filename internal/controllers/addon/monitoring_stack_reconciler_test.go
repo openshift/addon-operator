@@ -144,7 +144,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack Unavailable: foo",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack Unavailable: foo",
 		},
 		{
 			name: "available-unknown-condition",
@@ -158,7 +158,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack Unavailable: foo",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack Unavailable: foo",
 		},
 		{
 			name: "available-nonexistent-reconciled-true-condition",
@@ -172,7 +172,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack successfully reconciled: Pending MonitoringStack to be Available",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack successfully reconciled: Pending MonitoringStack to be Available",
 		},
 		{
 			name: "available-nonexistent-reconciled-false-condition",
@@ -186,7 +186,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack failed to reconcile: foo",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack failed to reconcile: foo",
 		},
 		{
 			name: "available-nonexistent-reconciled-unknown-condition",
@@ -200,7 +200,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack failed to reconcile: foo",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack failed to reconcile: foo",
 		},
 		{
 			name: "no-condition",
@@ -208,7 +208,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				Conditions: []obov1alpha1.Condition{},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack pending to get reconciled",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack pending to get reconciled",
 		},
 	}
 
