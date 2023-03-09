@@ -34,7 +34,9 @@ func TestReconcileSecret_CreateWithClientError(t *testing.T) {
 	c := testutil.NewClient()
 	c.On("Get", mock.Anything,
 		testutil.IsObjectKey,
-		mock.IsType(&corev1.Secret{})).
+		mock.IsType(&corev1.Secret{}),
+		mock.Anything,
+		mock.Anything).
 		Return(timeoutErr)
 
 	ctx := context.Background()
@@ -45,7 +47,7 @@ func TestReconcileSecret_CreateWithClientError(t *testing.T) {
 	c.AssertCalled(t, "Get", mock.Anything, client.ObjectKey{
 		Name:      secret.Name,
 		Namespace: secret.Namespace,
-	}, mock.IsType(&corev1.Secret{}))
+	}, mock.IsType(&corev1.Secret{}), mock.Anything)
 }
 
 func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
@@ -76,6 +78,7 @@ func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
 			mock.Anything,
 			addonPullSecretKey,
 			mock.IsType(&corev1.Secret{}),
+			mock.Anything,
 		).
 		Return(testutil.NewTestErrNotFound())
 	uncachedC.
@@ -83,6 +86,7 @@ func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
 			mock.Anything,
 			addonPullSecretKey,
 			mock.IsType(&corev1.Secret{}),
+			mock.Anything,
 		).
 		Return(nil)
 	c.On("Patch", // patch referenced Secret to add it to cache
@@ -135,6 +139,7 @@ func Test_getReferencedPullSecret_retry(t *testing.T) {
 			mock.Anything,
 			addonPullSecretKey,
 			mock.IsType(&corev1.Secret{}),
+			mock.Anything,
 		).
 		Return(testutil.NewTestErrNotFound())
 	uncachedC.
@@ -142,6 +147,7 @@ func Test_getReferencedPullSecret_retry(t *testing.T) {
 			mock.Anything,
 			addonPullSecretKey,
 			mock.IsType(&corev1.Secret{}),
+			mock.Anything,
 		).
 		Return(testutil.NewTestErrNotFound())
 
@@ -182,7 +188,7 @@ func Test_reconcileSecret_CreateWithClientError(t *testing.T) {
 	}
 
 	c := testutil.NewClient()
-	c.On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{})).
+	c.On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{}), mock.Anything).
 		Return(timeoutErr)
 
 	ctx := context.Background()
@@ -206,7 +212,7 @@ func Test_reconcileSecret_Create(t *testing.T) {
 
 	c := testutil.NewClient()
 	c.
-		On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{})).
+		On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{}), mock.Anything).
 		Return(k8sApiErrors.NewNotFound(schema.GroupResource{}, ""))
 	c.
 		On("Create", mock.Anything, secret, mock.Anything).
@@ -236,7 +242,7 @@ func Test_reconcileSecret_Update(t *testing.T) {
 
 	c := testutil.NewClient()
 	c.
-		On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{})).
+		On("Get", mock.Anything, key, mock.IsType(&corev1.Secret{}), mock.Anything).
 		Return(nil)
 	var updatedSecret *corev1.Secret
 	c.
@@ -302,7 +308,7 @@ func TestEnsureSecretPropagation(t *testing.T) {
 	}
 	srcSecret1Key := client.ObjectKeyFromObject(srcSecret1)
 	c.
-		On("Get", mock.Anything, srcSecret1Key, mock.IsType(&corev1.Secret{})).
+		On("Get", mock.Anything, srcSecret1Key, mock.IsType(&corev1.Secret{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			out := args.Get(2).(*corev1.Secret)
 			*out = *srcSecret1
@@ -314,7 +320,7 @@ func TestEnsureSecretPropagation(t *testing.T) {
 		Namespace: "test",
 	}
 	c.
-		On("Get", mock.Anything, destSecret1Key, mock.IsType(&corev1.Secret{})).
+		On("Get", mock.Anything, destSecret1Key, mock.IsType(&corev1.Secret{}), mock.Anything).
 		Return(k8sApiErrors.NewNotFound(schema.GroupResource{}, ""))
 	var createdDestSecret *corev1.Secret
 	c.
@@ -529,6 +535,7 @@ func TestGetDestinationSecretWithoutNamespace_WithSecrets(t *testing.T) {
 			mock.Anything,
 			secretKey,
 			mock.IsType(&corev1.Secret{}),
+			mock.Anything,
 		).
 		Return(testutil.NewTestErrNotFound())
 	uncachedC.
@@ -536,6 +543,7 @@ func TestGetDestinationSecretWithoutNamespace_WithSecrets(t *testing.T) {
 			mock.Anything,
 			secretKey,
 			mock.IsType(&corev1.Secret{}),
+			mock.Anything,
 		).
 		Return(testutil.NewTestErrNotFound())
 
@@ -587,6 +595,7 @@ func TestGetDestinationSecretWithoutNamespace_WithSecretsUncachedFallback(t *tes
 			mock.Anything,
 			secretKey,
 			mock.IsType(&corev1.Secret{}),
+			mock.Anything,
 		).
 		Return(testutil.NewTestErrNotFound())
 	uncachedC.
@@ -594,6 +603,7 @@ func TestGetDestinationSecretWithoutNamespace_WithSecretsUncachedFallback(t *tes
 			mock.Anything,
 			secretKey,
 			mock.IsType(&corev1.Secret{}),
+			mock.Anything,
 		).
 		Return(nil)
 	c.On("Patch",

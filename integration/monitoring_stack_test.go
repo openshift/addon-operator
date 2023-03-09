@@ -64,6 +64,7 @@ func (s *integrationTestSuite) TestMonitoringStack_MonitoringInPlaceAtCreationWi
 
 	// wait until Addon is available
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)

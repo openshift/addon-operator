@@ -41,7 +41,7 @@ func (s *integrationTestSuite) addonCleanup(addon *addonsv1alpha1.Addon,
 	s.Require().NoError(client.IgnoreNotFound(err), "delete Addon: %v", addon)
 
 	// wait until Addon is gone
-	err = integration.WaitToBeGone(s.T(), defaultAddonDeletionTimeout, addon)
+	err = integration.WaitToBeGone(ctx, s.T(), defaultAddonDeletionTimeout, addon)
 	s.Require().NoError(err, "wait for Addon to be deleted")
 }
 

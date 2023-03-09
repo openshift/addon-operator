@@ -81,6 +81,7 @@ func TestEnsureOperatorGroup(t *testing.T) {
 						Namespace: test.targetNamespace,
 					},
 					mock.IsType(&operatorsv1.OperatorGroup{}),
+					mock.Anything,
 				).
 				Return(errors.NewNotFound(schema.GroupResource{}, ""))
 			var createdOperatorGroup *operatorsv1.OperatorGroup
@@ -227,6 +228,7 @@ func TestReconcileOperatorGroup_Adoption(t *testing.T) {
 				testutil.IsContext,
 				testutil.IsObjectKey,
 				testutil.IsOperatorsV1OperatorGroupPtr,
+				mock.Anything,
 			).Run(func(args mock.Arguments) {
 				var og *operatorsv1.OperatorGroup
 

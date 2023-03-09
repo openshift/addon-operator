@@ -68,6 +68,7 @@ func (s *integrationTestSuite) TestMonitoringFederation_MonitoringInPlaceAtCreat
 
 	// wait until Addon is available
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)
@@ -103,7 +104,7 @@ func (s *integrationTestSuite) TestMonitoringFederation_MonitoringInPlaceAtCreat
 
 	// wait until monitoring Namespace is gone (ServiceMonitor will be gone as well)
 	{
-		err := integration.WaitToBeGone(s.T(), time.Minute, currentMonitoringNamespace)
+		err := integration.WaitToBeGone(ctx, s.T(), time.Minute, currentMonitoringNamespace)
 		s.Require().NoError(err)
 	}
 }
@@ -145,6 +146,7 @@ func (s *integrationTestSuite) TestMonitoringFederation_MonitoringNotInPlaceAtCr
 
 	// wait until Addon is available
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)
