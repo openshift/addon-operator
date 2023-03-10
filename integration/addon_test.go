@@ -56,6 +56,7 @@ func (s *integrationTestSuite) TestAddon() {
 
 	// wait until Addon is available
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)
@@ -108,6 +109,7 @@ func (s *integrationTestSuite) TestAddon() {
 				},
 			}
 			err := integration.WaitForObject(
+				ctx,
 				s.T(), defaultReconcileTimeout, destSecret,
 				fmt.Sprintf("Wait for destination secret %s to be updated", client.ObjectKeyFromObject(destSecret)),
 				func(obj client.Object) (done bool, err error) {
@@ -215,6 +217,7 @@ func (s *integrationTestSuite) TestAddonConditions() {
 	s.Require().NoError(err)
 	// wait until Addon is available
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)
@@ -236,6 +239,7 @@ func (s *integrationTestSuite) TestAddonConditions() {
 
 		// wait until upgrade started condition is reported as true.
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report upgrade started condition=true",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)
@@ -247,6 +251,7 @@ func (s *integrationTestSuite) TestAddonConditions() {
 
 		// Because we are upgrading, the addon should transition to available = false.
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report available condition=false",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)
@@ -259,6 +264,7 @@ func (s *integrationTestSuite) TestAddonConditions() {
 		// wait until upgrade succeeded condition is reported as true
 		// (When the new version is available)
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, updatedAddon, "to report upgrade succeeded condition=true",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)
@@ -289,6 +295,7 @@ func (s *integrationTestSuite) TestAddonConditions() {
 
 		// wait until upgrade started condition is reported as true.
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, addonV6, "to report upgrade started condition=true",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)
@@ -318,6 +325,7 @@ func (s *integrationTestSuite) TestAddonConditions() {
 		s.Require().NoError(err)
 		// wait until Addon is installed.
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, addon, "to be installed",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)
@@ -368,6 +376,7 @@ func (s *integrationTestSuite) TestAddonConditions() {
 
 		// wait for installed=false condition to be reported.
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, addon, "to be uninstalled",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)
@@ -398,6 +407,7 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 	s.Require().NoError(err)
 	// wait until Addon is available
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)

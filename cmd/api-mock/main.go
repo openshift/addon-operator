@@ -37,6 +37,8 @@ func main() {
 
 	addr := ":8080"
 	log.Printf("listening on %s\n", addr)
+
+	//nolint: gosec
 	if err := http.ListenAndServe(addr, r); err != nil {
 		panic(err)
 	}

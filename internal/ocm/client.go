@@ -70,7 +70,7 @@ func WithAccessToken(accessToken string) Option {
 }
 
 type OCMError struct {
-	StatusCode int
+	StatusCode int    `json:"-"`
 	Code       string `json:"code"`
 	Reason     string `json:"reason"`
 }

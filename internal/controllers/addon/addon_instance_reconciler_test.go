@@ -127,6 +127,7 @@ func TestEnsureAddonInstance(t *testing.T) {
 						mock.Anything,
 						client.ObjectKeyFromObject(addonInstance),
 						mock.IsType(&addonsv1alpha1.AddonInstance{}),
+						mock.Anything,
 					).
 					Return(nil)
 
@@ -290,6 +291,7 @@ func TestReconcileAddonInstance(t *testing.T) {
 				mock.Anything,
 				client.ObjectKeyFromObject(addonInstance),
 				mock.IsType(&addonsv1alpha1.AddonInstance{}),
+				mock.Anything,
 			).
 			Run(func(args mock.Arguments) {
 				fetchedAddonInstance := args.Get(2).(*addonsv1alpha1.AddonInstance)
@@ -315,6 +317,7 @@ func TestReconcileAddonInstance(t *testing.T) {
 				mock.Anything,
 				client.ObjectKeyFromObject(addonInstance),
 				mock.IsType(&addonsv1alpha1.AddonInstance{}),
+				mock.Anything,
 			).
 			Return(nil)
 

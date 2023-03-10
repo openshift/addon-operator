@@ -177,6 +177,7 @@ func TestObserveOperatorResource(t *testing.T) {
 					mock.Anything,
 					mock.IsType(client.ObjectKey{}),
 					testutil.IsOperatorsV1OperatorPtr,
+					mock.Anything,
 				)
 			call = call.
 				Run(func(args mock.Arguments) {
@@ -219,6 +220,8 @@ func TestObserveOperatorResource(t *testing.T) {
 					mock.Anything,
 					mock.IsType(client.ObjectKey{}),
 					testutil.IsConfigMapPtr,
+					mock.Anything,
+					mock.Anything,
 				).Run(func(args mock.Arguments) {
 					configMap := args.Get(2).(*corev1.ConfigMap)
 					configMap.Name = addon.Name
@@ -233,6 +236,7 @@ func TestObserveOperatorResource(t *testing.T) {
 					mock.Anything,
 					mock.IsType(client.ObjectKey{}),
 					testutil.IsConfigMapPtr,
+					mock.Anything,
 				).Return(testutil.NewTestErrNotFound())
 			}
 

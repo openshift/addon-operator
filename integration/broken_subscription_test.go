@@ -20,7 +20,6 @@ import (
 // CSV never succeed because the deployed operator pod is deliberately
 // broken through invalid readiness and liveness probes.
 func (s *integrationTestSuite) TestAddon_BrokenSubscription() {
-
 	ctx := context.Background()
 	addon := addon_OwnNamespace_TestBrokenSubscription()
 
@@ -35,6 +34,7 @@ func (s *integrationTestSuite) TestAddon_BrokenSubscription() {
 	}
 
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), 10*time.Minute, observedCSV, "to be Failed",
 		func(obj client.Object) (done bool, err error) {
 			csv := obj.(*operatorsv1alpha1.ClusterServiceVersion)

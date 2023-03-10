@@ -45,6 +45,7 @@ func (s *integrationTestSuite) TestAddon_OperatorGroup() {
 			})
 
 			err = integration.WaitForObject(
+				ctx,
 				s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 				func(obj client.Object) (done bool, err error) {
 					a := obj.(*addonsv1alpha1.Addon)

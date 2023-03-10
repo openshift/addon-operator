@@ -23,6 +23,7 @@ func TestEnsureSubscription_Adoption(t *testing.T) {
 		testutil.IsContext,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1SubscriptionPtr,
+		mock.Anything,
 	).Run(func(args mock.Arguments) {
 		subscriptionWithoutOwner := testutil.NewTestSubscriptionWithoutOwner()
 		subscriptionWithoutOwner.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.Subscription))

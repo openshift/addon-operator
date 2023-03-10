@@ -20,6 +20,7 @@ func (s *integrationTestSuite) TestMetricsServer() {
 
 	// wait until Pod is available
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultPodAvailabilityTimeout, pod, "to be Ready",
 		func(obj client.Object) (done bool, err error) {
 			p := obj.(*corev1.Pod)
@@ -60,7 +61,7 @@ func (s *integrationTestSuite) TestMetricsServer() {
 		s.Require().NoError(client.IgnoreNotFound(err), "delete Pod: %v", pod)
 
 		// wait until Pod is gone
-		err = integration.WaitToBeGone(s.T(), defaultPodDeletionTimeout, pod)
+		err = integration.WaitToBeGone(ctx, s.T(), defaultPodDeletionTimeout, pod)
 		s.Require().NoError(err, "wait for Pod to be deleted")
 	})
 }
