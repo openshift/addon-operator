@@ -220,21 +220,22 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		addon := testutil.NewTestAddonWithMonitoringStack()
-		monitoringStack := &obov1alpha1.MonitoringStack{
-			Status: tc.monitoringStackStatusFound,
-		}
-		isMonitoringStackAvailable := r.propagateMonitoringStackStatusToAddon(monitoringStack, addon)
-		require.Equal(t, tc.expectedAvailableStatusToPropagate, isMonitoringStackAvailable)
+		t.Run(tc.name, func(t *testing.T) {
+			addon := testutil.NewTestAddonWithMonitoringStack()
+			monitoringStack := &obov1alpha1.MonitoringStack{
+				Status: tc.monitoringStackStatusFound,
+			}
+			isMonitoringStackAvailable := r.propagateMonitoringStackStatusToAddon(monitoringStack, addon)
+			require.Equal(t, tc.expectedAvailableStatusToPropagate, isMonitoringStackAvailable)
 
-		if !isMonitoringStackAvailable {
-			require.Equal(t, addonsv1alpha1.AddonReasonUnreadyMonitoringStack, addon.Status.Conditions[0].Reason)
-			require.Equal(t, metav1.ConditionFalse, addon.Status.Conditions[0].Status)
-			require.Equal(t, tc.expectedAddonStatusMessage, addon.Status.Conditions[0].Message)
-			require.Equal(t, addonsv1alpha1.PhasePending, addon.Status.Phase)
-		} else {
-			require.Zero(t, len(addon.Status.Conditions))
-		}
-
+			if !isMonitoringStackAvailable {
+				require.Equal(t, addonsv1alpha1.AddonReasonUnreadyMonitoringStack, addon.Status.Conditions[0].Reason)
+				require.Equal(t, metav1.ConditionFalse, addon.Status.Conditions[0].Status)
+				require.Equal(t, tc.expectedAddonStatusMessage, addon.Status.Conditions[0].Message)
+				require.Equal(t, addonsv1alpha1.PhasePending, addon.Status.Phase)
+			} else {
+				require.Zero(t, len(addon.Status.Conditions))
+			}
+		})
 	}
 }
