@@ -93,7 +93,7 @@ func NewTestExistingNamespace() *corev1.Namespace {
 			Kind:       "foo-kind-something-else",
 			Name:       "foo-name-something-else",
 			UID:        "foo-uid-something-else",
-			Controller: utilpointer.BoolPtr(true),
+			Controller: utilpointer.Bool(true),
 		},
 	}
 
@@ -266,7 +266,7 @@ func testOwnerRefs() []metav1.OwnerReference {
 			Kind:       "foo-kind",
 			Name:       "foo-name",
 			UID:        "foo-uid",
-			Controller: utilpointer.BoolPtr(true),
+			Controller: utilpointer.Bool(true),
 		},
 	}
 }

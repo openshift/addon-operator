@@ -38,6 +38,7 @@ func (s *integrationTestSuite) TestUpgradePolicyReporting() {
 
 	// wait until Addon is available
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)
@@ -70,6 +71,7 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 
 	// wait until Addon is availablez
 	err = integration.WaitForObject(
+		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)
@@ -100,6 +102,7 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		s.Require().NoError(err)
 		// wait until Addon is paused.
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, addon, "to be paused",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.Addon)

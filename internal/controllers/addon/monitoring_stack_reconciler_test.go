@@ -144,7 +144,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack Unavailable: foo",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack Unavailable: foo",
 		},
 		{
 			name: "available-unknown-condition",
@@ -158,7 +158,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack Unavailable: foo",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack Unavailable: foo",
 		},
 		{
 			name: "available-nonexistent-reconciled-true-condition",
@@ -172,7 +172,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack successfully reconciled: Pending MonitoringStack to be Available",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack successfully reconciled: Pending MonitoringStack to be Available",
 		},
 		{
 			name: "available-nonexistent-reconciled-false-condition",
@@ -186,7 +186,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack failed to reconcile: foo",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack failed to reconcile: foo",
 		},
 		{
 			name: "available-nonexistent-reconciled-unknown-condition",
@@ -200,7 +200,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack failed to reconcile: foo",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack failed to reconcile: foo",
 		},
 		{
 			name: "no-condition",
@@ -208,7 +208,7 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 				Conditions: []obov1alpha1.Condition{},
 			},
 			expectedAvailableStatusToPropagate: false,
-			expectedAddonStatusMessage:         "Monitoring Stack is not ready: MonitoringStack pending to get reconciled",
+			expectedAddonStatusMessage:         "MonitoringStack is not ready: MonitoringStack pending to get reconciled",
 		},
 	}
 
@@ -220,21 +220,22 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		addon := testutil.NewTestAddonWithMonitoringStack()
-		monitoringStack := &obov1alpha1.MonitoringStack{
-			Status: tc.monitoringStackStatusFound,
-		}
-		isMonitoringStackAvailable := r.propagateMonitoringStackStatusToAddon(monitoringStack, addon)
-		require.Equal(t, tc.expectedAvailableStatusToPropagate, isMonitoringStackAvailable)
+		t.Run(tc.name, func(t *testing.T) {
+			addon := testutil.NewTestAddonWithMonitoringStack()
+			monitoringStack := &obov1alpha1.MonitoringStack{
+				Status: tc.monitoringStackStatusFound,
+			}
+			isMonitoringStackAvailable := r.propagateMonitoringStackStatusToAddon(monitoringStack, addon)
+			require.Equal(t, tc.expectedAvailableStatusToPropagate, isMonitoringStackAvailable)
 
-		if !isMonitoringStackAvailable {
-			require.Equal(t, addonsv1alpha1.AddonReasonUnreadyMonitoringStack, addon.Status.Conditions[0].Reason)
-			require.Equal(t, metav1.ConditionFalse, addon.Status.Conditions[0].Status)
-			require.Equal(t, tc.expectedAddonStatusMessage, addon.Status.Conditions[0].Message)
-			require.Equal(t, addonsv1alpha1.PhasePending, addon.Status.Phase)
-		} else {
-			require.Zero(t, len(addon.Status.Conditions))
-		}
-
+			if !isMonitoringStackAvailable {
+				require.Equal(t, addonsv1alpha1.AddonReasonUnreadyMonitoringStack, addon.Status.Conditions[0].Reason)
+				require.Equal(t, metav1.ConditionFalse, addon.Status.Conditions[0].Status)
+				require.Equal(t, tc.expectedAddonStatusMessage, addon.Status.Conditions[0].Message)
+				require.Equal(t, addonsv1alpha1.PhasePending, addon.Status.Phase)
+			} else {
+				require.Zero(t, len(addon.Status.Conditions))
+			}
+		})
 	}
 }

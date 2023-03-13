@@ -409,6 +409,15 @@ spec:
                   - name
                   type: object
                 type: array
+              packageOperator:
+                description: defines the PackageOperator image as part of the addon
+                  Spec
+                properties:
+                  image:
+                    type: string
+                required:
+                - image
+                type: object
               pause:
                 description: Pause reconciliation of Addon when set to True
                 type: boolean

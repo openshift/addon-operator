@@ -179,7 +179,7 @@ func reportPodStatus(ctx context.Context, pod *corev1.Pod) error {
 const defaultWaitPollInterval = time.Second
 
 // WaitToBeGone blocks until the given object is gone from the kubernetes API server.
-func WaitToBeGone(t *testing.T, timeout time.Duration, object client.Object) error {
+func WaitToBeGone(ctx context.Context, t *testing.T, timeout time.Duration, object client.Object) error {
 	gvk, err := apiutil.GVKForObject(object, Scheme)
 	if err != nil {
 		return err
@@ -189,7 +189,6 @@ func WaitToBeGone(t *testing.T, timeout time.Duration, object client.Object) err
 	t.Logf("waiting %s for %s %s to be gone...",
 		timeout, gvk, key)
 
-	ctx := context.Background()
 	return wait.PollImmediate(defaultWaitPollInterval, timeout, func() (done bool, err error) {
 		err = Client.Get(ctx, key, object)
 
@@ -207,6 +206,7 @@ func WaitToBeGone(t *testing.T, timeout time.Duration, object client.Object) err
 
 // Wait that something happens with an object.
 func WaitForObject(
+	ctx context.Context,
 	t *testing.T, timeout time.Duration,
 	object client.Object, reason string,
 	checkFn func(obj client.Object) (done bool, err error),
@@ -220,7 +220,6 @@ func WaitForObject(
 	t.Logf("waiting %s on %s %s %s...",
 		timeout, gvk, key, reason)
 
-	ctx := context.Background()
 	return wait.PollImmediate(time.Second, timeout, func() (done bool, err error) {
 		err = Client.Get(ctx, client.ObjectKeyFromObject(object), object)
 		if err != nil {
@@ -239,7 +238,9 @@ func WaitForFreshAddonCondition(
 	t *testing.T, timeout time.Duration,
 	a *addonsv1alpha1.Addon, conditionType string, conditionStatus metav1.ConditionStatus,
 ) error {
+	ctx := context.Background()
 	return WaitForObject(
+		ctx,
 		t, timeout, a, fmt.Sprintf("to be %s: %s", conditionType, conditionStatus),
 		func(obj client.Object) (done bool, err error) {
 			a := obj.(*addonsv1alpha1.Addon)
@@ -289,9 +290,8 @@ func RunAPIServerProxy(closeCh <-chan struct{}) error {
 		return fmt.Errorf("listen on %s:%d: %w", defaultAddress, defaultPort, err)
 	}
 
-	server := http.Server{
-		Handler: mux,
-	}
+	//nolint: gosec
+	server := http.Server{Handler: mux}
 
 	go func() {
 		if err := server.Serve(l); err != nil &&
@@ -310,6 +310,8 @@ func RunAPIServerProxy(closeCh <-chan struct{}) error {
 }
 
 func ExecCommandInPod(namespace string, pod string, container string, command []string) (string, string, error) {
+	ctx := context.Background()
+
 	attachOptions := &corev1.PodExecOptions{
 		Stdin:     false,
 		Stdout:    true,
@@ -337,7 +339,7 @@ func ExecCommandInPod(namespace string, pod string, container string, command []
 		return "", "", fmt.Errorf("failed to establish SPDY stream with Kubernetes API: %w", err)
 	}
 
-	err = exec.Stream(streamOptions)
+	err = exec.StreamWithContext(ctx, streamOptions)
 	stdout, stderr := strings.TrimSpace(stdoutStream.String()), strings.TrimSpace(stderrStream.String())
 	if err != nil {
 		return "", "", fmt.Errorf("failed to transport shell streams: %w\n%s", err, stderr)

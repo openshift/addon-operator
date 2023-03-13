@@ -27,6 +27,7 @@ func (s *integrationTestSuite) Setup() {
 		s.Require().NoError(err)
 
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, &addonOperator, "to be Available",
 			func(obj client.Object) (done bool, err error) {
 				a := obj.(*addonsv1alpha1.AddonOperator)

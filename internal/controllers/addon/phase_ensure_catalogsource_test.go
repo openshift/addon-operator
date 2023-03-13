@@ -22,6 +22,7 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Return(testutil.NewTestErrNotFound())
 	c.On("Create",
 		mock.Anything,
@@ -38,7 +39,7 @@ func TestReconcileCatalogSource_NotExistingYet_HappyPath(t *testing.T) {
 	c.AssertCalled(t, "Get", mock.Anything, client.ObjectKey{
 		Name:      catalogSource.Name,
 		Namespace: catalogSource.Namespace,
-	}, testutil.IsOperatorsV1Alpha1CatalogSourcePtr)
+	}, testutil.IsOperatorsV1Alpha1CatalogSourcePtr, mock.Anything)
 	c.AssertCalled(t, "Create", mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr, mock.Anything)
 }
@@ -51,6 +52,7 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorGet(t *testing.T) 
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Return(timeoutErr)
 
 	ctx := context.Background()
@@ -68,6 +70,7 @@ func TestReconcileCatalogSource_NotExistingYet_WithClientErrorCreate(t *testing.
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Return(testutil.NewTestErrNotFound())
 	c.On("Create",
 		mock.Anything,
@@ -90,6 +93,7 @@ func TestReconcileCatalogSource_Adoption(t *testing.T) {
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Run(func(args mock.Arguments) {
 		catalogSourceWithoutOwner := testutil.NewTestCatalogSourceWithoutOwner()
 		catalogSourceWithoutOwner.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.CatalogSource))
@@ -119,6 +123,7 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Return(testutil.NewTestErrNotFound())
 
 	var createdCatalogSource *operatorsv1alpha1.CatalogSource
@@ -157,6 +162,7 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Return(testutil.NewTestErrNotFound())
 	c.On("Create",
 		mock.Anything,
@@ -190,6 +196,7 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Run(func(args mock.Arguments) {
 		currentCatalogSource := args.Get(2).(*operatorsv1alpha1.CatalogSource)
 		currentCatalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{
@@ -223,6 +230,7 @@ func TestEnsureCatalogSource_Update(t *testing.T) {
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
+		mock.Anything,
 	).Run(func(args mock.Arguments) {
 		currentCatalogSource := args.Get(2).(*operatorsv1alpha1.CatalogSource)
 		currentCatalogSource.Status.GRPCConnectionState = &operatorsv1alpha1.GRPCConnectionState{

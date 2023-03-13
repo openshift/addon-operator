@@ -54,5 +54,6 @@ func main() {
 		}
 	})
 
+	//nolint: gosec
 	log.Fatal(http.ListenAndServe(":1234", nil))
 }

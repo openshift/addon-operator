@@ -70,4 +70,4 @@ objects:
                           metadata:
                             name: addon-operator
                           spec:
-                            image: ${REGISTRY_IMG}:${IMAGE_DIGEST}
+                            image: ${REGISTRY_IMG}@${IMAGE_DIGEST}

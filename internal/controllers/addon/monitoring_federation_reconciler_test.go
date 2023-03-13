@@ -57,7 +57,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(
 			assert.Equal(t, GetMonitoringNamespaceName(addon), namespace.Name)
 		}).
 		Return(nil)
-	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&monitoringv1.ServiceMonitor{})).
+	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).
 		Return(testutil.NewTestErrNotFound())
 	c.On("Create", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).
 		Run(func(args mock.Arguments) {

@@ -50,6 +50,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 		}
 
 		err = integration.WaitForObject(
+			ctx,
 			s.T(), 10*time.Minute, observedAddon, "to be available",
 			func(obj client.Object) (done bool, err error) {
 				addon := obj.(*addonsv1alpha1.Addon)
@@ -66,6 +67,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 				},
 			}
 			err = integration.WaitForObject(
+				ctx,
 				s.T(), 2*time.Minute, observedNs, "to have AddonOperator ownerReference",
 				func(obj client.Object) (done bool, err error) {
 					ns := obj.(*corev1.Namespace)
@@ -83,6 +85,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 				},
 			}
 			err = integration.WaitForObject(
+				ctx,
 				s.T(), 2*time.Minute, observedSubscription, "to have AddonOperator ownerReference",
 				func(obj client.Object) (done bool, err error) {
 					sub := obj.(*operatorsv1alpha1.Subscription)
@@ -101,6 +104,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 				},
 			}
 			err = integration.WaitForObject(
+				ctx,
 				s.T(), 2*time.Minute, observedOG, "to have AddonOperator ownerReference",
 				func(obj client.Object) (done bool, err error) {
 					og := obj.(*operatorsv1.OperatorGroup)
@@ -118,6 +122,7 @@ func (s *integrationTestSuite) TestResourceAdoption() {
 				},
 			}
 			err = integration.WaitForObject(
+				ctx,
 				s.T(), 2*time.Minute, observedCS, "to have AddonOperator ownerReference",
 				func(obj client.Object) (done bool, err error) {
 					cs := obj.(*operatorsv1alpha1.CatalogSource)
