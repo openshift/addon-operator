@@ -6,7 +6,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -258,11 +257,7 @@ func (Build) Docgen() {
 	mg.Deps(mg.F(Build.cmd, "docgen", "", ""))
 }
 
-func (b Build) ImageBuild(cmd string) error {
-	mg.SerialDeps(setupContainerRuntime)
-
-	// clean/prepare cache directory
-	imageCacheDir := path.Join(cacheDir, "image", cmd)
+func cleanImageCache(imageCacheDir string) error {
 	if err := os.RemoveAll(imageCacheDir); err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("deleting image cache dir: %w", err)
 	}
@@ -272,10 +267,21 @@ func (b Build) ImageBuild(cmd string) error {
 	if err := os.MkdirAll(imageCacheDir, os.ModePerm); err != nil {
 		return fmt.Errorf("create image cache dir: %w", err)
 	}
+	return nil
+}
+
+func (b Build) ImageBuild(cmd string) error {
+	mg.SerialDeps(setupContainerRuntime, b.init)
+
+	// clean/prepare cache directory
+	imageCacheDir := path.Join(cacheDir, "image", cmd)
+	if err := cleanImageCache(imageCacheDir); err != nil {
+		return fmt.Errorf("cleaning cache: %w", err)
+	}
 
 	switch cmd {
 	case "addon-operator-index":
-		return b.buildOLMIndexImage(imageCacheDir)
+		return b.buildOLMIndexImage()
 
 	case "addon-operator-bundle":
 		return b.buildOLMBundleImage(imageCacheDir)
@@ -284,31 +290,21 @@ func (b Build) ImageBuild(cmd string) error {
 		return b.buildPackageOperatorImage(imageCacheDir)
 
 	default:
-		mg.Deps(
+		deps := []interface{}{
 			mg.F(Build.cmd, cmd, "linux", "amd64"),
-		)
-		return b.buildGenericImage(cmd, imageCacheDir)
+			mg.F(populateCmdCache, imageCacheDir, cmd),
+		}
+		imageBuildInfo := newImageBuildInfo(cmd, imageCacheDir)
+		return dev.BuildImage(imageBuildInfo, deps)
 	}
 }
 
-// generic image build function, when the image just relies on
-// a static binary build from cmd/*
-func (Build) buildGenericImage(cmd, imageCacheDir string) error {
-	imageTag := imageURL(cmd)
-	for _, command := range [][]string{
-		// Copy files for build environment
-		{"cp", "-a",
-			"bin/linux_amd64/" + cmd,
-			imageCacheDir + "/" + cmd},
-		{"cp", "-a",
-			"config/docker/" + cmd + ".Dockerfile",
-			imageCacheDir + "/Dockerfile"},
-
-		// Build image!
-		{containerRuntime, "build", "-t", imageTag, imageCacheDir},
-		{containerRuntime, "image", "save",
-			"-o", imageCacheDir + ".tar", imageTag},
-	} {
+func populateCmdCache(imageCacheDir, cmd string) error {
+	commands := [][]string{
+		{"cp", "-a", "bin/linux_amd64/" + cmd, imageCacheDir + "/" + cmd},
+		{"cp", "-a", "config/docker/" + cmd + ".Dockerfile", imageCacheDir + "/Dockerfile"},
+	}
+	for _, command := range commands {
 		if err := sh.Run(command[0], command[1:]...); err != nil {
 			return fmt.Errorf("running %q: %w", strings.Join(command, " "), err)
 		}
@@ -316,7 +312,18 @@ func (Build) buildGenericImage(cmd, imageCacheDir string) error {
 	return nil
 }
 
-func (b Build) buildOLMIndexImage(imageCacheDir string) error {
+func newImageBuildInfo(imageName, imageCacheDir string) *dev.ImageBuildInfo {
+	imageTag := imageURL(imageName)
+	return &dev.ImageBuildInfo{
+		ImageTag:      imageTag,
+		CacheDir:      imageCacheDir,
+		ContainerFile: "",
+		ContextDir:    imageCacheDir,
+		Runtime:       containerRuntime,
+	}
+}
+
+func (b Build) buildOLMIndexImage() error {
 	mg.Deps(
 		Dependency.Opm,
 		mg.F(Build.imagePush, "addon-operator-bundle"),
@@ -331,13 +338,7 @@ func (b Build) buildOLMIndexImage(imageCacheDir string) error {
 	return nil
 }
 
-func (b Build) buildOLMBundleImage(imageCacheDir string) error {
-	mg.Deps(
-		Build.init,
-		Build.TemplateAddonOperatorCSV,
-	)
-
-	imageTag := imageURL("addon-operator-bundle")
+func populateOLMBundleCache(imageCacheDir string) error {
 	manifestsDir := path.Join(imageCacheDir, "manifests")
 	metadataDir := path.Join(imageCacheDir, "metadata")
 	for _, command := range [][]string{
@@ -368,17 +369,51 @@ func (b Build) buildOLMBundleImage(imageCacheDir string) error {
 		{"bash", "-c", "tail -n+3 " +
 			"config/deploy/addons.managed.openshift.io_addoninstances.yaml " +
 			"> " + path.Join(manifestsDir, "addoninstances.yaml")},
-
-		// Build image!
-		{containerRuntime, "build", "-t", imageTag, imageCacheDir},
-		{containerRuntime, "image", "save",
-			"-o", imageCacheDir + ".tar", imageTag},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func (b Build) buildOLMBundleImage(imageCacheDir string) error {
+	deps := []interface{}{
+		mg.F(Build.init),
+		mg.F(Build.TemplateAddonOperatorCSV),
+		mg.F(populateOLMBundleCache, imageCacheDir),
+	}
+	buildInfo := newImageBuildInfo("addon-operator-bundle", imageCacheDir)
+	return dev.BuildImage(buildInfo, deps)
+}
+
+func populatePkgCache(imageCacheDir string) error {
+	manifestsDir := path.Join(imageCacheDir, "manifests")
+	for _, command := range [][]string{
+		{"mkdir", "-p", manifestsDir},
+		{"bash", "-c", "cp config/package/hc/*.yaml " + manifestsDir},
+		{"cp", "config/package/hcp/addon-operator.yaml", manifestsDir},
+		{"cp", "config/package/manifest.yaml", manifestsDir},
+		{"cp", "config/package/addon-operator-package.Containerfile", manifestsDir},
+	} {
+		if err := sh.RunV(command[0], command[1:]...); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func newPackageBuildInfo(imageCacheDir string) *dev.PackageBuildInfo {
+	imageTag := imageURL("addon-operator-package")
+	manifestsDir := path.Join(imageCacheDir, "manifests")
+
+	return &dev.PackageBuildInfo{
+		ImageTag:   imageTag,
+		CacheDir:   imageCacheDir,
+		SourcePath: manifestsDir,
+		OutputPath: manifestsDir + ".tar",
+		Runtime:    containerRuntime,
+	}
 }
 
 func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
@@ -404,25 +439,11 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 		return err
 	}
 
-	imageTag := imageURL("addon-operator-package")
-
-	manifestsDir := path.Join(imageCacheDir, "manifests")
-
-	for _, command := range [][]string{
-		{"mkdir", "-p", manifestsDir},
-		{"bash", "-c", "cp config/package/hc/*.yaml " + manifestsDir},
-		{"cp", "config/package/hcp/addon-operator.yaml", manifestsDir},
-		{"cp", "config/package/manifest.yaml", manifestsDir},
-
-		{"cp", "config/package/addon-operator-package.Containerfile", manifestsDir},
-		{containerRuntime, "build", "-t", imageTag, "-f", manifestsDir + "/addon-operator-package.Containerfile"},
-		{containerRuntime, "image", "save", "-o", imageCacheDir + ".tar", imageTag},
-	} {
-		if err := sh.RunV(command[0], command[1:]...); err != nil {
-			return err
-		}
+	deps := []interface{}{
+		mg.F(populatePkgCache, imageCacheDir),
 	}
-	return nil
+	buildInfo := newPackageBuildInfo(imageCacheDir)
+	return dev.BuildPackage(buildInfo, deps)
 }
 
 func (b Build) TemplateAddonOperatorCSV() error {
@@ -480,6 +501,16 @@ func (b Build) TemplateAddonOperatorCSV() error {
 	return nil
 }
 
+func newImagePushInfo(imageName string) *dev.ImagePushInfo {
+	imageTag := imageURL(imageName)
+	return &dev.ImagePushInfo{
+		ImageTag:   imageTag,
+		CacheDir:   cacheDir,
+		Runtime:    containerRuntime,
+		DigestFile: "",
+	}
+}
+
 func (b Build) imagePushOnce(imageName string) error {
 	mg.SerialDeps(
 		Build.init,
@@ -500,25 +531,12 @@ func (b Build) imagePushOnce(imageName string) error {
 }
 
 func (Build) imagePush(imageName string) error {
-	mg.SerialDeps(
-		mg.F(Build.ImageBuild, imageName),
-	)
+	mg.SerialDeps(setupContainerRuntime, Build.init)
 
-	// Login to container registry when running on AppSRE Jenkins.
-	if _, ok := os.LookupEnv("JENKINS_HOME"); ok {
-		log.Println("running in Jenkins, calling container runtime login")
-		if err := sh.Run(containerRuntime,
-			"login", "-u="+os.Getenv("QUAY_USER"),
-			"-p="+os.Getenv("QUAY_TOKEN"), "quay.io"); err != nil {
-			return fmt.Errorf("registry login: %w", err)
-		}
-	}
+	pushInfo := newImagePushInfo(imageName)
+	buildImageDep := mg.F(Build.ImageBuild, imageName)
 
-	if err := sh.Run(containerRuntime, "push", imageURL(imageName)); err != nil {
-		return fmt.Errorf("pushing image: %w", err)
-	}
-
-	return nil
+	return dev.PushImage(pushInfo, buildImageDep)
 }
 
 func (Build) imageExists(ctx context.Context, name string) (bool, error) {
@@ -856,7 +874,7 @@ const (
 	controllerGenVersion = "0.6.2"
 	kindVersion          = "0.11.1"
 	yqVersion            = "4.12.0"
-	goimportsVersion     = "0.1.5"
+	goimportsVersion     = "0.2.0"
 	golangciLintVersion  = "1.51.2"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.24.0"
@@ -1009,7 +1027,7 @@ func (d Dev) Integration(ctx context.Context) error {
 	return nil
 }
 
-func (d Dev) LoadImage(ctx context.Context, image string) error {
+func (d Dev) LoadImage(image string) error {
 	mg.Deps(
 		mg.F(Build.ImageBuild, image),
 	)
