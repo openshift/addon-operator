@@ -8,8 +8,9 @@ import (
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
+
+	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
 var _ FeatureToggleHandler = (*MonitoringStackFeatureToggle)(nil)
