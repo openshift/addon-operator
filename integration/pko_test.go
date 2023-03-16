@@ -49,7 +49,7 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 	err = integration.WaitForObject(ctx, s.T(),
 		defaultAddonAvailabilityTimeout, tmpl, "to be created",
 		func(obj client.Object) (done bool, err error) {
-			_ = obj.(*pkov1alpha1.ObjectTemplate)
+			_ = obj.(*pkov1alpha1.ClusterObjectTemplate)
 			return true, nil
 		})
 	s.Require().NoError(err)

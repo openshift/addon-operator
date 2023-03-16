@@ -881,6 +881,7 @@ const (
 	opmVersion           = "1.24.0"
 	pkoCliVersion        = "1.4.0"
 	helmVersion          = "3.7.2"
+	pkoVersion           = "1.4.0"
 )
 
 type Dependency mg.Namespace
@@ -1413,6 +1414,7 @@ func (d Dev) init() error {
 			// Install OLM.
 			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/crds.yaml",
 			"https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v" + olmVersion + "/olm.yaml",
+			"https://github.com/package-operator/package-operator/releases/download/v" + pkoVersion + "/self-bootstrap-job.yaml",
 		},
 		dev.ClusterLoadObjectsFromFiles{
 			// OCP APIs required by the AddonOperator.

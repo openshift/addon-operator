@@ -7,6 +7,7 @@ import (
 	"net/http/pprof"
 	"os"
 	"strings"
+	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 	"time"
 
 	"k8s.io/apimachinery/pkg/types"
@@ -51,6 +52,7 @@ func init() {
 	_ = operatorsv1alpha1.AddToScheme(scheme)
 	_ = configv1.AddToScheme(scheme)
 	_ = monitoringv1.AddToScheme(scheme)
+	_ = pkov1alpha1.AddToScheme(scheme)
 }
 
 func initReconcilers(mgr ctrl.Manager,

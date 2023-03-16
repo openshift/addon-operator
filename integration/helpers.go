@@ -30,6 +30,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/remotecommand"
 	"k8s.io/kubectl/pkg/proxy"
+	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
@@ -71,6 +72,7 @@ func init() {
 		configv1.AddToScheme,
 		monitoringv1.AddToScheme,
 		obov1alpha1.AddToScheme,
+		pkov1alpha1.AddToScheme,
 	}
 	if err := AddToSchemes.AddToScheme(Scheme); err != nil {
 		panic(fmt.Errorf("could not load schemes: %w", err))
