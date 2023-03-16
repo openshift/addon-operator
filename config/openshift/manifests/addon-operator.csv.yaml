@@ -4,11 +4,11 @@ metadata:
   annotations:
     capabilities: Full Lifecycle
     containerImage: quay.io/openshift/addon-operator:latest
-    olm.skipRange: '>=0.0.1 <1.8.0'
+    olm.skipRange: '>=0.0.1 <1.8.1'
     repository: https://github.com/openshift/addon-operator
     support: "false"
   creationTimestamp: null
-  name: addon-operator.v1.8.0
+  name: addon-operator.v1.8.1
 spec:
   apiservicedefinitions: {}
   cleanup:
@@ -217,6 +217,9 @@ spec:
                   readOnly: true
               - args:
                 - --enable-leader-election
+                env:
+                - name: ENABLE_STATUS_REPORTING
+                  value: "true"
                 image: quay.io/openshift/addon-operator:latest
                 livenessProbe:
                   httpGet:
@@ -353,7 +356,7 @@ spec:
   provider:
     name: Red Hat
     url: www.redhat.com
-  version: 1.8.0
+  version: 1.8.1
   webhookdefinitions:
   - admissionReviewVersions:
     - v1
