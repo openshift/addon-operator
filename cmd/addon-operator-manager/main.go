@@ -7,8 +7,9 @@ import (
 	"net/http/pprof"
 	"os"
 	"strings"
-	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 	"time"
+
+	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 
 	"k8s.io/apimachinery/pkg/types"
 
@@ -60,7 +61,8 @@ func initReconcilers(mgr ctrl.Manager,
 	enableRecorder bool,
 	addonOperatorInCluster addonsv1alpha1.AddonOperator,
 	enableStatusReporting bool,
-	opts ...addoncontroller.AddonReconcilerOptions) error {
+	opts ...addoncontroller.AddonReconcilerOptions,
+) error {
 	ctx := context.Background()
 
 	// Create a client that does not cache resources cluster-wide.
