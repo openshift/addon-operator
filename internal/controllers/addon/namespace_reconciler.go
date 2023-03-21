@@ -171,6 +171,15 @@ func reconcileNamespace(ctx context.Context, c client.Client, namespace *corev1.
 		return nil, err
 	}
 
+	if currentNamespace.OwnerReferences != nil {
+		// Allow existing non-controlling owners to remain
+		for _, owner := range currentNamespace.OwnerReferences {
+			if owner.Controller == nil || !*owner.Controller {
+				namespace.OwnerReferences = append(namespace.OwnerReferences, owner)
+			}
+		}
+	}
+
 	currentNamespace.OwnerReferences = namespace.OwnerReferences
 
 	currentLabels := labels.Set(currentNamespace.Labels)
