@@ -440,6 +440,7 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	}
 
 	deps := []interface{}{
+		Dependency.PkoCli,
 		mg.F(populatePkgCache, imageCacheDir),
 	}
 	buildInfo := newPackageBuildInfo(imageCacheDir)
@@ -878,6 +879,7 @@ const (
 	golangciLintVersion  = "1.51.2"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.24.0"
+	pkoCliVersion        = "1.4.0"
 	helmVersion          = "3.7.2"
 )
 
@@ -968,6 +970,50 @@ func (d Dependency) Opm() error {
 	// Move
 	if err := os.Rename(tempOPMBin, path.Join(depsDir.Bin(), "opm")); err != nil {
 		return fmt.Errorf("move opm: %w", err)
+	}
+	return nil
+}
+
+func (d Dependency) PkoCli() error {
+	if err := os.MkdirAll(depsDir.Bin(), os.ModePerm); err != nil {
+		return fmt.Errorf("create dependency dir: %w", err)
+	}
+
+	needsRebuild, err := depsDir.NeedsRebuild("kubectl-package", pkoCliVersion)
+	if err != nil {
+		return err
+	}
+	if !needsRebuild {
+		return nil
+	}
+
+	// Tempdir
+	tempDir, err := os.MkdirTemp(cacheDir, "")
+	if err != nil {
+		return fmt.Errorf("temp dir: %w", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Download
+	tempPkoCliBin := path.Join(tempDir, "kubectl-package")
+	if err := sh.RunV(
+		"curl", "-L", "--fail",
+		"-o", tempPkoCliBin,
+		fmt.Sprintf(
+			"https://github.com/package-operator/package-operator/releases/download/v%s/kubectl-package_linux_amd64",
+			pkoCliVersion,
+		),
+	); err != nil {
+		return fmt.Errorf("downloading kubectl-package: %w", err)
+	}
+
+	if err := os.Chmod(tempPkoCliBin, 0755); err != nil {
+		return fmt.Errorf("make kubectl-package executable: %w", err)
+	}
+
+	// Move
+	if err := os.Rename(tempPkoCliBin, path.Join(depsDir.Bin(), "kubectl-package")); err != nil {
+		return fmt.Errorf("move kubectl-package: %w", err)
 	}
 	return nil
 }
