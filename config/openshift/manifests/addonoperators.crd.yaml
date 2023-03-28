@@ -43,13 +43,8 @@ spec:
             properties:
               featureToggles:
                 description: Specification of the feature toggles supported by the
-                  addon-operator
-                properties:
-                  experimentalFeatures:
-                    description: Feature toggle for enabling/disabling experimental
-                      features in the addon-operator
-                    type: boolean
-                type: object
+                  addon-operator in the form of a comma-separated string
+                type: string
               ocm:
                 description: OCM specific configuration. Setting this subconfig will
                   enable deeper OCM integration. e.g. push status reporting, etc.

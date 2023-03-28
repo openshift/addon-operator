@@ -4,7 +4,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
@@ -17,7 +16,6 @@ func GetAvailableFeatureToggles(opts ...availableFeatureTogglesGetterOpts) []Fea
 	return []FeatureToggleHandler{
 		&MonitoringStackFeatureToggle{
 			Client:                      params.client,
-			FeatureTogglesInCluster:     params.featureTogglesInCluster,
 			SchemeToUpdate:              params.schemeToUpdate,
 			AddonReconcilerOptsToUpdate: params.addonReconcilerOptsToUpdate,
 		},
@@ -30,7 +28,6 @@ type availableFeatureTogglesGetterOpts interface {
 
 type availableFeatureToggleGetterParams struct {
 	client                      client.Client
-	featureTogglesInCluster     addonsv1alpha1.AddonOperatorFeatureToggles
 	schemeToUpdate              *runtime.Scheme
 	addonReconcilerOptsToUpdate *[]addoncontroller.AddonReconcilerOptions
 }
@@ -49,12 +46,6 @@ type WithSchemeToUpdate struct {
 
 func (w WithSchemeToUpdate) apply(a *availableFeatureToggleGetterParams) {
 	a.schemeToUpdate = w.Scheme
-}
-
-type WithFeatureTogglesInCluster addonsv1alpha1.AddonOperatorFeatureToggles
-
-func (w WithFeatureTogglesInCluster) apply(a *availableFeatureToggleGetterParams) {
-	a.featureTogglesInCluster = addonsv1alpha1.AddonOperatorFeatureToggles(w)
 }
 
 type WithAddonReconcilerOptsToUpdate struct {

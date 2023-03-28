@@ -18,8 +18,8 @@ parameters:
   - name: OCM_BASE_URL
     value: http://api-mock.api-mock.svc.cluster.local
     required: true
-  - name: EXPERIMENTAL_FEATURES
-    value: "false"
+  - name: FEATURE_TOGGLES
+    value: ""
     required: true
 objects:
   - apiVersion: hive.openshift.io/v1
@@ -86,5 +86,4 @@ objects:
               secret:
                 name: pull-secret
                 namespace: openshift-config
-            featureToggles:
-              experimentalFeatures: ${{EXPERIMENTAL_FEATURES}}
+            featureToggles: ${FEATURE_TOGGLES}

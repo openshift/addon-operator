@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
+	"strings"
 	"time"
 
 	"k8s.io/apimachinery/pkg/types"
@@ -105,7 +106,7 @@ func initReconcilers(mgr ctrl.Manager,
 		OCMClientManager:    addonReconciler,
 		Recorder:            recorder,
 		ClusterExternalID:   clusterExternalID,
-		FeatureTogglesState: addonOperatorInCluster.Spec.FeatureToggles,
+		FeatureTogglesState: strings.Split(addonOperatorInCluster.Spec.FeatureToggles, ","),
 	}).SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create AddonOperator controller: %w", err)
 	}
@@ -193,13 +194,12 @@ func setup() error {
 
 	// feature toggle handlers ADO intends to support
 	featureToggleHandlers := featuretoggle.GetAvailableFeatureToggles(
-		featuretoggle.WithFeatureTogglesInCluster(addonOperatorObjectInCluster.Spec.FeatureToggles),
 		featuretoggle.WithSchemeToUpdate{Scheme: scheme},
 		featuretoggle.WithAddonReconcilerOptsToUpdate{AddonReconcilerOptsToUpdate: &addonReconcilerOptions},
 	)
 
 	for _, featureToggleHandler := range featureToggleHandlers {
-		if !featureToggleHandler.IsEnabled() {
+		if !featuretoggle.IsEnabled(featureToggleHandler, addonOperatorObjectInCluster) {
 			continue
 		}
 		if err := featureToggleHandler.PreManagerSetupHandle(ctx); err != nil {
@@ -250,7 +250,7 @@ func setup() error {
 	}
 
 	for _, featureToggleHandler := range featureToggleHandlers {
-		if !featureToggleHandler.IsEnabled() {
+		if !featuretoggle.IsEnabled(featureToggleHandler, addonOperatorObjectInCluster) {
 			continue
 		}
 		if err := featureToggleHandler.PostManagerSetupHandle(ctx, mgr); err != nil {

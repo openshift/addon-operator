@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/openshift/addon-operator/internal/metrics"
@@ -43,7 +44,7 @@ type AddonOperatorReconciler struct {
 	OCMClientManager    ocmClientManager
 	Recorder            *metrics.Recorder
 	ClusterExternalID   string
-	FeatureTogglesState addonsv1alpha1.AddonOperatorFeatureToggles // no need to guard this with a mutex considering the fact that no two goroutines would ever try to update it as this is only initialized at startup
+	FeatureTogglesState []string // no need to guard this with a mutex considering the fact that no two goroutines would ever try to update it as this is only initialized at startup
 }
 
 func (r *AddonOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
@@ -91,7 +92,7 @@ func (r *AddonOperatorReconciler) Reconcile(
 
 	// Exiting here so that k8s can restart ADO (pods).
 	// This will make ADO bootstrap itself w.r.t to the latest state of feature toggles in the cluster (AddonOperator CR).
-	if r.FeatureTogglesState != addonOperator.Spec.FeatureToggles {
+	if !areSlicesEquivalent(r.FeatureTogglesState, strings.Split(addonOperator.Spec.FeatureToggles, ",")) {
 		log.Info("found a different state of feature toggles, exiting AddonOperator")
 		os.Exit(0)
 	}
@@ -112,6 +113,28 @@ func (r *AddonOperatorReconciler) Reconcile(
 		return ctrl.Result{}, err
 	}
 	return ctrl.Result{RequeueAfter: defaultAddonOperatorRequeueTime}, nil
+}
+
+func areSlicesEquivalent(sliceA []string, sliceB []string) bool {
+	if len(sliceA) != len(sliceB) {
+		return false
+	}
+	elementsDiffTracker := map[string]int{}
+	for _, strA := range sliceA {
+		elementsDiffTracker[strA] += 1
+	}
+	for _, strB := range sliceB {
+		elementsDiffTracker[strB] -= 1
+	}
+
+	// if elementsDiffTracker as 0 value for all elements, this means that for every string in slice A there was a string in Slice B proving their equivalence
+	for _, diff := range elementsDiffTracker {
+		if diff != 0 {
+			return false
+		}
+	}
+
+	return true
 }
 
 // Creates an OCM API client and injects it into the OCM Client Manager for distribution.
