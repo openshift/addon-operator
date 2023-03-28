@@ -15,6 +15,10 @@ import (
 	"strings"
 	"time"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"package-operator.run/apis/core/v1alpha1"
+
 	"github.com/blang/semver/v4"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/stdr"
@@ -694,11 +698,29 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	}
 
 	ctx = logr.NewContext(ctx, logger)
+	if err := installPKO(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to install PKO: %w", err)
+	}
 	if err := labelNodesWithInfraRole(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
 	}
 	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
 		return err
+	}
+	return nil
+}
+
+func installPKO(ctx context.Context, cluster *dev.Cluster) error {
+	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
+		"https://github.com/package-operator/package-operator/releases/latest/download/self-bootstrap-job.yaml",
+	}); err != nil {
+		return fmt.Errorf("install PKO: %w", err)
+	}
+
+	clusterPkg := &v1alpha1.ClusterPackage{}
+	clusterPkg.SetName("package-operator")
+	if err := cluster.Waiter.WaitForCondition(ctx, clusterPkg, "Available", metav1.ConditionTrue); err != nil {
+		return fmt.Errorf("waiting for PKO installation: %w", err)
 	}
 	return nil
 }
