@@ -719,7 +719,7 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 func installPKO(ctx context.Context, cluster *dev.Cluster) error {
 	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
 		"https://github.com/package-operator/package-operator/releases/latest/download/self-bootstrap-job.yaml",
-	}); err != nil {
+	}, dev.WithInterval(10*time.Second), dev.WithTimeout(5*time.Minute)); err != nil {
 		return fmt.Errorf("install PKO: %w", err)
 	}
 
