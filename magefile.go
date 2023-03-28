@@ -31,6 +31,8 @@ import (
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 
+	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -692,7 +694,11 @@ func (Test) Integration(ctx context.Context) error {
 // Target to prepare the CI-CD environment before installing the operator.
 func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	cluster, err := dev.NewCluster(path.Join(cacheDir, "ci"),
-		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")),
+		dev.WithSchemeBuilder(runtime.SchemeBuilder{
+			pkov1alpha1.AddToScheme, // pko apis import pkoapis "package-operator.run/apis"
+		}),
+	)
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
