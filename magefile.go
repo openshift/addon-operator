@@ -719,13 +719,16 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 func installPKO(ctx context.Context, cluster *dev.Cluster) error {
 	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
 		"https://github.com/package-operator/package-operator/releases/latest/download/self-bootstrap-job.yaml",
-	}, dev.WithInterval(10*time.Second), dev.WithTimeout(5*time.Minute)); err != nil {
+	}); err != nil {
 		return fmt.Errorf("install PKO: %w", err)
 	}
 
 	clusterPkg := &v1alpha1.ClusterPackage{}
 	clusterPkg.SetName("package-operator")
-	if err := cluster.Waiter.WaitForCondition(ctx, clusterPkg, "Available", metav1.ConditionTrue); err != nil {
+	if err := cluster.Waiter.WaitForCondition(
+		ctx, clusterPkg, "Available", metav1.ConditionTrue,
+		dev.WithInterval(10*time.Second), dev.WithTimeout(5*time.Minute),
+	); err != nil {
 		return fmt.Errorf("waiting for PKO installation: %w", err)
 	}
 	return nil
