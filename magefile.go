@@ -393,6 +393,7 @@ func populatePkgCache(imageCacheDir string) error {
 		{"mkdir", "-p", manifestsDir},
 		{"bash", "-c", "cp config/package/hc/*.yaml " + manifestsDir},
 		{"cp", "config/package/hcp/addon-operator.yaml", manifestsDir},
+		{"cp", "config/package/hcp/metrics.service.yaml", manifestsDir},
 		{"cp", "config/package/manifest.yaml", manifestsDir},
 		{"cp", "config/package/addon-operator-package.Containerfile", manifestsDir},
 	} {
