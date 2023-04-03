@@ -15,9 +15,18 @@ func GetAvailableFeatureToggles(opts ...availableFeatureTogglesGetterOpts) []Fea
 
 	return []FeatureToggleHandler{
 		&MonitoringStackFeatureToggle{
-			Client:                      params.client,
-			SchemeToUpdate:              params.schemeToUpdate,
-			AddonReconcilerOptsToUpdate: params.addonReconcilerOptsToUpdate,
+			BaseFeatureToggleHandler{
+				Client:                      params.client,
+				SchemeToUpdate:              params.schemeToUpdate,
+				AddonReconcilerOptsToUpdate: params.addonReconcilerOptsToUpdate,
+			},
+		},
+		&AddonsPlugAndPlayFeatureToggleHandler{
+			BaseFeatureToggleHandler{
+				Client:                      params.client,
+				SchemeToUpdate:              params.schemeToUpdate,
+				AddonReconcilerOptsToUpdate: params.addonReconcilerOptsToUpdate,
+			},
 		},
 	}
 }
