@@ -160,6 +160,18 @@ rules:
   - get
   - list
   - patch
+- apiGroups:
+  - package-operator.run
+  resources:
+  - clusterobjecttemplates
+  verbs:
+  - create
+  - delete
+  - update
+  - watch
+  - get
+  - list
+  - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
