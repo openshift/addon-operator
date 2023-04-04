@@ -5,12 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"k8s.io/apimachinery/pkg/runtime"
-
-	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
-
 	"github.com/mt-sre/devkube/dev"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -30,13 +25,6 @@ type TestableFeatureToggleHandler interface {
 	PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error
 	Enable(ctx context.Context) error
 	Disable(ctx context.Context) error
-}
-
-type BaseFeatureToggleHandler struct {
-	FeatureToggleHandler
-	Client                      client.Client
-	SchemeToUpdate              *runtime.Scheme
-	AddonReconcilerOptsToUpdate *[]addoncontroller.AddonReconcilerOptions
 }
 
 func IsEnabled(featureToggleHandlerToCheck FeatureToggleHandler, addonOperatorObjInCluster addonsv1alpha1.AddonOperator) bool {

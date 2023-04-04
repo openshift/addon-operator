@@ -15,7 +15,7 @@ import (
 )
 
 func (s *integrationTestSuite) TestPackageOperatorAddon() {
-	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggleHandler{}) {
+	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggle{}) {
 		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
 	}
 
