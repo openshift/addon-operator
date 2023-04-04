@@ -289,7 +289,7 @@ const (
 	AddonReasonInstalled = "AddonInstalled"
 
 	// Addon has successfully been uninstalled.
-	AddonReasonUninstalled = "AddonUninstalled"
+	AddonReasonNotInstalled = "AddonNotInstalled"
 )
 
 type AddonNamespace struct {

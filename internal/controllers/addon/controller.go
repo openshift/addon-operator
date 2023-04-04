@@ -319,6 +319,11 @@ func (r *AddonReconciler) Reconcile(
 		return ctrl.Result{}, nil
 	}
 
+	// Set installed condition to false if its not already present.
+	if installedConditionMissing(addon) {
+		reportInstalledConditionFalse(addon)
+	}
+
 	// Ensure cache finalizer
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
 		controllerutil.AddFinalizer(addon, cacheFinalizer)
