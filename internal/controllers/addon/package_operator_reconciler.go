@@ -37,9 +37,12 @@ func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
 
 func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	if addon.Spec.AddonPackageOperator == nil {
-		return ctrl.Result{}, nil
+		return ctrl.Result{}, r.makeSureClusterObjectTemplateDoesNotExist(ctx, addon)
 	}
+	return ctrl.Result{}, r.makeSureClusterObjectTemplateExists(ctx, addon)
+}
 
+func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	pkg := &pkov1alpha1.ClusterObjectTemplate{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      addon.Name,
@@ -60,20 +63,39 @@ func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addons
 		panic(fmt.Errorf("set owner reference: %w", err))
 	}
 
-	existing := &pkov1alpha1.ClusterObjectTemplate{}
-	err := r.Client.Get(ctx, client.ObjectKey{Namespace: addon.Namespace, Name: addon.Name}, existing)
+	existing, err := r.getExisting(ctx, addon)
 	switch {
 	case err == nil:
 		if err := r.Client.Patch(ctx, existing, client.MergeFrom(pkg)); err != nil {
-			return ctrl.Result{}, fmt.Errorf("update pko object: %w", err)
+			return fmt.Errorf("update pko object: %w", err)
 		}
 	case errors.IsNotFound(err):
 		if err := r.Client.Create(ctx, pkg); err != nil {
-			return ctrl.Result{}, fmt.Errorf("create pko object: %w", err)
+			return fmt.Errorf("create pko object: %w", err)
 		}
 	default:
-		return ctrl.Result{}, fmt.Errorf("get pko object: %w", err)
+		return fmt.Errorf("get pko object: %w", err)
 	}
+	return nil
+}
 
-	return ctrl.Result{}, nil
+func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateDoesNotExist(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+	existing, err := r.getExisting(ctx, addon)
+	switch {
+	case err == nil:
+		if err := r.Client.Delete(ctx, existing); err != nil {
+			return fmt.Errorf("delete pko object: %w", err)
+		}
+	case errors.IsNotFound(err):
+		return nil
+	default:
+		return fmt.Errorf("get pko object: %w", err)
+	}
+	return nil
+}
+
+func (r *PackageOperatorReconciler) getExisting(ctx context.Context, addon *addonsv1alpha1.Addon) (*pkov1alpha1.ClusterObjectTemplate, error) {
+	existing := &pkov1alpha1.ClusterObjectTemplate{}
+	err := r.Client.Get(ctx, client.ObjectKey{Namespace: addon.Namespace, Name: addon.Name}, existing)
+	return existing, err
 }
