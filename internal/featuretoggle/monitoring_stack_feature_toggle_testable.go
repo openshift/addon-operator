@@ -39,8 +39,8 @@ func (m *MonitoringStackFeatureToggle) Enable(ctx context.Context) error {
 	}
 	// no need to do anything if its already enabled
 	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
-	isAddonsPlugAndPlayAlreadyEnabled := stringPresentInSlice(m.GetFeatureToggleIdentifier(), existingFeatureToggles)
-	if isAddonsPlugAndPlayAlreadyEnabled {
+	isMonitoringStackAlreadyEnabled := stringPresentInSlice(m.GetFeatureToggleIdentifier(), existingFeatureToggles)
+	if isMonitoringStackAlreadyEnabled {
 		return nil
 	}
 	adoInCluster.Spec.FeatureToggles += "," + m.GetFeatureToggleIdentifier()
@@ -71,8 +71,8 @@ func (m *MonitoringStackFeatureToggle) Disable(ctx context.Context) error {
 	}
 	// no need to do anything if its already disabled
 	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
-	isAddonsPlugAndPlayAlreadyEnabled := stringPresentInSlice(m.GetFeatureToggleIdentifier(), existingFeatureToggles)
-	if !isAddonsPlugAndPlayAlreadyEnabled {
+	isMonitoringStackAlreadyEnabled := stringPresentInSlice(m.GetFeatureToggleIdentifier(), existingFeatureToggles)
+	if !isMonitoringStackAlreadyEnabled {
 		return nil
 	}
 	updatedFeatureToggles := ""
