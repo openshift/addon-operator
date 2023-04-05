@@ -323,7 +323,20 @@ func (s *integrationTestSuite) TestAddonConditions() {
 
 		err := integration.Client.Create(ctx, addon)
 		s.Require().NoError(err)
-		// wait until Addon is installed.
+
+		// assert that the installed condition is present and is set to false, when the
+		// addon is being installed.
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to have installed condition set to false",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionFalse(
+					a.Status.Conditions, addonsv1alpha1.Installed), nil
+			})
+		s.Require().NoError(err)
+
+		// wait until Addon has installed=true.
 		err = integration.WaitForObject(
 			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, addon, "to be installed",

@@ -267,7 +267,7 @@ func installedCondition(value metav1.ConditionStatus) metav1.Condition {
 		return metav1.Condition{
 			Type:    addonsv1alpha1.Installed,
 			Status:  metav1.ConditionFalse,
-			Reason:  addonsv1alpha1.AddonReasonUninstalled,
+			Reason:  addonsv1alpha1.AddonReasonNotInstalled,
 			Message: "Addon has been uninstalled.",
 		}
 	}

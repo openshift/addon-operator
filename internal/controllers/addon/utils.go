@@ -183,7 +183,7 @@ func reportUninstalledCondition(addon *addonsv1alpha1.Addon) {
 			metav1.Condition{
 				Type:               addonsv1alpha1.Installed,
 				Status:             metav1.ConditionFalse,
-				Reason:             addonsv1alpha1.AddonReasonUninstalled,
+				Reason:             addonsv1alpha1.AddonReasonNotInstalled,
 				Message:            "Addon has been uninstalled.",
 				ObservedGeneration: addon.Generation,
 			},
@@ -219,6 +219,24 @@ func addonIsBeingUpgraded(addon *addonsv1alpha1.Addon) bool {
 		return addon.Spec.Version != addon.Status.ObservedVersion
 	}
 	return false
+}
+
+func installedConditionMissing(addon *addonsv1alpha1.Addon) bool {
+	cond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Installed)
+	return cond == nil
+}
+
+func reportInstalledConditionFalse(addon *addonsv1alpha1.Addon) {
+	meta.SetStatusCondition(&addon.Status.Conditions,
+		metav1.Condition{
+			Type:               addonsv1alpha1.Installed,
+			Status:             metav1.ConditionFalse,
+			Reason:             addonsv1alpha1.AddonReasonNotInstalled,
+			Message:            "Addon is not yet installed.",
+			ObservedGeneration: addon.Generation,
+		},
+	)
+	addon.Status.ObservedGeneration = addon.Generation
 }
 
 // Marks Addon as unavailable because the CatalogSource is unready

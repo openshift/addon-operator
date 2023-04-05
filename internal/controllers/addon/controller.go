@@ -6,7 +6,9 @@ import (
 	"sync"
 	"time"
 
+	multierror "github.com/hashicorp/go-multierror"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/metrics"
@@ -246,48 +248,58 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager, opts ...AddonReconc
 
 // AddonReconciler/Controller entrypoint
 func (r *AddonReconciler) Reconcile(
-	ctx context.Context, req ctrl.Request) (res ctrl.Result, err error) {
+	ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 
-	log := r.Log.WithValues("addon", req.NamespacedName.String())
-	ctx = controllers.ContextWithLogger(ctx, log)
+	logger := r.Log.WithValues("addon", req.NamespacedName.String())
+	ctx = controllers.ContextWithLogger(ctx, logger)
 
 	addon := &addonsv1alpha1.Addon{}
 	if err := r.Get(ctx, req.NamespacedName, addon); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	defer func() {
-		// Update metrics only if a Recorder is initialized
-		if r.Recorder != nil {
-			r.Recorder.RecordAddonMetrics(addon)
-		}
+	reconcileResult, reconcileErr := r.reconcile(ctx, addon, logger)
 
-		// Ensure we report to the UpgradePolicy endpoint, when we are done with whatever we are doing.
-		if err != nil {
-			return
-		}
-		err = r.handleUpgradePolicyStatusReporting(
-			ctx, log.WithName("UpgradePolicyStatusReporter"), addon,
-		)
+	// Update metrics only if a Recorder is initialized
+	if r.Recorder != nil {
+		r.Recorder.RecordAddonMetrics(addon)
+	}
+	errors := r.syncWithExternalAPIs(ctx, logger, addon)
 
-		if err != nil {
-			return
-		}
+	// append reconcilerErr
+	errors = multierror.Append(errors, reconcileErr)
 
-		err = r.handleOCMAddOnStatusReporting(
-			ctx, log.WithName("AddonStatusReporter"), addon,
-		)
-		if err != nil {
-			return
-		}
-		// We report the observed version regardless of whether the addon
-		// is available or not.
-		reportObservedVersion(addon)
-		// Finally, update the Status back to the kube-api
-		// This is the only place where Status is being reported.
-		err = r.Status().Update(ctx, addon)
-	}()
+	// We report the observed version regardless of whether the addon
+	// is available or not.
+	reportObservedVersion(addon)
 
+	if statusErr := r.Status().Update(ctx, addon); statusErr != nil {
+		errors = multierror.Append(errors, statusErr)
+		return reconcile.Result{}, errors
+	}
+	return reconcileResult, errors.ErrorOrNil()
+}
+
+func (r *AddonReconciler) syncWithExternalAPIs(ctx context.Context, logger logr.Logger, addon *addonsv1alpha1.Addon) *multierror.Error {
+	// We don't immeadiately return on errors, we append them to a multi-error object.
+	var multiErr *multierror.Error
+
+	upgradePolicyErr := r.handleUpgradePolicyStatusReporting(
+		ctx, logger.WithName("UpgradePolicyStatusReporter"), addon,
+	)
+	multiErr = multierror.Append(multiErr, upgradePolicyErr)
+
+	ocmStatusReportingErr := r.handleOCMAddOnStatusReporting(
+		ctx, logger.WithName("AddonStatusReporter"), addon,
+	)
+	multiErr = multierror.Append(multiErr, ocmStatusReportingErr)
+
+	return multiErr
+}
+
+func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.Addon,
+	log logr.Logger) (ctrl.Result, error) {
+	ctx = controllers.ContextWithLogger(ctx, log)
 	// Handle addon deletion before checking for pause condition.
 	// This allows even paused addons to be deleted.
 	if !addon.DeletionTimestamp.IsZero() {
@@ -317,6 +329,11 @@ func (r *AddonReconciler) Reconcile(
 	if addonIsBeingUpgraded(addon) {
 		reportAddonUpgradeStarted(addon)
 		return ctrl.Result{}, nil
+	}
+
+	// Set installed condition to false if its not already present.
+	if installedConditionMissing(addon) {
+		reportInstalledConditionFalse(addon)
 	}
 
 	// Ensure cache finalizer
