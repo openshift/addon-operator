@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"k8s.io/apimachinery/pkg/runtime"
-	"sigs.k8s.io/controller-runtime/pkg/manager"
-
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
+
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 )
@@ -16,16 +16,17 @@ import (
 var _ FeatureToggleHandler = (*MonitoringStackFeatureToggle)(nil)
 
 type MonitoringStackFeatureToggle struct {
+	FeatureToggleHandler
 	Client                      client.Client
 	SchemeToUpdate              *runtime.Scheme
 	AddonReconcilerOptsToUpdate *[]addoncontroller.AddonReconcilerOptions
 }
 
-func (m MonitoringStackFeatureToggle) Name() string {
+func (m *MonitoringStackFeatureToggle) Name() string {
 	return "Monitoring Stack Reconciliation Feature Toggle"
 }
 
-func (m MonitoringStackFeatureToggle) GetFeatureToggleIdentifier() string {
+func (m *MonitoringStackFeatureToggle) GetFeatureToggleIdentifier() string {
 	return "EXPERIMENTAL_FEATURES"
 }
 

@@ -19,6 +19,11 @@ func GetAvailableFeatureToggles(opts ...availableFeatureTogglesGetterOpts) []Fea
 			SchemeToUpdate:              params.schemeToUpdate,
 			AddonReconcilerOptsToUpdate: params.addonReconcilerOptsToUpdate,
 		},
+		&AddonsPlugAndPlayFeatureToggle{
+			Client:                      params.client,
+			SchemeToUpdate:              params.schemeToUpdate,
+			AddonReconcilerOptsToUpdate: params.addonReconcilerOptsToUpdate,
+		},
 	}
 }
 
