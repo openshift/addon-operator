@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -37,13 +38,13 @@ func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
 
 func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	if addon.Spec.AddonPackageOperator == nil {
-		return ctrl.Result{}, r.makeSureClusterObjectTemplateDoesNotExist(ctx, addon)
+		return ctrl.Result{}, r.ensureClusterObjectTemplateTornDown(ctx, addon)
 	}
-	return ctrl.Result{}, r.makeSureClusterObjectTemplateExists(ctx, addon)
+	return ctrl.Result{}, r.reconcileClusterObjectTemplate(ctx, addon)
 }
 
-func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx context.Context, addon *addonsv1alpha1.Addon) error {
-	pkg := &pkov1alpha1.ClusterObjectTemplate{
+func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+	clusterObjectTemplate := &pkov1alpha1.ClusterObjectTemplate{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      addon.Name,
 			Namespace: addon.Namespace,
@@ -59,42 +60,62 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 		},
 	}
 
-	if err := controllerutil.SetControllerReference(addon, &pkg.ObjectMeta, r.Scheme); err != nil {
-		panic(fmt.Errorf("set owner reference: %w", err))
+	if err := controllerutil.SetControllerReference(addon, clusterObjectTemplate, r.Scheme); err != nil {
+		return fmt.Errorf("setting owner reference: %w", err)
 	}
 
-	existing, err := r.getExisting(ctx, addon)
-	switch {
-	case err == nil:
-		if err := r.Client.Patch(ctx, existing, client.MergeFrom(pkg)); err != nil {
-			return fmt.Errorf("update pko object: %w", err)
+	existing, err := r.getExistingClusterObjectTemplate(ctx, addon)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			if err := r.Client.Create(ctx, clusterObjectTemplate); err != nil {
+				return fmt.Errorf("creating ClusterObjectTemplate object: %w", err)
+			}
 		}
-	case errors.IsNotFound(err):
-		if err := r.Client.Create(ctx, pkg); err != nil {
-			return fmt.Errorf("create pko object: %w", err)
+		return fmt.Errorf("getting ClusterObjectTemplate object: %w", err)
+	}
+
+	r.updateAddonStatusConditionsFromPackage(addon, clusterObjectTemplate)
+
+	if err := r.Client.Patch(ctx, existing, client.MergeFrom(clusterObjectTemplate)); err != nil {
+		return fmt.Errorf("updating ClusterObjectTemplate object: %w", err)
+	}
+
+	return nil
+}
+
+func (r *PackageOperatorReconciler) updateAddonStatusConditionsFromPackage(addon *addonsv1alpha1.Addon, clusterObjectTemplate *pkov1alpha1.ClusterObjectTemplate) {
+	for _, cond := range clusterObjectTemplate.Status.Conditions {
+		if clusterObjectTemplate.GetGeneration() != cond.ObservedGeneration {
+			// condition is out of date, don't copy it over
+			continue
 		}
-	default:
-		return fmt.Errorf("get pko object: %w", err)
+
+		newCond := metav1.Condition{
+			Type:               cond.Type,
+			Status:             cond.Status,
+			ObservedGeneration: addon.Generation,
+			Reason:             cond.Reason,
+			Message:            cond.Message,
+		}
+		meta.SetStatusCondition(&addon.Status.Conditions, newCond)
+	}
+}
+
+func (r *PackageOperatorReconciler) ensureClusterObjectTemplateTornDown(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+	existing, err := r.getExistingClusterObjectTemplate(ctx, addon)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			return nil
+		}
+		return fmt.Errorf("getting ClusterObjectTemplate object: %w", err)
+	}
+	if err = r.Client.Delete(ctx, existing); err != nil {
+		return fmt.Errorf("deleting ClusterObjectTemplate object: %w", err)
 	}
 	return nil
 }
 
-func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateDoesNotExist(ctx context.Context, addon *addonsv1alpha1.Addon) error {
-	existing, err := r.getExisting(ctx, addon)
-	switch {
-	case err == nil:
-		if err := r.Client.Delete(ctx, existing); err != nil {
-			return fmt.Errorf("delete pko object: %w", err)
-		}
-	case errors.IsNotFound(err):
-		return nil
-	default:
-		return fmt.Errorf("get pko object: %w", err)
-	}
-	return nil
-}
-
-func (r *PackageOperatorReconciler) getExisting(ctx context.Context, addon *addonsv1alpha1.Addon) (*pkov1alpha1.ClusterObjectTemplate, error) {
+func (r *PackageOperatorReconciler) getExistingClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (*pkov1alpha1.ClusterObjectTemplate, error) {
 	existing := &pkov1alpha1.ClusterObjectTemplate{}
 	err := r.Client.Get(ctx, client.ObjectKey{Namespace: addon.Namespace, Name: addon.Name}, existing)
 	return existing, err
