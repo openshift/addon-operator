@@ -25,7 +25,7 @@ metadata:
   namespace: "%s"
 spec:
   image: "%s"
-  config: {{toJSON .sources}}
+  config: {{toJson .config}}
 `
 const packageOperatorName = "packageOperatorReconciler"
 
