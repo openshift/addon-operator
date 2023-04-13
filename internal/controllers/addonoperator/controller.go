@@ -92,7 +92,7 @@ func (r *AddonOperatorReconciler) Reconcile(
 
 	// Exiting here so that k8s can restart ADO (pods).
 	// This will make ADO bootstrap itself w.r.t to the latest state of feature toggles in the cluster (AddonOperator CR).
-	if !areSlicesEquivalent(r.FeatureTogglesState, strings.Split(addonOperator.Spec.FeatureToggles, ",")) {
+	if !areSlicesEquivalent(r.FeatureTogglesState, strings.Split(addonOperator.Spec.FeatureFlags, ",")) {
 		log.Info("found a different state of feature toggles, exiting AddonOperator")
 		os.Exit(0)
 	}

@@ -30,7 +30,7 @@ type TestableFeatureToggleHandler interface {
 func IsEnabled(featureToggleHandlerToCheck FeatureToggleHandler, addonOperatorObjInCluster addonsv1alpha1.AddonOperator) bool {
 	targetFeatureToggleIdentifier := featureToggleHandlerToCheck.GetFeatureToggleIdentifier()
 
-	featureTogglesInClusterCommaSeparated := addonOperatorObjInCluster.Spec.FeatureToggles
+	featureTogglesInClusterCommaSeparated := addonOperatorObjInCluster.Spec.FeatureFlags
 	return stringPresentInSlice(targetFeatureToggleIdentifier, strings.Split(featureTogglesInClusterCommaSeparated, ","))
 }
 
