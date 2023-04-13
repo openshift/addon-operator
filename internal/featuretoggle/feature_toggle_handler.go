@@ -47,11 +47,7 @@ type Handler interface {
 	GetFeatureToggleIdentifier() string
 	PreManagerSetupHandle(ctx context.Context) error
 	PostManagerSetupHandle(ctx context.Context, mgr manager.Manager) error
-	TestableHandler
-}
-
-// to be used by tests / magefile to setup envs with / without feature toggles
-type TestableHandler interface {
+	// to be used by tests / magefile to setup envs with / without feature toggles
 	PreClusterCreationSetup(ctx context.Context) error
 	PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error
 	Enable(ctx context.Context) error
