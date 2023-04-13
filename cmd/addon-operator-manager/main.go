@@ -193,10 +193,11 @@ func setup() error {
 	addonReconcilerOptions := []addoncontroller.AddonReconcilerOptions{}
 
 	// feature toggle handlers ADO intends to support
-	featureToggleHandlers := featuretoggle.GetAvailableFeatureToggles(
-		featuretoggle.WithSchemeToUpdate{Scheme: scheme},
-		featuretoggle.WithAddonReconcilerOptsToUpdate{AddonReconcilerOptsToUpdate: &addonReconcilerOptions},
-	)
+	featureToggleGetter := featuretoggle.Getter{
+		SchemeToUpdate:              scheme,
+		AddonReconcilerOptsToUpdate: &addonReconcilerOptions,
+	}
+	featureToggleHandlers := featureToggleGetter.Get()
 
 	for _, featureToggleHandler := range featureToggleHandlers {
 		if !featuretoggle.IsEnabled(featureToggleHandler, addonOperatorObjectInCluster) {

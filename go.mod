@@ -25,6 +25,7 @@ require (
 	github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring v0.61.1-rhobs1
 	github.com/rhobs/observability-operator v0.0.20
 	github.com/stretchr/testify v1.8.2
+	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	k8s.io/api v0.26.3
 	k8s.io/apiextensions-apiserver v0.26.3
 	k8s.io/apimachinery v0.26.3

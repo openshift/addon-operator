@@ -1251,12 +1251,13 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 }
 
 func deployFeatureToggles(ctx context.Context, cluster *dev.Cluster) error {
-	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles(
-		featuretoggle.WithClient{Client: cluster.CtrlClient},
-		featuretoggle.WithSchemeToUpdate{Scheme: cluster.Scheme},
-	)
+	getter := featuretoggle.Getter{
+		Client:         cluster.CtrlClient,
+		SchemeToUpdate: cluster.Scheme,
+	}
+	featureToggles := getter.Get()
 
-	for _, featTog := range availableFeatureToggles {
+	for _, featTog := range featureToggles {
 		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
 		if featuretoggle.IsEnabledOnTestEnv(featTog) {
 			if err := featTog.Enable(ctx); err != nil {
@@ -1272,9 +1273,10 @@ func deployFeatureToggles(ctx context.Context, cluster *dev.Cluster) error {
 }
 
 func preClusterCreationFeatureToggleSetup(ctx context.Context) error {
-	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles()
+	getter := featuretoggle.Getter{}
+	featureToggles := getter.Get()
 
-	for _, featTog := range availableFeatureToggles {
+	for _, featTog := range featureToggles {
 		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
 		if featuretoggle.IsEnabledOnTestEnv(featTog) {
 			if err := featTog.PreClusterCreationSetup(ctx); err != nil {
@@ -1286,15 +1288,16 @@ func preClusterCreationFeatureToggleSetup(ctx context.Context) error {
 }
 
 func postClusterCreationFeatureToggleSetup(ctx context.Context, cluster *dev.Cluster) error {
-	availableFeatureToggles := featuretoggle.GetAvailableFeatureToggles(
-		featuretoggle.WithClient{Client: cluster.CtrlClient},
-		featuretoggle.WithSchemeToUpdate{Scheme: cluster.Scheme},
-	)
+	getter := featuretoggle.Getter{
+		Client:         cluster.CtrlClient,
+		SchemeToUpdate: cluster.Scheme,
+	}
+	featureToggles := getter.Get()
 
-	for _, featTog := range availableFeatureToggles {
+	for _, featureToggle := range featureToggles {
 		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
-		if featuretoggle.IsEnabledOnTestEnv(featTog) {
-			if err := featTog.PostClusterCreationSetup(ctx, cluster); err != nil {
+		if featuretoggle.IsEnabledOnTestEnv(featureToggle) {
+			if err := featureToggle.PostClusterCreationSetup(ctx, cluster); err != nil {
 				return fmt.Errorf("failed to set the feature toggle after the cluster creation: %w", err)
 			}
 		}
