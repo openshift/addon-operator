@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/go-logr/logr"
+
+	"github.com/openshift/addon-operator/internal/controllers"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -63,6 +67,8 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 	if err := controllerutil.SetControllerReference(addon, clusterObjectTemplate, r.Scheme); err != nil {
 		return fmt.Errorf("setting owner reference: %w", err)
 	}
+	logger := controllers.LoggerFromContext(ctx)              // TODO: remove
+	logger.Info("in reconcileClusterObjectTemplate function") // TODO: remove
 
 	existing, err := r.getExistingClusterObjectTemplate(ctx, addon)
 	if err != nil {
@@ -73,8 +79,9 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		}
 		return fmt.Errorf("getting ClusterObjectTemplate object: %w", err)
 	}
+	logger.Info("in after creating clusterObjectTemplate") // TODO: remove
 
-	r.updateAddonStatusConditionsFromPackage(addon, clusterObjectTemplate)
+	r.updateAddonStatusConditionsFromPackage(addon, clusterObjectTemplate, logger)
 
 	if err := r.Client.Patch(ctx, existing, client.MergeFrom(clusterObjectTemplate)); err != nil {
 		return fmt.Errorf("updating ClusterObjectTemplate object: %w", err)
@@ -83,10 +90,13 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 	return nil
 }
 
-func (r *PackageOperatorReconciler) updateAddonStatusConditionsFromPackage(addon *addonsv1alpha1.Addon, clusterObjectTemplate *pkov1alpha1.ClusterObjectTemplate) {
+func (r *PackageOperatorReconciler) updateAddonStatusConditionsFromPackage(addon *addonsv1alpha1.Addon, clusterObjectTemplate *pkov1alpha1.ClusterObjectTemplate, logger logr.Logger) {
+	logger.Info("in updateAddonStatusConditionsFromPackage")                          // TODO: remove
+	logger.Info("conditions", "length", len(clusterObjectTemplate.Status.Conditions)) // TODO: remove
 	for _, cond := range clusterObjectTemplate.Status.Conditions {
 		if clusterObjectTemplate.GetGeneration() != cond.ObservedGeneration {
 			// condition is out of date, don't copy it over
+			logger.Info("condition is out of date") // TODO: remove
 			continue
 		}
 

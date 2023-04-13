@@ -22,7 +22,7 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 	ctx := context.Background()
 
 	name := "addonname-pko-boatboat"
-	image := "testimage"
+	image := "quay.io/package-operator/test-stub-package:v1.0.0-47-g3405dde"
 	namespace := "namespace-onbgdions"
 
 	addon := &addonsv1alpha1.Addon{
@@ -60,5 +60,5 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 		})
 	s.Require().NoError(err)
 
-	s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
+	// s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 }
