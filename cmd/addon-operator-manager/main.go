@@ -187,6 +187,7 @@ func setup() error {
 		if !apierrors.IsNotFound(err) {
 			return fmt.Errorf("failed to GET the AddonOperator object: %w", err)
 		}
+		// TODO: is it correct that we just ignore the error and reset the ado object
 		addonOperatorObjectInCluster = addonsv1alpha1.AddonOperator{}
 	}
 
@@ -254,6 +255,8 @@ func setup() error {
 		if !featuretoggle.IsEnabled(featureToggleHandler, addonOperatorObjectInCluster) {
 			continue
 		}
+		// TODO: what does this do? It looks to me like it updates featureToggleHandler.AddonReconcilerOptsToUpdate
+		// but then AddonReconcilerOptsToUpdate isn't used anywhere
 		if err := featureToggleHandler.PostManagerSetupHandle(ctx, mgr); err != nil {
 			return fmt.Errorf("failed to handle the feature '%s' after the manager's creation", featureToggleHandler.Name())
 		}

@@ -47,22 +47,22 @@ type Handler interface {
 	GetFeatureToggleIdentifier() string
 	PreManagerSetupHandle(ctx context.Context) error
 	PostManagerSetupHandle(ctx context.Context, mgr manager.Manager) error
-	// to be used by tests / magefile to setup envs with / without feature toggles
+	// Functions for integration test setup
 	PreClusterCreationSetup(ctx context.Context) error
 	PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error
 	Enable(ctx context.Context) error
 	Disable(ctx context.Context) error
 }
 
-func IsEnabled(featureToggleHandlerToCheck Handler, addonOperatorObjInCluster addonsv1alpha1.AddonOperator) bool {
-	targetFeatureToggleIdentifier := featureToggleHandlerToCheck.GetFeatureToggleIdentifier()
+func IsEnabled(featureToggleHandler Handler, addonOperator addonsv1alpha1.AddonOperator) bool {
+	targetFeatureToggleIdentifier := featureToggleHandler.GetFeatureToggleIdentifier()
 
-	featureTogglesInClusterCommaSeparated := addonOperatorObjInCluster.Spec.FeatureToggles
-	return slices.Contains(strings.Split(featureTogglesInClusterCommaSeparated, ","), targetFeatureToggleIdentifier)
+	enabledFeatureToggles := addonOperator.Spec.FeatureToggles
+	return slices.Contains(strings.Split(enabledFeatureToggles, ","), targetFeatureToggleIdentifier)
 }
 
-func IsEnabledOnTestEnv(featureToggleHandlerToCheck Handler) bool {
-	targetFeatureToggleIdentifier := featureToggleHandlerToCheck.GetFeatureToggleIdentifier()
+func IsEnabledOnTestEnv(featureToggleHandler Handler) bool {
+	targetFeatureToggleIdentifier := featureToggleHandler.GetFeatureToggleIdentifier()
 
 	commaSeparatedFeatureToggles, ok := os.LookupEnv("FEATURE_TOGGLES")
 	if !ok {
@@ -72,37 +72,37 @@ func IsEnabledOnTestEnv(featureToggleHandlerToCheck Handler) bool {
 }
 
 func EnableFeatureToggle(ctx context.Context, client client.Client, featureToggleIdentifier string) error {
-	adoInCluster := addonsv1alpha1.AddonOperator{}
-	if err := client.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &adoInCluster); err != nil {
+	ado := addonsv1alpha1.AddonOperator{}
+	if err := client.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &ado); err != nil {
 		if errors.IsNotFound(err) {
-			adoObject := getAddonOperatorWithFeatureToggle(featureToggleIdentifier)
-			if err := client.Create(ctx, &adoObject); err != nil {
+			newAdo := getAddonOperatorWithFeatureToggle(featureToggleIdentifier)
+			if err := client.Create(ctx, &newAdo); err != nil {
 				return err
 			}
 			return nil
 		}
 		return err
 	}
-	// no need to do anything if its already enabled
-	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
+	existingFeatureToggles := strings.Split(ado.Spec.FeatureToggles, ",")
 	isFeatureToggleAlreadyEnabled := slices.Contains(existingFeatureToggles, featureToggleIdentifier)
+	// no need to do anything if its already enabled
 	if isFeatureToggleAlreadyEnabled {
 		return nil
 	}
-	newFeatureToggles := strings.Join([]string{adoInCluster.Spec.FeatureToggles, featureToggleIdentifier}, ",")
-	adoInCluster.Spec.FeatureToggles = newFeatureToggles
-	if err := client.Update(ctx, &adoInCluster); err != nil {
+	newFeatureToggles := strings.Join([]string{ado.Spec.FeatureToggles, featureToggleIdentifier}, ",")
+	ado.Spec.FeatureToggles = newFeatureToggles
+	if err := client.Update(ctx, &ado); err != nil {
 		return fmt.Errorf("failed to enable the feature toggle in the AddonOperator object: %w", err)
 	}
 	return nil
 }
 
 func DisableFeatureToggle(ctx context.Context, client client.Client, featureToggleIdentifier string) error {
-	adoInCluster := addonsv1alpha1.AddonOperator{}
-	if err := client.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &adoInCluster); err != nil {
+	ado := addonsv1alpha1.AddonOperator{}
+	if err := client.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &ado); err != nil {
 		if errors.IsNotFound(err) {
-			adoObject := getAddonOperatorWithFeatureToggle("")
-			if err := client.Create(ctx, &adoObject); err != nil {
+			newAdo := getAddonOperatorWithFeatureToggle("")
+			if err := client.Create(ctx, &newAdo); err != nil {
 				return err
 			}
 			return nil
@@ -110,16 +110,16 @@ func DisableFeatureToggle(ctx context.Context, client client.Client, featureTogg
 		return err
 	}
 	// no need to do anything if its already disabled
-	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
+	existingFeatureToggles := strings.Split(ado.Spec.FeatureToggles, ",")
 	isAddonsPlugAndPlayAlreadyEnabled := slices.Contains(existingFeatureToggles, featureToggleIdentifier)
 	if !isAddonsPlugAndPlayAlreadyEnabled {
 		return nil
 	}
 	index := slices.Index(existingFeatureToggles, featureToggleIdentifier)
 	newFeatureToggles := slices.Delete(existingFeatureToggles, index, index+1)
-	adoInCluster.Spec.FeatureToggles = strings.Join(newFeatureToggles, ",")
-	if err := client.Update(ctx, &adoInCluster); err != nil {
-		return fmt.Errorf("failed to enable the feature toggle in the AddonOperator object: %w", err)
+	ado.Spec.FeatureToggles = strings.Join(newFeatureToggles, ",")
+	if err := client.Update(ctx, &ado); err != nil {
+		return fmt.Errorf("failed to disable the feature toggle in the AddonOperator object: %w", err)
 	}
 	return nil
 }

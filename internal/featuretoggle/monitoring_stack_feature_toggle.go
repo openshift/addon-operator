@@ -16,9 +16,9 @@ import (
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
-var _ Handler = (*MonitoringStackFeatureToggle)(nil)
-
 const observabilityOperatorVersion = "0.0.15"
+
+var _ Handler = (*MonitoringStackFeatureToggle)(nil)
 
 type MonitoringStackFeatureToggle struct {
 	Handler
@@ -32,17 +32,19 @@ func (m *MonitoringStackFeatureToggle) Name() string {
 }
 
 func (m *MonitoringStackFeatureToggle) GetFeatureToggleIdentifier() string {
+	// TODO: should this be changed to "MONITORING_STACK"?
 	return "EXPERIMENTAL_FEATURES"
 }
 
+// PreManagerSetupHandle sets up to be done before the manager is created.
 func (m *MonitoringStackFeatureToggle) PreManagerSetupHandle(ctx context.Context) error {
-	// nothing to handle before the manager is setup
 	_ = obov1alpha1.AddToScheme(m.SchemeToUpdate)
 	return nil
 }
 
+// PostManagerSetupHandle uses the manager's cached client and scheme to set up the monitoringStackReconcilerOpt
+// addonReconcilerOpts w.r.t this featureToggleHandler
 func (m *MonitoringStackFeatureToggle) PostManagerSetupHandle(ctx context.Context, mgr manager.Manager) error {
-	// use the manager's cached client and scheme to setup the monitoringStackReconcilerOpt addonReconcilerOpts w.r.t this featureToggleHandler
 	*m.AddonReconcilerOptsToUpdate = append(*m.AddonReconcilerOptsToUpdate, addoncontroller.WithMonitoringStackReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
@@ -50,22 +52,30 @@ func (m *MonitoringStackFeatureToggle) PostManagerSetupHandle(ctx context.Contex
 	return nil
 }
 
-// Used For Testing
+// Enable is ONLY used for Testing. It adds the GetFeatureToggleIdentifier to the
+// FeatureToggles in the AddonOperator Spec. If the FeatureToggles field is changed,
+// the AddonOperator reconciler exits which triggers the addon operator manager
+// to restart with the new configuration.
 func (m *MonitoringStackFeatureToggle) Enable(ctx context.Context) error {
 	return EnableFeatureToggle(ctx, m.Client, m.GetFeatureToggleIdentifier())
 }
 
-// Used For Testing
+// Disable is ONLY used for Testing. It removes the GetFeatureToggleIdentifier from the
+// FeatureToggles in the AddonOperator Spec if it exists. If the FeatureToggles field is changed,
+// // the AddonOperator reconciler exits which triggers the addon operator manager
+// // to restart with the new configuration.
 func (m *MonitoringStackFeatureToggle) Disable(ctx context.Context) error {
 	return DisableFeatureToggle(ctx, m.Client, m.GetFeatureToggleIdentifier())
 }
 
-// Used For Testing
+// PreClusterCreationSetup is ONLY used for testing. It preforms any set up needed before
+// the test cluster is created.
 func (m *MonitoringStackFeatureToggle) PreClusterCreationSetup(ctx context.Context) error {
 	return nil
 }
 
-// Used For Testing
+// PostClusterCreationSetup is ONLY used for test. It preforms any set up needed after
+// the test cluster is created.
 func (m *MonitoringStackFeatureToggle) PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error {
 	observabilityOperatorCatalogSource, err := renderObservabilityOperatorCatalogSource(ctx, clusterCreated)
 	if err != nil {
@@ -91,7 +101,6 @@ func (m *MonitoringStackFeatureToggle) PostClusterCreationSetup(ctx context.Cont
 	return nil
 }
 
-// Used For Testing
 func renderObservabilityOperatorCatalogSource(ctx context.Context, cluster *dev.Cluster) (*operatorsv1alpha1.CatalogSource, error) {
 	objs, err := dev.LoadKubernetesObjectsFromFile("config/deploy/observability-operator/catalog-source.yaml.tpl")
 	if err != nil {

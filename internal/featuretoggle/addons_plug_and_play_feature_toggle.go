@@ -52,22 +52,30 @@ func (h *AddonsPlugAndPlayFeatureToggle) PostManagerSetupHandle(ctx context.Cont
 	return nil
 }
 
-// Used For Testing
+// Enable is ONLY used for Testing. It adds the GetFeatureToggleIdentifier to the
+// FeatureToggles in the AddonOperator Spec. If the FeatureToggles field is changed,
+// the AddonOperator reconciler exits which triggers the addon operator manager
+// to restart with the new configuration.
 func (h *AddonsPlugAndPlayFeatureToggle) Enable(ctx context.Context) error {
 	return EnableFeatureToggle(ctx, h.Client, h.GetFeatureToggleIdentifier())
 }
 
-// Used For Testing
+// Disable is ONLY used for Testing. It removes the GetFeatureToggleIdentifier from the
+// FeatureToggles in the AddonOperator Spec if it exists. If the FeatureToggles field is changed,
+// // the AddonOperator reconciler exits which triggers the addon operator manager
+// // to restart with the new configuration.
 func (h *AddonsPlugAndPlayFeatureToggle) Disable(ctx context.Context) error {
 	return DisableFeatureToggle(ctx, h.Client, h.GetFeatureToggleIdentifier())
 }
 
-// Used For Testing
+// PreClusterCreationSetup is ONLY used for testing. It preforms any set up needed before
+// the test cluster is created.
 func (h *AddonsPlugAndPlayFeatureToggle) PreClusterCreationSetup(ctx context.Context) error {
 	return nil
 }
 
-// Used For Testing
+// PostClusterCreationSetup is ONLY used for test. It preforms any set up needed after
+// the test cluster is created.
 func (h *AddonsPlugAndPlayFeatureToggle) PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error {
 	if err := clusterCreated.CreateAndWaitFromHttp(ctx, []string{
 		"https://github.com/package-operator/package-operator/releases/download/v" + pkoVersion + "/self-bootstrap-job.yaml",
