@@ -24,7 +24,11 @@ metadata:
   namespace: "%s"
 spec:
   image: "%s"
-  config: {{toJSON .sources}}
+  config:
+    addons:
+      v1alpha1:
+        deadManSnitchUrl: {{.config.deadManSnitchUrl}}
+        pagerDutyKey: {{.config.pagerDutyKey}}
 `
 const packageOperatorName = "packageOperatorReconciler"
 
@@ -55,7 +59,34 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 				addon.Namespace,
 				addon.Spec.AddonPackageOperator.Image,
 			),
-			Sources: []pkov1alpha1.ObjectTemplateSource{},
+			Sources: []pkov1alpha1.ObjectTemplateSource{
+				{
+					Optional:   true,
+					APIVersion: "v1",
+					Kind:       "Secret",
+					Name:       addon.Name + "-deadmanssnitch",
+					Namespace:  addon.Namespace,
+					Items: []pkov1alpha1.ObjectTemplateSourceItem{
+						{
+							Key:         ".data.SNITCH_URL",
+							Destination: ".deadMansSnitchUrl",
+						},
+					},
+				},
+				{
+					Optional:   true,
+					APIVersion: "v1",
+					Kind:       "Secret",
+					Name:       addon.Name + "-pagerduty",
+					Namespace:  addon.Namespace,
+					Items: []pkov1alpha1.ObjectTemplateSourceItem{
+						{
+							Key:         ".data.PAGERDUTY_KEY",
+							Destination: ".pagerDutyKey",
+						},
+					},
+				},
+			},
 		},
 	}
 
