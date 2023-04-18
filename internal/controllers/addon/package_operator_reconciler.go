@@ -2,9 +2,10 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
-	"k8s.io/apimachinery/pkg/api/errors"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -21,16 +22,18 @@ apiVersion: "%s"
 kind: ClusterPackage
 metadata:
   name: "%s"
-  namespace: "%s"
 spec:
   image: "%s"
   config:
     addons:
       v1alpha1:
-        deadManSnitchUrl: {{.config.deadManSnitchUrl}}
-        pagerDutyKey: {{.config.pagerDutyKey}}
+        deadMansSnitchUrl: {{.config%s | b64dec}}
+        pagerDutyKey: {{.config%s | b64dec}}
 `
+
 const packageOperatorName = "packageOperatorReconciler"
+const deadMansSnitchUrlConfigKey = ".deadMansSnitchUrl"
+const pagerDutyKeyConfigKey = ".pagerDutyKey"
 
 type PackageOperatorReconciler struct {
 	Client client.Client
@@ -47,17 +50,23 @@ func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addons
 }
 
 func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+	if len(addon.Spec.Namespaces) < 1 {
+		return errors.New(fmt.Sprintf("no namespace configured in addon %s", addon.Name))
+	}
+
+	addonDestNamespace := addon.Spec.Namespaces[0].Name
+
 	pkg := &pkov1alpha1.ClusterObjectTemplate{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      addon.Name,
-			Namespace: addon.Namespace,
+			Name: addon.Name,
 		},
 		Spec: pkov1alpha1.ObjectTemplateSpec{
 			Template: fmt.Sprintf(pkgTemplate,
 				pkov1alpha1.GroupVersion,
 				addon.Name,
-				addon.Namespace,
 				addon.Spec.AddonPackageOperator.Image,
+				deadMansSnitchUrlConfigKey,
+				pagerDutyKeyConfigKey,
 			),
 			Sources: []pkov1alpha1.ObjectTemplateSource{
 				{
@@ -65,11 +74,11 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 					APIVersion: "v1",
 					Kind:       "Secret",
 					Name:       addon.Name + "-deadmanssnitch",
-					Namespace:  addon.Namespace,
+					Namespace:  addonDestNamespace,
 					Items: []pkov1alpha1.ObjectTemplateSourceItem{
 						{
 							Key:         ".data.SNITCH_URL",
-							Destination: ".deadMansSnitchUrl",
+							Destination: deadMansSnitchUrlConfigKey,
 						},
 					},
 				},
@@ -78,11 +87,11 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 					APIVersion: "v1",
 					Kind:       "Secret",
 					Name:       addon.Name + "-pagerduty",
-					Namespace:  addon.Namespace,
+					Namespace:  addonDestNamespace,
 					Items: []pkov1alpha1.ObjectTemplateSourceItem{
 						{
 							Key:         ".data.PAGERDUTY_KEY",
-							Destination: ".pagerDutyKey",
+							Destination: pagerDutyKeyConfigKey,
 						},
 					},
 				},
@@ -100,7 +109,7 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 		if err := r.Client.Patch(ctx, existing, client.MergeFrom(pkg)); err != nil {
 			return fmt.Errorf("update pko object: %w", err)
 		}
-	case errors.IsNotFound(err):
+	case k8serrors.IsNotFound(err):
 		if err := r.Client.Create(ctx, pkg); err != nil {
 			return fmt.Errorf("create pko object: %w", err)
 		}
@@ -117,7 +126,7 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateDoesNotExist(ct
 		if err := r.Client.Delete(ctx, existing); err != nil {
 			return fmt.Errorf("delete pko object: %w", err)
 		}
-	case errors.IsNotFound(err):
+	case k8serrors.IsNotFound(err):
 		return nil
 	default:
 		return fmt.Errorf("get pko object: %w", err)
