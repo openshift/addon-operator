@@ -26,14 +26,23 @@ type AddonOperatorSpec struct {
 	// when set to True
 	// +optional
 	Paused bool `json:"pause"`
+	// [DEPRECATED] Specification of the feature toggles supported by the addon-operator
+	// +optional
+	FeatureToggles AddonOperatorFeatureToggles `json:"featureToggles"`
 	// Specification of the feature toggles supported by the addon-operator in the form of a comma-separated string
 	// +optional
-	FeatureToggles string `json:"featureToggles"`
+	FeatureFlags string `json:"featureFlags"`
 	// OCM specific configuration.
 	// Setting this subconfig will enable deeper OCM integration.
 	// e.g. push status reporting, etc.
 	// +optional
 	OCM *AddonOperatorOCM `json:"ocm,omitempty"`
+}
+
+type AddonOperatorFeatureToggles struct {
+	// Feature toggle for enabling/disabling experimental features in the addon-operator
+	// +optional
+	ExperimentalFeatures bool `json:"experimentalFeatures"`
 }
 
 // OCM specific configuration.
