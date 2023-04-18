@@ -3,9 +3,11 @@ package integration_test
 import (
 	"context"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"github.com/openshift/addon-operator/internal/featuretoggle"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -60,5 +62,13 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 		})
 	s.Require().NoError(err)
 
-	// s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
+	addonWithStatus := &addonsv1alpha1.Addon{}
+	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addonWithStatus)
+	s.Require().NoError(err)
+	availableCondition := meta.FindStatusCondition(addonWithStatus.Status.Conditions, pkov1alpha1.PackageAvailable)
+
+	s.Assert().Equal(metav1.ConditionFalse, availableCondition.Status)
+	s.Assert().Equal(addonsv1alpha1.AddonReasonUnreadyClusterPackageTemplate, availableCondition.Reason)
+
+	s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 }

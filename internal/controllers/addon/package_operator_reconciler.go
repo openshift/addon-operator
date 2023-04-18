@@ -4,10 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
-
-	"github.com/openshift/addon-operator/internal/controllers"
-
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -44,10 +40,10 @@ func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addons
 	if addon.Spec.AddonPackageOperator == nil {
 		return ctrl.Result{}, r.ensureClusterObjectTemplateTornDown(ctx, addon)
 	}
-	return ctrl.Result{}, r.reconcileClusterObjectTemplate(ctx, addon)
+	return r.reconcileClusterObjectTemplate(ctx, addon)
 }
 
-func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	clusterObjectTemplate := &pkov1alpha1.ClusterObjectTemplate{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      addon.Name,
@@ -65,50 +61,41 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 	}
 
 	if err := controllerutil.SetControllerReference(addon, clusterObjectTemplate, r.Scheme); err != nil {
-		return fmt.Errorf("setting owner reference: %w", err)
+		return ctrl.Result{}, fmt.Errorf("setting owner reference: %w", err)
 	}
-	logger := controllers.LoggerFromContext(ctx)              // TODO: remove
-	logger.Info("in reconcileClusterObjectTemplate function") // TODO: remove
 
-	existing, err := r.getExistingClusterObjectTemplate(ctx, addon)
+	existingClusterObjectTemplate, err := r.getExistingClusterObjectTemplate(ctx, addon)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			if err := r.Client.Create(ctx, clusterObjectTemplate); err != nil {
-				return fmt.Errorf("creating ClusterObjectTemplate object: %w", err)
+				return ctrl.Result{}, fmt.Errorf("creating ClusterObjectTemplate object: %w", err)
 			}
 		}
-		return fmt.Errorf("getting ClusterObjectTemplate object: %w", err)
-	}
-	logger.Info("in after creating clusterObjectTemplate") // TODO: remove
-
-	r.updateAddonStatusConditionsFromPackage(addon, clusterObjectTemplate, logger)
-
-	if err := r.Client.Patch(ctx, existing, client.MergeFrom(clusterObjectTemplate)); err != nil {
-		return fmt.Errorf("updating ClusterObjectTemplate object: %w", err)
+		return ctrl.Result{}, fmt.Errorf("getting ClusterObjectTemplate object: %w", err)
 	}
 
-	return nil
+	if packageAvailable := r.updateAddonStatus(addon, existingClusterObjectTemplate); !packageAvailable {
+		return handleExit(resultRetry), nil
+	}
+
+	if err := r.Client.Patch(ctx, existingClusterObjectTemplate, client.MergeFrom(clusterObjectTemplate)); err != nil {
+		return ctrl.Result{}, fmt.Errorf("updating ClusterObjectTemplate object: %w", err)
+	}
+
+	return ctrl.Result{}, nil
 }
 
-func (r *PackageOperatorReconciler) updateAddonStatusConditionsFromPackage(addon *addonsv1alpha1.Addon, clusterObjectTemplate *pkov1alpha1.ClusterObjectTemplate, logger logr.Logger) {
-	logger.Info("in updateAddonStatusConditionsFromPackage")                          // TODO: remove
-	logger.Info("conditions", "length", len(clusterObjectTemplate.Status.Conditions)) // TODO: remove
-	for _, cond := range clusterObjectTemplate.Status.Conditions {
-		if clusterObjectTemplate.GetGeneration() != cond.ObservedGeneration {
-			// condition is out of date, don't copy it over
-			logger.Info("condition is out of date") // TODO: remove
-			continue
-		}
-
-		newCond := metav1.Condition{
-			Type:               cond.Type,
-			Status:             cond.Status,
-			ObservedGeneration: addon.Generation,
-			Reason:             cond.Reason,
-			Message:            cond.Message,
-		}
-		meta.SetStatusCondition(&addon.Status.Conditions, newCond)
+func (r *PackageOperatorReconciler) updateAddonStatus(addon *addonsv1alpha1.Addon, clusterObjectTemplate *pkov1alpha1.ClusterObjectTemplate) bool {
+	availableCondition := meta.FindStatusCondition(clusterObjectTemplate.Status.Conditions, pkov1alpha1.PackageAvailable)
+	if availableCondition != nil &&
+		availableCondition.ObservedGeneration == clusterObjectTemplate.GetGeneration() &&
+		availableCondition.Status == metav1.ConditionTrue {
+		return true
 	}
+
+	reportUnreadyClusterObjectTemplate(addon)
+	return false
+
 }
 
 func (r *PackageOperatorReconciler) ensureClusterObjectTemplateTornDown(ctx context.Context, addon *addonsv1alpha1.Addon) error {

@@ -131,7 +131,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
 			AddonID:          "addon-1",
 			CorrelationID:    "123",
-			StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
 			nil,
@@ -286,7 +286,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			)
 		ocmClient.On("PatchAddOnStatus", mock.Anything, "addon-1", ocm.AddOnStatusPatchRequest{
 			CorrelationID:    addon.Spec.CorrelationID,
-			StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
 			nil,
@@ -370,7 +370,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 
 		ocmClient.On("PatchAddOnStatus", mock.Anything, "addon-1", ocm.AddOnStatusPatchRequest{
 			CorrelationID:    addon.Spec.CorrelationID,
-			StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
 			nil,
@@ -448,7 +448,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			)
 		ocmClient.On("PatchAddOnStatus", mock.Anything, "addon-1", ocm.AddOnStatusPatchRequest{
 			CorrelationID:    addon.Spec.CorrelationID,
-			StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
 			ocm.OCMError{

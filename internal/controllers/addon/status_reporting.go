@@ -34,17 +34,17 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 		return nil
 	}
 
-	// At this point, before returning we store the current reported status
+	// Before returning we store the current reported status
 	// in the addon's status block.
 	defer func() {
 		if err == nil {
 			setLastReportedStatus(addon)
 		}
 	}()
-	currentOCMAddonStatus, err := r.getAddonStatus(ctx, addon.Name)
+	currentOCMAddonStatus, err := r.getOCMAddonStatus(ctx, addon.Name)
 	if err != nil {
 		ocmErr, ok := err.(ocm.OCMError) //nolint
-		// OCM doesnt yet have the status for this addon.
+		// OCM doesn't yet have the status for this addon.
 		// We go ahead and create it.
 		if ok && ocmErr.StatusCode == http.StatusNotFound {
 			log.Info("reporting addon status for the first time.")
@@ -53,16 +53,16 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 		return
 	}
 
-	if OCMAddOnStatusDifferentFromInClusterAddonStatus(currentOCMAddonStatus, addon) {
-		log.Info("patching addon status.")
+	if isOCMAddOnStatusDifferentFromInClusterAddonStatus(currentOCMAddonStatus, addon) {
+		log.Info("patching in cluster addon status.")
 		err = r.patchAddonStatus(ctx, addon)
 		return
 	}
 	return nil
 }
 
-func (r *AddonReconciler) getAddonStatus(ctx context.Context, addonID string) (res ocm.AddOnStatusResponse, err error) {
-	r.recordASRequestDuration(func() {
+func (r *AddonReconciler) getOCMAddonStatus(ctx context.Context, addonID string) (res ocm.AddOnStatusResponse, err error) {
+	r.recordAddonServiceRequestDuration(func() {
 		res, err = r.ocmClient.GetAddOnStatus(ctx, addonID)
 	})
 	return
@@ -72,9 +72,9 @@ func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1al
 	statusPayload := ocm.AddOnStatusPostRequest{
 		AddonID:          addon.Name,
 		CorrelationID:    addon.Spec.CorrelationID,
-		StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+		StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 	}
-	r.recordASRequestDuration(func() {
+	r.recordAddonServiceRequestDuration(func() {
 		_, err = r.ocmClient.PostAddOnStatus(ctx, statusPayload)
 	})
 	return
@@ -83,19 +83,19 @@ func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1al
 func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (err error) {
 	payload := ocm.AddOnStatusPatchRequest{
 		CorrelationID:    addon.Spec.CorrelationID,
-		StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+		StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 	}
-	r.recordASRequestDuration(func() {
+	r.recordAddonServiceRequestDuration(func() {
 		_, err = r.ocmClient.PatchAddOnStatus(ctx, addon.Name, payload)
 	})
 	return
 }
 
 func (r *AddonReconciler) statusReportingRequired(addon *addonsv1alpha1.Addon) bool {
-	return r.statusReportingEnabled && currentStatusChangedFromPrevious(addon)
+	return r.statusReportingEnabled && isCurrentStatusDifferentFromPrevious(addon)
 }
 
-func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
+func (r *AddonReconciler) recordAddonServiceRequestDuration(reqFunc func()) {
 	if r.Recorder != nil {
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
 			us := v * 1000000 // convert to microseconds
@@ -106,7 +106,7 @@ func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
 	reqFunc()
 }
 
-func mapAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatusCondition {
+func mapToAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatusCondition {
 	res := make([]addonsv1alpha1.AddOnStatusCondition, len(in))
 	for i, obj := range in {
 		res[i] = addonsv1alpha1.AddOnStatusCondition{
@@ -118,16 +118,16 @@ func mapAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatu
 	return res
 }
 
-func OCMAddOnStatusDifferentFromInClusterAddonStatus(in ocm.AddOnStatusResponse, addon *addonsv1alpha1.Addon) bool {
+func isOCMAddOnStatusDifferentFromInClusterAddonStatus(ocmAddonStatus ocm.AddOnStatusResponse, inClusterAddon *addonsv1alpha1.Addon) bool {
 	incomingStatusHash := hashOCMAddonStatus(addonsv1alpha1.OCMAddOnStatus{
-		AddonID:          in.AddonID,
-		CorrelationID:    in.CorrelationID,
-		StatusConditions: in.StatusConditions,
+		AddonID:          ocmAddonStatus.AddonID,
+		CorrelationID:    ocmAddonStatus.CorrelationID,
+		StatusConditions: ocmAddonStatus.StatusConditions,
 	})
-	return incomingStatusHash != HashCurrentAddonStatus(addon)
+	return incomingStatusHash != HashCurrentAddonStatus(inClusterAddon)
 }
 
-func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {
+func isCurrentStatusDifferentFromPrevious(addon *addonsv1alpha1.Addon) bool {
 	if addon.Status.OCMReportedStatusHash != nil {
 		return addon.Status.OCMReportedStatusHash.StatusHash != HashCurrentAddonStatus(addon)
 	}
