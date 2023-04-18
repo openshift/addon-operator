@@ -86,4 +86,4 @@ objects:
               secret:
                 name: pull-secret
                 namespace: openshift-config
-            featureFlags: ${FEATURE_TOGGLES}
+            featureToggles: ${FEATURE_TOGGLES}
