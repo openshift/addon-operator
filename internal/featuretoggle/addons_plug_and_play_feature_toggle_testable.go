@@ -28,7 +28,7 @@ func (h *AddonsPlugAndPlayFeatureToggle) Enable(ctx context.Context) error {
 					Name: addonsv1alpha1.DefaultAddonOperatorName,
 				},
 				Spec: addonsv1alpha1.AddonOperatorSpec{
-					FeatureToggles: h.GetFeatureToggleIdentifier(),
+					FeatureFlags: h.GetFeatureToggleIdentifier(),
 				},
 			}
 			if err := h.Client.Create(ctx, &adoObject); err != nil {
@@ -39,12 +39,16 @@ func (h *AddonsPlugAndPlayFeatureToggle) Enable(ctx context.Context) error {
 		return err
 	}
 	// no need to do anything if its already enabled
-	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
+	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureFlags, ",")
 	isAddonsPlugAndPlayAlreadyEnabled := stringPresentInSlice(h.GetFeatureToggleIdentifier(), existingFeatureToggles)
 	if isAddonsPlugAndPlayAlreadyEnabled {
 		return nil
 	}
-	adoInCluster.Spec.FeatureToggles += "," + h.GetFeatureToggleIdentifier()
+	if adoInCluster.Spec.FeatureFlags == "" {
+		adoInCluster.Spec.FeatureFlags = h.GetFeatureToggleIdentifier()
+	} else {
+		adoInCluster.Spec.FeatureFlags += "," + h.GetFeatureToggleIdentifier()
+	}
 	if err := h.Client.Update(ctx, &adoInCluster); err != nil {
 		return fmt.Errorf("failed to enable the feature toggle in the AddonOperator object: %w", err)
 	}
@@ -60,7 +64,7 @@ func (h *AddonsPlugAndPlayFeatureToggle) Disable(ctx context.Context) error {
 					Name: addonsv1alpha1.DefaultAddonOperatorName,
 				},
 				Spec: addonsv1alpha1.AddonOperatorSpec{
-					FeatureToggles: "",
+					FeatureFlags: "",
 				},
 			}
 			if err := h.Client.Create(ctx, &adoObject); err != nil {
@@ -71,7 +75,7 @@ func (h *AddonsPlugAndPlayFeatureToggle) Disable(ctx context.Context) error {
 		return err
 	}
 	// no need to do anything if its already disabled
-	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
+	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureFlags, ",")
 	isAddonsPlugAndPlayAlreadyEnabled := stringPresentInSlice(h.GetFeatureToggleIdentifier(), existingFeatureToggles)
 	if !isAddonsPlugAndPlayAlreadyEnabled {
 		return nil
@@ -86,7 +90,7 @@ func (h *AddonsPlugAndPlayFeatureToggle) Disable(ctx context.Context) error {
 	if len(updatedFeatureToggles) != 0 {
 		updatedFeatureToggles = updatedFeatureToggles[1:]
 	}
-	adoInCluster.Spec.FeatureToggles = updatedFeatureToggles
+	adoInCluster.Spec.FeatureFlags = updatedFeatureToggles
 	if err := h.Client.Update(ctx, &adoInCluster); err != nil {
 		return fmt.Errorf("failed to enable the feature toggle in the AddonOperator object: %w", err)
 	}

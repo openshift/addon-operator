@@ -27,7 +27,7 @@ func (m *MonitoringStackFeatureToggle) Enable(ctx context.Context) error {
 					Name: addonsv1alpha1.DefaultAddonOperatorName,
 				},
 				Spec: addonsv1alpha1.AddonOperatorSpec{
-					FeatureToggles: m.GetFeatureToggleIdentifier(),
+					FeatureFlags: m.GetFeatureToggleIdentifier(),
 				},
 			}
 			if err := m.Client.Create(ctx, &adoObject); err != nil {
@@ -38,12 +38,16 @@ func (m *MonitoringStackFeatureToggle) Enable(ctx context.Context) error {
 		return err
 	}
 	// no need to do anything if its already enabled
-	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
+	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureFlags, ",")
 	isMonitoringStackAlreadyEnabled := stringPresentInSlice(m.GetFeatureToggleIdentifier(), existingFeatureToggles)
 	if isMonitoringStackAlreadyEnabled {
 		return nil
 	}
-	adoInCluster.Spec.FeatureToggles += "," + m.GetFeatureToggleIdentifier()
+	if adoInCluster.Spec.FeatureFlags == "" {
+		adoInCluster.Spec.FeatureFlags = m.GetFeatureToggleIdentifier()
+	} else {
+		adoInCluster.Spec.FeatureFlags += "," + m.GetFeatureToggleIdentifier()
+	}
 	if err := m.Client.Update(ctx, &adoInCluster); err != nil {
 		return fmt.Errorf("failed to enable the feature toggle in the AddonOperator object: %w", err)
 	}
@@ -59,7 +63,7 @@ func (m *MonitoringStackFeatureToggle) Disable(ctx context.Context) error {
 					Name: addonsv1alpha1.DefaultAddonOperatorName,
 				},
 				Spec: addonsv1alpha1.AddonOperatorSpec{
-					FeatureToggles: "",
+					FeatureFlags: "",
 				},
 			}
 			if err := m.Client.Create(ctx, &adoObject); err != nil {
@@ -70,7 +74,7 @@ func (m *MonitoringStackFeatureToggle) Disable(ctx context.Context) error {
 		return err
 	}
 	// no need to do anything if its already disabled
-	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureToggles, ",")
+	existingFeatureToggles := strings.Split(adoInCluster.Spec.FeatureFlags, ",")
 	isMonitoringStackAlreadyEnabled := stringPresentInSlice(m.GetFeatureToggleIdentifier(), existingFeatureToggles)
 	if !isMonitoringStackAlreadyEnabled {
 		return nil
@@ -85,7 +89,7 @@ func (m *MonitoringStackFeatureToggle) Disable(ctx context.Context) error {
 	if len(updatedFeatureToggles) != 0 {
 		updatedFeatureToggles = updatedFeatureToggles[1:]
 	}
-	adoInCluster.Spec.FeatureToggles = updatedFeatureToggles
+	adoInCluster.Spec.FeatureFlags = updatedFeatureToggles
 	if err := m.Client.Update(ctx, &adoInCluster); err != nil {
 		return fmt.Errorf("failed to enable the feature toggle in the AddonOperator object: %w", err)
 	}

@@ -93,7 +93,7 @@ func initReconcilers(mgr ctrl.Manager,
 		enableStatusReporting,
 		opts...,
 	)
-	if err := addonReconciler.SetupWithManager(mgr); err != nil {
+	if err := addonReconciler.SetupWithManager(mgr, opts...); err != nil {
 		return fmt.Errorf("unable to create Addon controller: %w", err)
 	}
 
@@ -106,7 +106,7 @@ func initReconcilers(mgr ctrl.Manager,
 		OCMClientManager:    addonReconciler,
 		Recorder:            recorder,
 		ClusterExternalID:   clusterExternalID,
-		FeatureTogglesState: strings.Split(addonOperatorInCluster.Spec.FeatureToggles, ","),
+		FeatureTogglesState: strings.Split(addonOperatorInCluster.Spec.FeatureFlags, ","),
 	}).SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create AddonOperator controller: %w", err)
 	}
