@@ -428,8 +428,14 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 		return fmt.Errorf("loading addon-operator-template.yaml: %w", err)
 	}
 
-	// Replace image
-	patchDeployment(deployment, "addon-operator-manager", "manager")
+	for i := range deployment.Spec.Template.Spec.Containers {
+		container := &deployment.Spec.Template.Spec.Containers[i]
+
+		if container.Name == "manager" {
+
+			container.Image = getImageName("addon-operator-manager")
+		}
+	}
 
 	depBytes, err := yaml.Marshal(deployment)
 	if err != nil {
