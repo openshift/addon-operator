@@ -229,7 +229,7 @@ func (ase *AddonStatusEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request
 		fmt.Fprintln(w, string(respBytes))
 		log.Printf("%s %s:\n", r.URL.String(), r.Method)
 
-	case http.MethodPatch:
+	case http.MethodPost:
 		ase.store.dataMux.Lock()
 		defer ase.store.dataMux.Unlock()
 		payload, err := ioutil.ReadAll(r.Body)

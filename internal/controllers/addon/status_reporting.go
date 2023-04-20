@@ -2,8 +2,6 @@ package addon
 
 import (
 	"context"
-	"net/http"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/go-logr/logr"
@@ -41,31 +39,14 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 			setLastReportedStatus(addon)
 		}
 	}()
-	currentOCMAddonStatus, err := r.getAddonStatus(ctx, addon.Name)
+	//We've added upsert functionality in the status API so modifying ADO to use POST
+	log.Info("Making the Upsert call ")
+	err = r.postAddonStatus(ctx, addon)
 	if err != nil {
-		ocmErr, ok := err.(ocm.OCMError) //nolint
-		// OCM doesnt yet have the status for this addon.
-		// We go ahead and create it.
-		if ok && ocmErr.StatusCode == http.StatusNotFound {
-			log.Info("reporting addon status for the first time.")
-			err = r.postAddonStatus(ctx, addon)
-		}
-		return
-	}
 
-	if OCMAddOnStatusDifferentFromInClusterAddonStatus(currentOCMAddonStatus, addon) {
-		log.Info("patching addon status.")
-		err = r.patchAddonStatus(ctx, addon)
-		return
+		return err
 	}
 	return nil
-}
-
-func (r *AddonReconciler) getAddonStatus(ctx context.Context, addonID string) (res ocm.AddOnStatusResponse, err error) {
-	r.recordASRequestDuration(func() {
-		res, err = r.ocmClient.GetAddOnStatus(ctx, addonID)
-	})
-	return
 }
 
 func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (err error) {
@@ -116,15 +97,6 @@ func mapAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatu
 		}
 	}
 	return res
-}
-
-func OCMAddOnStatusDifferentFromInClusterAddonStatus(in ocm.AddOnStatusResponse, addon *addonsv1alpha1.Addon) bool {
-	incomingStatusHash := hashOCMAddonStatus(addonsv1alpha1.OCMAddOnStatus{
-		AddonID:          in.AddonID,
-		CorrelationID:    in.CorrelationID,
-		StatusConditions: in.StatusConditions,
-	})
-	return incomingStatusHash != HashCurrentAddonStatus(addon)
 }
 
 func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {
