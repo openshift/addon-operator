@@ -2,6 +2,10 @@ package integration_test
 
 import (
 	"context"
+	"fmt"
+	"strings"
+
+	"k8s.io/apimachinery/pkg/types"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -24,8 +28,9 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 	ctx := context.Background()
 
 	name := "addonname-pko-boatboat"
-	image := "quay.io/package-operator/test-stub-package:v1.0.0-47-g3405dde"
-	namespace := "namespace-onbgdions"
+
+	image := "nonExistantImage"
+	namespace := "redhat-reference-addon" // This namespace is hard coded in managed tenants bundles
 
 	addon := &addonsv1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{Name: name},
@@ -53,7 +58,7 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 
 	err := integration.Client.Create(ctx, addon)
 	s.Require().NoError(err)
-	// wait until Addon is available
+	// wait until ClusterObjectTemplate is created
 	err = integration.WaitForObject(ctx, s.T(),
 		defaultAddonAvailabilityTimeout, tmpl, "to be created",
 		func(obj client.Object) (done bool, err error) {
@@ -62,13 +67,45 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 		})
 	s.Require().NoError(err)
 
-	addonWithStatus := &addonsv1alpha1.Addon{}
-	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addonWithStatus)
+	err = integration.WaitForObject(ctx, s.T(),
+		defaultAddonAvailabilityTimeout, addon, "to be unavailable",
+		func(obj client.Object) (done bool, err error) {
+			addonBrokenImage := obj.(*addonsv1alpha1.Addon)
+			availableCondition := meta.FindStatusCondition(addonBrokenImage.Status.Conditions, addonsv1alpha1.Available)
+			done = availableCondition.Status == metav1.ConditionFalse &&
+				availableCondition.Reason == addonsv1alpha1.AddonReasonUnreadyClusterPackageTemplate
+			return done, nil
+		})
 	s.Require().NoError(err)
-	availableCondition := meta.FindStatusCondition(addonWithStatus.Status.Conditions, pkov1alpha1.PackageAvailable)
 
-	s.Assert().Equal(metav1.ConditionFalse, availableCondition.Status)
-	s.Assert().Equal(addonsv1alpha1.AddonReasonUnreadyClusterPackageTemplate, availableCondition.Reason)
+	// Patch image
+	patchedImage := "quay.io/osd-addons/reference-addon-package:56916cb"
+	patch := fmt.Sprintf(`{"spec":{"packageOperator":{"image":"%s"}}}`, patchedImage)
+	err = integration.Client.Patch(ctx, addon, client.RawPatch(types.MergePatchType, []byte(patch)))
+	s.Require().NoError(err)
+
+	// wait until ClusterObjectTemplate image is patched and is available
+	err = integration.WaitForObject(ctx, s.T(),
+		defaultAddonAvailabilityTimeout, tmpl, "to be patched",
+		func(obj client.Object) (done bool, err error) {
+			clusterObjectTemplate := obj.(*pkov1alpha1.ClusterObjectTemplate)
+			if !strings.Contains(clusterObjectTemplate.Spec.Template, patchedImage) {
+				return false, nil
+			}
+			meta.IsStatusConditionTrue(clusterObjectTemplate.Status.Conditions, pkov1alpha1.PackageAvailable)
+			return true, nil
+		})
+	s.Require().NoError(err)
+
+	err = integration.WaitForObject(ctx, s.T(),
+		defaultAddonAvailabilityTimeout, addon, "to be available",
+		func(obj client.Object) (done bool, err error) {
+			addonAfterPatch := obj.(*addonsv1alpha1.Addon)
+			availableCondition := meta.FindStatusCondition(addonAfterPatch.Status.Conditions, addonsv1alpha1.Available)
+			done = availableCondition.Status == metav1.ConditionTrue
+			return done, nil
+		})
+	s.Require().NoError(err)
 
 	s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 }
