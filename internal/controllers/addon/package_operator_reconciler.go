@@ -26,14 +26,21 @@ spec:
   image: "%s"
   config:
     addons:
-      v1alpha1:
-        deadMansSnitchUrl: {{.config%s | b64dec}}
-        pagerDutyKey: {{.config%s | b64dec}}
+      v1alpha1: {
+{{ with index .config "%s" -}}
+        deadMansSnitchUrl: {{ . | b64dec }}
+{{ end -}}
+{{ with index .config "%s" -}}
+        pagerDutyKey: {{ . | b64dec }}
+{{ end -}}
+      }
 `
 
-const packageOperatorName = "packageOperatorReconciler"
-const deadMansSnitchUrlConfigKey = ".deadMansSnitchUrl"
-const pagerDutyKeyConfigKey = ".pagerDutyKey"
+const (
+	packageOperatorName        = "packageOperatorReconciler"
+	deadMansSnitchUrlConfigKey = ".deadMansSnitchUrl"
+	pagerDutyKeyConfigKey      = ".pagerDutyKey"
+)
 
 type PackageOperatorReconciler struct {
 	Client client.Client
