@@ -56,18 +56,20 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 
 	addonDestNamespace := addon.Spec.Namespaces[0].Name
 
+	templateString := fmt.Sprintf(pkgTemplate,
+		pkov1alpha1.GroupVersion,
+		addon.Name,
+		addon.Spec.AddonPackageOperator.Image,
+		deadMansSnitchUrlConfigKey,
+		pagerDutyKeyConfigKey,
+	)
+
 	pkg := &pkov1alpha1.ClusterObjectTemplate{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: addon.Name,
 		},
 		Spec: pkov1alpha1.ObjectTemplateSpec{
-			Template: fmt.Sprintf(pkgTemplate,
-				pkov1alpha1.GroupVersion,
-				addon.Name,
-				addon.Spec.AddonPackageOperator.Image,
-				deadMansSnitchUrlConfigKey,
-				pagerDutyKeyConfigKey,
-			),
+			Template: templateString,
 			Sources: []pkov1alpha1.ObjectTemplateSource{
 				{
 					Optional:   true,
