@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/openshift/addon-operator/internal/controllers"
-
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -45,13 +43,7 @@ func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addons
 	return r.reconcileClusterObjectTemplate(ctx, addon)
 }
 
-func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (res ctrl.Result, err error) {
-	logger := controllers.LoggerFromContext(ctx)
-	defer func() {
-		if err == nil {
-			logger.Info("successfully reconciled")
-		}
-	}()
+func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	clusterObjectTemplate := &pkov1alpha1.ClusterObjectTemplate{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      addon.Name,
@@ -68,7 +60,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		},
 	}
 
-	if err = controllerutil.SetControllerReference(addon, clusterObjectTemplate, r.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(addon, clusterObjectTemplate, r.Scheme); err != nil {
 		return ctrl.Result{}, fmt.Errorf("setting owner reference: %w", err)
 	}
 
@@ -78,6 +70,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 			if err := r.Client.Create(ctx, clusterObjectTemplate); err != nil {
 				return ctrl.Result{}, fmt.Errorf("creating ClusterObjectTemplate object: %w", err)
 			}
+			return ctrl.Result{}, nil
 		}
 		return ctrl.Result{}, fmt.Errorf("getting ClusterObjectTemplate object: %w", err)
 	}
@@ -87,24 +80,18 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		return ctrl.Result{}, fmt.Errorf("updating ClusterObjectTemplate object: %w", err)
 	}
 
-	if packageAvailable := r.updateAddonStatus(addon, existingClusterObjectTemplate); !packageAvailable {
-		return handleExit(resultRetry), nil
-	}
+	r.updateAddonStatus(addon, existingClusterObjectTemplate)
 
 	return ctrl.Result{}, nil
 }
 
-func (r *PackageOperatorReconciler) updateAddonStatus(addon *addonsv1alpha1.Addon, clusterObjectTemplate *pkov1alpha1.ClusterObjectTemplate) bool {
+func (r *PackageOperatorReconciler) updateAddonStatus(addon *addonsv1alpha1.Addon, clusterObjectTemplate *pkov1alpha1.ClusterObjectTemplate) {
 	availableCondition := meta.FindStatusCondition(clusterObjectTemplate.Status.Conditions, pkov1alpha1.PackageAvailable)
-	if availableCondition != nil &&
-		availableCondition.ObservedGeneration == clusterObjectTemplate.GetGeneration() &&
-		availableCondition.Status == metav1.ConditionTrue {
-		return true
+	if availableCondition == nil ||
+		availableCondition.ObservedGeneration != clusterObjectTemplate.GetGeneration() ||
+		availableCondition.Status != metav1.ConditionTrue {
+		reportUnreadyClusterObjectTemplate(addon)
 	}
-
-	reportUnreadyClusterObjectTemplate(addon)
-	return false
-
 }
 
 func (r *PackageOperatorReconciler) ensureClusterObjectTemplateTornDown(ctx context.Context, addon *addonsv1alpha1.Addon) error {
