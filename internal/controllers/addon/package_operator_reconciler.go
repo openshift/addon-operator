@@ -25,17 +25,7 @@ metadata:
 spec:
   image: "%s"
   config:
-{{- if or (index .config "%s") (index .config "%s") }}
-    addonsv1:
-  {{- with index .config "%s" }}
-      deadMansSnitchUrl: {{ . | b64dec }}
-  {{- end }}
-  {{- with index .config "%s" }}
-      pagerDutyKey: {{ . | b64dec }}
-  {{- end }}
-{{- else }}
-    addonsv1: {}
-{{ end -}}
+    addonsv1: {{toJson .config}}
 `
 
 const (
@@ -59,20 +49,16 @@ func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addons
 }
 
 func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx context.Context, addon *addonsv1alpha1.Addon) error {
-	if len(addon.Spec.Namespaces) < 1 {
-		return errors.New(fmt.Sprintf("no namespace configured in addon %s", addon.Name))
-	}
+	addonDestNamespace := extractDestinationNamespace(addon)
 
-	addonDestNamespace := addon.Spec.Namespaces[0].Name
+	if len(addonDestNamespace) < 1 {
+		return errors.New(fmt.Sprintf("no destination namespace configured in addon %s", addon.Name))
+	}
 
 	templateString := fmt.Sprintf(PkoPkgTemplate,
 		pkov1alpha1.GroupVersion,
 		addon.Name,
 		addon.Spec.AddonPackageOperator.Image,
-		DeadMansSnitchUrlConfigKey,
-		PagerDutyKeyConfigKey,
-		DeadMansSnitchUrlConfigKey,
-		PagerDutyKeyConfigKey,
 	)
 
 	pkg := &pkov1alpha1.ClusterObjectTemplate{
@@ -130,6 +116,21 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 		return fmt.Errorf("get pko object: %w", err)
 	}
 	return nil
+}
+
+func extractDestinationNamespace(addon *addonsv1alpha1.Addon) string {
+	switch addon.Spec.Install.Type {
+	case addonsv1alpha1.OLMAllNamespaces:
+		specNamespace := addon.Spec.Install.OLMAllNamespaces.Namespace
+		if len(specNamespace) < 1 {
+			return "openshift-operators"
+		}
+		return specNamespace
+	case addonsv1alpha1.OLMOwnNamespace:
+		return addon.Spec.Install.OLMOwnNamespace.Namespace
+	default:
+		return ""
+	}
 }
 
 func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateDoesNotExist(ctx context.Context, addon *addonsv1alpha1.Addon) error {

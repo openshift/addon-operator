@@ -25,7 +25,14 @@ var (
 	addonWithPKO    = &addonsv1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{Name: "test-addon"},
 		Spec: addonsv1alpha1.AddonSpec{
-			Namespaces:           []addonsv1alpha1.AddonNamespace{{Name: "test-ns"}},
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace: "test-ns",
+					},
+				},
+			},
 			AddonPackageOperator: &v1alpha1.AddonPackageOperator{Image: "test-pko-img"},
 		},
 	}

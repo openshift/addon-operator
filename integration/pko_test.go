@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 
@@ -177,7 +178,7 @@ func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonN
 ) {
 	cp := &v1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
 	err := integration.WaitForObject(ctx, s.T(),
-		defaultAddonAvailabilityTimeout, cp, "to be available",
+		defaultAddonAvailabilityTimeout, cp, "to be "+conditionType,
 		clusterPackageChecker(conditionType, deadMansSnitchUrlValuePresent, pagerDutyValuePresent))
 	s.Require().NoError(err)
 }
@@ -209,14 +210,14 @@ func clusterPackageChecker(conditionType string, deadMansSnitchUrlValuePresent b
 		deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false
 		if deadMansSnitchUrlValuePresent {
 			value, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
-			deadMansSnitchUrlValueOk = present && value == deadMansSnitchUrlValue
+			deadMansSnitchUrlValueOk = present && value == base64.StdEncoding.EncodeToString([]byte(deadMansSnitchUrlValue))
 		} else {
 			_, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
 			deadMansSnitchUrlValueOk = !present
 		}
 		if pagerDutyValuePresent {
 			value, present := addonsv1[addon.PagerDutyKeyConfigKey]
-			pagerDutyValueOk = present && value == pagerDutyKeyValue
+			pagerDutyValueOk = present && value == base64.StdEncoding.EncodeToString([]byte(pagerDutyKeyValue))
 		} else {
 			_, present := addonsv1[addon.PagerDutyKeyConfigKey]
 			pagerDutyValueOk = !present
