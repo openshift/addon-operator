@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"context"
+	"fmt"
 
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -18,7 +19,9 @@ import (
 const (
 	addonName              = "addonname-pko-boatboat"
 	addonNamespace         = "namespace-onbgdions"
-	pkoImage               = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v1.0"
+	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v2.0"
+	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v2.0"
+	pkoDeploymentNamespace = "default"
 	deadMansSnitchUrlValue = "https://example.com/test-snitch-url"
 	pagerDutyKeyValue      = "1234567890ABCDEF"
 )
@@ -28,9 +31,45 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
 	}
 
-	ctx := context.Background()
+	tests := []struct {
+		name                       string
+		pkoImage                   string
+		deployDeadMansSnitchSecret bool
+		deployPagerDutySecret      bool
+	}{
+		{"OptionalParamsAllMissing", pkoImageOptionalParams, false, false},
+		{"OptionalParamsAnyMissing", pkoImageOptionalParams, true, false},
+		{"OptionalParamsAllPresent", pkoImageOptionalParams, true, true},
+		{"RequiredParamsAllMissing", pkoImageRequiredParams, false, false},
+		{"RequiredParamsAnyMissing", pkoImageRequiredParams, true, false},
+		{"RequiredParamsAllPresent", pkoImageRequiredParams, true, true},
+	}
 
-	// Addon resource
+	for index, test := range tests {
+		s.Run(test.name, func() {
+			testAddonName := fmt.Sprintf("%s-%d", addonName, index)
+			testAddonNamespace := fmt.Sprintf("%s-%d", addonNamespace, index)
+			ctx := context.Background()
+
+			s.createAddon(ctx, testAddonName, testAddonNamespace, test.pkoImage)
+			s.waitForNamespace(ctx, testAddonNamespace)
+
+			if test.deployDeadMansSnitchSecret {
+				s.createDeadMansSnitchSecret(ctx, testAddonName, testAddonNamespace)
+			}
+			if test.deployPagerDutySecret {
+				s.createPagerDutySecret(ctx, testAddonName, testAddonNamespace)
+			}
+
+			// s.waitForValidDeployment(ctx, testAddonName, test.deployDeadMansSnitchSecret, test.deployPagerDutySecret)
+
+			// s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
+		})
+	}
+}
+
+// create the Addon resource
+func (s *integrationTestSuite) createAddon(ctx context.Context, addonName string, addonNamespace string, pkoImage string) *addonsv1alpha1.Addon {
 	addon := &addonsv1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{Name: addonName},
 		Spec: addonsv1alpha1.AddonSpec{
@@ -53,60 +92,66 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 		},
 	}
 
-	// Secret resources for Dead Man's Snitch and PagerDuty, simulating the structure defined in the docs. See:
-	// - https://mt-sre.github.io/docs/creating-addons/monitoring/deadmanssnitch_integration/#generated-secret
-	// - https://mt-sre.github.io/docs/creating-addons/monitoring/pagerduty_integration/
-	dmsSecret := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{Name: addonName + "-deadmanssnitch", Namespace: addonNamespace},
-		Data:       map[string][]byte{"SNITCH_URL": []byte(deadMansSnitchUrlValue)},
-	}
-	pdSecret := &v1.Secret{
-		ObjectMeta: metav1.ObjectMeta{Name: addonName + "-pagerduty", Namespace: addonNamespace},
-		Data:       map[string][]byte{"PAGERDUTY_KEY": []byte(pagerDutyKeyValue)},
-	}
-
-	// create the Addon resource
 	err := integration.Client.Create(ctx, addon)
 	s.Require().NoError(err)
 
-	// wait for the Addon addonNamespace to exist (needed to publish secrets)
-	err = integration.WaitForObject(ctx, s.T(),
+	return addon
+}
+
+// wait for the Addon addonNamespace to exist (needed to publish secrets)
+func (s *integrationTestSuite) waitForNamespace(ctx context.Context, addonNamespace string) {
+	err := integration.WaitForObject(ctx, s.T(),
 		defaultAddonAvailabilityTimeout, &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: addonNamespace}}, "to be created",
 		func(obj client.Object) (done bool, err error) { return true, nil })
 	s.Require().NoError(err)
-
-	// create Secrets
-	err = integration.Client.Create(ctx, dmsSecret)
-	s.Require().NoError(err)
-	err = integration.Client.Create(ctx, pdSecret)
-	s.Require().NoError(err)
-
-	// wait until all the replicas in the Deployment inside the ClusterPackage are ready
-	// and check if their env variables corresponds to the secrets
-	dep := &appsv1.Deployment{ObjectMeta: metav1.ObjectMeta{Name: addonName, Namespace: "apnp-test-optional-params"}}
-	err = integration.WaitForObject(ctx, s.T(),
-		defaultAddonAvailabilityTimeout, dep, "to have all replicas ready",
-		validateDeployment)
-	s.Require().NoError(err)
-
-	s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 }
 
-func validateDeployment(obj client.Object) (done bool, err error) {
-	deployment := obj.(*appsv1.Deployment)
+// create the Secret resource for Dead Man's Snitch as defined here:
+// - https://mt-sre.github.io/docs/creating-addons/monitoring/deadmanssnitch_integration/#generated-secret
+func (s *integrationTestSuite) createDeadMansSnitchSecret(ctx context.Context, addonName string, addonNamespace string) {
+	s.createSecret(ctx, addonName+"-deadmanssnitch", addonNamespace, map[string][]byte{"SNITCH_URL": []byte(deadMansSnitchUrlValue)})
+}
 
-	if *deployment.Spec.Replicas != deployment.Status.ReadyReplicas {
-		return false, nil
+// create the Secret resource for PagerDuty as defined here:
+// - https://mt-sre.github.io/docs/creating-addons/monitoring/pagerduty_integration/
+func (s *integrationTestSuite) createPagerDutySecret(ctx context.Context, addonName string, addonNamespace string) {
+	s.createSecret(ctx, addonName+"-pagerduty", addonNamespace, map[string][]byte{"PAGERDUTY_KEY": []byte(pagerDutyKeyValue)})
+}
+
+func (s *integrationTestSuite) createSecret(ctx context.Context, name string, namespace string, data map[string][]byte) {
+	secret := &v1.Secret{
+		ObjectMeta: metav1.ObjectMeta{Name: name, Namespace: namespace},
+		Data:       data,
 	}
+	err := integration.Client.Create(ctx, secret)
+	s.Require().NoError(err)
+}
 
-	deadMansSnitchOk, pagerDutyOk := false, false
-	for _, envItem := range deployment.Spec.Template.Spec.Containers[0].Env {
-		if envItem.Name == "MY_SNITCH_URL" {
-			deadMansSnitchOk = deadMansSnitchUrlValue == envItem.Value
-		} else if envItem.Name == "MY_PAGERDUTY_KEY" {
-			pagerDutyOk = pagerDutyKeyValue == envItem.Value
-		}
-	}
+// wait until all the replicas in the Deployment inside the ClusterPackage are ready
+// and check if their env variables corresponds to the secrets
+func (s *integrationTestSuite) waitForValidDeployment(ctx context.Context, addonName string,
+	deadMansSnitchValuePresent bool, pagerDutyValuePresent bool,
+) {
+	dep := &appsv1.Deployment{ObjectMeta: metav1.ObjectMeta{Name: addonName, Namespace: pkoDeploymentNamespace}}
+	err := integration.WaitForObject(ctx, s.T(),
+		defaultAddonAvailabilityTimeout, dep, "to have all replicas ready",
+		func(obj client.Object) (done bool, err error) {
+			deployment := obj.(*appsv1.Deployment)
 
-	return deadMansSnitchOk && pagerDutyOk, nil
+			if *deployment.Spec.Replicas != deployment.Status.ReadyReplicas {
+				return false, nil
+			}
+
+			deadMansSnitchOk, pagerDutyOk := false, false
+			for _, envItem := range deployment.Spec.Template.Spec.Containers[0].Env {
+				if envItem.Name == "MY_SNITCH_URL" {
+					deadMansSnitchOk = deadMansSnitchValuePresent && deadMansSnitchUrlValue == envItem.Value || "" == envItem.Value
+				} else if envItem.Name == "MY_PAGERDUTY_KEY" {
+					pagerDutyOk = pagerDutyValuePresent && pagerDutyKeyValue == envItem.Value || "" == envItem.Value
+				}
+			}
+
+			return deadMansSnitchOk && pagerDutyOk, nil
+		})
+	s.Require().NoError(err)
 }

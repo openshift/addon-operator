@@ -17,7 +17,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
-const pkgTemplate = `
+const PkoPkgTemplate = `
 apiVersion: "%s"
 kind: ClusterPackage
 metadata:
@@ -25,21 +25,23 @@ metadata:
 spec:
   image: "%s"
   config:
-    addons:
-      v1alpha1: {
-{{ with index .config "%s" -}}
-        deadMansSnitchUrl: {{ . | b64dec }}
+{{- if or (index .config "%s") (index .config "%s") }}
+    addonsv1:
+  {{- with index .config "%s" }}
+      deadMansSnitchUrl: {{ . | b64dec }}
+  {{- end }}
+  {{- with index .config "%s" }}
+      pagerDutyKey: {{ . | b64dec }}
+  {{- end }}
+{{- else }}
+    addonsv1: {}
 {{ end -}}
-{{ with index .config "%s" -}}
-        pagerDutyKey: {{ . | b64dec }}
-{{ end -}}
-      }
 `
 
 const (
 	packageOperatorName        = "packageOperatorReconciler"
-	deadMansSnitchUrlConfigKey = ".deadMansSnitchUrl"
-	pagerDutyKeyConfigKey      = ".pagerDutyKey"
+	deadMansSnitchUrlConfigKey = "deadMansSnitchUrl"
+	pagerDutyKeyConfigKey      = "pagerDutyKey"
 )
 
 type PackageOperatorReconciler struct {
@@ -63,10 +65,12 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 
 	addonDestNamespace := addon.Spec.Namespaces[0].Name
 
-	templateString := fmt.Sprintf(pkgTemplate,
+	templateString := fmt.Sprintf(PkoPkgTemplate,
 		pkov1alpha1.GroupVersion,
 		addon.Name,
 		addon.Spec.AddonPackageOperator.Image,
+		deadMansSnitchUrlConfigKey,
+		pagerDutyKeyConfigKey,
 		deadMansSnitchUrlConfigKey,
 		pagerDutyKeyConfigKey,
 	)
@@ -87,7 +91,7 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 					Items: []pkov1alpha1.ObjectTemplateSourceItem{
 						{
 							Key:         ".data.SNITCH_URL",
-							Destination: deadMansSnitchUrlConfigKey,
+							Destination: "." + deadMansSnitchUrlConfigKey,
 						},
 					},
 				},
@@ -100,7 +104,7 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 					Items: []pkov1alpha1.ObjectTemplateSourceItem{
 						{
 							Key:         ".data.PAGERDUTY_KEY",
-							Destination: pagerDutyKeyConfigKey,
+							Destination: "." + pagerDutyKeyConfigKey,
 						},
 					},
 				},
