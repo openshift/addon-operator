@@ -25,11 +25,13 @@ import (
 const (
 	addonName              = "addonname-pko-boatboat"
 	addonNamespace         = "namespace-onbgdions"
-	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v1.0"
-	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v1.0"
-	pkoDeploymentNamespace = "default"
 	deadMansSnitchUrlValue = "https://example.com/test-snitch-url"
 	pagerDutyKeyValue      = "1234567890ABCDEF"
+
+	// source: https://github.com/kostola/package-operator-packages/tree/v1.0/openshift/addon-operator/apnp-test-optional-params
+	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v1.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v1.0/openshift/addon-operator/apnp-test-required-params
+	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v1.0"
 )
 
 func (s *integrationTestSuite) TestPackageOperatorAddon() {
