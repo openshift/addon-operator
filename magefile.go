@@ -704,8 +704,14 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	if err := labelNodesWithInfraRole(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
 	}
+
+	// force ADDONS_PLUG_AND_PLAY feature toggle in CI to make sure tests are executed
+	os.Setenv("FEATURE_TOGGLES", featuretoggle.AddonsPlugAndPlayFeatureToggleIdentifier)
 	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
-		return err
+		return fmt.Errorf("failed to perform post-cluster creation setup for the feature toggles: %w", err)
+	}
+	if err := deployFeatureToggles(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to deploy feature toggles: %w", err)
 	}
 	return nil
 }
