@@ -40,8 +40,8 @@ spec:
 
 const (
 	packageOperatorName        = "packageOperatorReconciler"
-	deadMansSnitchUrlConfigKey = "deadMansSnitchUrl"
-	pagerDutyKeyConfigKey      = "pagerDutyKey"
+	DeadMansSnitchUrlConfigKey = "deadMansSnitchUrl"
+	PagerDutyKeyConfigKey      = "pagerDutyKey"
 )
 
 type PackageOperatorReconciler struct {
@@ -69,10 +69,10 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 		pkov1alpha1.GroupVersion,
 		addon.Name,
 		addon.Spec.AddonPackageOperator.Image,
-		deadMansSnitchUrlConfigKey,
-		pagerDutyKeyConfigKey,
-		deadMansSnitchUrlConfigKey,
-		pagerDutyKeyConfigKey,
+		DeadMansSnitchUrlConfigKey,
+		PagerDutyKeyConfigKey,
+		DeadMansSnitchUrlConfigKey,
+		PagerDutyKeyConfigKey,
 	)
 
 	pkg := &pkov1alpha1.ClusterObjectTemplate{
@@ -91,7 +91,7 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 					Items: []pkov1alpha1.ObjectTemplateSourceItem{
 						{
 							Key:         ".data.SNITCH_URL",
-							Destination: "." + deadMansSnitchUrlConfigKey,
+							Destination: "." + DeadMansSnitchUrlConfigKey,
 						},
 					},
 				},
@@ -104,7 +104,7 @@ func (r *PackageOperatorReconciler) makeSureClusterObjectTemplateExists(ctx cont
 					Items: []pkov1alpha1.ObjectTemplateSourceItem{
 						{
 							Key:         ".data.PAGERDUTY_KEY",
-							Destination: "." + pagerDutyKeyConfigKey,
+							Destination: "." + PagerDutyKeyConfigKey,
 						},
 					},
 				},
