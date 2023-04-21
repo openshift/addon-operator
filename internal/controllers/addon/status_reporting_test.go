@@ -145,7 +145,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			HashCurrentAddonStatus(addon))
 	})
 
-	/* t.Run("outdated reported status, but current status is equal to OCM status", func(t *testing.T) {
+	/*t.Run("outdated reported status, but current status is equal to OCM status", func(t *testing.T) {
 		client := testutil.NewClient()
 		ocmClient := ocmtest.NewClient()
 		recorder := metrics.NewRecorder(false, "asa346546dfew143")
@@ -221,7 +221,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		require.NotNil(t, addon.Status.OCMReportedStatusHash)
 		require.Equal(t, addon.Status.OCMReportedStatusHash.StatusHash,
 			HashCurrentAddonStatus(addon))
-	}) */
+	})*/
 
 	t.Run("Correctly patches OCM status with the current addon status when conditions change", func(t *testing.T) {
 		client := testutil.NewClient()
