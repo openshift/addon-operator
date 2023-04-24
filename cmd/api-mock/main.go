@@ -248,10 +248,10 @@ func (ase *AddonStatusEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request
 			return
 		}
 		vars := mux.Vars(r)
-		status.AddonID = vars["addon_id"]
+
 		ase.store.data[addonStatusKey{
 			clusterID: vars["cluster_id"],
-			addonID:   vars["addon_id"],
+			addonID:   status.AddonID,
 		}] = status
 		respBytes, err := marshalAddonStatus(status)
 		if err != nil {

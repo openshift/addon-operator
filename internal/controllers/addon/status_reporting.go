@@ -33,20 +33,16 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 		return nil
 	}
 
-	// At this point, before returning we store the current reported status
-	// in the addon's status block.
-	defer func() {
-		if err == nil {
-			setLastReportedStatus(addon)
-		}
-	}()
-	//We've added upsert functionality in the status API so modifying ADO to use POST
-	log.Info("Making the Upsert call ")
+	log.Info("upserting addon status")
 	err = r.postAddonStatus(ctx, addon)
 	if err != nil {
 
 		return err
 	}
+
+	// At this point, before returning we store the current reported status
+	// in the addon's status block.
+	setLastReportedStatus(addon)
 	return nil
 }
 
