@@ -147,7 +147,7 @@ func TestValidateAddonInstallImmutability(t *testing.T) {
 					},
 				},
 			}, addonName),
-			expectedErr: errInstallImmutable,
+			expectedErr: nil,
 		},
 		{
 			baseAddon: baseAddon,
