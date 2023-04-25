@@ -36,7 +36,6 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 	log.Info("upserting addon status")
 	err = r.postAddonStatus(ctx, addon)
 	if err != nil {
-
 		return err
 	}
 
