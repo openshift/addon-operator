@@ -2,7 +2,6 @@ package addon
 
 import (
 	"context"
-	"net/http"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -34,38 +33,16 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 		return nil
 	}
 
+	log.Info("upserting addon status")
+	err = r.postAddonStatus(ctx, addon)
+	if err != nil {
+		return err
+	}
+
 	// At this point, before returning we store the current reported status
 	// in the addon's status block.
-	defer func() {
-		if err == nil {
-			setLastReportedStatus(addon)
-		}
-	}()
-	currentOCMAddonStatus, err := r.getAddonStatus(ctx, addon.Name)
-	if err != nil {
-		ocmErr, ok := err.(ocm.OCMError) //nolint
-		// OCM doesnt yet have the status for this addon.
-		// We go ahead and create it.
-		if ok && ocmErr.StatusCode == http.StatusNotFound {
-			log.Info("reporting addon status for the first time.")
-			err = r.postAddonStatus(ctx, addon)
-		}
-		return
-	}
-
-	if OCMAddOnStatusDifferentFromInClusterAddonStatus(currentOCMAddonStatus, addon) {
-		log.Info("patching addon status.")
-		err = r.patchAddonStatus(ctx, addon)
-		return
-	}
+	setLastReportedStatus(addon)
 	return nil
-}
-
-func (r *AddonReconciler) getAddonStatus(ctx context.Context, addonID string) (res ocm.AddOnStatusResponse, err error) {
-	r.recordASRequestDuration(func() {
-		res, err = r.ocmClient.GetAddOnStatus(ctx, addonID)
-	})
-	return
 }
 
 func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (err error) {
@@ -76,17 +53,6 @@ func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1al
 	}
 	r.recordASRequestDuration(func() {
 		_, err = r.ocmClient.PostAddOnStatus(ctx, statusPayload)
-	})
-	return
-}
-
-func (r *AddonReconciler) patchAddonStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (err error) {
-	payload := ocm.AddOnStatusPatchRequest{
-		CorrelationID:    addon.Spec.CorrelationID,
-		StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
-	}
-	r.recordASRequestDuration(func() {
-		_, err = r.ocmClient.PatchAddOnStatus(ctx, addon.Name, payload)
 	})
 	return
 }
@@ -116,15 +82,6 @@ func mapAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatu
 		}
 	}
 	return res
-}
-
-func OCMAddOnStatusDifferentFromInClusterAddonStatus(in ocm.AddOnStatusResponse, addon *addonsv1alpha1.Addon) bool {
-	incomingStatusHash := hashOCMAddonStatus(addonsv1alpha1.OCMAddOnStatus{
-		AddonID:          in.AddonID,
-		CorrelationID:    in.CorrelationID,
-		StatusConditions: in.StatusConditions,
-	})
-	return incomingStatusHash != HashCurrentAddonStatus(addon)
 }
 
 func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {

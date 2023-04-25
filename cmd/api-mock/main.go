@@ -229,7 +229,7 @@ func (ase *AddonStatusEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request
 		fmt.Fprintln(w, string(respBytes))
 		log.Printf("%s %s:\n", r.URL.String(), r.Method)
 
-	case http.MethodPatch:
+	case http.MethodPost:
 		ase.store.dataMux.Lock()
 		defer ase.store.dataMux.Unlock()
 		payload, err := ioutil.ReadAll(r.Body)
@@ -248,10 +248,10 @@ func (ase *AddonStatusEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request
 			return
 		}
 		vars := mux.Vars(r)
-		status.AddonID = vars["addon_id"]
+
 		ase.store.data[addonStatusKey{
 			clusterID: vars["cluster_id"],
-			addonID:   vars["addon_id"],
+			addonID:   status.AddonID,
 		}] = status
 		respBytes, err := marshalAddonStatus(status)
 		if err != nil {
