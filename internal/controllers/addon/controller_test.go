@@ -107,11 +107,9 @@ func TestReconcileErrorHandling(t *testing.T) {
 		}
 
 		if testCase.externalAPISyncErrPresent {
-			ocmClient.On("GetAddOnStatus", mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, errors.New("gateway timeout"))
-			ocmClient.On("PatchAddOnStatus", mock.Anything, mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, errors.New("gateway timeout"))
+			ocmClient.On("PostAddOnStatus", mock.Anything, mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, errors.New("gateway timeout"))
 		} else {
-			ocmClient.On("GetAddOnStatus", mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, nil)
-			ocmClient.On("PatchAddOnStatus", mock.Anything, mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, nil)
+			ocmClient.On("PostAddOnStatus", mock.Anything, mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, nil)
 		}
 
 		if testCase.statusUpdateErrPresent {
