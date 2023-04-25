@@ -273,6 +273,11 @@ func reportUnreadyMonitoringStack(addon *addonsv1alpha1.Addon, message string) {
 		fmt.Sprintf("MonitoringStack is not ready: %s", message))
 }
 
+func reportUnreadyClusterObjectTemplate(addon *addonsv1alpha1.Addon) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyClusterPackageTemplate,
+		"PackageOperator ClusterPackageTemplate is not ready")
+}
+
 func reportPendingStatus(addon *addonsv1alpha1.Addon, reason, msg string) {
 	meta.SetStatusCondition(&addon.Status.Conditions,
 		metav1.Condition{
@@ -484,7 +489,7 @@ func HashCurrentAddonStatus(addon *addonsv1alpha1.Addon) string {
 	ocmAddonStatus := addonsv1alpha1.OCMAddOnStatus{
 		AddonID:          addon.Name,
 		CorrelationID:    addon.Spec.CorrelationID,
-		StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+		StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 	}
 	return hashOCMAddonStatus(ocmAddonStatus)
 }

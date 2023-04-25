@@ -31,7 +31,7 @@ type monitoringStackReconciler struct {
 	scheme *runtime.Scheme
 }
 
-func (r monitoringStackReconciler) Name() string {
+func (r *monitoringStackReconciler) Name() string {
 	return MONITORING_STACK_RECONCILER_NAME
 }
 

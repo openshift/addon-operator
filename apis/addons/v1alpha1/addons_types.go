@@ -267,8 +267,11 @@ const (
 	// Addon has unready metrics federation
 	AddonReasonUnreadyMonitoringFederation = "UnreadyMonitoringFederation"
 
-	// Addon has unready metrics federation
+	// Addon has unready monitoring stack
 	AddonReasonUnreadyMonitoringStack = "UnreadyMonitoringStack"
+
+	// Addon has unready ClusterPackageTemplate
+	AddonReasonUnreadyClusterPackageTemplate = "UnreadyClusterPackageTemplate"
 
 	// Addon has unready CSV
 	AddonReasonUnreadyCSV = "UnreadyCSV"

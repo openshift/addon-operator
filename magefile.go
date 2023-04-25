@@ -668,7 +668,14 @@ func (Test) Unit() error {
 	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...", "./pkg/...")
 }
 
-func (Test) Integration(ctx context.Context) error {
+func (t Test) Integration(ctx context.Context) error { return t.integration(ctx, "") }
+
+// Allows specifying a subset of tests to run e.g. ./mage test:integrationrun TestIntegration/TestPackageOperatorAddon
+func (t Test) IntegrationRun(ctx context.Context, filter string) error {
+	return t.integration(ctx, filter)
+}
+
+func (Test) integration(ctx context.Context, filter string) error {
 	workDir, ok := ctx.Value("workDir").(string)
 	if !ok || workDir == "" {
 		workDir = path.Join(cacheDir, "dev-env")
@@ -681,15 +688,23 @@ func (Test) Integration(ctx context.Context) error {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
 
+	// force ADDONS_PLUG_AND_PLAY feature toggle in CI to make sure tests are executed
+	os.Setenv("FEATURE_TOGGLES", featuretoggle.AddonsPlugAndPlayFeatureToggleIdentifier)
 	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to perform post-cluster creation setup for the feature toggles: %w", err)
 	}
 	if err := deployFeatureToggles(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to deploy feature toggles: %w", err)
 	}
-	return sh.Run("go", "test", "-v",
-		"-count=1", // will force a new run, instead of using the cache
-		"-timeout=40m", "./integration/...")
+
+	// will force a new run, instead of using the cache
+	args := []string{"test", "-v", "-failfast", "-count=1", "-timeout=40m"}
+	if len(filter) > 0 {
+		args = append(args, "-run", filter)
+	}
+	args = append(args, "./integration/...")
+
+	return sh.Run("go", args...)
 }
 
 // Target to prepare the CI-CD environment before installing the operator.
@@ -703,9 +718,6 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	ctx = logr.NewContext(ctx, logger)
 	if err := labelNodesWithInfraRole(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
-	}
-	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
-		return err
 	}
 	return nil
 }
@@ -886,7 +898,7 @@ const (
 	golangciLintVersion  = "1.51.2"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.24.0"
-	pkoCliVersion        = "1.4.0"
+	pkoCliVersion        = "1.6.0"
 	helmVersion          = "3.7.2"
 )
 
@@ -1092,7 +1104,8 @@ func (d Dev) LoadImage(image string) error {
 	return nil
 }
 
-// Deploy the Addon Operator, Mock API Server and Addon Operator webhooks (if env ENABLE_WEBHOOK=true) is set.
+// Deploy the Addon Operator, and additionally the Mock API Server and Addon Operator webhooks if the respective
+// environment variables are set.
 // All components are deployed via static manifests.
 func (d Dev) Deploy(ctx context.Context) error {
 	mg.Deps(
