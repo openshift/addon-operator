@@ -21,6 +21,9 @@ parameters:
   - name: FEATURE_TOGGLES
     value: ""
     required: true
+  - name: FEATURE_FLAGS
+    value: ""
+    required: true
 objects:
   - apiVersion: hive.openshift.io/v1
     kind: SelectorSyncSet
@@ -81,6 +84,7 @@ objects:
           metadata:
             name: addon-operator
           spec:
+            featureFlags: ${FEATURE_FLAGS}
             ocm:
               endpoint: ${OCM_BASE_URL}
               secret:
