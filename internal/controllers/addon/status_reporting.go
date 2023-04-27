@@ -39,7 +39,7 @@ func (r *AddonReconciler) handleOCMAddOnStatusReporting(
 		return err
 	}
 
-	// At this point, before returning we store the current reported status
+	// Before returning we store the current reported status
 	// in the addon's status block.
 	setLastReportedStatus(addon)
 	return nil
@@ -49,19 +49,19 @@ func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1al
 	statusPayload := ocm.AddOnStatusPostRequest{
 		AddonID:          addon.Name,
 		CorrelationID:    addon.Spec.CorrelationID,
-		StatusConditions: mapAddonStatusConditions(addon.Status.Conditions),
+		StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 	}
-	r.recordASRequestDuration(func() {
+	r.recordAddonServiceRequestDuration(func() {
 		_, err = r.ocmClient.PostAddOnStatus(ctx, statusPayload)
 	})
 	return
 }
 
 func (r *AddonReconciler) statusReportingRequired(addon *addonsv1alpha1.Addon) bool {
-	return r.statusReportingEnabled && currentStatusChangedFromPrevious(addon)
+	return r.statusReportingEnabled && isCurrentStatusDifferentFromPrevious(addon)
 }
 
-func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
+func (r *AddonReconciler) recordAddonServiceRequestDuration(reqFunc func()) {
 	if r.Recorder != nil {
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
 			us := v * 1000000 // convert to microseconds
@@ -72,7 +72,7 @@ func (r *AddonReconciler) recordASRequestDuration(reqFunc func()) {
 	reqFunc()
 }
 
-func mapAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatusCondition {
+func mapToAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatusCondition {
 	res := make([]addonsv1alpha1.AddOnStatusCondition, len(in))
 	for i, obj := range in {
 		res[i] = addonsv1alpha1.AddOnStatusCondition{
@@ -84,7 +84,7 @@ func mapAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnStatu
 	return res
 }
 
-func currentStatusChangedFromPrevious(addon *addonsv1alpha1.Addon) bool {
+func isCurrentStatusDifferentFromPrevious(addon *addonsv1alpha1.Addon) bool {
 	if addon.Status.OCMReportedStatusHash != nil {
 		return addon.Status.OCMReportedStatusHash.StatusHash != HashCurrentAddonStatus(addon)
 	}

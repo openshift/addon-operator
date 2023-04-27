@@ -17,7 +17,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var pkoVersion = "1.6.0"
+var pkoVersion = "1.6.1"
 
 func (h *AddonsPlugAndPlayFeatureToggle) Enable(ctx context.Context) error {
 	adoInCluster := addonsv1alpha1.AddonOperator{}

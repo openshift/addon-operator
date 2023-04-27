@@ -64,7 +64,7 @@ func TestPackageOperatorReconcilerLogic(t *testing.T) {
 						c.On("Get", ctx, identifier, mock.AnythingOfType("*v1alpha1.ClusterObjectTemplate"), []client.GetOption(nil)).
 							Return(nil).
 							Once()
-						c.On("Patch", ctx, mock.AnythingOfType("*v1alpha1.ClusterObjectTemplate"), mock.Anything, []client.PatchOption(nil)).
+						c.On("Update", ctx, mock.AnythingOfType("*v1alpha1.ClusterObjectTemplate"), []client.UpdateOption(nil)).
 							Return(nil).
 							Once()
 					},
