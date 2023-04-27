@@ -25,13 +25,15 @@ import (
 const (
 	addonName              = "addonname-pko-boatboat"
 	addonNamespace         = "namespace-onbgdions"
+	clusterIDValue         = "a440b136-b2d6-406b-a884-fca2d62cd170"
 	deadMansSnitchUrlValue = "https://example.com/test-snitch-url"
+	ocmClusterIDValue      = "foobar"
 	pagerDutyKeyValue      = "1234567890ABCDEF"
 
-	// source: https://github.com/kostola/package-operator-packages/tree/v1.0/openshift/addon-operator/apnp-test-optional-params
-	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v1.0"
-	// source: https://github.com/kostola/package-operator-packages/tree/v1.0/openshift/addon-operator/apnp-test-required-params
-	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v1.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-optional-params
+	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v2.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-required-params
+	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v2.0"
 )
 
 func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAddon() {
@@ -130,50 +132,61 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 	}
 
 	tests := []struct {
-		name                       string
-		pkoImage                   string
-		deployDeadMansSnitchSecret bool
-		deployPagerDutySecret      bool
-		clusterPackageStatus       string
+		name                        string
+		pkoImage                    string
+		deployAddonParametersSecret bool
+		deployDeadMansSnitchSecret  bool
+		deployPagerDutySecret       bool
+		clusterPackageStatus        string
 	}{
 		{
 			"OptionalParamsAllMissing", pkoImageOptionalParams,
-			false, false,
+			false, false, false,
 			v1alpha1.PackageAvailable,
 		},
 		{
 			"OptionalParams1stMissing", pkoImageOptionalParams,
-			false, true,
+			false, true, true,
 			v1alpha1.PackageAvailable,
 		},
 		{
 			"OptionalParams2ndMissing", pkoImageOptionalParams,
-			true, false,
+			true, false, true,
+			v1alpha1.PackageAvailable,
+		},
+		{
+			"OptionalParams3rdMissing", pkoImageOptionalParams,
+			true, true, false,
 			v1alpha1.PackageAvailable,
 		},
 		{
 			"OptionalParamsAllPresent", pkoImageOptionalParams,
-			true, true,
+			true, true, true,
 			v1alpha1.PackageAvailable,
 		},
 		{
 			"RequiredParamsAllMissing", pkoImageRequiredParams,
-			false, false,
+			false, false, false,
 			v1alpha1.PackageInvalid,
 		},
 		{
 			"RequiredParams1stMissing", pkoImageRequiredParams,
-			false, true,
+			false, true, true,
 			v1alpha1.PackageInvalid,
 		},
 		{
 			"RequiredParams2ndMissing", pkoImageRequiredParams,
-			true, false,
+			true, false, true,
+			v1alpha1.PackageInvalid,
+		},
+		{
+			"RequiredParams3rdMissing", pkoImageRequiredParams,
+			true, true, false,
 			v1alpha1.PackageInvalid,
 		},
 		{
 			"RequiredParamsAllPresent", pkoImageRequiredParams,
-			true, true,
+			true, true, true,
 			v1alpha1.PackageAvailable,
 		},
 	}
@@ -187,6 +200,9 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 			addon := s.createAddon(ctx, testAddonName, testAddonNamespace, test.pkoImage)
 			s.waitForNamespace(ctx, testAddonNamespace)
 
+			if test.deployAddonParametersSecret {
+				s.createAddonParametersSecret(ctx, testAddonName, testAddonNamespace)
+			}
 			if test.deployDeadMansSnitchSecret {
 				s.createDeadMansSnitchSecret(ctx, testAddonName, testAddonNamespace)
 			}
@@ -194,7 +210,15 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 				s.createPagerDutySecret(ctx, testAddonName, testAddonNamespace)
 			}
 
-			s.waitForClusterPackage(ctx, testAddonName, test.clusterPackageStatus, test.deployDeadMansSnitchSecret, test.deployPagerDutySecret)
+			s.waitForClusterPackage(
+				ctx,
+				testAddonName,
+				testAddonNamespace,
+				test.clusterPackageStatus,
+				test.deployAddonParametersSecret,
+				test.deployDeadMansSnitchSecret,
+				test.deployPagerDutySecret,
+			)
 
 			s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 		})
@@ -239,6 +263,11 @@ func (s *integrationTestSuite) waitForNamespace(ctx context.Context, addonNamesp
 	s.Require().NoError(err)
 }
 
+// create the Secret resource for Addon Parameters
+func (s *integrationTestSuite) createAddonParametersSecret(ctx context.Context, addonName string, addonNamespace string) {
+	s.createSecret(ctx, "addon-"+addonName+"-parameters", addonNamespace, map[string][]byte{"foo1": []byte("bar"), "foo2": []byte("baz")})
+}
+
 // create the Secret resource for Dead Man's Snitch as defined here:
 // - https://mt-sre.github.io/docs/creating-addons/monitoring/deadmanssnitch_integration/#generated-secret
 func (s *integrationTestSuite) createDeadMansSnitchSecret(ctx context.Context, addonName string, addonNamespace string) {
@@ -262,17 +291,23 @@ func (s *integrationTestSuite) createSecret(ctx context.Context, name string, na
 
 // wait until all the replicas in the Deployment inside the ClusterPackage are ready
 // and check if their env variables corresponds to the secrets
-func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonName string,
-	conditionType string, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool,
+func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonName string, addonNamespace string, conditionType string,
+	addonParametersValuePresent bool, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool,
 ) {
 	cp := &v1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
 	err := integration.WaitForObject(ctx, s.T(),
 		defaultAddonAvailabilityTimeout, cp, "to be "+conditionType,
-		clusterPackageChecker(conditionType, deadMansSnitchUrlValuePresent, pagerDutyValuePresent))
+		clusterPackageChecker(addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent, pagerDutyValuePresent))
 	s.Require().NoError(err)
 }
 
-func clusterPackageChecker(conditionType string, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool) func(client.Object) (done bool, err error) {
+func clusterPackageChecker(
+	addonNamespace string,
+	conditionType string,
+	addonParametersValuePresent bool,
+	deadMansSnitchUrlValuePresent bool,
+	pagerDutyValuePresent bool,
+) func(client.Object) (done bool, err error) {
 	if conditionType == v1alpha1.PackageInvalid {
 		return func(obj client.Object) (done bool, err error) {
 			clusterPackage := obj.(*v1alpha1.ClusterPackage)
@@ -286,7 +321,7 @@ func clusterPackageChecker(conditionType string, deadMansSnitchUrlValuePresent b
 			return false, nil
 		}
 
-		config := make(map[string]map[string]string)
+		config := make(map[string]map[string]interface{})
 		if err := json.Unmarshal(clusterPackage.Spec.Config.Raw, &config); err != nil {
 			return false, err
 		}
@@ -296,22 +331,55 @@ func clusterPackageChecker(conditionType string, deadMansSnitchUrlValuePresent b
 			return false, nil
 		}
 
-		deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false
+		targetNamespace, present := addonsv1[addon.TargetNamespaceConfigKey]
+		targetNamespaceValueOk := present && targetNamespace == addonNamespace
+
+		fmt.Printf("NAMESPACE: %s present=%v ok=%v\n", targetNamespace, present, targetNamespaceValueOk)
+
+		clusterID, present := addonsv1[addon.ClusterIDConfigKey]
+		clusterIDValueOk := present && clusterID == clusterIDValue
+
+		fmt.Printf("EXT CLUSTER ID: %s present=%v ok=%v\n", clusterID, present, clusterIDValueOk)
+
+		ocmClusterID, present := addonsv1[addon.OcmClusterIDConfigKey]
+		ocmClusterIDValueOk := present && ocmClusterID == ocmClusterIDValue
+
+		fmt.Printf("OCM CLUSTER ID: %s present=%v\n", ocmClusterID, ocmClusterIDValueOk)
+
+		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
+		if addonParametersValuePresent {
+			value, present := addonsv1[addon.AddonParametersConfigKey]
+			if present {
+				jsonValue, err := json.Marshal(value)
+				if err == nil {
+					addonParametersValueOk = string(jsonValue) == "{\"foo1\":\"YmFy\",\"foo2\":\"YmF6\"}"
+				}
+			}
+			addonParametersValueOk = present && value == base64.StdEncoding.EncodeToString([]byte(deadMansSnitchUrlValue))
+		} else {
+			_, present := addonsv1[addon.AddonParametersConfigKey]
+			addonParametersValueOk = !present
+		}
 		if deadMansSnitchUrlValuePresent {
 			value, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
-			deadMansSnitchUrlValueOk = present && value == base64.StdEncoding.EncodeToString([]byte(deadMansSnitchUrlValue))
+			deadMansSnitchUrlValueOk = present && fmt.Sprint(value) == base64.StdEncoding.EncodeToString([]byte(deadMansSnitchUrlValue))
 		} else {
 			_, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
 			deadMansSnitchUrlValueOk = !present
 		}
 		if pagerDutyValuePresent {
 			value, present := addonsv1[addon.PagerDutyKeyConfigKey]
-			pagerDutyValueOk = present && value == base64.StdEncoding.EncodeToString([]byte(pagerDutyKeyValue))
+			pagerDutyValueOk = present && fmt.Sprint(value) == base64.StdEncoding.EncodeToString([]byte(pagerDutyKeyValue))
 		} else {
 			_, present := addonsv1[addon.PagerDutyKeyConfigKey]
 			pagerDutyValueOk = !present
 		}
 
-		return deadMansSnitchUrlValueOk && pagerDutyValueOk, nil
+		return targetNamespaceValueOk &&
+			clusterIDValueOk &&
+			ocmClusterIDValueOk &&
+			addonParametersValueOk &&
+			deadMansSnitchUrlValueOk &&
+			pagerDutyValueOk, nil
 	}
 }

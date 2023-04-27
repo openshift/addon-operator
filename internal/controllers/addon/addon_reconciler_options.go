@@ -37,8 +37,10 @@ type WithPackageOperatorReconciler struct {
 
 func (w WithPackageOperatorReconciler) ApplyToAddonReconciler(config *AddonReconciler) {
 	poReconciler := &PackageOperatorReconciler{
-		Client: w.Client,
-		Scheme: w.Scheme,
+		Client:       w.Client,
+		Scheme:       w.Scheme,
+		ClusterID:    config.ClusterExternalID,
+		OcmClusterID: "foobar", // TODO: set real OCM cluster ID
 	}
 	config.subReconcilers = append(config.subReconcilers, poReconciler)
 }
