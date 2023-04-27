@@ -898,7 +898,7 @@ const (
 	golangciLintVersion  = "1.51.2"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.24.0"
-	pkoCliVersion        = "1.6.0"
+	pkoCliVersion        = "1.6.1"
 	helmVersion          = "3.7.2"
 )
 
