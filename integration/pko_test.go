@@ -334,17 +334,11 @@ func clusterPackageChecker(
 		targetNamespace, present := addonsv1[addon.TargetNamespaceConfigKey]
 		targetNamespaceValueOk := present && targetNamespace == addonNamespace
 
-		fmt.Printf("NAMESPACE: %s present=%v ok=%v\n", targetNamespace, present, targetNamespaceValueOk)
-
 		clusterID, present := addonsv1[addon.ClusterIDConfigKey]
 		clusterIDValueOk := present && clusterID == clusterIDValue
 
-		fmt.Printf("EXT CLUSTER ID: %s present=%v ok=%v\n", clusterID, present, clusterIDValueOk)
-
 		ocmClusterID, present := addonsv1[addon.OcmClusterIDConfigKey]
 		ocmClusterIDValueOk := present && ocmClusterID == ocmClusterIDValue
-
-		fmt.Printf("OCM CLUSTER ID: %s present=%v\n", ocmClusterID, ocmClusterIDValueOk)
 
 		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
 		if addonParametersValuePresent {
@@ -355,7 +349,6 @@ func clusterPackageChecker(
 					addonParametersValueOk = string(jsonValue) == "{\"foo1\":\"YmFy\",\"foo2\":\"YmF6\"}"
 				}
 			}
-			addonParametersValueOk = present && value == base64.StdEncoding.EncodeToString([]byte(deadMansSnitchUrlValue))
 		} else {
 			_, present := addonsv1[addon.AddonParametersConfigKey]
 			addonParametersValueOk = !present
