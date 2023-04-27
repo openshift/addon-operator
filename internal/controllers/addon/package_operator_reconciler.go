@@ -2,9 +2,10 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
-	"k8s.io/apimachinery/pkg/api/errors"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -17,17 +18,22 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
-const pkgTemplate = `
+const PkoPkgTemplate = `
 apiVersion: "%s"
 kind: ClusterPackage
 metadata:
   name: "%s"
-  namespace: "%s"
 spec:
   image: "%s"
-  config: {{toJson .config}}
+  config:
+    addonsv1: {{toJson .config}}
 `
-const packageOperatorName = "packageOperatorReconciler"
+
+const (
+	packageOperatorName        = "packageOperatorReconciler"
+	DeadMansSnitchUrlConfigKey = "deadMansSnitchUrl"
+	PagerDutyKeyConfigKey      = "pagerDutyKey"
+)
 
 type PackageOperatorReconciler struct {
 	Client client.Client
@@ -44,19 +50,52 @@ func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addons
 }
 
 func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	addonDestNamespace := extractDestinationNamespace(addon)
+
+	if len(addonDestNamespace) < 1 {
+		return ctrl.Result{}, errors.New(fmt.Sprintf("no destination namespace configured in addon %s", addon.Name))
+	}
+
+	templateString := fmt.Sprintf(PkoPkgTemplate,
+		pkov1alpha1.GroupVersion,
+		addon.Name,
+		addon.Spec.AddonPackageOperator.Image,
+	)
+
 	clusterObjectTemplate := &pkov1alpha1.ClusterObjectTemplate{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      addon.Name,
-			Namespace: addon.Namespace,
+			Name: addon.Name,
 		},
 		Spec: pkov1alpha1.ObjectTemplateSpec{
-			Template: fmt.Sprintf(pkgTemplate,
-				pkov1alpha1.GroupVersion,
-				addon.Name,
-				addon.Namespace,
-				addon.Spec.AddonPackageOperator.Image,
-			),
-			Sources: []pkov1alpha1.ObjectTemplateSource{},
+			Template: templateString,
+			Sources: []pkov1alpha1.ObjectTemplateSource{
+				{
+					Optional:   true,
+					APIVersion: "v1",
+					Kind:       "Secret",
+					Name:       addon.Name + "-deadmanssnitch",
+					Namespace:  addonDestNamespace,
+					Items: []pkov1alpha1.ObjectTemplateSourceItem{
+						{
+							Key:         ".data.SNITCH_URL",
+							Destination: "." + DeadMansSnitchUrlConfigKey,
+						},
+					},
+				},
+				{
+					Optional:   true,
+					APIVersion: "v1",
+					Kind:       "Secret",
+					Name:       addon.Name + "-pagerduty",
+					Namespace:  addonDestNamespace,
+					Items: []pkov1alpha1.ObjectTemplateSourceItem{
+						{
+							Key:         ".data.PAGERDUTY_KEY",
+							Destination: "." + PagerDutyKeyConfigKey,
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -66,7 +105,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 
 	existingClusterObjectTemplate, err := r.getExistingClusterObjectTemplate(ctx, addon)
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			if err := r.Client.Create(ctx, clusterObjectTemplate); err != nil {
 				return ctrl.Result{}, fmt.Errorf("creating ClusterObjectTemplate object: %w", err)
 			}
@@ -79,7 +118,6 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 	if err := r.Client.Update(ctx, clusterObjectTemplate); err != nil {
 		return ctrl.Result{}, fmt.Errorf("updating ClusterObjectTemplate object: %w", err)
 	}
-
 	r.updateAddonStatus(addon, existingClusterObjectTemplate)
 
 	return ctrl.Result{}, nil
@@ -94,10 +132,25 @@ func (r *PackageOperatorReconciler) updateAddonStatus(addon *addonsv1alpha1.Addo
 	}
 }
 
+func extractDestinationNamespace(addon *addonsv1alpha1.Addon) string {
+	switch addon.Spec.Install.Type {
+	case addonsv1alpha1.OLMAllNamespaces:
+		specNamespace := addon.Spec.Install.OLMAllNamespaces.Namespace
+		if len(specNamespace) < 1 {
+			return "openshift-operators"
+		}
+		return specNamespace
+	case addonsv1alpha1.OLMOwnNamespace:
+		return addon.Spec.Install.OLMOwnNamespace.Namespace
+	default:
+		return ""
+	}
+}
+
 func (r *PackageOperatorReconciler) ensureClusterObjectTemplateTornDown(ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	existing, err := r.getExistingClusterObjectTemplate(ctx, addon)
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			return nil
 		}
 		return fmt.Errorf("getting ClusterObjectTemplate object: %w", err)

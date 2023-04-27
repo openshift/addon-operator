@@ -428,8 +428,14 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 		return fmt.Errorf("loading addon-operator-template.yaml: %w", err)
 	}
 
-	// Replace image
-	patchDeployment(deployment, "addon-operator-manager", "manager")
+	for i := range deployment.Spec.Template.Spec.Containers {
+		container := &deployment.Spec.Template.Spec.Containers[i]
+
+		if container.Name == "manager" {
+
+			container.Image = getImageName("addon-operator-manager")
+		}
+	}
 
 	depBytes, err := yaml.Marshal(deployment)
 	if err != nil {
@@ -682,6 +688,8 @@ func (Test) integration(ctx context.Context, filter string) error {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
 
+	// force ADDONS_PLUG_AND_PLAY feature toggle in CI to make sure tests are executed
+	os.Setenv("FEATURE_TOGGLES", featuretoggle.AddonsPlugAndPlayFeatureToggleIdentifier)
 	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to perform post-cluster creation setup for the feature toggles: %w", err)
 	}
@@ -710,9 +718,6 @@ func (t Test) IntegrationCIPrepare(ctx context.Context) error {
 	ctx = logr.NewContext(ctx, logger)
 	if err := labelNodesWithInfraRole(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to label the nodes with infra role: %w", err)
-	}
-	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
-		return err
 	}
 	return nil
 }

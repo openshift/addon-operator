@@ -15,6 +15,7 @@ The `addons.managed.openshift.io` API group in managed OpenShift contains all Ad
 	* [AddonInstanceSpec](#addoninstancespecaddonsmanagedopenshiftiov1alpha1)
 	* [AddonInstanceStatus](#addoninstancestatusaddonsmanagedopenshiftiov1alpha1)
 * [AddonOperator](#addonoperatoraddonsmanagedopenshiftiov1alpha1)
+	* [AddonOperatorFeatureToggles](#addonoperatorfeaturetogglesaddonsmanagedopenshiftiov1alpha1)
 	* [AddonOperatorOCM](#addonoperatorocmaddonsmanagedopenshiftiov1alpha1)
 	* [AddonOperatorSpec](#addonoperatorspecaddonsmanagedopenshiftiov1alpha1)
 	* [AddonOperatorStatus](#addonoperatorstatusaddonsmanagedopenshiftiov1alpha1)
@@ -111,6 +112,16 @@ AddonOperator is the Schema for the AddonOperator API
 
 [Back to Group]()
 
+### AddonOperatorFeatureToggles.addons.managed.openshift.io/v1alpha1
+
+
+
+| Field | Description | Scheme | Required |
+| ----- | ----------- | ------ | -------- |
+| experimentalFeatures | Feature toggle for enabling/disabling experimental features in the addon-operator | bool | true |
+
+[Back to Group]()
+
 ### AddonOperatorOCM.addons.managed.openshift.io/v1alpha1
 
 OCM specific configuration.
@@ -129,7 +140,8 @@ AddonOperatorSpec defines the desired state of Addon operator.
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
 | pause | Pause reconciliation on all Addons in the cluster when set to True | bool | true |
-| featureToggles | Specification of the feature toggles supported by the addon-operator in the form of a comma-separated string | string | true |
+| featureToggles | [DEPRECATED] Specification of the feature toggles supported by the addon-operator | [AddonOperatorFeatureToggles.addons.managed.openshift.io/v1alpha1](#addonoperatorfeaturetogglesaddonsmanagedopenshiftiov1alpha1) | true |
+| featureFlags | Specification of the feature toggles supported by the addon-operator in the form of a comma-separated string | string | true |
 | ocm | OCM specific configuration. Setting this subconfig will enable deeper OCM integration. e.g. push status reporting, etc. | *[AddonOperatorOCM.addons.managed.openshift.io/v1alpha1](#addonoperatorocmaddonsmanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()

@@ -23,8 +23,18 @@ import (
 var (
 	addonWithoutPKO = testutil.NewTestAddonWithSingleNamespace()
 	addonWithPKO    = &addonsv1alpha1.Addon{
-		ObjectMeta: metav1.ObjectMeta{Name: "test-addon", Namespace: "test-ns"},
-		Spec:       addonsv1alpha1.AddonSpec{AddonPackageOperator: &v1alpha1.AddonPackageOperator{Image: "test-pko-img"}},
+		ObjectMeta: metav1.ObjectMeta{Name: "test-addon"},
+		Spec: addonsv1alpha1.AddonSpec{
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace: "test-ns",
+					},
+				},
+			},
+			AddonPackageOperator: &v1alpha1.AddonPackageOperator{Image: "test-pko-img"},
+		},
 	}
 )
 

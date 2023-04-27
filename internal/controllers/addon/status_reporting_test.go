@@ -121,13 +121,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 			},
 		}
 		// setup mock calls
-		ocmClient.On("GetAddOnStatus", mock.Anything, "addon-1").
-			Return(
-				ocm.AddOnStatusResponse{},
-				ocm.OCMError{
-					StatusCode: http.StatusNotFound,
-				},
-			)
+
 		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
 			AddonID:          "addon-1",
 			CorrelationID:    "123",
@@ -139,84 +133,6 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		mockSummary.On(
 			"Observe", mock.IsType(float64(0)))
 
-		err := r.handleOCMAddOnStatusReporting(context.Background(), log, addon)
-		require.NoError(t, err)
-		ocmClient.AssertExpectations(t)
-		mockSummary.AssertExpectations(t)
-
-		// Assert that the reported status is indeed stored in the addon's status
-		// block.
-		require.NotNil(t, addon.Status.OCMReportedStatusHash)
-		require.Equal(t, addon.Status.OCMReportedStatusHash.StatusHash,
-			HashCurrentAddonStatus(addon))
-	})
-
-	t.Run("outdated reported status, but current status is equal to OCM status", func(t *testing.T) {
-		client := testutil.NewClient()
-		ocmClient := ocmtest.NewClient()
-		recorder := metrics.NewRecorder(false, "asa346546dfew143")
-		mockSummary := testutil.NewSummaryMock()
-		recorder.InjectAddonServiceAPIRequestDuration(mockSummary)
-		log := testutil.NewLogger(t)
-		r := &AddonReconciler{
-			Client:    client,
-			ocmClient: ocmClient,
-			Recorder:  recorder,
-		}
-		r.statusReportingEnabled = true
-		addon := &addonsv1alpha1.Addon{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "addon-1",
-			},
-			Spec: addonsv1alpha1.AddonSpec{
-				CorrelationID: "1234",
-			},
-			Status: addonsv1alpha1.AddonStatus{
-				Conditions: []metav1.Condition{
-					{
-						Type:   addonsv1alpha1.Available,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonFullyReconciled,
-					},
-					{
-						Type:   addonsv1alpha1.UpgradeStarted,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonUpgradeStarted,
-					},
-				},
-				OCMReportedStatusHash: &addonsv1alpha1.OCMAddOnStatusHash{
-					StatusHash: "outdated",
-				},
-			},
-		}
-		// setup mock calls
-		ocmClient.On("GetAddOnStatus", mock.Anything, "addon-1").
-			Return(
-				ocm.AddOnStatusResponse{
-					AddonID:       "addon-1",
-					CorrelationID: "1234",
-					StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
-						{
-							StatusType:  addonsv1alpha1.Available,
-							StatusValue: metav1.ConditionTrue,
-							Reason:      addonsv1alpha1.AddonReasonFullyReconciled,
-						},
-						{
-							StatusType:  addonsv1alpha1.UpgradeStarted,
-							StatusValue: metav1.ConditionTrue,
-							Reason:      addonsv1alpha1.AddonReasonUpgradeStarted,
-						},
-					},
-				},
-				nil,
-			)
-		mockSummary.On(
-			"Observe", mock.IsType(float64(0)))
-
-		// No POST or PATCH calls made to OCM as the status in OCM
-		// is the same as in the current in cluster addon status.
-		ocmClient.AssertNotCalled(t, "PostAddOnStatus")
-		ocmClient.AssertNotCalled(t, "PatchAddOnStatus")
 		err := r.handleOCMAddOnStatusReporting(context.Background(), log, addon)
 		require.NoError(t, err)
 		ocmClient.AssertExpectations(t)
@@ -269,28 +185,16 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		}
 
 		// setup mock calls
-		ocmClient.On("GetAddOnStatus", mock.Anything, "addon-1").
-			Return(
-				ocm.AddOnStatusResponse{
-					AddonID:       "addon-1",
-					CorrelationID: "1234",
-					StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
-						{
-							StatusType:  addonsv1alpha1.Available,
-							StatusValue: metav1.ConditionTrue,
-							Reason:      addonsv1alpha1.AddonReasonFullyReconciled,
-						},
-					},
-				},
-				nil,
-			)
-		ocmClient.On("PatchAddOnStatus", mock.Anything, "addon-1", ocm.AddOnStatusPatchRequest{
+
+		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
+			AddonID:          "addon-1",
 			CorrelationID:    addon.Spec.CorrelationID,
 			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
 			nil,
 		)
+
 		mockSummary.On(
 			"Observe", mock.IsType(float64(0)))
 
@@ -347,28 +251,8 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		addon.Spec.CorrelationID = "changed"
 
 		// setup mock calls
-		ocmClient.On("GetAddOnStatus", mock.Anything, "addon-1").
-			Return(
-				ocm.AddOnStatusResponse{
-					AddonID:       "addon-1",
-					CorrelationID: "1234",
-					StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
-						{
-							StatusType:  addonsv1alpha1.Available,
-							StatusValue: metav1.ConditionTrue,
-							Reason:      addonsv1alpha1.AddonReasonFullyReconciled,
-						},
-						{
-							StatusType:  addonsv1alpha1.UpgradeStarted,
-							StatusValue: metav1.ConditionTrue,
-							Reason:      addonsv1alpha1.AddonReasonUpgradeStarted,
-						},
-					},
-				},
-				nil,
-			)
-
-		ocmClient.On("PatchAddOnStatus", mock.Anything, "addon-1", ocm.AddOnStatusPatchRequest{
+		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
+			AddonID:          "addon-1",
 			CorrelationID:    addon.Spec.CorrelationID,
 			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
@@ -431,22 +315,8 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		originalReportedStatusHash := addon.Status.OCMReportedStatusHash.StatusHash
 
 		// setup mock calls
-		ocmClient.On("GetAddOnStatus", mock.Anything, "addon-1").
-			Return(
-				ocm.AddOnStatusResponse{
-					AddonID:       "addon-1",
-					CorrelationID: "123",
-					StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
-						{
-							StatusType:  addonsv1alpha1.Available,
-							StatusValue: metav1.ConditionFalse,
-							Reason:      addonsv1alpha1.AddonReasonUnreadyCSV,
-						},
-					},
-				},
-				nil,
-			)
-		ocmClient.On("PatchAddOnStatus", mock.Anything, "addon-1", ocm.AddOnStatusPatchRequest{
+		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
+			AddonID:          "addon-1",
 			CorrelationID:    addon.Spec.CorrelationID,
 			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
@@ -455,6 +325,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 				StatusCode: http.StatusGatewayTimeout,
 			},
 		)
+
 		mockSummary.On(
 			"Observe", mock.IsType(float64(0)))
 

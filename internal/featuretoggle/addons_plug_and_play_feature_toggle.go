@@ -13,6 +13,8 @@ import (
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
+const AddonsPlugAndPlayFeatureToggleIdentifier = "ADDONS_PLUG_AND_PLAY"
+
 var _ FeatureToggleHandler = (*AddonsPlugAndPlayFeatureToggle)(nil)
 
 type AddonsPlugAndPlayFeatureToggle struct {
@@ -27,7 +29,7 @@ func (h *AddonsPlugAndPlayFeatureToggle) Name() string {
 }
 
 func (h *AddonsPlugAndPlayFeatureToggle) GetFeatureToggleIdentifier() string {
-	return "ADDONS_PLUG_AND_PLAY"
+	return AddonsPlugAndPlayFeatureToggleIdentifier
 }
 
 func (h *AddonsPlugAndPlayFeatureToggle) PreManagerSetupHandle(ctx context.Context) error {
