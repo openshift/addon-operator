@@ -26,16 +26,16 @@ metadata:
 spec:
   image: "%s"
   config:
-    addonsv1: {{toJson (merge .config (dict "%s" "%s" "%s" "%s" "%s" "%s"))}}
+    addonsv1: {{toJson (merge ( .config | b64decMap ) ( ( index .config "%s" | default dict ) | b64decMap ) (dict "%s" "%s" "%s" "%s" "%s" "%s"))}}
 `
 
 const (
 	packageOperatorName        = "packageOperatorReconciler"
-	AddonParametersConfigKey   = "addonParameters"
 	ClusterIDConfigKey         = "clusterID"
 	DeadMansSnitchUrlConfigKey = "deadMansSnitchUrl"
 	OcmClusterIDConfigKey      = "ocmClusterID"
 	PagerDutyKeyConfigKey      = "pagerDutyKey"
+	ParametersConfigKey        = "parameters"
 	TargetNamespaceConfigKey   = "targetNamespace"
 )
 
@@ -66,6 +66,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		pkov1alpha1.GroupVersion,
 		addon.Name,
 		addon.Spec.AddonPackageOperator.Image,
+		ParametersConfigKey,
 		ClusterIDConfigKey, r.ClusterID,
 		OcmClusterIDConfigKey, r.OcmClusterID,
 		TargetNamespaceConfigKey, addonDestNamespace,
@@ -87,7 +88,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 					Items: []pkov1alpha1.ObjectTemplateSourceItem{
 						{
 							Key:         ".data",
-							Destination: "." + AddonParametersConfigKey,
+							Destination: "." + ParametersConfigKey,
 						},
 					},
 				},

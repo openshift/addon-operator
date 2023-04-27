@@ -160,6 +160,21 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 			v1alpha1.PackageAvailable,
 		},
 		{
+			"OptionalParams1stPresent", pkoImageOptionalParams,
+			true, false, false,
+			v1alpha1.PackageAvailable,
+		},
+		{
+			"OptionalParams2ndPresent", pkoImageOptionalParams,
+			false, true, false,
+			v1alpha1.PackageAvailable,
+		},
+		{
+			"OptionalParams3rdPresent", pkoImageOptionalParams,
+			false, false, true,
+			v1alpha1.PackageAvailable,
+		},
+		{
 			"OptionalParamsAllPresent", pkoImageOptionalParams,
 			true, true, true,
 			v1alpha1.PackageAvailable,
@@ -182,6 +197,21 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 		{
 			"RequiredParams3rdMissing", pkoImageRequiredParams,
 			true, true, false,
+			v1alpha1.PackageInvalid,
+		},
+		{
+			"RequiredParams1stPresent", pkoImageRequiredParams,
+			true, false, false,
+			v1alpha1.PackageInvalid,
+		},
+		{
+			"RequiredParams2ndPresent", pkoImageRequiredParams,
+			false, true, false,
+			v1alpha1.PackageInvalid,
+		},
+		{
+			"RequiredParams3rdPresent", pkoImageRequiredParams,
+			false, false, true,
 			v1alpha1.PackageInvalid,
 		},
 		{
@@ -342,7 +372,7 @@ func clusterPackageChecker(
 
 		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
 		if addonParametersValuePresent {
-			value, present := addonsv1[addon.AddonParametersConfigKey]
+			value, present := addonsv1[addon.ParametersConfigKey]
 			if present {
 				jsonValue, err := json.Marshal(value)
 				if err == nil {
@@ -350,7 +380,7 @@ func clusterPackageChecker(
 				}
 			}
 		} else {
-			_, present := addonsv1[addon.AddonParametersConfigKey]
+			_, present := addonsv1[addon.ParametersConfigKey]
 			addonParametersValueOk = !present
 		}
 		if deadMansSnitchUrlValuePresent {
