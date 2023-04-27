@@ -7,25 +7,19 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/openshift/addon-operator/internal/controllers/addon"
-
-	"k8s.io/apimachinery/pkg/api/meta"
-
-	"package-operator.run/apis/core/v1alpha1"
-
 	v1 "k8s.io/api/core/v1"
-
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-
-	"github.com/openshift/addon-operator/internal/featuretoggle"
-
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
+	"github.com/openshift/addon-operator/internal/controllers/addon"
+	"github.com/openshift/addon-operator/internal/featuretoggle"
+
+	"package-operator.run/apis/core/v1alpha1"
+	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 )
 
 const (
@@ -40,7 +34,7 @@ const (
 	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v1.0"
 )
 
-func (s *integrationTestSuite) TestPackageOperatorAddon() {
+func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAddon() {
 	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggle{}) {
 		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
 	}
@@ -130,7 +124,7 @@ func (s *integrationTestSuite) TestPackageOperatorAddon() {
 	s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 }
 
-func (s *integrationTestSuite) TestPackageOperatorAddonParameters() {
+func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjection() {
 	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggle{}) {
 		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
 	}
