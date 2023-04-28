@@ -2,9 +2,9 @@ package integration_test
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 
 	v1 "k8s.io/api/core/v1"
@@ -23,8 +23,8 @@ import (
 )
 
 const (
-	addonName              = "addonname-pko-boatboat"
-	addonNamespace         = "namespace-onbgdions"
+	addonName              = "pko-test"
+	addonNamespace         = "pko-test-ns"
 	clusterIDValue         = "a440b136-b2d6-406b-a884-fca2d62cd170"
 	deadMansSnitchUrlValue = "https://example.com/test-snitch-url"
 	ocmClusterIDValue      = "foobar"
@@ -126,105 +126,75 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAd
 	s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 }
 
+type TestPKOSourcesData struct {
+	name                        string
+	resourceSuffix              string
+	requiredParameters          bool
+	pkoImage                    string
+	deployAddonParametersSecret bool
+	deployDeadMansSnitchSecret  bool
+	deployPagerDutySecret       bool
+	clusterPackageStatus        string
+}
+
 func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjection() {
 	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggle{}) {
 		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
 	}
 
-	tests := []struct {
-		name                        string
-		pkoImage                    string
-		deployAddonParametersSecret bool
-		deployDeadMansSnitchSecret  bool
-		deployPagerDutySecret       bool
-		clusterPackageStatus        string
-	}{
-		{
-			"OptionalParamsAllMissing", pkoImageOptionalParams,
-			false, false, false,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParams1stMissing", pkoImageOptionalParams,
-			false, true, true,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParams2ndMissing", pkoImageOptionalParams,
-			true, false, true,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParams3rdMissing", pkoImageOptionalParams,
-			true, true, false,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParams1stPresent", pkoImageOptionalParams,
-			true, false, false,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParams2ndPresent", pkoImageOptionalParams,
-			false, true, false,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParams3rdPresent", pkoImageOptionalParams,
-			false, false, true,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParamsAllPresent", pkoImageOptionalParams,
-			true, true, true,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"RequiredParamsAllMissing", pkoImageRequiredParams,
-			false, false, false,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParams1stMissing", pkoImageRequiredParams,
-			false, true, true,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParams2ndMissing", pkoImageRequiredParams,
-			true, false, true,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParams3rdMissing", pkoImageRequiredParams,
-			true, true, false,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParams1stPresent", pkoImageRequiredParams,
-			true, false, false,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParams2ndPresent", pkoImageRequiredParams,
-			false, true, false,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParams3rdPresent", pkoImageRequiredParams,
-			false, false, true,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParamsAllPresent", pkoImageRequiredParams,
-			true, true, true,
-			v1alpha1.PackageAvailable,
-		},
+	parValues := map[string]bool{
+		"Opt": false,
+		"Req": true,
 	}
+	apValues := map[string]bool{
+		"ApN": false,
+		"ApY": true,
+	}
+	dsValues := map[string]bool{
+		"DsN": false,
+		"DsY": true,
+	}
+	pdValues := map[string]bool{
+		"PdN": false,
+		"PdY": true,
+	}
+
+	// create all combinations
+	var tests []TestPKOSourcesData
+	for parK, parV := range parValues {
+		for apK, apV := range apValues {
+			for dsK, dsV := range dsValues {
+				for pdK, pdV := range pdValues {
+					pkoImage := pkoImageOptionalParams
+					if parV {
+						pkoImage = pkoImageRequiredParams
+					}
+
+					status := v1alpha1.PackageAvailable
+					if parV && (!apV || !dsV || !pdV) {
+						status = pkov1alpha1.PackageInvalid
+					}
+
+					tests = append(tests, TestPKOSourcesData{
+						fmt.Sprintf("%s%s%s%s", parK, apK, dsK, pdK),
+						fmt.Sprintf("%s-%s-%s-%s", strings.ToLower(parK), strings.ToLower(apK), strings.ToLower(dsK), strings.ToLower(pdK)),
+						parV, pkoImage,
+						apV, dsV, pdV,
+						status,
+					})
+				}
+			}
+		}
+	}
+
+	sort.Slice(tests, func(i, j int) bool {
+		return tests[i].name < tests[j].name
+	})
 
 	for index, test := range tests {
 		s.Run(test.name, func() {
-			testAddonName := fmt.Sprintf("%s-%d", addonName, index)
-			testAddonNamespace := fmt.Sprintf("%s-%d", addonNamespace, index)
+			testAddonName := fmt.Sprintf("%s-%02d-%s", addonName, index, test.resourceSuffix)
+			testAddonNamespace := fmt.Sprintf("%s-%02d-%s", addonNamespace, index, test.resourceSuffix)
 			ctx := context.Background()
 
 			addon := s.createAddon(ctx, testAddonName, testAddonNamespace, test.pkoImage)
@@ -376,7 +346,7 @@ func clusterPackageChecker(
 			if present {
 				jsonValue, err := json.Marshal(value)
 				if err == nil {
-					addonParametersValueOk = string(jsonValue) == "{\"foo1\":\"YmFy\",\"foo2\":\"YmF6\"}"
+					addonParametersValueOk = string(jsonValue) == "{\"foo1\":\"bar\",\"foo2\":\"baz\"}"
 				}
 			}
 		} else {
@@ -385,14 +355,14 @@ func clusterPackageChecker(
 		}
 		if deadMansSnitchUrlValuePresent {
 			value, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
-			deadMansSnitchUrlValueOk = present && fmt.Sprint(value) == base64.StdEncoding.EncodeToString([]byte(deadMansSnitchUrlValue))
+			deadMansSnitchUrlValueOk = present && fmt.Sprint(value) == deadMansSnitchUrlValue
 		} else {
 			_, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
 			deadMansSnitchUrlValueOk = !present
 		}
 		if pagerDutyValuePresent {
 			value, present := addonsv1[addon.PagerDutyKeyConfigKey]
-			pagerDutyValueOk = present && fmt.Sprint(value) == base64.StdEncoding.EncodeToString([]byte(pagerDutyKeyValue))
+			pagerDutyValueOk = present && fmt.Sprint(value) == pagerDutyKeyValue
 		} else {
 			_, present := addonsv1[addon.PagerDutyKeyConfigKey]
 			pagerDutyValueOk = !present

@@ -19,14 +19,19 @@ import (
 )
 
 const PkoPkgTemplate = `
-apiVersion: "%s"
+apiVersion: "%[1]s"
 kind: ClusterPackage
 metadata:
-  name: "%s"
+  name: "%[2]s"
 spec:
-  image: "%s"
+  image: "%[3]s"
   config:
-    addonsv1: {{toJson (merge ( .config | b64decMap ) ( ( index .config "%s" | default dict ) | b64decMap ) (dict "%s" "%s" "%s" "%s" "%s" "%s"))}}
+    addonsv1: {{toJson (
+		merge
+			(.config | b64decMap)
+			(hasKey .config "%[4]s" | ternary (dict "%[4]s" (index .config "%[4]s" | b64decMap)) (dict))
+			(dict "%[5]s" "%[6]s" "%[7]s" "%[8]s" "%[9]s" "%[10]s")
+	)}}
 `
 
 const (
