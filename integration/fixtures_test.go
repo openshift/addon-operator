@@ -202,12 +202,11 @@ func addon_AllNamespaces() *addonsv1alpha1.Addon {
 	}
 }
 
-var uuid = "c24cd15c-4353-4036-bd86-384046eb4ff8"
+var testUuid = "c24cd15c-4353-4036-bd86-384046eb4ff8"
 
 func addon_OwnNamespace_TestBrokenSubscription() *addonsv1alpha1.Addon {
-
-	addonName := fmt.Sprintf("addon-%s", uuid)
-	addonNamespace := fmt.Sprintf("namespace-%s", uuid)
+	addonName := fmt.Sprintf("addon-%s", testUuid)
+	addonNamespace := fmt.Sprintf("namespace-%s", testUuid)
 
 	return &addonsv1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{

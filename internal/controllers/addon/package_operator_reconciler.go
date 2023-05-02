@@ -30,7 +30,7 @@ spec:
 		merge
 			(.config | b64decMap)
 			(hasKey .config "%[4]s" | ternary (dict "%[4]s" (index .config "%[4]s" | b64decMap)) (dict))
-			(dict "%[5]s" "%[6]s" "%[7]s" "%[8]s" "%[9]s" "%[10]s")
+			(dict "%[5]s" "%[6]s" "%[7]s" "%[8]s")
 	)}}
 `
 
@@ -38,17 +38,15 @@ const (
 	packageOperatorName        = "packageOperatorReconciler"
 	ClusterIDConfigKey         = "clusterID"
 	DeadMansSnitchUrlConfigKey = "deadMansSnitchUrl"
-	OcmClusterIDConfigKey      = "ocmClusterID"
 	PagerDutyKeyConfigKey      = "pagerDutyKey"
 	ParametersConfigKey        = "parameters"
 	TargetNamespaceConfigKey   = "targetNamespace"
 )
 
 type PackageOperatorReconciler struct {
-	Client       client.Client
-	Scheme       *runtime.Scheme
-	ClusterID    string
-	OcmClusterID string
+	Client    client.Client
+	Scheme    *runtime.Scheme
+	ClusterID string
 }
 
 func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
@@ -73,7 +71,6 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		addon.Spec.AddonPackageOperator.Image,
 		ParametersConfigKey,
 		ClusterIDConfigKey, r.ClusterID,
-		OcmClusterIDConfigKey, r.OcmClusterID,
 		TargetNamespaceConfigKey, addonDestNamespace,
 	)
 
