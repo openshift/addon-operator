@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/go-logr/logr"
 	"github.com/google/uuid"
 
 	v1 "k8s.io/api/core/v1"
@@ -19,6 +20,7 @@ import (
 	"github.com/openshift/addon-operator/integration"
 	"github.com/openshift/addon-operator/internal/controllers/addon"
 	"github.com/openshift/addon-operator/internal/featuretoggle"
+	"github.com/openshift/addon-operator/internal/testutil"
 
 	"package-operator.run/apis/core/v1alpha1"
 	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
@@ -294,14 +296,16 @@ func (s *integrationTestSuite) createSecret(ctx context.Context, name string, na
 func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonName string, addonNamespace string, conditionType string,
 	addonParametersValuePresent bool, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool,
 ) {
+	logger := testutil.NewLogger(s.T())
 	cp := &v1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
 	err := integration.WaitForObject(ctx, s.T(),
 		defaultAddonAvailabilityTimeout, cp, "to be "+conditionType,
-		clusterPackageChecker(addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent, pagerDutyValuePresent))
+		clusterPackageChecker(&logger, addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent, pagerDutyValuePresent))
 	s.Require().NoError(err)
 }
 
 func clusterPackageChecker(
+	logger *logr.Logger,
 	addonNamespace string,
 	conditionType string,
 	addonParametersValuePresent bool,
@@ -311,27 +315,33 @@ func clusterPackageChecker(
 	if conditionType == v1alpha1.PackageInvalid {
 		return func(obj client.Object) (done bool, err error) {
 			clusterPackage := obj.(*v1alpha1.ClusterPackage)
-			if !meta.IsStatusConditionTrue(clusterPackage.Status.Conditions, conditionType) {
-				return false, nil
-			}
-			return true, nil
+			logJson(logger, "expecting "+pkov1alpha1.PackageInvalid+" package: ", clusterPackage)
+			result := meta.IsStatusConditionTrue(clusterPackage.Status.Conditions, conditionType)
+			logger.Info(fmt.Sprintf("result: %t", result))
+			return result, nil
 		}
 	}
 
 	return func(obj client.Object) (done bool, err error) {
 		clusterPackage := obj.(*v1alpha1.ClusterPackage)
+		logJson(logger, "expecting "+pkov1alpha1.PackageAvailable+" package: ", clusterPackage)
 
 		if !meta.IsStatusConditionTrue(clusterPackage.Status.Conditions, conditionType) {
+			logger.Info("result: false (wrong status condition)")
 			return false, nil
 		}
 
 		config := make(map[string]map[string]interface{})
 		if err := json.Unmarshal(clusterPackage.Spec.Config.Raw, &config); err != nil {
+			logger.Info("result: false (can't deserialize config map)")
 			return false, err
 		}
 
+		logJson(logger, "config: ", config)
+
 		addonsv1, present := config["addonsv1"]
 		if !present {
+			logger.Info("result: false (no 'addonsv1' key in config)")
 			return false, nil
 		}
 
@@ -373,10 +383,28 @@ func clusterPackageChecker(
 			pagerDutyValueOk = !present
 		}
 
-		return targetNamespaceValueOk &&
+		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
+			targetNamespaceValueOk,
+			clusterIDValueOk,
+			addonParametersValueOk,
+			deadMansSnitchUrlValueOk,
+			pagerDutyValueOk))
+
+		result := targetNamespaceValueOk &&
 			clusterIDValueOk &&
 			addonParametersValueOk &&
 			deadMansSnitchUrlValueOk &&
-			pagerDutyValueOk, nil
+			pagerDutyValueOk
+
+		logger.Info(fmt.Sprintf("result: %t", result))
+		return result, nil
 	}
+}
+
+func logJson(logger *logr.Logger, prefix string, input any) {
+	out, err := json.Marshal(input)
+	if err != nil {
+		logger.Error(err, "can't serialize to JSON")
+	}
+	logger.Info(prefix + string(out))
 }
