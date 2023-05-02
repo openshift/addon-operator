@@ -26,7 +26,8 @@ type AddonOperatorSpec struct {
 	// when set to True
 	// +optional
 	Paused bool `json:"pause"`
-	// [DEPRECATED] Specification of the feature toggles supported by the addon-operator
+	// [DEPRECATED] DOES NOT WORK, ONLY HERE FOR LEGACY REASONS
+	// Specification of the feature toggles supported by the addon-operator
 	// +optional
 	FeatureToggles AddonOperatorFeatureToggles `json:"featureToggles"`
 	// Specification of the feature toggles supported by the addon-operator in the form of a comma-separated string

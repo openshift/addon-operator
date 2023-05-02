@@ -13,11 +13,11 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
-	"github.com/openshift/addon-operator/internal/featuretoggle"
+	"github.com/openshift/addon-operator/internal/featureflag"
 )
 
 func (s *integrationTestSuite) TestMonitoringStack_MonitoringInPlaceAtCreationWithAvailableState() {
-	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.MonitoringStackFeatureToggle{}) {
+	if !featureflag.IsEnabledOnTestEnv(&featureflag.MonitoringStackFeatureFlag{}) {
 		s.T().Skip("skipping Monitoring Stack Integration tests as the feature toggle for it is disabled in the test environment")
 	}
 

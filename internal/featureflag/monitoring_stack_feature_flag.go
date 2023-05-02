@@ -1,4 +1,4 @@
-package featuretoggle
+package featureflag
 
 import (
 	"context"
@@ -6,11 +6,9 @@ import (
 
 	"github.com/mt-sre/devkube/dev"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
-
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
@@ -18,33 +16,33 @@ import (
 
 const observabilityOperatorVersion = "0.0.15"
 
-var _ Handler = (*MonitoringStackFeatureToggle)(nil)
+var _ Handler = (*MonitoringStackFeatureFlag)(nil)
 
-type MonitoringStackFeatureToggle struct {
+type MonitoringStackFeatureFlag struct {
 	Handler
 	Client                      client.Client
 	SchemeToUpdate              *runtime.Scheme
 	AddonReconcilerOptsToUpdate *[]addoncontroller.AddonReconcilerOptions
 }
 
-func (m *MonitoringStackFeatureToggle) Name() string {
-	return "Monitoring Stack Reconciliation Feature Toggle"
+func (m *MonitoringStackFeatureFlag) Name() string {
+	return "Monitoring Stack Reconciliation Feature Flag"
 }
 
-func (m *MonitoringStackFeatureToggle) GetFeatureToggleIdentifier() string {
+func (m *MonitoringStackFeatureFlag) GetFeatureFlagIdentifier() string {
 	// TODO: should this be changed to "MONITORING_STACK"?
 	return "EXPERIMENTAL_FEATURES"
 }
 
 // PreManagerSetupHandle sets up to be done before the manager is created.
-func (m *MonitoringStackFeatureToggle) PreManagerSetupHandle(ctx context.Context) error {
+func (m *MonitoringStackFeatureFlag) PreManagerSetupHandle(ctx context.Context) error {
 	_ = obov1alpha1.AddToScheme(m.SchemeToUpdate)
 	return nil
 }
 
 // PostManagerSetupHandle uses the manager's cached client and scheme to set up the monitoringStackReconcilerOpt
-// addonReconcilerOpts w.r.t this featureToggleHandler
-func (m *MonitoringStackFeatureToggle) PostManagerSetupHandle(ctx context.Context, mgr manager.Manager) error {
+// addonReconcilerOpts w.r.t this featureFlagHandler
+func (m *MonitoringStackFeatureFlag) PostManagerSetupHandle(ctx context.Context, mgr manager.Manager) error {
 	*m.AddonReconcilerOptsToUpdate = append(*m.AddonReconcilerOptsToUpdate, addoncontroller.WithMonitoringStackReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
@@ -52,31 +50,31 @@ func (m *MonitoringStackFeatureToggle) PostManagerSetupHandle(ctx context.Contex
 	return nil
 }
 
-// Enable is ONLY used for Testing. It adds the GetFeatureToggleIdentifier to the
-// FeatureToggles in the AddonOperator Spec. If the FeatureToggles field is changed,
+// Enable is ONLY used for Testing. It adds the GetFeatureFlagIdentifier to the
+// FeatureFlags in the AddonOperator Spec. If the FeatureFlags field is changed,
 // the AddonOperator reconciler exits which triggers the addon operator manager
 // to restart with the new configuration.
-func (m *MonitoringStackFeatureToggle) Enable(ctx context.Context) error {
-	return EnableFeatureToggle(ctx, m.Client, m.GetFeatureToggleIdentifier())
+func (m *MonitoringStackFeatureFlag) Enable(ctx context.Context) error {
+	return EnableFeatureFlag(ctx, m.Client, m.GetFeatureFlagIdentifier())
 }
 
-// Disable is ONLY used for Testing. It removes the GetFeatureToggleIdentifier from the
-// FeatureToggles in the AddonOperator Spec if it exists. If the FeatureToggles field is changed,
+// Disable is ONLY used for Testing. It removes the GetFeatureFlagIdentifier from the
+// FeatureFlags in the AddonOperator Spec if it exists. If the FeatureFlags field is changed,
 // // the AddonOperator reconciler exits which triggers the addon operator manager
 // // to restart with the new configuration.
-func (m *MonitoringStackFeatureToggle) Disable(ctx context.Context) error {
-	return DisableFeatureToggle(ctx, m.Client, m.GetFeatureToggleIdentifier())
+func (m *MonitoringStackFeatureFlag) Disable(ctx context.Context) error {
+	return DisableFeatureFlag(ctx, m.Client, m.GetFeatureFlagIdentifier())
 }
 
 // PreClusterCreationSetup is ONLY used for testing. It preforms any set up needed before
 // the test cluster is created.
-func (m *MonitoringStackFeatureToggle) PreClusterCreationSetup(ctx context.Context) error {
+func (m *MonitoringStackFeatureFlag) PreClusterCreationSetup(ctx context.Context) error {
 	return nil
 }
 
 // PostClusterCreationSetup is ONLY used for test. It preforms any set up needed after
 // the test cluster is created.
-func (m *MonitoringStackFeatureToggle) PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error {
+func (m *MonitoringStackFeatureFlag) PostClusterCreationSetup(ctx context.Context, clusterCreated *dev.Cluster) error {
 	observabilityOperatorCatalogSource, err := renderObservabilityOperatorCatalogSource(ctx, clusterCreated)
 	if err != nil {
 		return fmt.Errorf("failed to render the observability operator catalog source from its template: %w", err)

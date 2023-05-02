@@ -140,7 +140,7 @@ AddonOperatorSpec defines the desired state of Addon operator.
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
 | pause | Pause reconciliation on all Addons in the cluster when set to True | bool | true |
-| featureToggles | [DEPRECATED] Specification of the feature toggles supported by the addon-operator | [AddonOperatorFeatureToggles.addons.managed.openshift.io/v1alpha1](#addonoperatorfeaturetogglesaddonsmanagedopenshiftiov1alpha1) | true |
+| featureToggles | [DEPRECATED] DOES NOT WORK, ONLY HERE FOR LEGACY REASONS Specification of the feature toggles supported by the addon-operator | [AddonOperatorFeatureToggles.addons.managed.openshift.io/v1alpha1](#addonoperatorfeaturetogglesaddonsmanagedopenshiftiov1alpha1) | true |
 | featureFlags | Specification of the feature toggles supported by the addon-operator in the form of a comma-separated string | string | true |
 | ocm | OCM specific configuration. Setting this subconfig will enable deeper OCM integration. e.g. push status reporting, etc. | *[AddonOperatorOCM.addons.managed.openshift.io/v1alpha1](#addonoperatorocmaddonsmanagedopenshiftiov1alpha1) | false |
 

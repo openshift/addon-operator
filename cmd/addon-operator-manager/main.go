@@ -36,7 +36,7 @@ import (
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 	aictrl "github.com/openshift/addon-operator/internal/controllers/addoninstance"
 	aocontroller "github.com/openshift/addon-operator/internal/controllers/addonoperator"
-	"github.com/openshift/addon-operator/internal/featuretoggle"
+	"github.com/openshift/addon-operator/internal/featureflag"
 )
 
 var (
@@ -98,15 +98,15 @@ func initReconcilers(mgr ctrl.Manager,
 	}
 
 	if err := (&aocontroller.AddonOperatorReconciler{
-		Client:              mgr.GetClient(),
-		UncachedClient:      uncachedClient,
-		Log:                 ctrl.Log.WithName("controllers").WithName("AddonOperator"),
-		Scheme:              mgr.GetScheme(),
-		GlobalPauseManager:  addonReconciler,
-		OCMClientManager:    addonReconciler,
-		Recorder:            recorder,
-		ClusterExternalID:   clusterExternalID,
-		FeatureTogglesState: strings.Split(addonOperatorInCluster.Spec.FeatureFlags, ","),
+		Client:             mgr.GetClient(),
+		UncachedClient:     uncachedClient,
+		Log:                ctrl.Log.WithName("controllers").WithName("AddonOperator"),
+		Scheme:             mgr.GetScheme(),
+		GlobalPauseManager: addonReconciler,
+		OCMClientManager:   addonReconciler,
+		Recorder:           recorder,
+		ClusterExternalID:  clusterExternalID,
+		FeatureFlagsState:  strings.Split(addonOperatorInCluster.Spec.FeatureFlags, ","),
 	}).SetupWithManager(mgr); err != nil {
 		return fmt.Errorf("unable to create AddonOperator controller: %w", err)
 	}
@@ -184,28 +184,28 @@ func setup() error {
 
 	addonOperatorObjectInCluster := addonsv1alpha1.AddonOperator{}
 	if err := uncachedClient.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &addonOperatorObjectInCluster); err != nil {
-		if !apierrors.IsNotFound(err) {
+		if apierrors.IsNotFound(err) {
+			addonOperatorObjectInCluster = addonsv1alpha1.AddonOperator{}
+		} else {
 			return fmt.Errorf("failed to GET the AddonOperator object: %w", err)
 		}
-		// TODO: is it correct that we just ignore the error and reset the ado object
-		addonOperatorObjectInCluster = addonsv1alpha1.AddonOperator{}
 	}
 
 	addonReconcilerOptions := []addoncontroller.AddonReconcilerOptions{}
 
-	// feature toggle handlers ADO intends to support
-	featureToggleGetter := featuretoggle.Getter{
+	// feature flag handlers ADO intends to support
+	featureFlagGetter := featureflag.Getter{
 		SchemeToUpdate:              scheme,
 		AddonReconcilerOptsToUpdate: &addonReconcilerOptions,
 	}
-	featureToggleHandlers := featureToggleGetter.Get()
+	featureFlagHandlers := featureFlagGetter.Get()
 
-	for _, featureToggleHandler := range featureToggleHandlers {
-		if !featuretoggle.IsEnabled(featureToggleHandler, addonOperatorObjectInCluster) {
+	for _, featureFlagHandler := range featureFlagHandlers {
+		if !featureflag.IsEnabled(featureFlagHandler, addonOperatorObjectInCluster) {
 			continue
 		}
-		if err := featureToggleHandler.PreManagerSetupHandle(ctx); err != nil {
-			return fmt.Errorf("failed to handle the feature '%s' before the manager's creation", featureToggleHandler.Name())
+		if err := featureFlagHandler.PreManagerSetupHandle(ctx); err != nil {
+			return fmt.Errorf("failed to handle the feature '%s' before the manager's creation", featureFlagHandler.Name())
 		}
 	}
 
@@ -251,14 +251,14 @@ func setup() error {
 		return fmt.Errorf("unable to start manager: %w", err)
 	}
 
-	for _, featureToggleHandler := range featureToggleHandlers {
-		if !featuretoggle.IsEnabled(featureToggleHandler, addonOperatorObjectInCluster) {
+	for _, featureFlagHandler := range featureFlagHandlers {
+		if !featureflag.IsEnabled(featureFlagHandler, addonOperatorObjectInCluster) {
 			continue
 		}
-		// TODO: what does this do? It looks to me like it updates featureToggleHandler.AddonReconcilerOptsToUpdate
+		// TODO: what does this do? It looks to me like it updates featureFlagHandler.AddonReconcilerOptsToUpdate
 		// but then AddonReconcilerOptsToUpdate isn't used anywhere
-		if err := featureToggleHandler.PostManagerSetupHandle(ctx, mgr); err != nil {
-			return fmt.Errorf("failed to handle the feature '%s' after the manager's creation", featureToggleHandler.Name())
+		if err := featureFlagHandler.PostManagerSetupHandle(ctx, mgr); err != nil {
+			return fmt.Errorf("failed to handle the feature '%s' after the manager's creation", featureFlagHandler.Name())
 		}
 	}
 

@@ -37,14 +37,14 @@ const (
 
 type AddonOperatorReconciler struct {
 	client.Client
-	UncachedClient      client.Client
-	Log                 logr.Logger
-	Scheme              *runtime.Scheme
-	GlobalPauseManager  globalPauseManager
-	OCMClientManager    ocmClientManager
-	Recorder            *metrics.Recorder
-	ClusterExternalID   string
-	FeatureTogglesState []string // no need to guard this with a mutex considering the fact that no two goroutines would ever try to update it as this is only initialized at startup
+	UncachedClient     client.Client
+	Log                logr.Logger
+	Scheme             *runtime.Scheme
+	GlobalPauseManager globalPauseManager
+	OCMClientManager   ocmClientManager
+	Recorder           *metrics.Recorder
+	ClusterExternalID  string
+	FeatureFlagsState  []string // no need to guard this with a mutex considering the fact that no two goroutines would ever try to update it as this is only initialized at startup
 }
 
 func (r *AddonOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
@@ -92,7 +92,7 @@ func (r *AddonOperatorReconciler) Reconcile(
 
 	// Exiting here so that k8s can restart ADO (pods).
 	// This will make ADO bootstrap itself w.r.t to the latest state of feature toggles in the cluster (AddonOperator CR).
-	if !areSlicesEquivalent(r.FeatureTogglesState, strings.Split(addonOperator.Spec.FeatureFlags, ",")) {
+	if !areSlicesEquivalent(r.FeatureFlagsState, strings.Split(addonOperator.Spec.FeatureFlags, ",")) {
 		log.Info("found a different state of feature toggles, exiting AddonOperator")
 		os.Exit(0)
 	}

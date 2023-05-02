@@ -46,8 +46,8 @@ spec:
                   addon-operator in the form of a comma-separated string
                 type: string
               featureToggles:
-                description: '[DEPRECATED] Specification of the feature toggles supported
-                  by the addon-operator'
+                description: '[DEPRECATED] DOES NOT WORK, ONLY HERE FOR LEGACY REASONS
+                  Specification of the feature toggles supported by the addon-operator'
                 properties:
                   experimentalFeatures:
                     description: Feature toggle for enabling/disabling experimental

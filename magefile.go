@@ -37,7 +37,7 @@ import (
 
 	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
-	"github.com/openshift/addon-operator/internal/featuretoggle"
+	"github.com/openshift/addon-operator/internal/featureflag"
 )
 
 const (
@@ -688,13 +688,13 @@ func (Test) integration(ctx context.Context, filter string) error {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
 
-	// force ADDONS_PLUG_AND_PLAY feature toggle in CI to make sure tests are executed
-	os.Setenv("FEATURE_TOGGLES", featuretoggle.AddonsPlugAndPlayFeatureToggleIdentifier)
-	if err := postClusterCreationFeatureToggleSetup(ctx, cluster); err != nil {
-		return fmt.Errorf("failed to perform post-cluster creation setup for the feature toggles: %w", err)
+	// force ADDONS_PLUG_AND_PLAY feature flag in CI to make sure tests are executed
+	os.Setenv("FEATURE_TOGGLES", featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
+	if err := postClusterCreationFeatureFlagSetup(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to perform post-cluster creation setup for the feature flags: %w", err)
 	}
-	if err := deployFeatureToggles(ctx, cluster); err != nil {
-		return fmt.Errorf("failed to deploy feature toggles: %w", err)
+	if err := deployFeatureFlags(ctx, cluster); err != nil {
+		return fmt.Errorf("failed to deploy feature Flags: %w", err)
 	}
 
 	// will force a new run, instead of using the cache
@@ -1050,7 +1050,7 @@ func (d Dev) Setup(ctx context.Context) error {
 		return err
 	}
 
-	if err := preClusterCreationFeatureToggleSetup(ctx); err != nil {
+	if err := preClusterCreationFeatureFlagSetup(ctx); err != nil {
 		return err
 	}
 
@@ -1058,7 +1058,7 @@ func (d Dev) Setup(ctx context.Context) error {
 		return fmt.Errorf("initializing dev environment: %w", err)
 	}
 
-	if err := postClusterCreationFeatureToggleSetup(ctx, devEnvironment.Cluster); err != nil {
+	if err := postClusterCreationFeatureFlagSetup(ctx, devEnvironment.Cluster); err != nil {
 		return err
 	}
 
@@ -1250,55 +1250,55 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 	return nil
 }
 
-func deployFeatureToggles(ctx context.Context, cluster *dev.Cluster) error {
-	getter := featuretoggle.Getter{
+func deployFeatureFlags(ctx context.Context, cluster *dev.Cluster) error {
+	getter := featureflag.Getter{
 		Client:         cluster.CtrlClient,
 		SchemeToUpdate: cluster.Scheme,
 	}
-	featureToggles := getter.Get()
+	featureFlags := getter.Get()
 
-	for _, featTog := range featureToggles {
-		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
-		if featuretoggle.IsEnabledOnTestEnv(featTog) {
+	for _, featTog := range featureFlags {
+		// feature flags enabled/disabled at the level of openshift/release in the form of multiple jobs
+		if featureflag.IsEnabledOnTestEnv(featTog) {
 			if err := featTog.Enable(ctx); err != nil {
-				return fmt.Errorf("failed to enable the feature toggle: %w", err)
+				return fmt.Errorf("failed to enable the feature flag: %w", err)
 			}
 		} else {
 			if err := featTog.Disable(ctx); err != nil {
-				return fmt.Errorf("failed to disable the feature toggle: %w", err)
+				return fmt.Errorf("failed to disable the feature flag: %w", err)
 			}
 		}
 	}
 	return nil
 }
 
-func preClusterCreationFeatureToggleSetup(ctx context.Context) error {
-	getter := featuretoggle.Getter{}
-	featureToggles := getter.Get()
+func preClusterCreationFeatureFlagSetup(ctx context.Context) error {
+	getter := featureflag.Getter{}
+	featureFlags := getter.Get()
 
-	for _, featTog := range featureToggles {
-		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
-		if featuretoggle.IsEnabledOnTestEnv(featTog) {
+	for _, featTog := range featureFlags {
+		// feature flags enabled/disabled at the level of openshift/release in the form of multiple jobs
+		if featureflag.IsEnabledOnTestEnv(featTog) {
 			if err := featTog.PreClusterCreationSetup(ctx); err != nil {
-				return fmt.Errorf("failed to set the feature toggle before the cluster creation: %w", err)
+				return fmt.Errorf("failed to set the feature flags before the cluster creation: %w", err)
 			}
 		}
 	}
 	return nil
 }
 
-func postClusterCreationFeatureToggleSetup(ctx context.Context, cluster *dev.Cluster) error {
-	getter := featuretoggle.Getter{
+func postClusterCreationFeatureFlagSetup(ctx context.Context, cluster *dev.Cluster) error {
+	getter := featureflag.Getter{
 		Client:         cluster.CtrlClient,
 		SchemeToUpdate: cluster.Scheme,
 	}
-	featureToggles := getter.Get()
+	featureFlags := getter.Get()
 
-	for _, featureToggle := range featureToggles {
-		// feature toggles enabled/disabled at the level of openshift/release in the form of multiple jobs
-		if featuretoggle.IsEnabledOnTestEnv(featureToggle) {
-			if err := featureToggle.PostClusterCreationSetup(ctx, cluster); err != nil {
-				return fmt.Errorf("failed to set the feature toggle after the cluster creation: %w", err)
+	for _, featureFlag := range featureFlags {
+		// feature flags enabled/disabled at the level of openshift/release in the form of multiple jobs
+		if featureflag.IsEnabledOnTestEnv(featureFlag) {
+			if err := featureFlag.PostClusterCreationSetup(ctx, cluster); err != nil {
+				return fmt.Errorf("failed to set the feature flags after the cluster creation: %w", err)
 			}
 		}
 	}
@@ -1335,8 +1335,8 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	if err := cluster.CreateAndWaitForReadiness(ctx, deployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager: %w", err)
 	}
-	if err := deployFeatureToggles(ctx, cluster); err != nil {
-		return fmt.Errorf("deploy feature toggles: %w", err)
+	if err := deployFeatureFlags(ctx, cluster); err != nil {
+		return fmt.Errorf("deploy feature flags: %w", err)
 	}
 	return nil
 }

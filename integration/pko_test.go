@@ -19,7 +19,7 @@ import (
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/integration"
 	"github.com/openshift/addon-operator/internal/controllers/addon"
-	"github.com/openshift/addon-operator/internal/featuretoggle"
+	"github.com/openshift/addon-operator/internal/featureflag"
 	"github.com/openshift/addon-operator/internal/testutil"
 
 	"package-operator.run/apis/core/v1alpha1"
@@ -39,8 +39,8 @@ const (
 )
 
 func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAddon() {
-	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggle{}) {
-		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
+	if !featureflag.IsEnabledOnTestEnv(&featureflag.AddonsPlugAndPlayFeatureFlag{}) {
+		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature flag for it is disabled in the test environment")
 	}
 
 	ctx := context.Background()
@@ -140,8 +140,8 @@ type TestPKOSourcesData struct {
 }
 
 func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjection() {
-	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggle{}) {
-		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
+	if !featureflag.IsEnabledOnTestEnv(&featureflag.AddonsPlugAndPlayFeatureFlag{}) {
+		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature flag for it is disabled in the test environment")
 	}
 
 	parValues := map[string]bool{
