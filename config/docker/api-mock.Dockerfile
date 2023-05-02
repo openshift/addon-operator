@@ -1,5 +1,5 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal@sha256:ab03679e683010d485ef0399e056b09a38d7843ba4a36ee7dec337dd0037f7a7
-# registry.access.redhat.com/ubi8/ubi-minimal:8.7-1085
+FROM registry.access.redhat.com/ubi8/ubi-minimal@sha256:3e1adcc31c6073d010b8043b070bd089d7bf37ee2c397c110211a6273453433f
+# registry.access.redhat.com/ubi8/ubi-minimal:8.7-1107
 
 # shadow-utils contains adduser and groupadd binaries
 RUN microdnf install shadow-utils \
