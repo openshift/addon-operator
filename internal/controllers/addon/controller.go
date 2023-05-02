@@ -129,6 +129,7 @@ func NewAddonReconciler(
 }
 
 type ocmClient interface {
+	GetClusterID() string
 	GetCluster(
 		ctx context.Context,
 		req ocm.ClusterGetRequest,
@@ -171,6 +172,13 @@ func (r *AddonReconciler) InjectOCMClient(ctx context.Context, c *ocm.Client) er
 
 	r.ocmClient = c
 	return nil
+}
+
+func (r *AddonReconciler) GetOCMClusterID() string {
+	if r.ocmClient == nil {
+		return ""
+	}
+	return r.ocmClient.GetClusterID()
 }
 
 // Pauses reconcilation of all Addon objects. Concurrency safe.
@@ -248,8 +256,8 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager, opts ...AddonReconc
 
 // AddonReconciler/Controller entrypoint
 func (r *AddonReconciler) Reconcile(
-	ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
+	ctx context.Context, req ctrl.Request,
+) (ctrl.Result, error) {
 	logger := r.Log.WithValues("addon", req.NamespacedName.String())
 	ctx = controllers.ContextWithLogger(ctx, logger)
 
@@ -298,7 +306,8 @@ func (r *AddonReconciler) syncWithExternalAPIs(ctx context.Context, logger logr.
 }
 
 func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.Addon,
-	log logr.Logger) (ctrl.Result, error) {
+	log logr.Logger,
+) (ctrl.Result, error) {
 	ctx = controllers.ContextWithLogger(ctx, log)
 	// Handle addon deletion before checking for pause condition.
 	// This allows even paused addons to be deleted.

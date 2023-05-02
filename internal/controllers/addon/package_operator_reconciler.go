@@ -44,11 +44,13 @@ const (
 	TargetNamespaceConfigKey   = "targetNamespace"
 )
 
+type OcmClusterIDGetter func() string
+
 type PackageOperatorReconciler struct {
 	Client       client.Client
 	Scheme       *runtime.Scheme
 	ClusterID    string
-	OcmClusterID string
+	OcmClusterID OcmClusterIDGetter
 }
 
 func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
@@ -73,7 +75,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		addon.Spec.AddonPackageOperator.Image,
 		ParametersConfigKey,
 		ClusterIDConfigKey, r.ClusterID,
-		OcmClusterIDConfigKey, r.OcmClusterID,
+		OcmClusterIDConfigKey, r.OcmClusterID(),
 		TargetNamespaceConfigKey, addonDestNamespace,
 	)
 

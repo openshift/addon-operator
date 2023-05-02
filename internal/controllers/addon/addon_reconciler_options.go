@@ -40,7 +40,7 @@ func (w WithPackageOperatorReconciler) ApplyToAddonReconciler(config *AddonRecon
 		Client:       w.Client,
 		Scheme:       w.Scheme,
 		ClusterID:    config.ClusterExternalID,
-		OcmClusterID: "foobar", // TODO: set real OCM cluster ID
+		OcmClusterID: config.GetOCMClusterID,
 	}
 	config.subReconcilers = append(config.subReconcilers, poReconciler)
 }

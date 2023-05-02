@@ -30,13 +30,12 @@ const (
 	addonName              = "pko-test"
 	addonNamespace         = "pko-test-ns"
 	deadMansSnitchUrlValue = "https://example.com/test-snitch-url"
-	ocmClusterIDValue      = "foobar"
 	pagerDutyKeyValue      = "1234567890ABCDEF"
 
-	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-optional-params
-	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v2.0"
-	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-required-params
-	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v2.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v3.0/openshift/addon-operator/apnp-test-optional-params
+	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v3.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v3.0/openshift/addon-operator/apnp-test-required-params
+	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v3.0"
 )
 
 func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAddon() {
@@ -357,7 +356,7 @@ func clusterPackageChecker(
 		}
 
 		ocmClusterID, present := addonsv1[addon.OcmClusterIDConfigKey]
-		ocmClusterIDValueOk := present && ocmClusterID == ocmClusterIDValue
+		ocmClusterIDValueOk := present && len(fmt.Sprintf("%v", ocmClusterID)) > 0
 
 		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
 		if addonParametersValuePresent {
