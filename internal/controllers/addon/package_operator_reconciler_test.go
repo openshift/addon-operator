@@ -142,7 +142,14 @@ func TestPackageOperatorReconcilerLogic(t *testing.T) {
 					ctx := context.Background()
 					subTest.configureClient(ctx, c, identifier)
 
-					r := &addon.PackageOperatorReconciler{Client: c, Scheme: testutil.NewTestSchemeWithAddonsv1alpha1()}
+					r := &addon.PackageOperatorReconciler{
+						Client:    c,
+						Scheme:    testutil.NewTestSchemeWithAddonsv1alpha1(),
+						ClusterID: "test-cluster-id",
+						OcmClusterID: func() string {
+							return "test-ocm-cluster-id"
+						},
+					}
 
 					res, err := r.Reconcile(ctx, test.addon)
 
