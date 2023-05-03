@@ -30,6 +30,7 @@ const (
 	addonName              = "pko-test"
 	addonNamespace         = "pko-test-ns"
 	deadMansSnitchUrlValue = "https://example.com/test-snitch-url"
+	ocmClusterIDValue      = "foobar"
 	pagerDutyKeyValue      = "1234567890ABCDEF"
 
 	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-optional-params
@@ -355,6 +356,9 @@ func clusterPackageChecker(
 			clusterIDValueOk = err == nil
 		}
 
+		ocmClusterID, present := addonsv1[addon.OcmClusterIDConfigKey]
+		ocmClusterIDValueOk := present && ocmClusterID == ocmClusterIDValue
+
 		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
 		if addonParametersValuePresent {
 			value, present := addonsv1[addon.ParametersConfigKey]
@@ -383,15 +387,17 @@ func clusterPackageChecker(
 			pagerDutyValueOk = !present
 		}
 
-		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
+		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, ocmClusterID=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
 			targetNamespaceValueOk,
 			clusterIDValueOk,
+			ocmClusterIDValueOk,
 			addonParametersValueOk,
 			deadMansSnitchUrlValueOk,
 			pagerDutyValueOk))
 
 		result := targetNamespaceValueOk &&
 			clusterIDValueOk &&
+			ocmClusterIDValueOk &&
 			addonParametersValueOk &&
 			deadMansSnitchUrlValueOk &&
 			pagerDutyValueOk
