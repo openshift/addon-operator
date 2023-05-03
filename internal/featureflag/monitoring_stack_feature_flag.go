@@ -15,6 +15,7 @@ import (
 )
 
 const observabilityOperatorVersion = "0.0.15"
+const MonitoringStackFeatureFlagIdentifier = "EXPERIMENTAL_FEATURES"
 
 var _ Handler = (*MonitoringStackFeatureFlag)(nil)
 
@@ -31,7 +32,7 @@ func (m *MonitoringStackFeatureFlag) Name() string {
 
 func (m *MonitoringStackFeatureFlag) GetFeatureFlagIdentifier() string {
 	// TODO: should this be changed to "MONITORING_STACK"?
-	return "EXPERIMENTAL_FEATURES"
+	return MonitoringStackFeatureFlagIdentifier
 }
 
 // PreManagerSetupHandle sets up to be done before the manager is created.

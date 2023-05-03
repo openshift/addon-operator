@@ -98,14 +98,14 @@ func EnableFeatureFlag(ctx context.Context, client client.Client, featureFlagIde
 func DisableFeatureFlag(ctx context.Context, client client.Client, featureFlagIdentifier string) error {
 	ado := addonsv1alpha1.AddonOperator{}
 	if err := client.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &ado); err != nil {
-		if errors.IsNotFound(err) {
-			newAdo := getAddonOperatorWithFeatureFlag("")
-			if err := client.Create(ctx, &newAdo); err != nil {
-				return err
-			}
-			return nil
+		if !errors.IsNotFound(err) {
+			return err
 		}
-		return err
+		newAdo := getAddonOperatorWithFeatureFlag("")
+		if err := client.Create(ctx, &newAdo); err != nil {
+			return err
+		}
+		return nil
 	}
 	// no need to do anything if its already disabled
 	existingFeatureFlags := strings.Split(ado.Spec.FeatureFlags, ",")

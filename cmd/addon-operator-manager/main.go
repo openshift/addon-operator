@@ -184,11 +184,10 @@ func setup() error {
 
 	addonOperatorObjectInCluster := addonsv1alpha1.AddonOperator{}
 	if err := uncachedClient.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &addonOperatorObjectInCluster); err != nil {
-		if apierrors.IsNotFound(err) {
-			addonOperatorObjectInCluster = addonsv1alpha1.AddonOperator{}
-		} else {
+		if !apierrors.IsNotFound(err) {
 			return fmt.Errorf("failed to GET the AddonOperator object: %w", err)
 		}
+		addonOperatorObjectInCluster = addonsv1alpha1.AddonOperator{}
 	}
 
 	addonReconcilerOptions := []addoncontroller.AddonReconcilerOptions{}
@@ -201,9 +200,6 @@ func setup() error {
 	featureFlagHandlers := featureFlagGetter.Get()
 
 	for _, featureFlagHandler := range featureFlagHandlers {
-		if !featureflag.IsEnabled(featureFlagHandler, addonOperatorObjectInCluster) {
-			continue
-		}
 		if err := featureFlagHandler.PreManagerSetupHandle(ctx); err != nil {
 			return fmt.Errorf("failed to handle the feature '%s' before the manager's creation", featureFlagHandler.Name())
 		}
@@ -252,11 +248,6 @@ func setup() error {
 	}
 
 	for _, featureFlagHandler := range featureFlagHandlers {
-		if !featureflag.IsEnabled(featureFlagHandler, addonOperatorObjectInCluster) {
-			continue
-		}
-		// TODO: what does this do? It looks to me like it updates featureFlagHandler.AddonReconcilerOptsToUpdate
-		// but then AddonReconcilerOptsToUpdate isn't used anywhere
 		if err := featureFlagHandler.PostManagerSetupHandle(ctx, mgr); err != nil {
 			return fmt.Errorf("failed to handle the feature '%s' after the manager's creation", featureFlagHandler.Name())
 		}
