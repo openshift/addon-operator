@@ -175,6 +175,9 @@ func (r *AddonReconciler) InjectOCMClient(ctx context.Context, c *ocm.Client) er
 }
 
 func (r *AddonReconciler) GetOCMClusterID() string {
+	r.ocmClientMux.RLock()
+	defer r.ocmClientMux.RUnlock()
+
 	if r.ocmClient == nil {
 		return ""
 	}
