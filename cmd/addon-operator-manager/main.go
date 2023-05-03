@@ -200,6 +200,9 @@ func setup() error {
 	featureFlagHandlers := featureFlagGetter.Get()
 
 	for _, featureFlagHandler := range featureFlagHandlers {
+		if !featureflag.IsEnabled(featureFlagHandler, addonOperatorObjectInCluster) {
+			continue
+		}
 		if err := featureFlagHandler.PreManagerSetupHandle(ctx); err != nil {
 			return fmt.Errorf("failed to handle the feature '%s' before the manager's creation", featureFlagHandler.Name())
 		}
@@ -248,6 +251,9 @@ func setup() error {
 	}
 
 	for _, featureFlagHandler := range featureFlagHandlers {
+		if !featureflag.IsEnabled(featureFlagHandler, addonOperatorObjectInCluster) {
+			continue
+		}
 		if err := featureFlagHandler.PostManagerSetupHandle(ctx, mgr); err != nil {
 			return fmt.Errorf("failed to handle the feature '%s' after the manager's creation", featureFlagHandler.Name())
 		}
