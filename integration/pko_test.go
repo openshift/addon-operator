@@ -2,10 +2,13 @@ package integration_test
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
+
+	"github.com/go-logr/logr"
+	"github.com/google/uuid"
 
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -17,21 +20,22 @@ import (
 	"github.com/openshift/addon-operator/integration"
 	"github.com/openshift/addon-operator/internal/controllers/addon"
 	"github.com/openshift/addon-operator/internal/featuretoggle"
+	"github.com/openshift/addon-operator/internal/testutil"
 
 	"package-operator.run/apis/core/v1alpha1"
 	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 )
 
 const (
-	addonName              = "addonname-pko-boatboat"
-	addonNamespace         = "namespace-onbgdions"
+	addonName              = "pko-test"
+	addonNamespace         = "pko-test-ns"
 	deadMansSnitchUrlValue = "https://example.com/test-snitch-url"
 	pagerDutyKeyValue      = "1234567890ABCDEF"
 
-	// source: https://github.com/kostola/package-operator-packages/tree/v1.0/openshift/addon-operator/apnp-test-optional-params
-	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v1.0"
-	// source: https://github.com/kostola/package-operator-packages/tree/v1.0/openshift/addon-operator/apnp-test-required-params
-	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v1.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-optional-params
+	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v2.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-required-params
+	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v2.0"
 )
 
 func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAddon() {
@@ -124,69 +128,83 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAd
 	s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 }
 
+type TestPKOSourcesData struct {
+	name                        string
+	resourceSuffix              string
+	requiredParameters          bool
+	pkoImage                    string
+	deployAddonParametersSecret bool
+	deployDeadMansSnitchSecret  bool
+	deployPagerDutySecret       bool
+	clusterPackageStatus        string
+}
+
 func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjection() {
 	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggle{}) {
 		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
 	}
 
-	tests := []struct {
-		name                       string
-		pkoImage                   string
-		deployDeadMansSnitchSecret bool
-		deployPagerDutySecret      bool
-		clusterPackageStatus       string
-	}{
-		{
-			"OptionalParamsAllMissing", pkoImageOptionalParams,
-			false, false,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParams1stMissing", pkoImageOptionalParams,
-			false, true,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParams2ndMissing", pkoImageOptionalParams,
-			true, false,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"OptionalParamsAllPresent", pkoImageOptionalParams,
-			true, true,
-			v1alpha1.PackageAvailable,
-		},
-		{
-			"RequiredParamsAllMissing", pkoImageRequiredParams,
-			false, false,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParams1stMissing", pkoImageRequiredParams,
-			false, true,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParams2ndMissing", pkoImageRequiredParams,
-			true, false,
-			v1alpha1.PackageInvalid,
-		},
-		{
-			"RequiredParamsAllPresent", pkoImageRequiredParams,
-			true, true,
-			v1alpha1.PackageAvailable,
-		},
+	parValues := map[string]bool{
+		"Opt": false,
+		"Req": true,
 	}
+	apValues := map[string]bool{
+		"ApN": false,
+		"ApY": true,
+	}
+	dsValues := map[string]bool{
+		"DsN": false,
+		"DsY": true,
+	}
+	pdValues := map[string]bool{
+		"PdN": false,
+		"PdY": true,
+	}
+
+	// create all combinations
+	var tests []TestPKOSourcesData
+	for parK, parV := range parValues {
+		for apK, apV := range apValues {
+			for dsK, dsV := range dsValues {
+				for pdK, pdV := range pdValues {
+					pkoImage := pkoImageOptionalParams
+					if parV {
+						pkoImage = pkoImageRequiredParams
+					}
+
+					status := v1alpha1.PackageAvailable
+					if parV && (!apV || !dsV || !pdV) {
+						status = pkov1alpha1.PackageInvalid
+					}
+
+					tests = append(tests, TestPKOSourcesData{
+						fmt.Sprintf("%s%s%s%s", parK, apK, dsK, pdK),
+						fmt.Sprintf("%s-%s-%s-%s", strings.ToLower(parK), strings.ToLower(apK), strings.ToLower(dsK), strings.ToLower(pdK)),
+						parV, pkoImage,
+						apV, dsV, pdV,
+						status,
+					})
+				}
+			}
+		}
+	}
+
+	sort.Slice(tests, func(i, j int) bool {
+		return tests[i].name < tests[j].name
+	})
 
 	for index, test := range tests {
 		s.Run(test.name, func() {
-			testAddonName := fmt.Sprintf("%s-%d", addonName, index)
-			testAddonNamespace := fmt.Sprintf("%s-%d", addonNamespace, index)
+			testAddonName := fmt.Sprintf("%s-%02d-%s", addonName, index, test.resourceSuffix)
+			testAddonNamespace := fmt.Sprintf("%s-%02d-%s", addonNamespace, index, test.resourceSuffix)
 			ctx := context.Background()
 
 			addon := s.createAddon(ctx, testAddonName, testAddonNamespace, test.pkoImage)
 			s.waitForNamespace(ctx, testAddonNamespace)
 
+			if test.deployAddonParametersSecret {
+				s.createAddonParametersSecret(ctx, testAddonName, testAddonNamespace)
+			}
 			if test.deployDeadMansSnitchSecret {
 				s.createDeadMansSnitchSecret(ctx, testAddonName, testAddonNamespace)
 			}
@@ -194,7 +212,15 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 				s.createPagerDutySecret(ctx, testAddonName, testAddonNamespace)
 			}
 
-			s.waitForClusterPackage(ctx, testAddonName, test.clusterPackageStatus, test.deployDeadMansSnitchSecret, test.deployPagerDutySecret)
+			s.waitForClusterPackage(
+				ctx,
+				testAddonName,
+				testAddonNamespace,
+				test.clusterPackageStatus,
+				test.deployAddonParametersSecret,
+				test.deployDeadMansSnitchSecret,
+				test.deployPagerDutySecret,
+			)
 
 			s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
 		})
@@ -239,6 +265,11 @@ func (s *integrationTestSuite) waitForNamespace(ctx context.Context, addonNamesp
 	s.Require().NoError(err)
 }
 
+// create the Secret resource for Addon Parameters
+func (s *integrationTestSuite) createAddonParametersSecret(ctx context.Context, addonName string, addonNamespace string) {
+	s.createSecret(ctx, "addon-"+addonName+"-parameters", addonNamespace, map[string][]byte{"foo1": []byte("bar"), "foo2": []byte("baz")})
+}
+
 // create the Secret resource for Dead Man's Snitch as defined here:
 // - https://mt-sre.github.io/docs/creating-addons/monitoring/deadmanssnitch_integration/#generated-secret
 func (s *integrationTestSuite) createDeadMansSnitchSecret(ctx context.Context, addonName string, addonNamespace string) {
@@ -262,56 +293,118 @@ func (s *integrationTestSuite) createSecret(ctx context.Context, name string, na
 
 // wait until all the replicas in the Deployment inside the ClusterPackage are ready
 // and check if their env variables corresponds to the secrets
-func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonName string,
-	conditionType string, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool,
+func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonName string, addonNamespace string, conditionType string,
+	addonParametersValuePresent bool, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool,
 ) {
+	logger := testutil.NewLogger(s.T())
 	cp := &v1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
 	err := integration.WaitForObject(ctx, s.T(),
 		defaultAddonAvailabilityTimeout, cp, "to be "+conditionType,
-		clusterPackageChecker(conditionType, deadMansSnitchUrlValuePresent, pagerDutyValuePresent))
+		clusterPackageChecker(&logger, addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent, pagerDutyValuePresent))
 	s.Require().NoError(err)
 }
 
-func clusterPackageChecker(conditionType string, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool) func(client.Object) (done bool, err error) {
+func clusterPackageChecker(
+	logger *logr.Logger,
+	addonNamespace string,
+	conditionType string,
+	addonParametersValuePresent bool,
+	deadMansSnitchUrlValuePresent bool,
+	pagerDutyValuePresent bool,
+) func(client.Object) (done bool, err error) {
 	if conditionType == v1alpha1.PackageInvalid {
 		return func(obj client.Object) (done bool, err error) {
 			clusterPackage := obj.(*v1alpha1.ClusterPackage)
-			return meta.IsStatusConditionTrue(clusterPackage.Status.Conditions, conditionType), nil
+			logJson(logger, "expecting "+pkov1alpha1.PackageInvalid+" package: ", clusterPackage)
+			result := meta.IsStatusConditionTrue(clusterPackage.Status.Conditions, conditionType)
+			logger.Info(fmt.Sprintf("result: %t", result))
+			return result, nil
 		}
 	}
 
 	return func(obj client.Object) (done bool, err error) {
 		clusterPackage := obj.(*v1alpha1.ClusterPackage)
+		logJson(logger, "expecting "+pkov1alpha1.PackageAvailable+" package: ", clusterPackage)
+
 		if !meta.IsStatusConditionTrue(clusterPackage.Status.Conditions, conditionType) {
+			logger.Info("result: false (wrong status condition)")
 			return false, nil
 		}
 
-		config := make(map[string]map[string]string)
+		config := make(map[string]map[string]interface{})
 		if err := json.Unmarshal(clusterPackage.Spec.Config.Raw, &config); err != nil {
+			logger.Info("result: false (can't deserialize config map)")
 			return false, err
 		}
 
+		logJson(logger, "config: ", config)
+
 		addonsv1, present := config["addonsv1"]
 		if !present {
+			logger.Info("result: false (no 'addonsv1' key in config)")
 			return false, nil
 		}
 
-		deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false
+		targetNamespace, present := addonsv1[addon.TargetNamespaceConfigKey]
+		targetNamespaceValueOk := present && targetNamespace == addonNamespace
+
+		clusterID, present := addonsv1[addon.ClusterIDConfigKey]
+		clusterIDValueOk := false
+		if present {
+			_, err := uuid.Parse(fmt.Sprintf("%v", clusterID))
+			clusterIDValueOk = err == nil
+		}
+
+		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
+		if addonParametersValuePresent {
+			value, present := addonsv1[addon.ParametersConfigKey]
+			if present {
+				jsonValue, err := json.Marshal(value)
+				if err == nil {
+					addonParametersValueOk = string(jsonValue) == "{\"foo1\":\"bar\",\"foo2\":\"baz\"}"
+				}
+			}
+		} else {
+			_, present := addonsv1[addon.ParametersConfigKey]
+			addonParametersValueOk = !present
+		}
 		if deadMansSnitchUrlValuePresent {
 			value, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
-			deadMansSnitchUrlValueOk = present && value == base64.StdEncoding.EncodeToString([]byte(deadMansSnitchUrlValue))
+			deadMansSnitchUrlValueOk = present && fmt.Sprint(value) == deadMansSnitchUrlValue
 		} else {
 			_, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
 			deadMansSnitchUrlValueOk = !present
 		}
 		if pagerDutyValuePresent {
 			value, present := addonsv1[addon.PagerDutyKeyConfigKey]
-			pagerDutyValueOk = present && value == base64.StdEncoding.EncodeToString([]byte(pagerDutyKeyValue))
+			pagerDutyValueOk = present && fmt.Sprint(value) == pagerDutyKeyValue
 		} else {
 			_, present := addonsv1[addon.PagerDutyKeyConfigKey]
 			pagerDutyValueOk = !present
 		}
 
-		return deadMansSnitchUrlValueOk && pagerDutyValueOk, nil
+		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
+			targetNamespaceValueOk,
+			clusterIDValueOk,
+			addonParametersValueOk,
+			deadMansSnitchUrlValueOk,
+			pagerDutyValueOk))
+
+		result := targetNamespaceValueOk &&
+			clusterIDValueOk &&
+			addonParametersValueOk &&
+			deadMansSnitchUrlValueOk &&
+			pagerDutyValueOk
+
+		logger.Info(fmt.Sprintf("result: %t", result))
+		return result, nil
 	}
+}
+
+func logJson(logger *logr.Logger, prefix string, input any) {
+	out, err := json.Marshal(input)
+	if err != nil {
+		logger.Error(err, "can't serialize to JSON")
+	}
+	logger.Info(prefix + string(out))
 }

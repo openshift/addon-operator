@@ -19,25 +19,34 @@ import (
 )
 
 const PkoPkgTemplate = `
-apiVersion: "%s"
+apiVersion: "%[1]s"
 kind: ClusterPackage
 metadata:
-  name: "%s"
+  name: "%[2]s"
 spec:
-  image: "%s"
+  image: "%[3]s"
   config:
-    addonsv1: {{toJson .config}}
+    addonsv1: {{toJson (
+		merge
+			(.config | b64decMap)
+			(hasKey .config "%[4]s" | ternary (dict "%[4]s" (index .config "%[4]s" | b64decMap)) (dict))
+			(dict "%[5]s" "%[6]s" "%[7]s" "%[8]s")
+	)}}
 `
 
 const (
 	packageOperatorName        = "packageOperatorReconciler"
+	ClusterIDConfigKey         = "clusterID"
 	DeadMansSnitchUrlConfigKey = "deadMansSnitchUrl"
 	PagerDutyKeyConfigKey      = "pagerDutyKey"
+	ParametersConfigKey        = "parameters"
+	TargetNamespaceConfigKey   = "targetNamespace"
 )
 
 type PackageOperatorReconciler struct {
-	Client client.Client
-	Scheme *runtime.Scheme
+	Client    client.Client
+	Scheme    *runtime.Scheme
+	ClusterID string
 }
 
 func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
@@ -60,6 +69,9 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		pkov1alpha1.GroupVersion,
 		addon.Name,
 		addon.Spec.AddonPackageOperator.Image,
+		ParametersConfigKey,
+		ClusterIDConfigKey, r.ClusterID,
+		TargetNamespaceConfigKey, addonDestNamespace,
 	)
 
 	clusterObjectTemplate := &pkov1alpha1.ClusterObjectTemplate{
@@ -69,6 +81,19 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		Spec: pkov1alpha1.ObjectTemplateSpec{
 			Template: templateString,
 			Sources: []pkov1alpha1.ObjectTemplateSource{
+				{
+					Optional:   true,
+					APIVersion: "v1",
+					Kind:       "Secret",
+					Name:       "addon-" + addon.Name + "-parameters",
+					Namespace:  addonDestNamespace,
+					Items: []pkov1alpha1.ObjectTemplateSourceItem{
+						{
+							Key:         ".data",
+							Destination: "." + ParametersConfigKey,
+						},
+					},
+				},
 				{
 					Optional:   true,
 					APIVersion: "v1",

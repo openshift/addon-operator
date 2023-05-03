@@ -28,7 +28,7 @@ func (s *integrationTestSuite) TestAddon_BrokenSubscription() {
 
 	observedCSV := &operatorsv1alpha1.ClusterServiceVersion{
 		ObjectMeta: v1.ObjectMeta{
-			Namespace: fmt.Sprintf("namespace-%s", uuid),
+			Namespace: fmt.Sprintf("namespace-%s", testUuid),
 			Name:      "reference-addon.v0.1.3",
 		},
 	}
