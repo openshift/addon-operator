@@ -358,6 +358,9 @@ func clusterPackageChecker(
 		ocmClusterID, present := addonsv1[addon.OcmClusterIDConfigKey]
 		ocmClusterIDValueOk := present && len(fmt.Sprintf("%v", ocmClusterID)) > 0
 
+		ocmClusterName, present := addonsv1[addon.OcmClusterNameConfigKey]
+		ocmClusterNameValueOk := present && len(fmt.Sprintf("%v", ocmClusterName)) > 0
+
 		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
 		if addonParametersValuePresent {
 			value, present := addonsv1[addon.ParametersConfigKey]
@@ -386,10 +389,11 @@ func clusterPackageChecker(
 			pagerDutyValueOk = !present
 		}
 
-		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, ocmClusterID=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
+		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, ocmClusterID=%t, ocmClusterName=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
 			targetNamespaceValueOk,
 			clusterIDValueOk,
 			ocmClusterIDValueOk,
+			ocmClusterNameValueOk,
 			addonParametersValueOk,
 			deadMansSnitchUrlValueOk,
 			pagerDutyValueOk))
@@ -397,6 +401,7 @@ func clusterPackageChecker(
 		result := targetNamespaceValueOk &&
 			clusterIDValueOk &&
 			ocmClusterIDValueOk &&
+			ocmClusterNameValueOk &&
 			addonParametersValueOk &&
 			deadMansSnitchUrlValueOk &&
 			pagerDutyValueOk
