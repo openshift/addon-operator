@@ -30,7 +30,7 @@ spec:
 		merge
 			(.config | b64decMap)
 			(hasKey .config "%[4]s" | ternary (dict "%[4]s" (index .config "%[4]s" | b64decMap)) (dict))
-			(dict "%[5]s" "%[6]s" "%[7]s" "%[8]s" "%[9]s" "%[10]s")
+			(dict "%[5]s" "%[6]s" "%[7]s" "%[8]s" "%[9]s" "%[10]s" "%[11]s" "%[12]s")
 	)}}
 `
 
@@ -39,18 +39,26 @@ const (
 	ClusterIDConfigKey         = "clusterID"
 	DeadMansSnitchUrlConfigKey = "deadMansSnitchUrl"
 	OcmClusterIDConfigKey      = "ocmClusterID"
+	OcmClusterNameConfigKey    = "ocmClusterName"
 	PagerDutyKeyConfigKey      = "pagerDutyKey"
 	ParametersConfigKey        = "parameters"
 	TargetNamespaceConfigKey   = "targetNamespace"
 )
 
-type OcmClusterIDGetter func() string
+type OcmClusterInfo struct {
+	ID   string
+	Name string
+}
+
+type (
+	OcmClusterInfoGetter func() OcmClusterInfo
+)
 
 type PackageOperatorReconciler struct {
-	Client       client.Client
-	Scheme       *runtime.Scheme
-	ClusterID    string
-	OcmClusterID OcmClusterIDGetter
+	Client         client.Client
+	Scheme         *runtime.Scheme
+	ClusterID      string
+	OcmClusterInfo OcmClusterInfoGetter
 }
 
 func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
@@ -69,13 +77,16 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		return ctrl.Result{}, errors.New(fmt.Sprintf("no destination namespace configured in addon %s", addon.Name))
 	}
 
+	ocmClusterInfo := r.OcmClusterInfo()
+
 	templateString := fmt.Sprintf(PkoPkgTemplate,
 		pkov1alpha1.GroupVersion,
 		addon.Name,
 		addon.Spec.AddonPackageOperator.Image,
 		ParametersConfigKey,
 		ClusterIDConfigKey, r.ClusterID,
-		OcmClusterIDConfigKey, r.OcmClusterID(),
+		OcmClusterIDConfigKey, ocmClusterInfo.ID,
+		OcmClusterNameConfigKey, ocmClusterInfo.Name,
 		TargetNamespaceConfigKey, addonDestNamespace,
 	)
 

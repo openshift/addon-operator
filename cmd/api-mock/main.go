@@ -11,6 +11,8 @@ import (
 	"sync"
 
 	"github.com/gorilla/mux"
+
+	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
 )
 
 func main() {
@@ -64,7 +66,6 @@ type ClustersKey struct {
 }
 
 func (cs *ClustersEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
 	re := regexp.MustCompile(`'.*'`)
 
 	switch r.Method {
@@ -95,7 +96,9 @@ func (cs *ClustersEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		//return always the same cluster id, regardless the external id
 		//provided
 		fmt.Fprintf(w,
-			`{"items": [{"kind": "Cluster","id": "1ou","external_id": "%s"}]}`,
+			`{"items": [{"kind": "Cluster","id": "%s","name": "%s", "external_id": "%s"}]}`,
+			ocmtest.MockClusterId,
+			ocmtest.MockClusterName,
 			clusterExternalId)
 
 		log.Printf("%s %s:\n", r.URL.String(), r.Method)

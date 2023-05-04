@@ -129,7 +129,7 @@ func NewAddonReconciler(
 }
 
 type ocmClient interface {
-	GetClusterID() string
+	GetClusterIDAndName() (string, string)
 	GetCluster(
 		ctx context.Context,
 		req ocm.ClusterGetRequest,
@@ -174,14 +174,18 @@ func (r *AddonReconciler) InjectOCMClient(ctx context.Context, c *ocm.Client) er
 	return nil
 }
 
-func (r *AddonReconciler) GetOCMClusterID() string {
+func (r *AddonReconciler) GetOCMClusterInfo() OcmClusterInfo {
 	r.ocmClientMux.RLock()
 	defer r.ocmClientMux.RUnlock()
 
 	if r.ocmClient == nil {
-		return ""
+		return OcmClusterInfo{}
 	}
-	return r.ocmClient.GetClusterID()
+	clusterId, clusterName := r.ocmClient.GetClusterIDAndName()
+	return OcmClusterInfo{
+		ID:   clusterId,
+		Name: clusterName,
+	}
 }
 
 // Pauses reconcilation of all Addon objects. Concurrency safe.

@@ -38,6 +38,7 @@ func NewClient(ctx context.Context, opts ...Option) (*Client, error) {
 	}
 
 	c.opts.ClusterID = clusterInfo.Items[0].Id
+	c.opts.ClusterName = clusterInfo.Items[0].Name
 	return c, nil
 }
 
@@ -45,6 +46,7 @@ type ClientOptions struct {
 	Endpoint          string
 	ClusterExternalID string
 	ClusterID         string
+	ClusterName       string
 	AccessToken       string
 }
 

@@ -15,11 +15,12 @@ type ClusterGetResponse struct {
 
 type Cluster struct {
 	Id         string `json:"id"`
+	Name       string `json:"name"`
 	ExternalId string `json:"external_id"`
 }
 
-func (c *Client) GetClusterID() string {
-	return c.opts.ClusterID
+func (c *Client) GetClusterIDAndName() (string, string) {
+	return c.opts.ClusterID, c.opts.ClusterName
 }
 
 func (c *Client) GetCluster(

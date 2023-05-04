@@ -8,7 +8,10 @@ import (
 	"github.com/openshift/addon-operator/internal/ocm"
 )
 
-const MockClusterID = "foobar"
+const (
+	MockClusterId   = "1ou"
+	MockClusterName = "openshift-mock-cluster-name"
+)
 
 type Client struct {
 	mock.Mock
@@ -45,8 +48,8 @@ func (c *Client) GetCluster(
 		args.Error(1)
 }
 
-func (c *Client) GetClusterID() string {
-	return MockClusterID
+func (c *Client) GetClusterIDAndName() (string, string) {
+	return MockClusterId, MockClusterName
 }
 
 func (c *Client) PostAddOnStatus(

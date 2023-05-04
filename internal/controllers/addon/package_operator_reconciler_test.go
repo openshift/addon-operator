@@ -17,6 +17,7 @@ import (
 	"github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers/addon"
+	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
 	"github.com/openshift/addon-operator/internal/testutil"
 )
 
@@ -146,8 +147,8 @@ func TestPackageOperatorReconcilerLogic(t *testing.T) {
 						Client:    c,
 						Scheme:    testutil.NewTestSchemeWithAddonsv1alpha1(),
 						ClusterID: "test-cluster-id",
-						OcmClusterID: func() string {
-							return "test-ocm-cluster-id"
+						OcmClusterInfo: func() addon.OcmClusterInfo {
+							return addon.OcmClusterInfo{ID: ocmtest.MockClusterId, Name: ocmtest.MockClusterName}
 						},
 					}
 
