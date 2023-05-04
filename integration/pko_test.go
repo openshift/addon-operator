@@ -32,10 +32,10 @@ const (
 	deadMansSnitchUrlValue = "https://example.com/test-snitch-url"
 	pagerDutyKeyValue      = "1234567890ABCDEF"
 
-	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-optional-params
-	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v2.0"
-	// source: https://github.com/kostola/package-operator-packages/tree/v2.0/openshift/addon-operator/apnp-test-required-params
-	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v2.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v3.0/openshift/addon-operator/apnp-test-optional-params
+	pkoImageOptionalParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-optional-params:v3.0"
+	// source: https://github.com/kostola/package-operator-packages/tree/v3.0/openshift/addon-operator/apnp-test-required-params
+	pkoImageRequiredParams = "quay.io/alcosta/package-operator-packages/openshift/addon-operator/apnp-test-required-params:v3.0"
 )
 
 func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAddon() {
@@ -355,6 +355,9 @@ func clusterPackageChecker(
 			clusterIDValueOk = err == nil
 		}
 
+		ocmClusterID, present := addonsv1[addon.OcmClusterIDConfigKey]
+		ocmClusterIDValueOk := present && len(fmt.Sprintf("%v", ocmClusterID)) > 0
+
 		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
 		if addonParametersValuePresent {
 			value, present := addonsv1[addon.ParametersConfigKey]
@@ -383,15 +386,17 @@ func clusterPackageChecker(
 			pagerDutyValueOk = !present
 		}
 
-		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
+		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, ocmClusterID=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
 			targetNamespaceValueOk,
 			clusterIDValueOk,
+			ocmClusterIDValueOk,
 			addonParametersValueOk,
 			deadMansSnitchUrlValueOk,
 			pagerDutyValueOk))
 
 		result := targetNamespaceValueOk &&
 			clusterIDValueOk &&
+			ocmClusterIDValueOk &&
 			addonParametersValueOk &&
 			deadMansSnitchUrlValueOk &&
 			pagerDutyValueOk

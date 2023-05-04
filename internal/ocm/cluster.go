@@ -18,6 +18,10 @@ type Cluster struct {
 	ExternalId string `json:"external_id"`
 }
 
+func (c *Client) GetClusterID() string {
+	return c.opts.ClusterID
+}
+
 func (c *Client) GetCluster(
 	ctx context.Context,
 	req ClusterGetRequest,
