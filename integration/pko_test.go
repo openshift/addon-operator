@@ -39,7 +39,7 @@ const (
 )
 
 func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAddon() {
-	if !featureflag.IsEnabledOnTestEnv(&featureflag.AddonsPlugAndPlayFeatureFlag{}) {
+	if !integration.IsEnabledOnTestEnv(featureflag.AddonsPlugAndPlayFeatureFlagIdentifier) {
 		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature flag for it is disabled in the test environment")
 	}
 
@@ -140,7 +140,7 @@ type TestPKOSourcesData struct {
 }
 
 func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjection() {
-	if !featureflag.IsEnabledOnTestEnv(&featureflag.AddonsPlugAndPlayFeatureFlag{}) {
+	if !integration.IsEnabledOnTestEnv(featureflag.AddonsPlugAndPlayFeatureFlagIdentifier) {
 		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature flag for it is disabled in the test environment")
 	}
 

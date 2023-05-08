@@ -14,6 +14,8 @@ import (
 	"testing"
 	"time"
 
+	"golang.org/x/exp/slices"
+
 	configv1 "github.com/openshift/api/config/v1"
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
@@ -348,4 +350,13 @@ func ExecCommandInPod(namespace string, pod string, container string, command []
 	}
 
 	return stdout, stderr, nil
+}
+
+// TODO: Use in mage file
+func IsEnabledOnTestEnv(featureFlagIdentifier string) bool {
+	commaSeparatedFeatureFlags, ok := os.LookupEnv("FEATURE_TOGGLES")
+	if !ok {
+		return false
+	}
+	return slices.Contains(strings.Split(commaSeparatedFeatureFlags, ","), featureFlagIdentifier)
 }

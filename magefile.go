@@ -15,6 +15,11 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/exp/slices"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
+
 	"github.com/blang/semver/v4"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/stdr"
@@ -26,6 +31,8 @@ import (
 	imageparser "github.com/novln/docker-parser"
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
+
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -891,15 +898,16 @@ func (Test) IntegrationShort() error {
 
 // Dependency Versions
 const (
-	controllerGenVersion = "0.6.2"
-	kindVersion          = "0.11.1"
-	yqVersion            = "4.12.0"
-	goimportsVersion     = "0.2.0"
-	golangciLintVersion  = "1.51.2"
-	olmVersion           = "0.20.0"
-	opmVersion           = "1.24.0"
-	pkoCliVersion        = "1.6.1"
-	helmVersion          = "3.7.2"
+	controllerGenVersion         = "0.6.2"
+	kindVersion                  = "0.11.1"
+	yqVersion                    = "4.12.0"
+	goimportsVersion             = "0.2.0"
+	golangciLintVersion          = "1.51.2"
+	olmVersion                   = "0.20.0"
+	opmVersion                   = "1.24.0"
+	pkoVersion                   = "1.6.1"
+	observabilityOperatorVersion = "0.0.15"
+	helmVersion                  = "3.7.2"
 )
 
 type Dependency mg.Namespace
@@ -998,7 +1006,7 @@ func (d Dependency) PkoCli() error {
 		return fmt.Errorf("create dependency dir: %w", err)
 	}
 
-	needsRebuild, err := depsDir.NeedsRebuild("kubectl-package", pkoCliVersion)
+	needsRebuild, err := depsDir.NeedsRebuild("kubectl-package", pkoVersion)
 	if err != nil {
 		return err
 	}
@@ -1020,7 +1028,7 @@ func (d Dependency) PkoCli() error {
 		"-o", tempPkoCliBin,
 		fmt.Sprintf(
 			"https://github.com/package-operator/package-operator/releases/download/v%s/kubectl-package_linux_amd64",
-			pkoCliVersion,
+			pkoVersion,
 		),
 	); err != nil {
 		return fmt.Errorf("downloading kubectl-package: %w", err)
@@ -1047,10 +1055,6 @@ var (
 
 func (d Dev) Setup(ctx context.Context) error {
 	if err := d.init(); err != nil {
-		return err
-	}
-
-	if err := preClusterCreationFeatureFlagSetup(ctx); err != nil {
 		return err
 	}
 
@@ -1251,56 +1255,178 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 }
 
 func deployFeatureFlags(ctx context.Context, cluster *dev.Cluster) error {
-	getter := featureflag.Getter{
-		Client:         cluster.CtrlClient,
-		SchemeToUpdate: cluster.Scheme,
+	if IsEnabledOnTestEnv(featureflag.MonitoringStackFeatureFlagIdentifier) {
+		err := EnableFeatureFlag(ctx, cluster.CtrlClient, featureflag.MonitoringStackFeatureFlagIdentifier)
+		if err != nil {
+			return fmt.Errorf("Enabling Monitoring Stack Feature flag: %w", err)
+		}
+	} else {
+		err := DisableFeatureFlag(ctx, cluster.CtrlClient, featureflag.MonitoringStackFeatureFlagIdentifier)
+		if err != nil {
+			return fmt.Errorf("Disabling Monitoring Stack Feature flag: %w", err)
+		}
 	}
-	featureFlags := getter.Get()
 
-	for _, featTog := range featureFlags {
-		// feature flags enabled/disabled at the level of openshift/release in the form of multiple jobs
-		if featureflag.IsEnabledOnTestEnv(featTog) {
-			if err := featTog.Enable(ctx); err != nil {
-				return fmt.Errorf("failed to enable the feature flag: %w", err)
-			}
-		} else {
-			if err := featTog.Disable(ctx); err != nil {
-				return fmt.Errorf("failed to disable the feature flag: %w", err)
-			}
+	if IsEnabledOnTestEnv(featureflag.AddonsPlugAndPlayFeatureFlagIdentifier) {
+		err := EnableFeatureFlag(ctx, cluster.CtrlClient, featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
+		if err != nil {
+			return fmt.Errorf("Enabling Addons Plug and Play flag: %w", err)
+		}
+	} else {
+		err := DisableFeatureFlag(ctx, cluster.CtrlClient, featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
+		if err != nil {
+			return fmt.Errorf("Disabling addons plug and play flag: %w", err)
 		}
 	}
 	return nil
 }
 
-func preClusterCreationFeatureFlagSetup(ctx context.Context) error {
-	getter := featureflag.Getter{}
-	featureFlags := getter.Get()
+func IsEnabledOnTestEnv(featureFlagIdentifier string) bool {
+	commaSeparatedFeatureFlags, ok := os.LookupEnv("FEATURE_TOGGLES")
+	if !ok {
+		return false
+	}
+	return slices.Contains(strings.Split(commaSeparatedFeatureFlags, ","), featureFlagIdentifier)
+}
 
-	for _, featTog := range featureFlags {
-		// feature flags enabled/disabled at the level of openshift/release in the form of multiple jobs
-		if featureflag.IsEnabledOnTestEnv(featTog) {
-			if err := featTog.PreClusterCreationSetup(ctx); err != nil {
-				return fmt.Errorf("failed to set the feature flags before the cluster creation: %w", err)
+func EnableFeatureFlag(ctx context.Context, client ctrlclient.Client, featureFlagIdentifier string) error {
+	ado := addonsv1alpha1.AddonOperator{}
+	if err := client.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &ado); err != nil {
+		if errors.IsNotFound(err) {
+			newAdo := getAddonOperatorWithFeatureFlag(featureFlagIdentifier)
+			if err := client.Create(ctx, &newAdo); err != nil {
+				return err
 			}
+			return nil
 		}
+		return err
+	}
+	existingFeatureFlags := strings.Split(ado.Spec.FeatureFlags, ",")
+	isFeatureFlagAlreadyEnabled := slices.Contains(existingFeatureFlags, featureFlagIdentifier)
+	// no need to do anything if its already enabled
+	if isFeatureFlagAlreadyEnabled {
+		return nil
+	}
+	newFeatureFlags := strings.Join([]string{ado.Spec.FeatureFlags, featureFlagIdentifier}, ",")
+	ado.Spec.FeatureFlags = newFeatureFlags
+	if err := client.Update(ctx, &ado); err != nil {
+		return fmt.Errorf("failed to enable the feature flag in the AddonOperator object: %w", err)
 	}
 	return nil
+}
+
+func DisableFeatureFlag(ctx context.Context, client ctrlclient.Client, featureFlagIdentifier string) error {
+	ado := addonsv1alpha1.AddonOperator{}
+	if err := client.Get(ctx, types.NamespacedName{Name: addonsv1alpha1.DefaultAddonOperatorName}, &ado); err != nil {
+		if !errors.IsNotFound(err) {
+			return err
+		}
+		newAdo := getAddonOperatorWithFeatureFlag("")
+		if err := client.Create(ctx, &newAdo); err != nil {
+			return err
+		}
+		return nil
+	}
+	// no need to do anything if its already disabled
+	existingFeatureFlags := strings.Split(ado.Spec.FeatureFlags, ",")
+	isAddonsPlugAndPlayAlreadyEnabled := slices.Contains(existingFeatureFlags, featureFlagIdentifier)
+	if !isAddonsPlugAndPlayAlreadyEnabled {
+		return nil
+	}
+	index := slices.Index(existingFeatureFlags, featureFlagIdentifier)
+	newFeatureFlags := slices.Delete(existingFeatureFlags, index, index+1)
+	ado.Spec.FeatureFlags = strings.Join(newFeatureFlags, ",")
+	if err := client.Update(ctx, &ado); err != nil {
+		return fmt.Errorf("failed to disable the feature flag in the AddonOperator object: %w", err)
+	}
+	return nil
+}
+
+func getAddonOperatorWithFeatureFlag(featureFlag string) addonsv1alpha1.AddonOperator {
+	adoObject := addonsv1alpha1.AddonOperator{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: addonsv1alpha1.DefaultAddonOperatorName,
+		},
+		Spec: addonsv1alpha1.AddonOperatorSpec{
+			FeatureFlags: featureFlag,
+		},
+	}
+	return adoObject
 }
 
 func postClusterCreationFeatureFlagSetup(ctx context.Context, cluster *dev.Cluster) error {
-	getter := featureflag.Getter{
-		Client:         cluster.CtrlClient,
-		SchemeToUpdate: cluster.Scheme,
-	}
-	featureFlags := getter.Get()
-
-	for _, featureFlag := range featureFlags {
-		// feature flags enabled/disabled at the level of openshift/release in the form of multiple jobs
-		if featureflag.IsEnabledOnTestEnv(featureFlag) {
-			if err := featureFlag.PostClusterCreationSetup(ctx, cluster); err != nil {
-				return fmt.Errorf("failed to set the feature flags after the cluster creation: %w", err)
-			}
+	if IsEnabledOnTestEnv(featureflag.MonitoringStackFeatureFlagIdentifier) {
+		if err := deployObservabilityOperator(ctx, cluster); err != nil {
+			return fmt.Errorf("failed to deploy observability operator: %w", err)
 		}
+	}
+	if IsEnabledOnTestEnv(featureflag.AddonsPlugAndPlayFeatureFlagIdentifier) {
+		if err := deployPackageOperator(ctx, cluster); err != nil {
+			return fmt.Errorf("failed to deploy pko: %w", err)
+		}
+	}
+	return nil
+}
+
+func deployObservabilityOperator(ctx context.Context, clusterCreated *dev.Cluster) error {
+	observabilityOperatorCatalogSource, err := renderObservabilityOperatorCatalogSource(ctx, clusterCreated)
+	if err != nil {
+		return fmt.Errorf("failed to render the observability operator catalog source from its template: %w", err)
+	}
+
+	if err := clusterCreated.CreateAndWaitFromFiles(ctx, []string{
+		"config/deploy/observability-operator/namespace.yaml",
+	}); err != nil {
+		return fmt.Errorf("failed to load the namespace for observability-operator: %w", err)
+	}
+
+	if err := clusterCreated.CreateAndWaitForReadiness(ctx, observabilityOperatorCatalogSource); err != nil {
+		return fmt.Errorf("failed to load the catalog source for observability-operator: %w", err)
+	}
+
+	if err := clusterCreated.CreateAndWaitFromFiles(ctx, []string{
+		"config/deploy/observability-operator/operator-group.yaml",
+		"config/deploy/observability-operator/subscription.yaml",
+	}); err != nil {
+		return fmt.Errorf("failed to load the operator-group/subscription for observability-operator: %w", err)
+	}
+	return nil
+}
+
+func renderObservabilityOperatorCatalogSource(ctx context.Context, cluster *dev.Cluster) (*operatorsv1alpha1.CatalogSource, error) {
+	objs, err := dev.LoadKubernetesObjectsFromFile("config/deploy/observability-operator/catalog-source.yaml.tpl")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load the prometheus-remote-storage-mock deployment.yaml.tpl: %w", err)
+	}
+
+	// Replace version
+	observabilityOperatorCatalogSource := &operatorsv1alpha1.CatalogSource{}
+	if err := cluster.Scheme.Convert(&objs[0], observabilityOperatorCatalogSource, ctx); err != nil {
+		return nil, fmt.Errorf("failed to convert the catalog source: %w", err)
+	}
+
+	observabilityOperatorCatalogSourceImage := fmt.Sprintf("quay.io/rhobs/observability-operator-catalog:%s", observabilityOperatorVersion)
+	observabilityOperatorCatalogSource.Spec.Image = observabilityOperatorCatalogSourceImage
+
+	return observabilityOperatorCatalogSource, nil
+}
+
+func deployPackageOperator(ctx context.Context, cluster *dev.Cluster) error {
+	if err := cluster.CreateAndWaitFromHttp(ctx, []string{
+		"https://github.com/package-operator/package-operator/releases/download/v" + pkoVersion + "/self-bootstrap-job.yaml",
+	}); err != nil {
+		return fmt.Errorf("install PKO: %w", err)
+	}
+
+	deployment := &appsv1.Deployment{}
+	deployment.SetNamespace("package-operator-system")
+	deployment.SetName("package-operator-manager")
+
+	if err := cluster.Waiter.WaitForCondition(
+		ctx, deployment, "Available", metav1.ConditionTrue,
+		dev.WithInterval(10*time.Second), dev.WithTimeout(5*time.Minute),
+	); err != nil {
+		return fmt.Errorf("waiting for PKO installation: %w", err)
 	}
 	return nil
 }

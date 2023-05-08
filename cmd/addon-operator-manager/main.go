@@ -190,23 +190,9 @@ func setup() error {
 		addonOperatorObjectInCluster = addonsv1alpha1.AddonOperator{}
 	}
 
-	addonReconcilerOptions := []addoncontroller.AddonReconcilerOptions{}
-
 	// feature flag handlers ADO intends to support
-	featureFlagGetter := featureflag.Getter{
-		SchemeToUpdate:              scheme,
-		AddonReconcilerOptsToUpdate: &addonReconcilerOptions,
-	}
-	featureFlagHandlers := featureFlagGetter.Get()
-
-	for _, featureFlagHandler := range featureFlagHandlers {
-		if !featureflag.IsEnabled(featureFlagHandler, addonOperatorObjectInCluster) {
-			continue
-		}
-		if err := featureFlagHandler.PreManagerSetupHandle(ctx); err != nil {
-			return fmt.Errorf("failed to handle the feature '%s' before the manager's creation", featureFlagHandler.Name())
-		}
-	}
+	featureFlagHandlers := featureflag.GetFeatureFlagHandler(&addonOperatorObjectInCluster)
+	featureFlagHandlers.PreManagerSetupHandle(ctx, scheme)
 
 	opts := options{
 		MetricsAddr:           ":8080",
@@ -250,14 +236,7 @@ func setup() error {
 		return fmt.Errorf("unable to start manager: %w", err)
 	}
 
-	for _, featureFlagHandler := range featureFlagHandlers {
-		if !featureflag.IsEnabled(featureFlagHandler, addonOperatorObjectInCluster) {
-			continue
-		}
-		if err := featureFlagHandler.PostManagerSetupHandle(ctx, mgr); err != nil {
-			return fmt.Errorf("failed to handle the feature '%s' after the manager's creation", featureFlagHandler.Name())
-		}
-	}
+	addonReconcilerOptions := featureFlagHandlers.PostManagerSetupHandle(ctx, mgr)
 
 	// PPROF
 	if len(opts.PprofAddr) > 0 {
@@ -272,7 +251,7 @@ func setup() error {
 	}
 
 	if err := initReconcilers(mgr, opts.Namespace,
-		opts.EnableMetricsRecorder, addonOperatorObjectInCluster, opts.StatusReportingEnabled, addonReconcilerOptions...); err != nil {
+		opts.EnableMetricsRecorder, addonOperatorObjectInCluster, opts.StatusReportingEnabled, *addonReconcilerOptions...); err != nil {
 		return fmt.Errorf("init reconcilers: %w", err)
 	}
 
