@@ -15,8 +15,6 @@ const AddonsPlugAndPlayFeatureFlagIdentifier = "ADDONS_PLUG_AND_PLAY"
 var _ Handler = (*AddonsPlugAndPlayFeatureFlag)(nil)
 
 type AddonsPlugAndPlayFeatureFlag struct {
-	SchemeToUpdate              *runtime.Scheme
-	AddonReconcilerOptsToUpdate *[]addoncontroller.AddonReconcilerOptions
 }
 
 func (h *AddonsPlugAndPlayFeatureFlag) Name() string {

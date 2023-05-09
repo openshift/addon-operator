@@ -12,17 +12,6 @@ import (
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
-type Getter struct {
-	SchemeToUpdate *runtime.Scheme
-}
-
-func (g Getter) Get() []Handler {
-	return []Handler{
-		&MonitoringStackFeatureFlag{},
-		&AddonsPlugAndPlayFeatureFlag{},
-	}
-}
-
 type Handler interface {
 	PreManagerSetupHandle(ctx context.Context, scheme *runtime.Scheme)
 	PostManagerSetupHandle(ctx context.Context, mgr manager.Manager) *[]addoncontroller.AddonReconcilerOptions

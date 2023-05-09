@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/openshift/addon-operator/internal/testutil"
+
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -17,7 +19,7 @@ import (
 )
 
 func (s *integrationTestSuite) TestMonitoringStack_MonitoringInPlaceAtCreationWithAvailableState() {
-	if !integration.IsEnabledOnTestEnv(featureflag.MonitoringStackFeatureFlagIdentifier) {
+	if !testutil.IsEnabledOnTestEnv(featureflag.MonitoringStackFeatureFlagIdentifier) {
 		s.T().Skip("skipping Monitoring Stack Integration tests as the feature flag for it is disabled in the test environment")
 	}
 

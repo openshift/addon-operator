@@ -3,7 +3,10 @@ package testutil
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
+
+	"golang.org/x/exp/slices"
 
 	"github.com/stretchr/testify/assert"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
@@ -76,4 +79,12 @@ func stripTransients(cond metav1.Condition) metav1.Condition {
 		Reason:  cond.Reason,
 		Message: cond.Message,
 	}
+}
+
+func IsEnabledOnTestEnv(featureFlagIdentifier string) bool {
+	commaSeparatedFeatureFlags, ok := os.LookupEnv("FEATURE_TOGGLES")
+	if !ok {
+		return false
+	}
+	return slices.Contains(strings.Split(commaSeparatedFeatureFlags, ","), featureFlagIdentifier)
 }

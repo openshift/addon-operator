@@ -15,11 +15,6 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/exp/slices"
-	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
-
 	"github.com/blang/semver/v4"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/stdr"
@@ -31,20 +26,21 @@ import (
 	imageparser "github.com/novln/docker-parser"
 	olmversion "github.com/operator-framework/api/pkg/lib/version"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
-
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-
+	"golang.org/x/exp/slices"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/yaml"
 
-	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/featureflag"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 const (
@@ -689,18 +685,22 @@ func (Test) integration(ctx context.Context, filter string) error {
 	}
 	cluster, err := dev.NewCluster(
 		workDir,
-		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")), dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")), dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, addonsv1alpha1.AddToScheme}),
 	)
 	if err != nil {
 		return fmt.Errorf("creating cluster client: %w", err)
 	}
 
+	// TODO: keep this?
 	// force ADDONS_PLUG_AND_PLAY feature flag in CI to make sure tests are executed
 	os.Setenv("FEATURE_TOGGLES", featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
-	if err := postClusterCreationFeatureFlagSetup(ctx, cluster); err != nil {
+
+	handler := GetTestFeatureFlagHandler()
+	if err := handler.postClusterCreationFeatureFlagSetup(ctx, devEnvironment.Cluster); err != nil {
 		return fmt.Errorf("failed to perform post-cluster creation setup for the feature flags: %w", err)
 	}
-	if err := deployFeatureFlags(ctx, cluster); err != nil {
+
+	if err := handler.ReconcileFlags(ctx, cluster.CtrlClient); err != nil {
 		return fmt.Errorf("failed to deploy feature Flags: %w", err)
 	}
 
@@ -905,7 +905,7 @@ const (
 	golangciLintVersion          = "1.51.2"
 	olmVersion                   = "0.20.0"
 	opmVersion                   = "1.24.0"
-	pkoVersion                   = "1.6.1"
+	pkoVersion                   = "1.6.5"
 	observabilityOperatorVersion = "0.0.15"
 	helmVersion                  = "3.7.2"
 )
@@ -1062,7 +1062,8 @@ func (d Dev) Setup(ctx context.Context) error {
 		return fmt.Errorf("initializing dev environment: %w", err)
 	}
 
-	if err := postClusterCreationFeatureFlagSetup(ctx, devEnvironment.Cluster); err != nil {
+	handler := GetTestFeatureFlagHandler()
+	if err := handler.postClusterCreationFeatureFlagSetup(ctx, devEnvironment.Cluster); err != nil {
 		return err
 	}
 
@@ -1254,39 +1255,75 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 	return nil
 }
 
-func deployFeatureFlags(ctx context.Context, cluster *dev.Cluster) error {
-	if IsEnabledOnTestEnv(featureflag.MonitoringStackFeatureFlagIdentifier) {
-		err := EnableFeatureFlag(ctx, cluster.CtrlClient, featureflag.MonitoringStackFeatureFlagIdentifier)
-		if err != nil {
-			return fmt.Errorf("Enabling Monitoring Stack Feature flag: %w", err)
-		}
-	} else {
-		err := DisableFeatureFlag(ctx, cluster.CtrlClient, featureflag.MonitoringStackFeatureFlagIdentifier)
-		if err != nil {
-			return fmt.Errorf("Disabling Monitoring Stack Feature flag: %w", err)
-		}
-	}
+type TestHandler interface {
+	ReconcileFlags(ctx context.Context, client ctrlclient.Client) error
+	postClusterCreationFeatureFlagSetup(ctx context.Context, cluster *dev.Cluster) error
+}
 
-	if IsEnabledOnTestEnv(featureflag.AddonsPlugAndPlayFeatureFlagIdentifier) {
-		err := EnableFeatureFlag(ctx, cluster.CtrlClient, featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
-		if err != nil {
-			return fmt.Errorf("Enabling Addons Plug and Play flag: %w", err)
-		}
-	} else {
-		err := DisableFeatureFlag(ctx, cluster.CtrlClient, featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
-		if err != nil {
-			return fmt.Errorf("Disabling addons plug and play flag: %w", err)
+type TestHandlerList []TestHandler
+
+var _ TestHandler = (TestHandlerList)(nil)
+
+func GetTestFeatureFlagHandler() TestHandlerList {
+	handler := TestHandlerList{
+		TestAddonsPlugAndPlayHandler{},
+		TestMonitoringStackHandler{},
+	}
+	return handler
+}
+
+func (hl TestHandlerList) ReconcileFlags(ctx context.Context, client ctrlclient.Client) error {
+	for _, h := range hl {
+		if err := h.ReconcileFlags(ctx, client); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func IsEnabledOnTestEnv(featureFlagIdentifier string) bool {
-	commaSeparatedFeatureFlags, ok := os.LookupEnv("FEATURE_TOGGLES")
-	if !ok {
-		return false
+func (hl TestHandlerList) postClusterCreationFeatureFlagSetup(ctx context.Context, cluster *dev.Cluster) error {
+	for _, h := range hl {
+		if err := h.postClusterCreationFeatureFlagSetup(ctx, cluster); err != nil {
+			return err
+		}
 	}
-	return slices.Contains(strings.Split(commaSeparatedFeatureFlags, ","), featureFlagIdentifier)
+	return nil
+}
+
+type TestAddonsPlugAndPlayHandler struct{}
+
+func (h TestAddonsPlugAndPlayHandler) ReconcileFlags(ctx context.Context, client ctrlclient.Client) error {
+	if testutil.IsEnabledOnTestEnv(featureflag.AddonsPlugAndPlayFeatureFlagIdentifier) {
+		return EnableFeatureFlag(ctx, client, featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
+	}
+	return DisableFeatureFlag(ctx, client, featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
+}
+
+func (h TestAddonsPlugAndPlayHandler) postClusterCreationFeatureFlagSetup(ctx context.Context, cluster *dev.Cluster) error {
+	if testutil.IsEnabledOnTestEnv(featureflag.AddonsPlugAndPlayFeatureFlagIdentifier) {
+		if err := deployPackageOperator(ctx, cluster); err != nil {
+			return fmt.Errorf("failed to deploy pko: %w", err)
+		}
+	}
+	return nil
+}
+
+type TestMonitoringStackHandler struct{}
+
+func (h TestMonitoringStackHandler) ReconcileFlags(ctx context.Context, client ctrlclient.Client) error {
+	if testutil.IsEnabledOnTestEnv(featureflag.MonitoringStackFeatureFlagIdentifier) {
+		return EnableFeatureFlag(ctx, client, featureflag.MonitoringStackFeatureFlagIdentifier)
+	}
+	return DisableFeatureFlag(ctx, client, featureflag.MonitoringStackFeatureFlagIdentifier)
+}
+
+func (h TestMonitoringStackHandler) postClusterCreationFeatureFlagSetup(ctx context.Context, cluster *dev.Cluster) error {
+	if testutil.IsEnabledOnTestEnv(featureflag.MonitoringStackFeatureFlagIdentifier) {
+		if err := deployObservabilityOperator(ctx, cluster); err != nil {
+			return fmt.Errorf("failed to deploy observability operator: %w", err)
+		}
+	}
+	return nil
 }
 
 func EnableFeatureFlag(ctx context.Context, client ctrlclient.Client, featureFlagIdentifier string) error {
@@ -1352,20 +1389,6 @@ func getAddonOperatorWithFeatureFlag(featureFlag string) addonsv1alpha1.AddonOpe
 		},
 	}
 	return adoObject
-}
-
-func postClusterCreationFeatureFlagSetup(ctx context.Context, cluster *dev.Cluster) error {
-	if IsEnabledOnTestEnv(featureflag.MonitoringStackFeatureFlagIdentifier) {
-		if err := deployObservabilityOperator(ctx, cluster); err != nil {
-			return fmt.Errorf("failed to deploy observability operator: %w", err)
-		}
-	}
-	if IsEnabledOnTestEnv(featureflag.AddonsPlugAndPlayFeatureFlagIdentifier) {
-		if err := deployPackageOperator(ctx, cluster); err != nil {
-			return fmt.Errorf("failed to deploy pko: %w", err)
-		}
-	}
-	return nil
 }
 
 func deployObservabilityOperator(ctx context.Context, clusterCreated *dev.Cluster) error {
@@ -1461,7 +1484,8 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	if err := cluster.CreateAndWaitForReadiness(ctx, deployment); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager: %w", err)
 	}
-	if err := deployFeatureFlags(ctx, cluster); err != nil {
+	handler := GetTestFeatureFlagHandler()
+	if err := handler.ReconcileFlags(ctx, cluster.CtrlClient); err != nil {
 		return fmt.Errorf("deploy feature flags: %w", err)
 	}
 	return nil
@@ -1583,7 +1607,7 @@ func (d Dev) init() error {
 			dev.WithWaitOptions([]dev.WaitOption{
 				dev.WithTimeout(10 * time.Minute),
 			}),
-			dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, aoapisv1alpha1.AddToScheme}),
+			dev.WithSchemeBuilder(runtime.SchemeBuilder{operatorsv1alpha1.AddToScheme, addonsv1alpha1.AddToScheme}),
 		}),
 		dev.WithContainerRuntime(containerRuntime),
 		dev.WithKindClusterConfig(kindv1alpha4.Cluster{
