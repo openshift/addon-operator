@@ -805,3 +805,62 @@ func TestHasMonitoringFederation(t *testing.T) {
 		})
 	}
 }
+
+func TestHasMonitoringStack(t *testing.T) {
+	testCases := []struct {
+		name     string
+		addon    *addonsv1alpha1.Addon
+		expected bool
+	}{
+		{
+			name: "addon with monitoring stack defined",
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Monitoring: &addonsv1alpha1.MonitoringSpec{
+						MonitoringStack: &addonsv1alpha1.MonitoringStackSpec{
+							RHOBSRemoteWriteConfig: &addonsv1alpha1.RHOBSRemoteWriteConfigSpec{
+								URL:       "test/url",
+								Allowlist: []string{"test", "foo", "bar"},
+							},
+						},
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "addon with nil monitoring",
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Monitoring: nil,
+				},
+			},
+			expected: false,
+		},
+		{
+			name: "addon with nil monitoring stack",
+			addon: &addonsv1alpha1.Addon{
+				Spec: addonsv1alpha1.AddonSpec{
+					Monitoring: &addonsv1alpha1.MonitoringSpec{
+						MonitoringStack: nil,
+					},
+				},
+			},
+			expected: false,
+		},
+		{
+			name:     "addon with nil spec",
+			addon:    &addonsv1alpha1.Addon{},
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			addon := tc.addon.DeepCopy()
+			result := HasMonitoringStack(addon)
+			// monitoring stack check
+			assert.Equal(t, tc.expected, result)
+		})
+	}
+}
