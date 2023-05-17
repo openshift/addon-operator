@@ -20,11 +20,9 @@ func (r *olmReconciler) observeOperatorResource(
 	addon *addonsv1alpha1.Addon,
 	csvKey client.ObjectKey,
 ) (requeueResult, error) {
-	commonInstallOptions := GetCommonInstallOptions(addon)
-	operatorName := fmt.Sprintf("%s.%s", commonInstallOptions.PackageName, commonInstallOptions.Namespace)
 	operatorKey := client.ObjectKey{
 		Namespace: "",
-		Name:      operatorName,
+		Name:      generateOperatorResourceName(addon),
 	}
 
 	// add mapping
@@ -100,6 +98,11 @@ func getCSVPhase(csvReference *operatorsv1.RichReference) operatorsv1alpha1.Clus
 		}
 	}
 	return ""
+}
+
+func generateOperatorResourceName(addon *addonsv1alpha1.Addon) string {
+	commonInstallOptions := GetCommonInstallOptions(addon)
+	return fmt.Sprintf("%s.%s", commonInstallOptions.PackageName, commonInstallOptions.Namespace)
 }
 
 func findConcernedCSVReference(csv client.ObjectKey, operator *operatorsv1.Operator) *operatorsv1.RichReference {

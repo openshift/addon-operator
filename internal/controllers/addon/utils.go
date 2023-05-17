@@ -48,8 +48,13 @@ func handleExit(result requeueResult) ctrl.Result {
 	}
 }
 
-// Handle the deletion of an Addon.
-func (r *AddonReconciler) handleAddonDeletion(
+func markedForDeletion(addon *addonsv1alpha1.Addon) bool {
+	_, found := addon.Annotations[addonsv1alpha1.DeleteAnnotationFlag]
+	return found
+}
+
+// Handle the deletion of an AddonCR.
+func (r *AddonReconciler) handleAddonCRDeletion(
 	ctx context.Context, addon *addonsv1alpha1.Addon,
 ) error {
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
@@ -126,6 +131,39 @@ func reportAddonPauseStatus(addon *addonsv1alpha1.Addon,
 		Status:             metav1.ConditionTrue,
 		Reason:             reason,
 		Message:            "",
+		ObservedGeneration: addon.Generation,
+	})
+	addon.Status.ObservedGeneration = addon.Generation
+}
+
+func reportAddonReadyToBeDeletedStatus(addon *addonsv1alpha1.Addon, value metav1.ConditionStatus) {
+	if value == metav1.ConditionTrue {
+		meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
+			Type:               addonsv1alpha1.ReadyToBeDeleted,
+			Status:             value,
+			Reason:             addonsv1alpha1.AddonReasonReadyToBeDeleted,
+			Message:            "Addon is ready to deleted.",
+			ObservedGeneration: addon.Generation,
+		})
+		addon.Status.ObservedGeneration = addon.Generation
+	} else {
+		meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
+			Type:               addonsv1alpha1.ReadyToBeDeleted,
+			Status:             value,
+			Reason:             addonsv1alpha1.AddonReasonNotReadyToBeDeleted,
+			Message:            "Addon is not yet ready to deleted.",
+			ObservedGeneration: addon.Generation,
+		})
+		addon.Status.ObservedGeneration = addon.Generation
+	}
+}
+
+func reportAddonDeletionTimedOut(addon *addonsv1alpha1.Addon) {
+	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
+		Type:               addonsv1alpha1.DeleteTimeout,
+		Status:             metav1.ConditionTrue,
+		Reason:             addonsv1alpha1.AddonReasonDeletionTimedOut,
+		Message:            "Addon deletion is timed out.",
 		ObservedGeneration: addon.Generation,
 	})
 	addon.Status.ObservedGeneration = addon.Generation
