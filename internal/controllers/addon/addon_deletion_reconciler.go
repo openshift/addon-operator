@@ -76,7 +76,7 @@ func (r *addonDeletionReconciler) deletionTimedOut(addon *addonsv1alpha1.Addon) 
 	if readyToBeDeletedCond == nil || readyToBeDeletedCond.Status == metav1.ConditionTrue {
 		return false
 	}
-	return readyToBeDeletedCond.LastTransitionTime.Add(deleteTimeoutInterval(addon)).After(r.clock.Now())
+	return r.clock.Now().After(readyToBeDeletedCond.LastTransitionTime.Add(deleteTimeoutInterval(addon)))
 }
 
 func removeDeleteTimeoutCondition(addon *addonsv1alpha1.Addon) {
