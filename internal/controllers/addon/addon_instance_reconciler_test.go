@@ -3,15 +3,14 @@ package addon
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -21,14 +20,14 @@ import (
 
 func TestEnsureAddonInstance(t *testing.T) {
 	t.Run("ensures AddonInstance", func(t *testing.T) {
-		addonInstance := &addonsv1alpha1.AddonInstance{
+		existingInstance := &addonsv1alpha1.AddonInstance{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      addonsv1alpha1.DefaultAddonInstanceName,
 				Namespace: "addon-system",
 			},
 			Spec: addonsv1alpha1.AddonInstanceSpec{
 				HeartbeatUpdatePeriod: metav1.Duration{
-					Duration: addonsv1alpha1.DefaultAddonInstanceHeartbeatUpdatePeriod,
+					Duration: time.Hour,
 				},
 			},
 		}
@@ -68,21 +67,22 @@ func TestEnsureAddonInstance(t *testing.T) {
 		}
 
 		tests := []struct {
-			name                     string
-			addon                    *addonsv1alpha1.Addon
-			targetNamespace          string
-			expectedTargetNamespaces []string
+			name                  string
+			addon                 *addonsv1alpha1.Addon
+			targetNamespace       string
+			existingAddonInstance *addonsv1alpha1.AddonInstance
 		}{
 			{
-				name:                     "OwnNamespace",
-				addon:                    addonOwnNamespace,
-				targetNamespace:          addonOwnNamespace.Spec.Install.OLMOwnNamespace.Namespace,
-				expectedTargetNamespaces: []string{addonOwnNamespace.Spec.Install.OLMOwnNamespace.Namespace},
+				name:                  "OwnNamespace",
+				addon:                 addonOwnNamespace,
+				targetNamespace:       addonOwnNamespace.Spec.Install.OLMOwnNamespace.Namespace,
+				existingAddonInstance: nil,
 			},
 			{
-				name:            "AllNamespaces",
-				addon:           addonAllNamespaces,
-				targetNamespace: addonAllNamespaces.Spec.Install.OLMAllNamespaces.Namespace,
+				name:                  "OwnNamespace",
+				addon:                 addonAllNamespaces,
+				targetNamespace:       addonAllNamespaces.Spec.Install.OLMAllNamespaces.Namespace,
+				existingAddonInstance: existingInstance,
 			},
 		}
 
@@ -97,65 +97,69 @@ func TestEnsureAddonInstance(t *testing.T) {
 				addon := test.addon
 
 				// Mock Setup
-				c.
-					On(
+				if test.existingAddonInstance != nil {
+					c.On(
 						"Get",
 						mock.Anything,
-						client.ObjectKey{
-							Name:      addon.Name,
-							Namespace: test.targetNamespace,
-						},
-						mock.Anything,
-					).
-					Return(errors.NewNotFound(schema.GroupResource{}, ""))
-				var createdAddonInstance *addonsv1alpha1.AddonInstance
-				c.
-					On(
-						"Create",
 						mock.Anything,
 						mock.IsType(&addonsv1alpha1.AddonInstance{}),
 						mock.Anything,
-					).
-					Run(func(args mock.Arguments) {
-						createdAddonInstance = args.Get(1).(*addonsv1alpha1.AddonInstance)
-					}).
-					Return(nil)
-
-				c.
-					On(
+					).Run(func(args mock.Arguments) {
+						instance := args.Get(2).(*addonsv1alpha1.AddonInstance)
+						*instance = *test.existingAddonInstance
+					}).Return(nil)
+				} else {
+					c.On(
 						"Get",
 						mock.Anything,
-						client.ObjectKeyFromObject(addonInstance),
-						mock.IsType(&addonsv1alpha1.AddonInstance{}),
-						mock.Anything,
-					).
-					Return(nil)
-
-				c.
-					On(
-						"Update",
 						mock.Anything,
 						mock.IsType(&addonsv1alpha1.AddonInstance{}),
 						mock.Anything,
-					).
-					Run(func(args mock.Arguments) {
-						createdAddonInstance = args.Get(1).(*addonsv1alpha1.AddonInstance)
-					}).
-					Return(nil)
+					).Return(testutil.NewTestErrNotFound())
+				}
 
+				var reconciledInstance *addonsv1alpha1.AddonInstance
+				// update path
+				if test.existingAddonInstance != nil {
+					c.
+						On(
+							"Update",
+							mock.Anything,
+							mock.IsType(&addonsv1alpha1.AddonInstance{}),
+							mock.Anything,
+						).
+						Run(func(args mock.Arguments) {
+							reconciledInstance = args.Get(1).(*addonsv1alpha1.AddonInstance)
+						}).
+						Return(nil)
+
+				} else {
+					// Create path
+					c.
+						On(
+							"Create",
+							mock.Anything,
+							mock.IsType(&addonsv1alpha1.AddonInstance{}),
+							mock.Anything,
+						).
+						Run(func(args mock.Arguments) {
+							reconciledInstance = args.Get(1).(*addonsv1alpha1.AddonInstance)
+						}).
+						Return(nil)
+				}
 				// Test
 				ctx := context.Background()
 				controllers.ContextWithLogger(ctx, log)
 				err := r.ensureAddonInstance(ctx, addon)
 				require.NoError(t, err)
 
-				assert.Equal(t, addonsv1alpha1.DefaultAddonInstanceName, createdAddonInstance.Name)
-				assert.Equal(t, test.targetNamespace, createdAddonInstance.Namespace)
+				assert.Equal(t, addonsv1alpha1.DefaultAddonInstanceName, reconciledInstance.Name)
+				assert.Equal(t, test.targetNamespace, reconciledInstance.Namespace)
 				assert.Equal(t,
 					metav1.Duration{
 						Duration: addonsv1alpha1.DefaultAddonInstanceHeartbeatUpdatePeriod,
 					},
-					createdAddonInstance.Spec.HeartbeatUpdatePeriod,
+					reconciledInstance.Spec.HeartbeatUpdatePeriod,
 				)
 			})
 		}

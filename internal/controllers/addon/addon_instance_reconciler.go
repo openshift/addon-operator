@@ -70,17 +70,22 @@ func (r *addonInstanceReconciler) ensureAddonInstance(
 // Reconciles the reality to have the desired AddonInstance resource by creating it if it does not exist,
 // or updating if it exists with a different spec.
 func (r *addonInstanceReconciler) reconcileAddonInstance(
-	ctx context.Context, addonInstance *addonsv1alpha1.AddonInstance) error {
+	ctx context.Context, desiredAddonInstance *addonsv1alpha1.AddonInstance) error {
 	currentAddonInstance := &addonsv1alpha1.AddonInstance{}
-	err := r.client.Get(ctx, client.ObjectKeyFromObject(addonInstance), currentAddonInstance)
+	err := r.client.Get(ctx, client.ObjectKeyFromObject(desiredAddonInstance), currentAddonInstance)
 	if errors.IsNotFound(err) {
-		return r.client.Create(ctx, addonInstance)
+		return r.client.Create(ctx, desiredAddonInstance)
 	}
 	if err != nil {
 		return fmt.Errorf("getting AddonInstance: %w", err)
 	}
-	if !equality.Semantic.DeepEqual(currentAddonInstance.Spec, addonInstance.Spec) {
-		return r.client.Update(ctx, addonInstance)
+	// We don't want to overwrite the marked for deletion field of the existing
+	// addoninstance. The addon deletion sub-reconciler handles that part.
+	desiredAddonInstance.Spec.MarkedForDeletion = currentAddonInstance.Spec.MarkedForDeletion
+	if !equality.Semantic.DeepEqual(currentAddonInstance.Spec, desiredAddonInstance.Spec) {
+		currentAddonInstance.Spec = desiredAddonInstance.Spec
+		currentAddonInstance.OwnerReferences = desiredAddonInstance.OwnerReferences
+		return r.client.Update(ctx, currentAddonInstance)
 	}
 	return nil
 }
