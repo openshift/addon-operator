@@ -92,10 +92,9 @@ func NewAddonReconciler(
 		subReconcilers: []addonReconciler{
 			// Step 1: Check if addon is being deleted.
 			&addonDeletionReconciler{
-				client:         client,
-				uncachedClient: uncachedClient,
 				strategies: []addonDeletionStrategy{
 					&legacyDeletionStrategy{client: client, uncachedClient: uncachedClient},
+					&addonInstanceDeletionStrategy{client: client},
 				},
 			},
 			// Step 2: Reconcile Namespace
