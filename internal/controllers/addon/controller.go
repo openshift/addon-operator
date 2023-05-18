@@ -92,6 +92,7 @@ func NewAddonReconciler(
 		subReconcilers: []addonReconciler{
 			// Step 1: Check if addon is being deleted.
 			&addonDeletionReconciler{
+				clock: defaultClock{},
 				strategies: []addonDeletionStrategy{
 					&legacyDeletionStrategy{client: client, uncachedClient: uncachedClient},
 					&addonInstanceDeletionStrategy{client: client},

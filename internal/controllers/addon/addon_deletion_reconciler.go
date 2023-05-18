@@ -20,7 +20,18 @@ type addonDeletionStrategy interface {
 	AckReceivedFromAddon(context.Context, *addonsv1alpha1.Addon) bool
 }
 
+type clock interface {
+	Now() time.Time
+}
+
+type defaultClock struct{}
+
+func (c defaultClock) Now() time.Time {
+	return time.Now()
+}
+
 type addonDeletionReconciler struct {
+	clock      clock
 	strategies []addonDeletionStrategy
 }
 
@@ -39,7 +50,7 @@ func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1
 	// We set ReadyToBeDeleted=false status condition in response to the delete signal received from OCM.
 	reportAddonReadyToBeDeletedStatus(addon, metav1.ConditionFalse)
 
-	if deletionTimedOut(addon) {
+	if r.deletionTimedOut(addon) {
 		reportAddonDeletionTimedOut(addon)
 	}
 
@@ -58,14 +69,14 @@ func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1
 	return ctrl.Result{RequeueAfter: deleteTimeoutInterval(addon)}, nil
 }
 
-// Deletion is timed out when the (ReadyToBeDeleted=false) condition's last transition time + deleteTimeoutInterval
+// Deletion is timed out when (ReadyToBeDeleted=false) condition's last transition time + deleteTimeoutInterval
 // is after the current time.
-func deletionTimedOut(addon *addonsv1alpha1.Addon) bool {
+func (r *addonDeletionReconciler) deletionTimedOut(addon *addonsv1alpha1.Addon) bool {
 	readyToBeDeletedCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted)
 	if readyToBeDeletedCond == nil || readyToBeDeletedCond.Status == metav1.ConditionTrue {
 		return false
 	}
-	return readyToBeDeletedCond.LastTransitionTime.Add(deleteTimeoutInterval(addon)).After(time.Now())
+	return readyToBeDeletedCond.LastTransitionTime.Add(deleteTimeoutInterval(addon)).After(r.clock.Now())
 }
 
 func removeDeleteTimeoutCondition(addon *addonsv1alpha1.Addon) {
