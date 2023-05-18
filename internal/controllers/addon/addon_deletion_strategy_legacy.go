@@ -77,6 +77,7 @@ func (l *legacyDeletionStrategy) AckReceivedFromAddon(ctx context.Context, addon
 		// will get requeued when it gets created.
 		return false
 	}
+	// The addon deletes its CSV after it cleans up its external resources.
 	csvKey := types.NamespacedName{Namespace: addonTargetNS, Name: currentSubscription.Status.CurrentCSV}
 	return CSVmissing(operator, csvKey)
 }

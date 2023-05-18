@@ -84,6 +84,7 @@ AddonInstanceSpec defines the configuration to consider while taking AddonInstan
 
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
+| markedForDeletion | This field indicates whether the addon is marked for deletion. | bool | true |
 | heartbeatUpdatePeriod | The periodic rate at which heartbeats are expected to be received by the AddonInstance object | metav1.Duration | false |
 
 [Back to Group]()

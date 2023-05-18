@@ -305,7 +305,7 @@ const (
 	// Addon has successfully been uninstalled.
 	AddonReasonNotInstalled = "AddonNotInstalled"
 
-	// Addon is ready to deleted.
+	// Addon is ready to be deleted.
 	AddonReasonReadyToBeDeleted = "AddonReadyToBeDeleted"
 
 	// Addon is not yet ready to deleted.

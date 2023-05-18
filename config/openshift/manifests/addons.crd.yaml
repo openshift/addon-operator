@@ -469,7 +469,6 @@ spec:
                   status and metrics.
                 type: string
             required:
-            - deleteAckRequired
             - displayName
             - install
             type: object
