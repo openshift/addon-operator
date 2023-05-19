@@ -696,7 +696,8 @@ func (Test) integration(ctx context.Context, filter string) error {
 	os.Setenv("FEATURE_TOGGLES", featureflag.AddonsPlugAndPlayFeatureFlagIdentifier)
 
 	handler := GetTestFeatureFlagHandler()
-	if err := handler.postClusterCreationFeatureFlagSetup(ctx, devEnvironment.Cluster); err != nil {
+
+	if err := handler.postClusterCreationFeatureFlagSetup(ctx, cluster); err != nil {
 		return fmt.Errorf("failed to perform post-cluster creation setup for the feature flags: %w", err)
 	}
 
@@ -711,7 +712,7 @@ func (Test) integration(ctx context.Context, filter string) error {
 	}
 	args = append(args, "./integration/...")
 
-	return sh.Run("go", args...)
+	return sh.RunV("go", args...)
 }
 
 // Target to prepare the CI-CD environment before installing the operator.

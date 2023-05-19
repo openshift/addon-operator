@@ -41,9 +41,5 @@ func (m *MonitoringStackFeatureFlag) PostManagerSetupHandle(ctx context.Context,
 			Scheme: mgr.GetScheme(),
 		},
 	}
-	//*m.AddonReconcilerOptsToUpdate = append(*m.AddonReconcilerOptsToUpdate, addoncontroller.WithMonitoringStackReconciler{
-	//	Client: mgr.GetClient(),
-	//	Scheme: mgr.GetScheme(),
-	//})
 	return &reconcilerOptions
 }
