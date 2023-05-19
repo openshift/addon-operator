@@ -17,7 +17,7 @@ const (
 
 type addonDeletionStrategy interface {
 	NotifyAddon(context.Context, *addonsv1alpha1.Addon) error
-	AckReceivedFromAddon(context.Context, *addonsv1alpha1.Addon) bool
+	AckReceivedFromAddon(context.Context, *addonsv1alpha1.Addon) (bool, error)
 }
 
 type clock interface {
@@ -43,6 +43,7 @@ func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1
 
 	// if spec.DeleteAckRequired is false, we directly report ReadyToBeDeleted=true Status condition.
 	if !addon.Spec.DeleteAckRequired {
+		removeDeleteTimeoutCondition(addon)
 		reportAddonReadyToBeDeletedStatus(addon, metav1.ConditionTrue)
 		return ctrl.Result{}, nil
 	}
@@ -50,20 +51,26 @@ func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1
 	// We set ReadyToBeDeleted=false status condition in response to the delete signal received from OCM.
 	reportAddonReadyToBeDeletedStatus(addon, metav1.ConditionFalse)
 
-	if r.deletionTimedOut(addon) {
-		reportAddonDeletionTimedOut(addon)
-	}
-
 	for _, strategy := range r.strategies {
 		if err := strategy.NotifyAddon(ctx, addon); err != nil {
 			return ctrl.Result{}, err
 		}
 		// If ack is received from the underlying addon, we report ReadyToBeDeleted = true.
-		if strategy.AckReceivedFromAddon(ctx, addon) {
+		ackReceived, err := strategy.AckReceivedFromAddon(ctx, addon)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		if ackReceived {
 			removeDeleteTimeoutCondition(addon)
 			reportAddonReadyToBeDeletedStatus(addon, metav1.ConditionTrue)
 			return ctrl.Result{}, nil
 		}
+	}
+
+	// If deletion has timed out.
+	if r.deletionTimedOut(addon) {
+		reportAddonDeletionTimedOut(addon)
+		return ctrl.Result{}, nil
 	}
 	// If no ack is received from the addon, we arrange for a requeue after the deletetimeout duration.
 	return ctrl.Result{RequeueAfter: deleteTimeoutInterval(addon)}, nil

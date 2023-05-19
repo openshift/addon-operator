@@ -47,11 +47,10 @@ func (l *legacyDeletionStrategy) NotifyAddon(ctx context.Context, addon *addonsv
 		modifiedCM.Labels = make(map[string]string)
 	}
 	modifiedCM.Labels[fmt.Sprintf(DeleteConfigMapLabel, addon.Name)] = ""
-	l.client.Patch(ctx, modifiedCM, client.MergeFrom(currentDeleteCM))
-	return nil
+	return l.client.Patch(ctx, modifiedCM, client.MergeFrom(currentDeleteCM))
 }
 
-func (l *legacyDeletionStrategy) AckReceivedFromAddon(ctx context.Context, addon *addonsv1alpha1.Addon) bool {
+func (l *legacyDeletionStrategy) AckReceivedFromAddon(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error) {
 	operatorKey := client.ObjectKey{
 		Namespace: "",
 		Name:      generateOperatorResourceName(addon),
@@ -60,9 +59,12 @@ func (l *legacyDeletionStrategy) AckReceivedFromAddon(ctx context.Context, addon
 	operator := &operatorsv1.Operator{}
 
 	if err := l.uncachedClient.Get(ctx, operatorKey, operator); err != nil {
-		// Operator resource is not yet created. We will get requeued when it eventually
-		// gets created.
-		return false
+		// We return without errors on notfound errors, as the obj would get created
+		// eventually and we would be requeued on that event.
+		if errors.IsNotFound(err) {
+			return false, nil
+		}
+		return false, err
 	}
 
 	// Fetch current CSV key from subscription.
@@ -73,13 +75,16 @@ func (l *legacyDeletionStrategy) AckReceivedFromAddon(ctx context.Context, addon
 		Namespace: addonTargetNS,
 	}, currentSubscription)
 	if err != nil {
-		// Subscription is not yet created, subsequent sub-reconcilers will create it and we
-		// will get requeued when it gets created.
-		return false
+		// We return without errors on notfound errors, as the obj would get created
+		// eventually by the subsequent sub-reconcilers and we would be requeued on that event.
+		if errors.IsNotFound(err) {
+			return false, nil
+		}
+		return false, err
 	}
 	// The addon deletes its CSV after it cleans up its external resources.
 	csvKey := types.NamespacedName{Namespace: addonTargetNS, Name: currentSubscription.Status.CurrentCSV}
-	return CSVmissing(operator, csvKey)
+	return CSVmissing(operator, csvKey), nil
 }
 
 func CSVmissing(operator *operatorsv1.Operator, csvKey types.NamespacedName) bool {

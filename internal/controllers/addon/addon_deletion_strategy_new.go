@@ -4,6 +4,7 @@ import (
 	"context"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -23,6 +24,11 @@ func (a *addonInstanceDeletionStrategy) NotifyAddon(ctx context.Context, addon *
 	currentAddonInstance := &addonsv1alpha1.AddonInstance{}
 	addonNS := GetCommonInstallOptions(addon).Namespace
 	if err := a.fetchAddonInstance(ctx, addonNS, currentAddonInstance); err != nil {
+		if errors.IsNotFound(err) {
+			// We return without errors on notfound errors, as the addon instance obj would get created
+			// eventually by the subsequent sub-reconcilers and we would be requeued on that event.
+			return nil
+		}
 		return err
 	}
 	if !currentAddonInstance.Spec.MarkedForDeletion {
@@ -34,13 +40,18 @@ func (a *addonInstanceDeletionStrategy) NotifyAddon(ctx context.Context, addon *
 
 func (a *addonInstanceDeletionStrategy) AckReceivedFromAddon(
 	ctx context.Context,
-	addon *addonsv1alpha1.Addon) bool {
+	addon *addonsv1alpha1.Addon) (bool, error) {
 	currentAddonInstance := &addonsv1alpha1.AddonInstance{}
 	addonNS := GetCommonInstallOptions(addon).Namespace
 	if err := a.fetchAddonInstance(ctx, addonNS, currentAddonInstance); err != nil {
-		return false
+		// We return without errors on notfound errors, as the addon instance obj would get created
+		// eventually by the subsequent sub-reconcilers and we would be requeued on that event.
+		if errors.IsNotFound(err) {
+			return false, nil
+		}
+		return false, err
 	}
-	return hasReadyToBeDeletedStatusCondition(currentAddonInstance, metav1.ConditionTrue)
+	return hasReadyToBeDeletedStatusCondition(currentAddonInstance, metav1.ConditionTrue), nil
 }
 
 func (a *addonInstanceDeletionStrategy) fetchAddonInstance(
@@ -49,9 +60,7 @@ func (a *addonInstanceDeletionStrategy) fetchAddonInstance(
 		Name:      addonsv1alpha1.DefaultAddonInstanceName,
 		Namespace: addonNS,
 	}
-	// We ignore not found errors, as the addon instance obj would get created
-	// eventually by the subsequent sub-reconcilers.
-	return client.IgnoreNotFound(a.client.Get(ctx, addonInstanceKey, instance))
+	return a.client.Get(ctx, addonInstanceKey, instance)
 }
 
 func hasReadyToBeDeletedStatusCondition(
