@@ -464,6 +464,9 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 		addon := addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorking)
 		err := integration.Client.Create(ctx, addon)
 		s.Require().NoError(err)
+		s.T().Cleanup(func() {
+			s.addonCleanup(addon, ctx)
+		})
 		// wait until Addon is available
 		err = integration.WaitForObject(
 			ctx,
@@ -527,11 +530,13 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 		// We act like the addon's operator and add the ready to deleted condition to our addon instance.
 
 		meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
-			Type:   string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
-			Status: metav1.ConditionTrue,
+			Type:    string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+			Reason:  addonsv1alpha1.AddonInstanceReasonReadyToBeDeleted.String(),
+			Message: "Cleanup up resources.",
+			Status:  metav1.ConditionTrue,
 		})
 
-		err = integration.Client.Update(ctx, instance)
+		err = integration.Client.Status().Update(ctx, instance)
 		s.Require().NoError(err)
 
 		// Now we wait for readytoBeDeleted=true condition in the addonCR.
@@ -544,16 +549,19 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 					a.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted), nil
 			})
 		s.Require().NoError(err)
-
-		// cleanup
-		s.addonCleanup(addon, ctx)
 	})
 
 	s.Run("sets readyToBeDeleted=true through legacy strategy", func() {
 		// This version of the addon responds to delete config map.
 		addon := addonWithVersion("v0.8.0", referenceAddonCatalogSourceImageWorkingLatest)
+		// Set name to "reference-addon" as the reference-addon's operator only
+		// responds if the delete CM has the name "reference-addon".
+		addon.Name = "reference-addon"
 		err := integration.Client.Create(ctx, addon)
 		s.Require().NoError(err)
+		s.T().Cleanup(func() {
+			s.addonCleanup(addon, ctx)
+		})
 		// wait until Addon is available
 		err = integration.WaitForObject(
 			ctx,
@@ -578,6 +586,17 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 		err = integration.Client.Update(ctx, addon)
 		s.Require().NoError(err)
 
+		// Now we wait for readytoBeDeleted=true condition in the addonCR.(Addon has removed its CSV)
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to have ReadyToBeDeleted=true condition",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted), nil
+			})
+		s.Require().NoError(err)
+
 		// Assert that the delete config map is indeed created.
 		cm := &corev1.ConfigMap{}
 		err = integration.Client.Get(ctx,
@@ -593,23 +612,10 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 		s.Require().True(found)
 		s.Require().Equal("", val)
 
-		// Now we wait for readytoBeDeleted=true condition in the addonCR.(Addon has removed its CSV)
-		err = integration.WaitForObject(
-			ctx,
-			s.T(), defaultAddonAvailabilityTimeout, addon, "to have ReadyToBeDeleted=true condition",
-			func(obj client.Object) (done bool, err error) {
-				a := obj.(*addonsv1alpha1.Addon)
-				return meta.IsStatusConditionTrue(
-					a.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted), nil
-			})
-		s.Require().NoError(err)
-
 		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
 		s.Require().NoError(err)
 		// addon has set installed=false.
 		s.Require().True(meta.IsStatusConditionFalse(addon.Status.Conditions, addonsv1alpha1.Installed))
-		// cleanup
-		s.addonCleanup(addon, ctx)
 	})
 
 	s.Run("addon deletion timeout", func() {
@@ -617,6 +623,9 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 		addon := addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorking)
 		err := integration.Client.Create(ctx, addon)
 		s.Require().NoError(err)
+		s.T().Cleanup(func() {
+			s.addonCleanup(addon, ctx)
+		})
 		// wait until Addon is available
 		err = integration.WaitForObject(
 			ctx,
@@ -676,11 +685,13 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 
 		// We act like the addon's operator and add the ready to deleted condition to our addon instance.
 		meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
-			Type:   string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
-			Status: metav1.ConditionTrue,
+			Type:    string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+			Reason:  addonsv1alpha1.AddonInstanceReasonReadyToBeDeleted.String(),
+			Message: "Cleanup up resources.",
+			Status:  metav1.ConditionTrue,
 		})
 
-		err = integration.Client.Update(ctx, instance)
+		err = integration.Client.Status().Update(ctx, instance)
 		s.Require().NoError(err)
 
 		// Now we wait for readytoBeDeleted=true condition in the addonCR.
@@ -698,12 +709,8 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 		s.Require().NoError(err)
 
 		// Delete timeout condition should be removed.
-
 		timeoutCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.DeleteTimeout)
 		s.Require().Nil(timeoutCond)
-
-		// cleanup
-		s.addonCleanup(addon, ctx)
 	})
 
 }
