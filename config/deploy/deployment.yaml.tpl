@@ -30,6 +30,14 @@ spec:
       - name: tls
         secret:
           secretName: metrics-server-cert
+      - configMap:
+          defaultMode: 420
+          items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+          name: trusted-ca-bundle
+          optional: true
+        name: trusted-ca-bundle
       containers:
       - name: metrics-relay-server
         image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
@@ -44,6 +52,9 @@ spec:
         volumeMounts:
         - name: tls
           mountPath: "/tmp/k8s-metrics-server/serving-certs/"
+          readOnly: true
+        - mountPath: /etc/pki/ca-trust/extracted/pem
+          name: trusted-ca-bundle
           readOnly: true
         ports:
         - containerPort: 8443
