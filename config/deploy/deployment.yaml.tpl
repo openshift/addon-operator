@@ -53,9 +53,6 @@ spec:
         - name: tls
           mountPath: "/tmp/k8s-metrics-server/serving-certs/"
           readOnly: true
-        - mountPath: /etc/pki/ca-trust/extracted/pem
-          name: trusted-ca-bundle
-          readOnly: true
         ports:
         - containerPort: 8443
         readinessProbe:
@@ -79,6 +76,10 @@ spec:
         image: quay.io/openshift/addon-operator:latest
         args:
         - --enable-leader-election
+        volumeMounts:
+        - mountPath: /etc/pki/ca-trust/extracted/pem
+          name: trusted-ca-bundle
+          readOnly: true
         livenessProbe:
           httpGet:
             path: /healthz
