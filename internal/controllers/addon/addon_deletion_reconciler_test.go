@@ -44,12 +44,12 @@ func TestAddonDeletionReconciler(t *testing.T) {
 
 		reconciler := addonDeletionReconciler{
 			clock: defaultClock{},
-			strategies: []addonDeletionStrategy{
-				&legacyDeletionStrategy{
+			handlers: []addonDeletionHandler{
+				&legacyDeletionHandler{
 					client:         client,
 					uncachedClient: client,
 				},
-				&addonInstanceDeletionStrategy{client: client},
+				&addonInstanceDeletionHandler{client: client},
 			},
 		}
 
@@ -62,12 +62,12 @@ func TestAddonDeletionReconciler(t *testing.T) {
 		client := testutil.NewClient()
 		reconciler := addonDeletionReconciler{
 			clock: defaultClock{},
-			strategies: []addonDeletionStrategy{
-				&legacyDeletionStrategy{
+			handlers: []addonDeletionHandler{
+				&legacyDeletionHandler{
 					client:         client,
 					uncachedClient: client,
 				},
-				&addonInstanceDeletionStrategy{client: client},
+				&addonInstanceDeletionHandler{client: client},
 			},
 		}
 		addon := &addonsv1alpha1.Addon{
@@ -97,12 +97,12 @@ func TestAddonDeletionReconciler(t *testing.T) {
 		client := testutil.NewClient()
 		reconciler := addonDeletionReconciler{
 			clock: defaultClock{},
-			strategies: []addonDeletionStrategy{
-				&legacyDeletionStrategy{
+			handlers: []addonDeletionHandler{
+				&legacyDeletionHandler{
 					client:         client,
 					uncachedClient: client,
 				},
-				&addonInstanceDeletionStrategy{client: client},
+				&addonInstanceDeletionHandler{client: client},
 			},
 		}
 		addon := &addonsv1alpha1.Addon{
@@ -131,7 +131,7 @@ func TestAddonDeletionReconciler(t *testing.T) {
 		mockStrategy := &mockdeletionStrategy{}
 		reconciler := addonDeletionReconciler{
 			clock: defaultClock{},
-			strategies: []addonDeletionStrategy{
+			handlers: []addonDeletionHandler{
 				mockStrategy,
 			},
 		}
@@ -170,37 +170,37 @@ func TestAddonDeletionReconciler(t *testing.T) {
 
 	t.Run("runs deletion strategies and returns errors and reconcile result correctly.", func(t *testing.T) {
 		testCases := []struct {
-			testCase                    int
-			Err                         bool
+			testCase                    string
 			AckReceivedFromAddon        bool
 			OCMTimeoutDuration          string
 			CurrentTime                 time.Time
 			DeletionTimedOutCondPresent bool
 			ExpectedReconcileResult     ctrl.Result
+			HandlerErr                  bool
 		}{
 
 			{
-				testCase:             1,
-				Err:                  true,
+				testCase:             "handler returns error",
+				HandlerErr:           true,
 				AckReceivedFromAddon: false,
 				CurrentTime:          time.Now(),
 			},
 			{
-				testCase:                2,
-				Err:                     false,
+				testCase:                "reconcile result should have the right RequeueAfter interval",
+				HandlerErr:              false,
 				AckReceivedFromAddon:    false,
 				CurrentTime:             time.Now(),
 				ExpectedReconcileResult: ctrl.Result{RequeueAfter: defaultDeleteTimeoutDuration},
 			},
 			{
-				testCase:             3,
-				Err:                  false,
+				testCase:             "no handler errors and ack received from addon",
+				HandlerErr:           false,
 				AckReceivedFromAddon: true,
 				CurrentTime:          time.Now(),
 			},
 			{
-				testCase:                    4,
-				Err:                         false,
+				testCase:                    "reconcile result should have the right RequeueAfter interval",
+				HandlerErr:                  false,
 				AckReceivedFromAddon:        false,
 				OCMTimeoutDuration:          "5m",
 				CurrentTime:                 time.Now(),
@@ -208,8 +208,8 @@ func TestAddonDeletionReconciler(t *testing.T) {
 				ExpectedReconcileResult:     ctrl.Result{RequeueAfter: 5 * time.Minute},
 			},
 			{
-				testCase:                    5,
-				Err:                         false,
+				testCase:                    "reconcile result should have the right RequeueAfter interval",
+				HandlerErr:                  false,
 				AckReceivedFromAddon:        false,
 				OCMTimeoutDuration:          "5minutes", // time.ParseDuration will fail.
 				CurrentTime:                 time.Now(),
@@ -217,8 +217,8 @@ func TestAddonDeletionReconciler(t *testing.T) {
 				ExpectedReconcileResult:     ctrl.Result{RequeueAfter: defaultDeleteTimeoutDuration},
 			},
 			{
-				testCase:                    6,
-				Err:                         false,
+				testCase:                    "delete timeout condition should be set",
+				HandlerErr:                  false,
 				AckReceivedFromAddon:        false,
 				OCMTimeoutDuration:          "5m",
 				CurrentTime:                 time.Now().Add(10 * time.Minute),
@@ -228,13 +228,13 @@ func TestAddonDeletionReconciler(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			t.Logf("running test case: %d \n", tc.testCase)
+			t.Logf("running test case: %s \n", tc.testCase)
 			mockStrategy := &mockdeletionStrategy{}
 			testClock := &testClock{}
 			testClock.On("Now").Return(tc.CurrentTime)
 			reconciler := addonDeletionReconciler{
 				clock: testClock,
-				strategies: []addonDeletionStrategy{
+				handlers: []addonDeletionHandler{
 					mockStrategy,
 				},
 			}
@@ -255,7 +255,7 @@ func TestAddonDeletionReconciler(t *testing.T) {
 
 			// Setup mock calls
 			mockStrategy.On("NotifyAddon", mock.Anything, mock.Anything).Return(nil)
-			if tc.Err {
+			if tc.HandlerErr {
 				mockStrategy.On("AckReceivedFromAddon", mock.Anything, mock.Anything).
 					Return(false, errors.New("kubeapi server busy"))
 			} else {
@@ -272,7 +272,7 @@ func TestAddonDeletionReconciler(t *testing.T) {
 			reconcileRes, reconcileErr := reconciler.Reconcile(context.Background(), addon)
 
 			// assertions
-			if tc.Err {
+			if tc.HandlerErr {
 				require.Error(t, reconcileErr)
 			} else {
 				require.Equal(t, tc.ExpectedReconcileResult, reconcileRes)
@@ -284,7 +284,7 @@ func TestAddonDeletionReconciler(t *testing.T) {
 			require.NotNil(t, readyToBeDeletedCondition)
 
 			// If no errors and AckReceivedFromAddon = true
-			if !tc.Err && tc.AckReceivedFromAddon {
+			if !tc.HandlerErr && tc.AckReceivedFromAddon {
 				require.Equal(t, v1.ConditionTrue, readyToBeDeletedCondition.Status)
 			} else {
 				// If any error or AckReceivedFromAddon = false

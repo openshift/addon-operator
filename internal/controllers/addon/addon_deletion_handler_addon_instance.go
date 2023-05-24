@@ -17,11 +17,11 @@ import (
 // The addon's controller reconciles this change and cleans up its resources.
 // Once done cleaning up, the addon's controller would set
 // AddonInstanceConditionReadyToBeDeleted=true status condition to the addoninstance.
-type addonInstanceDeletionStrategy struct {
+type addonInstanceDeletionHandler struct {
 	client client.Client
 }
 
-func (a *addonInstanceDeletionStrategy) NotifyAddon(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+func (a *addonInstanceDeletionHandler) NotifyAddon(ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	currentAddonInstance := &addonsv1alpha1.AddonInstance{}
 	addonNS := GetCommonInstallOptions(addon).Namespace
 	if err := a.fetchAddonInstance(ctx, addonNS, currentAddonInstance); err != nil {
@@ -39,7 +39,7 @@ func (a *addonInstanceDeletionStrategy) NotifyAddon(ctx context.Context, addon *
 	return nil
 }
 
-func (a *addonInstanceDeletionStrategy) AckReceivedFromAddon(
+func (a *addonInstanceDeletionHandler) AckReceivedFromAddon(
 	ctx context.Context,
 	addon *addonsv1alpha1.Addon) (bool, error) {
 	currentAddonInstance := &addonsv1alpha1.AddonInstance{}
@@ -55,7 +55,7 @@ func (a *addonInstanceDeletionStrategy) AckReceivedFromAddon(
 	return hasReadyToBeDeletedStatusCondition(currentAddonInstance, metav1.ConditionTrue), nil
 }
 
-func (a *addonInstanceDeletionStrategy) fetchAddonInstance(
+func (a *addonInstanceDeletionHandler) fetchAddonInstance(
 	ctx context.Context, addonNS string, instance *addonsv1alpha1.AddonInstance) error {
 	addonInstanceKey := types.NamespacedName{
 		Name:      addonsv1alpha1.DefaultAddonInstanceName,

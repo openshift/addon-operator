@@ -21,12 +21,12 @@ var DeleteConfigMapLabel = "api.openshift.com/addon-%v-delete"
 // of the deletion process. The addon notices this CM and cleans up its resources and
 // then deletes its CSV. We take this CSV going missing as an ack from the underlying
 // addon.
-type legacyDeletionStrategy struct {
+type legacyDeletionHandler struct {
 	client         client.Client
 	uncachedClient client.Client
 }
 
-func (l *legacyDeletionStrategy) NotifyAddon(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+func (l *legacyDeletionHandler) NotifyAddon(ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	currentDeleteCM := &corev1.ConfigMap{}
 	addonTargetNS := GetCommonInstallOptions(addon).Namespace
 
@@ -51,7 +51,7 @@ func (l *legacyDeletionStrategy) NotifyAddon(ctx context.Context, addon *addonsv
 	return l.client.Patch(ctx, modifiedCM, client.MergeFrom(currentDeleteCM))
 }
 
-func (l *legacyDeletionStrategy) AckReceivedFromAddon(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error) {
+func (l *legacyDeletionHandler) AckReceivedFromAddon(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error) {
 	operatorKey := client.ObjectKey{
 		Namespace: "",
 		Name:      generateOperatorResourceName(addon),
@@ -92,7 +92,7 @@ func CSVmissing(operator *operatorsv1.Operator, csvKey types.NamespacedName) boo
 	return findConcernedCSVReference(csvKey, operator) == nil
 }
 
-func (l *legacyDeletionStrategy) createDeleteConfigMap(ctx context.Context, addon *addonsv1alpha1.Addon) error {
+func (l *legacyDeletionHandler) createDeleteConfigMap(ctx context.Context, addon *addonsv1alpha1.Addon) error {
 	addonTargetNS := GetCommonInstallOptions(addon).Namespace
 
 	desiredCM := &corev1.ConfigMap{

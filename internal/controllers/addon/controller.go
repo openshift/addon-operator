@@ -93,9 +93,9 @@ func NewAddonReconciler(
 			// Step 1: Check if addon is being deleted.
 			&addonDeletionReconciler{
 				clock: defaultClock{},
-				strategies: []addonDeletionStrategy{
-					&legacyDeletionStrategy{client: client, uncachedClient: uncachedClient},
-					&addonInstanceDeletionStrategy{client: client},
+				handlers: []addonDeletionHandler{
+					&legacyDeletionHandler{client: client, uncachedClient: uncachedClient},
+					&addonInstanceDeletionHandler{client: client},
 				},
 			},
 			// Step 2: Reconcile Namespace

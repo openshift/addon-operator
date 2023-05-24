@@ -17,7 +17,7 @@ import (
 func TestNotifyAddonStrategyNew(t *testing.T) {
 	t.Run("no errors on addon instance not found error", func(t *testing.T) {
 		client := testutil.NewClient()
-		strategy := addonInstanceDeletionStrategy{
+		strategy := addonInstanceDeletionHandler{
 			client: client,
 		}
 		addon := testutil.NewTestAddonWithCatalogSourceImage()
@@ -35,7 +35,7 @@ func TestNotifyAddonStrategyNew(t *testing.T) {
 
 	t.Run("updates addon instance's spec.MarkedForDeletion if its unset", func(t *testing.T) {
 		client := testutil.NewClient()
-		strategy := addonInstanceDeletionStrategy{
+		strategy := addonInstanceDeletionHandler{
 			client: client,
 		}
 		addon := testutil.NewTestAddonWithCatalogSourceImage()
@@ -70,7 +70,7 @@ func TestNotifyAddonStrategyNew(t *testing.T) {
 
 	t.Run("doesnt update if spec.MarkedForDeletion is already true", func(t *testing.T) {
 		client := testutil.NewClient()
-		strategy := addonInstanceDeletionStrategy{
+		strategy := addonInstanceDeletionHandler{
 			client: client,
 		}
 		addon := testutil.NewTestAddonWithCatalogSourceImage()
@@ -159,7 +159,7 @@ func TestAckReceivedFromAddonStrategyNew(t *testing.T) {
 	for _, tc := range testCases {
 		addon := testutil.NewTestAddonWithCatalogSourceImage()
 		client := testutil.NewClient()
-		strategy := addonInstanceDeletionStrategy{
+		strategy := addonInstanceDeletionHandler{
 			client: client,
 		}
 

@@ -21,7 +21,7 @@ import (
 func TestNotifyAddonLegacy(t *testing.T) {
 	t.Run("creates the delete configmap if not present", func(t *testing.T) {
 		client := testutil.NewClient()
-		strategy := legacyDeletionStrategy{
+		strategy := legacyDeletionHandler{
 			client:         client,
 			uncachedClient: client,
 		}
@@ -56,7 +56,7 @@ func TestNotifyAddonLegacy(t *testing.T) {
 
 	t.Run("patches the delete configmap if label is missing", func(t *testing.T) {
 		client := testutil.NewClient()
-		strategy := legacyDeletionStrategy{
+		strategy := legacyDeletionHandler{
 			client:         client,
 			uncachedClient: client,
 		}
@@ -106,7 +106,7 @@ func TestNotifyAddonLegacy(t *testing.T) {
 
 	t.Run("doesnt patch when the existing configmap is upto spec", func(t *testing.T) {
 		client := testutil.NewClient()
-		strategy := legacyDeletionStrategy{
+		strategy := legacyDeletionHandler{
 			client:         client,
 			uncachedClient: client,
 		}
@@ -299,7 +299,7 @@ func TestAckReceivedFromAddonLegacy(t *testing.T) {
 			},
 		}
 		client := testutil.NewClient()
-		strategy := &legacyDeletionStrategy{
+		strategy := &legacyDeletionHandler{
 			client:         client,
 			uncachedClient: client,
 		}

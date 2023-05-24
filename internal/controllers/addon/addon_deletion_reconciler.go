@@ -16,7 +16,7 @@ const (
 	DELETION_RECONCILER_NAME     = "deletionReconciler"
 )
 
-type addonDeletionStrategy interface {
+type addonDeletionHandler interface {
 	NotifyAddon(context.Context, *addonsv1alpha1.Addon) error
 	AckReceivedFromAddon(context.Context, *addonsv1alpha1.Addon) (bool, error)
 }
@@ -32,12 +32,12 @@ func (c defaultClock) Now() time.Time {
 }
 
 type addonDeletionReconciler struct {
-	clock      clock
-	strategies []addonDeletionStrategy
+	clock    clock
+	handlers []addonDeletionHandler
 }
 
 func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
-	if !markedForDeletion(addon) || alreadyWaitingToBeDeleted(addon) {
+	if !markedForDeletion(addon) || awaitingRemoteDeletion(addon) {
 		// Nothing to do.
 		return ctrl.Result{}, nil
 	}
@@ -52,12 +52,12 @@ func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1
 	// We set ReadyToBeDeleted=false status condition in response to the delete signal received from OCM.
 	reportAddonReadyToBeDeletedStatus(addon, metav1.ConditionFalse)
 
-	for _, strategy := range r.strategies {
-		if err := strategy.NotifyAddon(ctx, addon); err != nil {
+	for _, handler := range r.handlers {
+		if err := handler.NotifyAddon(ctx, addon); err != nil {
 			return ctrl.Result{}, err
 		}
 		// If ack is received from the underlying addon, we report ReadyToBeDeleted = true.
-		ackReceived, err := strategy.AckReceivedFromAddon(ctx, addon)
+		ackReceived, err := handler.AckReceivedFromAddon(ctx, addon)
 		if err != nil {
 			return ctrl.Result{}, err
 		}
@@ -105,7 +105,7 @@ func deleteTimeoutInterval(addon *addonsv1alpha1.Addon) time.Duration {
 }
 
 // Addon is waiting to be deleted by OCM if ReadyToBeDeleted=true.
-func alreadyWaitingToBeDeleted(addon *addonsv1alpha1.Addon) bool {
+func awaitingRemoteDeletion(addon *addonsv1alpha1.Addon) bool {
 	cond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted)
 	if cond == nil {
 		return false
