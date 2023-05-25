@@ -59,10 +59,14 @@ spec:
                   type: string
                 description: Labels to be applied to all resources.
                 type: object
-              correlation_id:
+              correlationID:
                 description: Correlation ID for co-relating current AddonCR revision
                   and reported status.
                 type: string
+              deleteAckRequired:
+                description: Defines whether the addon needs acknowledgment from the
+                  underlying addon's operator before deletion.
+                type: boolean
               displayName:
                 description: Human readable name for this addon.
                 minLength: 1

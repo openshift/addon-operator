@@ -23,6 +23,10 @@ var (
 
 	// version v0.5.0
 	referenceAddonCatalogSourceImageWorkingv5 = "quay.io/osd-addons/reference-addon-index@sha256:ccd0ab7962a7f185e9c0783319b649a17695442855208948363eac4acf6e0b5b"
+
+	// Latest
+	referenceAddonCatalogSourceImageWorkingLatest = "quay.io/osd-addons/reference-addon-index@sha256:2403bcb6d6f61ba3cd9d3a4653edeb852026a1edc0c49f416d3df5008dad37e8"
+
 	// The latest bundle in this index image deploys a version of our referene-addon where InstallPlan and CSV never succeed
 	// because the deployed operator pod is deliberately broken through invalid readiness and liveness probes.
 	// Version: v0.1.3
@@ -109,8 +113,9 @@ func addonWithVersion(version string, catalogSrc string) *addonsv1alpha1.Addon {
 			Name: "addon-oisafbo12",
 		},
 		Spec: addonsv1alpha1.AddonSpec{
-			Version:     version,
-			DisplayName: "addon-oisafbo12",
+			DeleteAckRequired: true,
+			Version:           version,
+			DisplayName:       "addon-oisafbo12",
 			Namespaces: []addonsv1alpha1.AddonNamespace{
 				{Name: "namespace-onbgdions"},
 				{Name: "namespace-pioghfndb"},

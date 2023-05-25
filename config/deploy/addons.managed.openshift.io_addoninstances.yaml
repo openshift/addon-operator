@@ -54,6 +54,10 @@ spec:
                 description: The periodic rate at which heartbeats are expected to
                   be received by the AddonInstance object
                 type: string
+              markedForDeletion:
+                description: This field indicates whether the addon is marked for
+                  deletion.
+                type: boolean
             type: object
           status:
             description: AddonInstanceStatus defines the observed state of Addon

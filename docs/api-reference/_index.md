@@ -84,6 +84,7 @@ AddonInstanceSpec defines the configuration to consider while taking AddonInstan
 
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
+| markedForDeletion | This field indicates whether the addon is marked for deletion. | bool | true |
 | heartbeatUpdatePeriod | The periodic rate at which heartbeats are expected to be received by the AddonInstance object | metav1.Duration | false |
 
 [Back to Group]()
@@ -318,8 +319,9 @@ AddonSpec defines the desired state of Addon.
 | namespaces | Defines a list of Kubernetes Namespaces that belong to this Addon. Namespaces listed here will be created prior to installation of the Addon and will be removed from the cluster when the Addon is deleted. Collisions with existing Namespaces will result in the existing Namespaces being adopted. | [][AddonNamespace.addons.managed.openshift.io/v1alpha1](#addonnamespaceaddonsmanagedopenshiftiov1alpha1) | false |
 | commonLabels | Labels to be applied to all resources. | map[string]string | false |
 | commonAnnotations | Annotations to be applied to all resources. | map[string]string | false |
-| correlation_id | Correlation ID for co-relating current AddonCR revision and reported status. | string | false |
+| correlationID | Correlation ID for co-relating current AddonCR revision and reported status. | string | false |
 | install | Defines how an Addon is installed. This field is immutable. | [AddonInstallSpec.addons.managed.openshift.io/v1alpha1](#addoninstallspecaddonsmanagedopenshiftiov1alpha1) | true |
+| deleteAckRequired | Defines whether the addon needs acknowledgment from the underlying addon's operator before deletion. | bool | true |
 | upgradePolicy | UpgradePolicy enables status reporting via upgrade policies. | *[AddonUpgradePolicy.addons.managed.openshift.io/v1alpha1](#addonupgradepolicyaddonsmanagedopenshiftiov1alpha1) | false |
 | monitoring | Defines how an addon is monitored. | *[MonitoringSpec.addons.managed.openshift.io/v1alpha1](#monitoringspecaddonsmanagedopenshiftiov1alpha1) | false |
 | secretPropagation | Settings for propagating secrets from the Addon Operator install namespace into Addon namespaces. | *[AddonSecretPropagation.addons.managed.openshift.io/v1alpha1](#addonsecretpropagationaddonsmanagedopenshiftiov1alpha1) | false |

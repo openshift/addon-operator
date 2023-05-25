@@ -90,31 +90,39 @@ func NewAddonReconciler(
 		operatorResourceHandler: operatorResourceHandler,
 		statusReportingEnabled:  enableStatusReporting,
 		subReconcilers: []addonReconciler{
-			// Step 1: Reconcile Namespace
+			// Step 1: Check if addon is being deleted.
+			&addonDeletionReconciler{
+				clock: defaultClock{},
+				handlers: []addonDeletionHandler{
+					&legacyDeletionHandler{client: client, uncachedClient: uncachedClient},
+					&addonInstanceDeletionHandler{client: client},
+				},
+			},
+			// Step 2: Reconcile Namespace
 			&namespaceReconciler{
 				client: client,
 				scheme: scheme,
 			},
-			// Step 2: Reconcile Addon pull secrets
+			// Step 3: Reconcile Addon pull secrets
 			&addonSecretPropagationReconciler{
 				cachedClient:           client,
 				uncachedClient:         uncachedClient,
 				scheme:                 scheme,
 				addonOperatorNamespace: addonOperatorNamespace,
 			},
-			// Step 3: Reconcile AddonInstance object
+			// Step 4: Reconcile AddonInstance object
 			&addonInstanceReconciler{
 				client: client,
 				scheme: scheme,
 			},
-			// Step 4: Reconcile OLM objects
+			// Step 5: Reconcile OLM objects
 			&olmReconciler{
 				client:                  client,
 				uncachedClient:          uncachedClient,
 				scheme:                  scheme,
 				operatorResourceHandler: operatorResourceHandler,
 			},
-			// Step 5: Reconcile Monitoring Federation
+			// Step 6: Reconcile Monitoring Federation
 			&monitoringFederationReconciler{
 				client: client,
 				scheme: scheme,
@@ -319,7 +327,7 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	// Handle addon deletion before checking for pause condition.
 	// This allows even paused addons to be deleted.
 	if !addon.DeletionTimestamp.IsZero() {
-		return ctrl.Result{}, r.handleAddonDeletion(ctx, addon)
+		return ctrl.Result{}, r.handleAddonCRDeletion(ctx, addon)
 	}
 
 	// check for global pause
@@ -368,5 +376,6 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 			return result, nil
 		}
 	}
+
 	return ctrl.Result{}, nil
 }

@@ -45,7 +45,7 @@ func TestHandleAddonDeletion(t *testing.T) {
 			On("Free", addonToDelete)
 
 		ctx := context.Background()
-		err := r.handleAddonDeletion(ctx, addonToDelete)
+		err := r.handleAddonCRDeletion(ctx, addonToDelete)
 		require.NoError(t, err)
 
 		assert.Empty(t, addonToDelete.Finalizers)                                    // finalizer is gone
@@ -82,7 +82,7 @@ func TestHandleAddonDeletion(t *testing.T) {
 			On("Free", addonToDelete)
 
 		ctx := context.Background()
-		err := r.handleAddonDeletion(ctx, addonToDelete)
+		err := r.handleAddonCRDeletion(ctx, addonToDelete)
 		require.NoError(t, err)
 
 		// ensure no API calls are made,

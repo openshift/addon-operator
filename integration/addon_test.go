@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -453,4 +454,263 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 	s.T().Cleanup(func() {
 		s.addonCleanup(addon, ctx)
 	})
+}
+
+func (s *integrationTestSuite) TestAddonDeletionFlow() {
+	ctx := context.Background()
+
+	s.Run("sets readyToBeDeleted=true through addon instance strategy", func() {
+		// This version of the addon doesn't respond to the delete config map.
+		addon := addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorking)
+		err := integration.Client.Create(ctx, addon)
+		s.Require().NoError(err)
+		s.T().Cleanup(func() {
+			s.addonCleanup(addon, ctx)
+		})
+		// wait until Addon is available
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.Available), nil
+			})
+		s.Require().NoError(err)
+
+		// Fetch the addon from the cluster
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		if addon.Annotations == nil {
+			addon.Annotations = map[string]string{}
+		}
+		addon.Annotations[addonsv1alpha1.DeleteAnnotationFlag] = "true"
+
+		err = integration.Client.Update(ctx, addon)
+		s.Require().NoError(err)
+
+		// wait till ReadyToBeDeleted = false is reported
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to have ReadyToBeDeleted=false condition",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionFalse(
+					a.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted), nil
+			})
+		s.Require().NoError(err)
+
+		// Assert that the delete config map is indeed created.
+		cm := &corev1.ConfigMap{}
+		err = integration.Client.Get(ctx,
+			types.NamespacedName{
+				Name:      addon.Name,
+				Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
+			},
+			cm,
+		)
+		s.Require().NoError(err)
+
+		val, found := cm.Labels[fmt.Sprintf("api.openshift.com/addon-%v-delete", addon.Name)]
+		s.Require().True(found)
+		s.Require().Equal("", val)
+
+		// Assert that the addon instance's spec.markedForDeletion is set to true.
+		instance := &addonsv1alpha1.AddonInstance{}
+		err = integration.Client.Get(ctx, types.NamespacedName{
+			Name:      addonsv1alpha1.DefaultAddonInstanceName,
+			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
+		}, instance)
+
+		s.Require().NoError(err)
+		s.Require().True(instance.Spec.MarkedForDeletion)
+
+		// We act like the addon's operator and add the ready to deleted condition to our addon instance.
+
+		meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
+			Type:    string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+			Reason:  addonsv1alpha1.AddonInstanceReasonReadyToBeDeleted.String(),
+			Message: "Cleanup up resources.",
+			Status:  metav1.ConditionTrue,
+		})
+
+		err = integration.Client.Status().Update(ctx, instance)
+		s.Require().NoError(err)
+
+		// Now we wait for readytoBeDeleted=true condition in the addonCR.
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to have ReadyToBeDeleted=true condition",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted), nil
+			})
+		s.Require().NoError(err)
+	})
+
+	s.Run("sets readyToBeDeleted=true through legacy strategy", func() {
+		// This version of the addon responds to delete config map.
+		addon := addonWithVersion("v0.8.0", referenceAddonCatalogSourceImageWorkingLatest)
+		// Set name to "reference-addon" as the reference-addon's operator only
+		// responds if the delete CM has the name "reference-addon".
+		addon.Name = "reference-addon"
+		err := integration.Client.Create(ctx, addon)
+		s.Require().NoError(err)
+		s.T().Cleanup(func() {
+			s.addonCleanup(addon, ctx)
+		})
+		// wait until Addon is available
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.Available), nil
+			})
+		s.Require().NoError(err)
+
+		// Fetch the addon from the cluster
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		if addon.Annotations == nil {
+			addon.Annotations = map[string]string{}
+		}
+		addon.Annotations[addonsv1alpha1.DeleteAnnotationFlag] = "true"
+
+		err = integration.Client.Update(ctx, addon)
+		s.Require().NoError(err)
+
+		// Now we wait for readytoBeDeleted=true condition in the addonCR.(Addon has removed its CSV)
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to have ReadyToBeDeleted=true condition",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted), nil
+			})
+		s.Require().NoError(err)
+
+		// Assert that the delete config map is indeed created.
+		cm := &corev1.ConfigMap{}
+		err = integration.Client.Get(ctx,
+			types.NamespacedName{
+				Name:      addon.Name,
+				Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
+			},
+			cm,
+		)
+		s.Require().NoError(err)
+
+		val, found := cm.Labels[fmt.Sprintf("api.openshift.com/addon-%v-delete", addon.Name)]
+		s.Require().True(found)
+		s.Require().Equal("", val)
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+		// addon has set installed=false.
+		s.Require().True(meta.IsStatusConditionFalse(addon.Status.Conditions, addonsv1alpha1.Installed))
+	})
+
+	s.Run("addon deletion timeout", func() {
+		// This version of the addon doesn't respond to the delete config map.
+		addon := addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorking)
+		err := integration.Client.Create(ctx, addon)
+		s.Require().NoError(err)
+		s.T().Cleanup(func() {
+			s.addonCleanup(addon, ctx)
+		})
+		// wait until Addon is available
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.Available), nil
+			})
+		s.Require().NoError(err)
+
+		// Fetch the addon from the cluster
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		if addon.Annotations == nil {
+			addon.Annotations = map[string]string{}
+		}
+		addon.Annotations[addonsv1alpha1.DeleteAnnotationFlag] = "true"
+		addon.Annotations[addonsv1alpha1.DeleteTimeoutDuration] = "1m"
+
+		err = integration.Client.Update(ctx, addon)
+		s.Require().NoError(err)
+
+		// wait till ReadyToBeDeleted = false is reported
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to have ReadyToBeDeleted=false condition",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionFalse(
+					a.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted), nil
+			})
+		s.Require().NoError(err)
+
+		// wait for deletetimeout condition
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), time.Minute*2, addon, "to have deletetimeout=true condition",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.DeleteTimeout), nil
+			})
+		s.Require().NoError(err)
+
+		// Assert that the addon instance's spec.markedForDeletion is set to true.
+		instance := &addonsv1alpha1.AddonInstance{}
+		err = integration.Client.Get(ctx, types.NamespacedName{
+			Name:      addonsv1alpha1.DefaultAddonInstanceName,
+			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
+		}, instance)
+
+		s.Require().NoError(err)
+		s.Require().True(instance.Spec.MarkedForDeletion)
+
+		// We act like the addon's operator and add the ready to deleted condition to our addon instance.
+		meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
+			Type:    string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+			Reason:  addonsv1alpha1.AddonInstanceReasonReadyToBeDeleted.String(),
+			Message: "Cleanup up resources.",
+			Status:  metav1.ConditionTrue,
+		})
+
+		err = integration.Client.Status().Update(ctx, instance)
+		s.Require().NoError(err)
+
+		// Now we wait for readytoBeDeleted=true condition in the addonCR.
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to have ReadyToBeDeleted=true condition",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.ReadyToBeDeleted), nil
+			})
+		s.Require().NoError(err)
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		// Delete timeout condition should be removed.
+		timeoutCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.DeleteTimeout)
+		s.Require().Nil(timeoutCond)
+	})
+
 }
