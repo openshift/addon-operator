@@ -30,6 +30,14 @@ spec:
       - name: tls
         secret:
           secretName: metrics-server-cert
+      - configMap:
+          defaultMode: 420
+          items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+          name: trusted-ca-bundle
+          optional: true
+        name: trusted-ca-bundle
       containers:
       - name: metrics-relay-server
         image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
@@ -68,6 +76,10 @@ spec:
         image: quay.io/openshift/addon-operator:latest
         args:
         - --enable-leader-election
+        volumeMounts:
+        - mountPath: /etc/pki/ca-trust/extracted/pem
+          name: trusted-ca-bundle
+          readOnly: true
         livenessProbe:
           httpGet:
             path: /healthz

@@ -356,7 +356,7 @@ func populateOLMBundleCache(imageCacheDir string) error {
 		{"cp", "-a", "config/olm/prometheus-role.yaml", manifestsDir},
 		{"cp", "-a", "config/olm/prometheus-rb.yaml", manifestsDir},
 		{"cp", "-a", "config/olm/annotations.yaml", metadataDir},
-
+		{"cp", "-a", "config/olm/trusted_ca_bundle_configmap.yaml", manifestsDir},
 		// copy CRDs
 		// The first few lines of the CRD file need to be removed:
 		// https://github.com/operator-framework/operator-registry/issues/222
@@ -1325,6 +1325,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 		"config/deploy/addons.managed.openshift.io_addons.yaml",
 		"config/deploy/metrics.service.yaml",
 		"config/deploy/rbac.yaml",
+		"config/deploy/trusted_ca_bundle_configmap.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
