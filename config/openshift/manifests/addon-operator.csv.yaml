@@ -272,7 +272,7 @@ spec:
                     path: tls-ca-bundle.pem
                   name: trusted-ca-bundle
                   optional: true
-                name: ""
+                name: trusted-ca-bundle
       - name: addon-operator-webhooks
         spec:
           replicas: 2
