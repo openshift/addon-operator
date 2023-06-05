@@ -17,6 +17,7 @@ spec:
       labels:
         app.kubernetes.io/name: addon-operator
     spec:
+      automountServiceAccountToken: false
       containers:
         - args:
             - --secure-listen-address=0.0.0.0:8443
