@@ -2,20 +2,21 @@ package addon
 
 import (
 	"context"
+	"reflect"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"k8s.io/apimachinery/pkg/api/meta"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 func TestEnsureAddonInstance(t *testing.T) {
@@ -345,4 +346,40 @@ func TestReconcileAddonInstance(t *testing.T) {
 			mock.Anything,
 		)
 	})
+}
+
+func Test_addonInstanceReconciler_Reconcile(t *testing.T) {
+	type fields struct {
+		client client.Client
+		scheme *runtime.Scheme
+	}
+	type args struct {
+		ctx   context.Context
+		addon *addonsv1alpha1.Addon
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    reconcile.Result
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &addonInstanceReconciler{
+				client: tt.fields.client,
+				scheme: tt.fields.scheme,
+			}
+			got, err := r.Reconcile(tt.args.ctx, tt.args.addon)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("addonInstanceReconciler.Reconcile() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("addonInstanceReconciler.Reconcile() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

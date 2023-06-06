@@ -2,6 +2,7 @@ package addon
 
 import (
 	"context"
+	"reflect"
 	"testing"
 
 	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
@@ -15,6 +16,7 @@ import (
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
+	monv1 "github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring/v1"
 )
 
 func TestEnsureMonitoringStack_MissingConfig(t *testing.T) {
@@ -238,4 +240,39 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestGetWriteRelabelConfigFromAllowlist tests the getWriteRelabelConfigFromAllowlist
+// function in the addon package.
+func TestGetWriteRelabelConfigFromAllowlist(t *testing.T) {
+	allowlist := []string{"pods", "nodes", "namespaces"}
+	expectedResult := []monv1.RelabelConfig{
+		{
+			SourceLabels: []monv1.LabelName{"[__name__]"},
+			Separator:   "",
+			TargetLabel: "",
+			Regex:       "(pods|nodes|namespaces)",
+			Modulus:     0,
+			Replacement: "",
+			Action:      "keep",
+		},
+	}
+
+	result := getWriteRelabelConfigFromAllowlist(allowlist)
+
+	if !reflect.DeepEqual(result, expectedResult) {
+		t.Errorf("Expected result to be %v, but got %v", expectedResult, result)
+	}
+}
+
+// TestMonitoringStackReconciler_Name ensures that the Name() method
+// of the monitoringStackReconciler returned the expected name defined by 
+// the MONITORING_STACK_RECONCILER_NAME constant.
+func TestMonitoringStackReconciler_Name(t *testing.T) {
+	r := &monitoringStackReconciler{}
+	expectedName := MONITORING_STACK_RECONCILER_NAME
+
+	result := r.Name()
+
+	assert.Equal(t, expectedName, result)
 }

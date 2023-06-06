@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"k8s.io/apimachinery/pkg/runtime"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
@@ -414,4 +415,61 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_Prese
 
 	require.NoError(t, err)
 	c.AssertExpectations(t)
+}
+
+// Test_monitoringFederationReconciler_Name test the Name method of the
+// monitoringFederationReconsiler type.
+func Test_monitoringFederationReconciler_Name(t *testing.T) {
+
+	// Create a fake client for testing
+	c := testutil.NewClient()
+	// Create a test scheme with the required types
+	scheme := testutil.NewTestSchemeWithAddonsv1alpha1()
+
+
+	type fields struct {
+		client client.Client
+		scheme *runtime.Scheme
+	}
+
+		// Test case 1: Reconciler name is "MonitoringFederationReconciler"
+		fields1 := fields{
+			client: c,
+			scheme: scheme,
+		}
+		want1 := "MonitoringFederationReconciler"
+	
+		// Test case 2: Reconciler name is "AnotherReconciler"
+		fields2 := fields{
+			client: c,
+			scheme: scheme,
+		}
+		want2 := "AnotherReconciler"
+
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name:   "Test case 1",
+			fields: fields1,
+			want:   want1,
+		},
+		{
+			name:   "Test case 2",
+			fields: fields2,
+			want:   want2,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &monitoringFederationReconciler{
+				client: tt.fields.client,
+				scheme: tt.fields.scheme,
+			}
+			got := r.Name()
+			assert.Equal(t, "monitoringFederationReconciler", got)
+		})
+	}
 }
