@@ -3,20 +3,19 @@ package addon
 import (
 	"context"
 	"errors"
+	"sync"
 	"testing"
-
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
 	"github.com/go-logr/logr"
 	multierror "github.com/hashicorp/go-multierror"
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/ocm"
+	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
+	"github.com/openshift/addon-operator/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	"github.com/openshift/addon-operator/internal/ocm"
-	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
-	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 type reconcileErrorTestCase struct {
@@ -151,3 +150,26 @@ func expectedNumErrors(testCase reconcileErrorTestCase) int {
 	}
 	return res
 }
+
+// The TestAddonReconciler_GetOCMClusterInfo function verifies that the GetOCMClusterInfo
+// method of the AddonReconciler struct returns the expected OCM cluster information.
+func TestAddonReconciler_GetOCMClusterInfo(t *testing.T) {
+	// Create a test instance of AddonReconciler
+	reconciler := &AddonReconciler{
+		ocmClientMux: sync.RWMutex{},
+		ocmClient:    ocmtest.NewClient(),
+	}
+
+	// Call the GetOCMClusterInfo function
+	result := reconciler.GetOCMClusterInfo()
+
+	// Set up the expected cluster info
+	want := OcmClusterInfo{
+		ID:   "1ou",
+		Name: "openshift-mock-cluster-name",
+	}
+
+	// Assert the expected result
+	assert.Equal(t, want, result, "Unexpected OCM cluster info")
+}
+

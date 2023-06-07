@@ -65,3 +65,35 @@ func TestContextWithLogger(t *testing.T) {
 		})
 	}
 }
+
+func TestLoggerFromContext(t *testing.T) {
+	type args struct {
+		ctx context.Context
+	}
+	tests := []struct {
+		name string
+		args args
+		want logr.Logger
+	}{
+		{
+			name: "Context with logger",
+			args: args{
+				ctx: ContextWithLogger(context.Background(), logr.Discard()),
+			},
+			want: logr.Discard(),
+		},
+		{
+			name: "Context without logger",
+			args: args{
+				ctx: context.Background(),
+			},
+			want: logr.Discard(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := LoggerFromContext(tt.args.ctx)
+			assert.Equal(t, tt.want, got, "LoggerFromContext() returned unexpected logger")
+		})
+	}
+}
