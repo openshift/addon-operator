@@ -2,7 +2,6 @@ package addon
 
 import (
 	"context"
-	"reflect"
 	"testing"
 	"time"
 
@@ -14,9 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 func TestEnsureAddonInstance(t *testing.T) {
