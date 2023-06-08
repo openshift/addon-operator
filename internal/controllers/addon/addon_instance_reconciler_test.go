@@ -345,3 +345,14 @@ func TestReconcileAddonInstance(t *testing.T) {
 	})
 }
 
+// The TestAddonInstanceReconciler_Name functions verifies that the Name
+// method of the addonInstanceReconciler returns the expected name.
+func TestAddonInstanceReconciler_Name(t *testing.T) {
+	r := &addonInstanceReconciler{}
+	expectedName := ADDON_INSTANCE_RECONCILER_NAME
+
+	result := r.Name()
+
+	assert.Equal(t, expectedName, result, "Unexpected reconciler name")
+}
+
