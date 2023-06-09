@@ -6,14 +6,14 @@ import (
 	"testing"
 	"time"
 
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/testutil"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/meta"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 type testClock struct {
@@ -299,4 +299,14 @@ func TestAddonDeletionReconciler(t *testing.T) {
 		}
 	})
 
+}
+
+// The TestAddonDeletionReconciler_Name function, tests the Name
+// method of the addonDeletionReconciler type.
+func TestAddonDeletionReconciler_Name(t *testing.T) {
+	reconciler := &addonDeletionReconciler{}
+
+	name := reconciler.Name()
+
+	assert.Equal(t, DELETION_RECONCILER_NAME, name)
 }

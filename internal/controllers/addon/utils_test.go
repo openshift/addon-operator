@@ -4,6 +4,9 @@ import (
 	"context"
 	"testing"
 
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
+	"github.com/openshift/addon-operator/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -12,10 +15,6 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
-
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/controllers"
-	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 func TestHandleAddonDeletion(t *testing.T) {
@@ -863,4 +862,17 @@ func TestHasMonitoringStack(t *testing.T) {
 			assert.Equal(t, tc.expected, result)
 		})
 	}
+}
+
+func TestReportLastObservedAvailableCSV(t *testing.T) {
+	// Create a new Addon instance
+	addon := &addonsv1alpha1.Addon{
+		Status: addonsv1alpha1.AddonStatus{},
+	}
+
+	// Call the function under test
+	reportLastObservedAvailableCSV(addon, "test-csv")
+
+	// Assert that the LastObservedAvailableCSV field has been updated correctly
+	assert.Equal(t, "test-csv", addon.Status.LastObservedAvailableCSV)
 }
