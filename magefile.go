@@ -192,9 +192,13 @@ func (Build) cmd(cmd, goos, goarch string) error {
 	mg.Deps(Build.init)
 
 	env := map[string]string{
-		"GOFLAGS":     "",
-		"CGO_ENABLED": "0",
-		"LDFLAGS":     ldFlags,
+		"GOFLAGS": "",
+		"LDFLAGS": ldFlags,
+	}
+
+	_, cgoOK := os.LookupEnv("CGO_ENABLED")
+	if !cgoOK {
+		env["CGO_ENABLED"] = "0"
 	}
 
 	bin := path.Join("bin", cmd)
