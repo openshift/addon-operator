@@ -421,7 +421,7 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_Prese
 // monitoringFederationReconsiler type.
 func Test_monitoringFederationReconciler_Name(t *testing.T) {
 
-	// Create a fake client for testing
+	// Create a mock client for testing
 	c := testutil.NewClient()
 	// Create a test scheme with the required types
 	scheme := testutil.NewTestSchemeWithAddonsv1alpha1()
@@ -473,3 +473,5 @@ func Test_monitoringFederationReconciler_Name(t *testing.T) {
 		})
 	}
 }
+
+

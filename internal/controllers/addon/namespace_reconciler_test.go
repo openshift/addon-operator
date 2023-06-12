@@ -442,3 +442,13 @@ func TestEnsureDeletionOfUnwantedNamespaces_NoNamespacesInSpec_WithClientError(t
 	require.EqualError(t, errors.Unwrap(err), timeoutErr.Error())
 	c.AssertExpectations(t)
 }
+
+// TestNamespaceReconcilerName tests that the Name method returns the
+// correct name for the namespaceReconciler instance.
+func TestNamespaceReconcilerName(t *testing.T) {
+	reconciler := &namespaceReconciler{}
+
+	name := reconciler.Name()
+
+	assert.Equal(t, NAMESPACE_RECONCILER_NAME, name)
+}

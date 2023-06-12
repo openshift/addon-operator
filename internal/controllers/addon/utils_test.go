@@ -876,3 +876,47 @@ func TestReportLastObservedAvailableCSV(t *testing.T) {
 	// Assert that the LastObservedAvailableCSV field has been updated correctly
 	assert.Equal(t, "test-csv", addon.Status.LastObservedAvailableCSV)
 }
+
+// The TestReportAddonPauseStatus tests the behavior of the 
+// reportAddonPauseStatus function.
+func TestReportAddonPauseStatus(t *testing.T) {
+	// Create a new Addon instance
+	addon := &addonsv1alpha1.Addon{
+		TypeMeta:   metav1.TypeMeta{},
+		ObjectMeta: metav1.ObjectMeta{},
+		Spec:       addonsv1alpha1.AddonSpec{},
+		Status:     addonsv1alpha1.AddonStatus{},
+	}
+
+	// Call the reportAddonPauseStatus function
+	reason := "a reason"
+	reportAddonPauseStatus(addon, reason)
+
+	// Assert the expected status condition
+	expectedCondition := metav1.Condition{
+		Type:               addonsv1alpha1.Paused,
+		Status:             metav1.ConditionTrue,
+		Reason:             reason,
+		Message:            "",
+		ObservedGeneration: addon.Generation,
+	}
+
+	// Assert the expected condition is present
+	var found bool
+	for _, condition := range addon.Status.Conditions {
+		if condition.Type == expectedCondition.Type &&
+			condition.Status == expectedCondition.Status &&
+			condition.Reason == expectedCondition.Reason &&
+			condition.Message == expectedCondition.Message &&
+			condition.ObservedGeneration == expectedCondition.ObservedGeneration {
+			found = true
+			break
+		}
+	}
+
+	assert.True(t, found, "Expected condition not found")
+
+	// Assert the expected observed generation
+	assert.Equal(t, addon.Generation, addon.Status.ObservedGeneration)
+}
+
