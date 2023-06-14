@@ -245,13 +245,13 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 // TestGetWriteRelabelConfigFromAllowlist tests the getWriteRelabelConfigFromAllowlist
 // function in the addon package.
 func TestGetWriteRelabelConfigFromAllowlist(t *testing.T) {
-	allowlist := []string{"pods", "nodes", "namespaces"}
+	allowlist := []string{"cpu_usage", "memory_usage", "disk_space_used"}
 	expectedResult := []monv1.RelabelConfig{
 		{
 			SourceLabels: []monv1.LabelName{"[__name__]"},
 			Separator:   "",
 			TargetLabel: "",
-			Regex:       "(pods|nodes|namespaces)",
+			Regex:       "(cpu_usage|memory_usage|disk_space_used)",
 			Modulus:     0,
 			Replacement: "",
 			Action:      "keep",
@@ -259,7 +259,6 @@ func TestGetWriteRelabelConfigFromAllowlist(t *testing.T) {
 	}
 
 	result := getWriteRelabelConfigFromAllowlist(allowlist)
-
 	if !reflect.DeepEqual(result, expectedResult) {
 		t.Errorf("Expected result to be %v, but got %v", expectedResult, result)
 	}

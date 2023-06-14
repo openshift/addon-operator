@@ -214,9 +214,9 @@ func TestEnqueueAddonOperator(t *testing.T) {
 // occurs during the process.
 func TestAccessTokenFromDockerConfig(t *testing.T) {
 	testCases := []struct {
-		name       string
-		dockerJSON []byte
-		expected   string
+		name        string
+		dockerJSON  []byte
+		expected    string
 		expectedErr string
 	}{
 		{
@@ -231,9 +231,36 @@ func TestAccessTokenFromDockerConfig(t *testing.T) {
 			expected: "THIS_IS_AN_API_TOKEN",
 		},
 		{
-			name:       "InvalidJSON",
-			dockerJSON: []byte(`{invalid JSON}`),
+			name:        "InvalidJSON",
+			dockerJSON:  []byte(`{invalid JSON}`),
 			expectedErr: "unmarshalling docker config json",
+		},
+		{
+			name:        "EmptyDockerConfig",
+			dockerJSON:  []byte(`{}`),
+			expectedErr: "missing token for cloud.openshift.com",
+		},
+		{
+			name: "InvalidToken",
+			dockerJSON: []byte(`{
+				"auths": {
+					"cloud.openshift.com": {
+						"auth": "INVALID_TOKEN"
+					}
+				}
+			}`),
+			expected: "INVALID_TOKEN",
+		},
+		{
+			name: "ErrorAccessingAuthKey",
+			dockerJSON: []byte(`{
+				"auths": {
+					"cloud.openshift.com": {
+						"invalid-key": "THIS_IS_AN_API_TOKEN"
+					}
+				}
+			}`),
+			expectedErr: "missing token for cloud.openshift.com",
 		},
 		{
 			name: "MissingToken",
@@ -249,7 +276,7 @@ func TestAccessTokenFromDockerConfig(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			accessToken, err := accessTokenFromDockerConfig(tc.dockerJSON)
-
+			
 			if tc.expectedErr != "" {
 				assert.Error(t, err)
 				assert.Contains(t, err.Error(), tc.expectedErr)
@@ -260,5 +287,3 @@ func TestAccessTokenFromDockerConfig(t *testing.T) {
 		})
 	}
 }
-
-

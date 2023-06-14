@@ -180,10 +180,9 @@ func timeFixture() time.Time {
 // the String method correctly returns the expected string 
 // representation of the PhaseCheckHeartbeat instance.
 func TestPhaseCheckHeartbeat_String(t *testing.T) {
-	// Create a new PhaseCheckHeartbeat instance
+
 	heartbeat := &PhaseCheckHeartbeat{}
 
-	// Call the String method
 	result := heartbeat.String()
 
 	// Assert the expected string value

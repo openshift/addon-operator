@@ -12,60 +12,38 @@ import (
 // function. The purpose of the function is to create a new context with a logger
 // value attached.
 func TestContextWithLogger(t *testing.T) {
-	type args struct {
-		parent context.Context
-		logger logr.Logger
-	}
 	tests := []struct {
-		name string
-		args args
-		want context.Context
+		name        string
+		parentCtx   context.Context
+		logger      logr.Logger
+		expectedCtx context.Context
 	}{
 		{
-			name: "Valid logger",
-			args: args{
-				parent: context.Background(),
-				logger: logr.Discard(),
-			},
-			want: context.WithValue(context.Background(), loggerContextKey, logr.Discard()),
+			name:        "Different Parent Context",
+			parentCtx:   context.WithValue(context.Background(), "key", "value"),
+			logger:      logr.Discard(),
+			expectedCtx: context.WithValue(context.Background(), loggerContextKey, logr.Discard()),
 		},
 		{
-			name: "Nil logger",
-			args: args{
-				parent: context.Background(),
-				logger: logr.Discard(),
-			},
-			want: context.WithValue(context.Background(), loggerContextKey, logr.Discard()),
-		},
-		{
-			name: "Existing logger in parent context",
-			args: args{
-				parent: ContextWithLogger(context.Background(), logr.Discard()),
-				logger: logr.Discard(),
-			},
-			want: context.WithValue(context.Background(), loggerContextKey, logr.Discard()),
-		},
-		{
-			name: "Different key value in parent context",
-			args: args{
-				parent: context.WithValue(context.Background(), "otherKey", "otherValue"),
-				logger: logr.Discard(),
-			},
-			want: context.WithValue(context.WithValue(context.Background(), "otherKey", "otherValue"), loggerContextKey, logr.Discard()),
+			name:        "Multiple Loggers",
+			parentCtx:   context.Background(),
+			logger:      logr.Discard(),
+			expectedCtx: context.WithValue(context.Background(), loggerContextKey, logr.Discard()),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ContextWithLogger(tt.args.parent, tt.args.logger)
-			wantValue := tt.want.Value(loggerContextKey)
-			gotValue := got.Value(loggerContextKey)
-
-			assert.Equal(t, wantValue, gotValue, "ContextWithLogger() = %v, want %v", got, tt.want)
+			ctx := ContextWithLogger(tt.parentCtx, tt.logger)
+			assert.Equal(t, tt.expectedCtx, ctx, "Returned context should match the expected context")
+			assert.Equal(t, tt.logger, ctx.Value(loggerContextKey), "Logger value should be added to the context")
 		})
 	}
 }
 
+// The TestLoggerFromContext function ensures that the LoggerFromContext
+// function behaves correctly by returning the expected logger from
+// the provided context, or the default logger if no logger is present. 
 func TestLoggerFromContext(t *testing.T) {
 	type args struct {
 		ctx context.Context

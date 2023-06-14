@@ -864,8 +864,9 @@ func TestHasMonitoringStack(t *testing.T) {
 	}
 }
 
+// The TestReportLastOvservedAvailableCSV function ensures an addon's
+// LastObservedAvailableCSV field is set to the expected value.
 func TestReportLastObservedAvailableCSV(t *testing.T) {
-	// Create a new Addon instance
 	addon := &addonsv1alpha1.Addon{
 		Status: addonsv1alpha1.AddonStatus{},
 	}
@@ -880,7 +881,6 @@ func TestReportLastObservedAvailableCSV(t *testing.T) {
 // The TestReportAddonPauseStatus tests the behavior of the 
 // reportAddonPauseStatus function.
 func TestReportAddonPauseStatus(t *testing.T) {
-	// Create a new Addon instance
 	addon := &addonsv1alpha1.Addon{
 		TypeMeta:   metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{},

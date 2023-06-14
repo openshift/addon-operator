@@ -446,9 +446,11 @@ func TestEnsureDeletionOfUnwantedNamespaces_NoNamespacesInSpec_WithClientError(t
 // TestNamespaceReconcilerName tests that the Name method returns the
 // correct name for the namespaceReconciler instance.
 func TestNamespaceReconcilerName(t *testing.T) {
-	reconciler := &namespaceReconciler{}
+	r := &namespaceReconciler{}
 
-	name := reconciler.Name()
+	expectedName := "namespaceReconciler"
 
-	assert.Equal(t, NAMESPACE_RECONCILER_NAME, name)
+	name := r.Name()
+
+	assert.Equal(t, expectedName, name)
 }

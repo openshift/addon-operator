@@ -304,9 +304,13 @@ func TestAddonDeletionReconciler(t *testing.T) {
 // The TestAddonDeletionReconciler_Name function, tests the Name
 // method of the addonDeletionReconciler type.
 func TestAddonDeletionReconciler_Name(t *testing.T) {
-	reconciler := &addonDeletionReconciler{}
+	r := &addonDeletionReconciler{}
 
-	name := reconciler.Name()
+	// The expected reconciler name
+	expectedName := "deletionReconciler"
 
-	assert.Equal(t, DELETION_RECONCILER_NAME, name)
+	name := r.Name()
+
+	// Verify that the reconciler name is correct
+	assert.Equal(t, expectedName, name)
 }
