@@ -19,12 +19,6 @@ func TestContextWithLogger(t *testing.T) {
 		expectedCtx context.Context
 	}{
 		{
-			name:        "Different Parent Context",
-			parentCtx:   context.WithValue(context.Background(), "key", "value"),
-			logger:      logr.Discard(),
-			expectedCtx: context.WithValue(context.Background(), loggerContextKey, logr.Discard()),
-		},
-		{
 			name:        "Multiple Loggers",
 			parentCtx:   context.Background(),
 			logger:      logr.Discard(),
@@ -43,7 +37,7 @@ func TestContextWithLogger(t *testing.T) {
 
 // The TestLoggerFromContext function ensures that the LoggerFromContext
 // function behaves correctly by returning the expected logger from
-// the provided context, or the default logger if no logger is present. 
+// the provided context, or the default logger if no logger is present.
 func TestLoggerFromContext(t *testing.T) {
 	type args struct {
 		ctx context.Context

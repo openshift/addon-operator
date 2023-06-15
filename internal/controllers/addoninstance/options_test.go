@@ -10,7 +10,7 @@ import (
 	"github.com/go-logr/logr"
 )
 
-// TestConfigurators function tests the configuration functions 
+// TestConfigurators function tests the configuration functions
 // for the addoninstance options.
 func TestConfigurators(t *testing.T) {
 	discardLogger := logr.Discard()

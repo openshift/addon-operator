@@ -8,14 +8,15 @@ import (
 
 	"github.com/go-logr/logr"
 	multierror "github.com/hashicorp/go-multierror"
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/ocm"
-	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
-	"github.com/openshift/addon-operator/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/ocm"
+	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 type reconcileErrorTestCase struct {
@@ -172,4 +173,3 @@ func TestAddonReconciler_GetOCMClusterInfo(t *testing.T) {
 	// Assert the expected result
 	assert.Equal(t, want, result, "Unexpected OCM cluster info")
 }
-

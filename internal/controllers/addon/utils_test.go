@@ -4,9 +4,6 @@ import (
 	"context"
 	"testing"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/controllers"
-	"github.com/openshift/addon-operator/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -15,6 +12,10 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
+
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 func TestHandleAddonDeletion(t *testing.T) {
@@ -878,7 +879,7 @@ func TestReportLastObservedAvailableCSV(t *testing.T) {
 	assert.Equal(t, "test-csv", addon.Status.LastObservedAvailableCSV)
 }
 
-// The TestReportAddonPauseStatus tests the behavior of the 
+// The TestReportAddonPauseStatus tests the behavior of the
 // reportAddonPauseStatus function.
 func TestReportAddonPauseStatus(t *testing.T) {
 	addon := &addonsv1alpha1.Addon{
@@ -919,4 +920,3 @@ func TestReportAddonPauseStatus(t *testing.T) {
 	// Assert the expected observed generation
 	assert.Equal(t, addon.Generation, addon.Status.ObservedGeneration)
 }
-

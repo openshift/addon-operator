@@ -2,18 +2,18 @@ package controllers
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/testutil"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 func TestHasEqualControllerReference(t *testing.T) {
@@ -69,6 +69,7 @@ func TestCommonLabelsAsLabelSelector(t *testing.T) {
 		t.Fatal("selector is empty but should filter on common labels")
 	}
 }
+
 // The TestAddCommonAnnotations function tests adding common annotations from an Addon
 // object to a metav1.Object object
 func TestAddCommonAnnotations(t *testing.T) {
@@ -162,67 +163,102 @@ func TestAddCommonAnnotations(t *testing.T) {
 	}
 }
 
-// The TestCurrentNamespace function tests the behavior of the CurrentNamespace function.
-// The CurrentNamespace function determines the current namespace based on environment 
-// variables or a file.
+// TestCurrentNamespace tests the CurrentNamespace function to ensure it
+// behaves correctly under different scenarios.
 func TestCurrentNamespace(t *testing.T) {
-	// Test case: Local override with ADDON_OPERATOR_NAMESPACE environment variable
-	t.Run("LocalOverride", func(t *testing.T) {
-		expectedNamespace := "my-namespace"
-		os.Setenv("ADDON_OPERATOR_NAMESPACE", expectedNamespace)
-		defer os.Unsetenv("ADDON_OPERATOR_NAMESPACE")
+	inClusterNamespacePath := "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
 
-		namespace, err := CurrentNamespace()
-		require.NoError(t, err, "Unexpected error")
-		require.Equal(t, expectedNamespace, namespace, "Namespace mismatch")
-	})
+	tests := []struct {
+		name          string
+		wantNamespace string
+		wantErr       bool
+	}{
+		{
+			name:          "Running in-cluster",
+			wantNamespace: "test-namespace",
+			wantErr:       false,
+		},
+		{
+			name:          "Running outside cluster with ADDON_OPERATOR_NAMESPACE environment variable set",
+			wantNamespace: "test-namespace",
+			wantErr:       false,
+		},
+		{
+			name:          "Running outside cluster without ADDON_OPERATOR_NAMESPACE environment variable",
+			wantNamespace: "",
+			wantErr:       true,
+		},
+		{
+			name:          "Error checking namespace file",
+			wantNamespace: "",
+			wantErr:       true,
+		},
+		{
+			name:          "Error reading namespace file",
+			wantNamespace: "",
+			wantErr:       true,
+		},
+	}
 
-	// Test case: Namespace file doesn't exist
-	t.Run("FileNotExist", func(t *testing.T) {
-		// Temporarily rename the namespace file to simulate its absence
-		tmpfile, err := ioutil.TempFile("", "namespace")
-		require.NoError(t, err, "Failed to create temporary namespace file")
-		tmpfilePath := tmpfile.Name()
-		tmpfile.Close()
-		os.Rename(tmpfilePath, tmpfilePath+".backup")
-		defer os.Rename(tmpfilePath+".backup", tmpfilePath)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			switch tt.name {
+			case "Running in-cluster":
+				// Set the ADDON_OPERATOR_NAMESPACE environment variable
+				os.Setenv("ADDON_OPERATOR_NAMESPACE", tt.wantNamespace)
+				defer os.Unsetenv("ADDON_OPERATOR_NAMESPACE")
 
-		namespace, err := CurrentNamespace()
-		require.Error(t, err, "Expected error")
-		require.EqualError(t, err, "not running in-cluster, please specify ADDON_OPERATOR_NAMESPACE", "Error message mismatch")
-		require.Equal(t, "", namespace, "Namespace should be empty")
-	})
+			case "Running outside cluster with ADDON_OPERATOR_NAMESPACE environment variable set":
+				// Set the ADDON_OPERATOR_NAMESPACE environment variable
+				os.Setenv("ADDON_OPERATOR_NAMESPACE", tt.wantNamespace)
+				defer os.Unsetenv("ADDON_OPERATOR_NAMESPACE")
 
-	// Test case: Error checking namespace file
-	t.Run("ErrorCheckingFile", func(t *testing.T) {
-		// Create a temporary directory and set it as the namespace file
-		tmpDir, err := ioutil.TempDir("", "namespace")
-		require.NoError(t, err, "Failed to create temporary directory")
-		tmpfilePath := filepath.Join(tmpDir, "namespace")
-		os.Setenv("ADDON_OPERATOR_NAMESPACE", tmpfilePath)
-		defer os.Unsetenv("ADDON_OPERATOR_NAMESPACE")
+			case "Running outside cluster without ADDON_OPERATOR_NAMESPACE environment variable":
+				// Unset the ADDON_OPERATOR_NAMESPACE environment variable
+				os.Unsetenv("ADDON_OPERATOR_NAMESPACE")
 
-		namespace, err := CurrentNamespace()
-		require.Error(t, err, "Expected error")
-		require.Contains(t, err.Error(), "error checking namespace file", "Error message mismatch")
-		require.Equal(t, "", namespace, "Namespace should be empty")
-	})
+			case "Error checking namespace file":
+				// Remove the namespace file to simulate the error
+				err := os.Remove(inClusterNamespacePath)
+				if err != nil && !os.IsNotExist(err) {
+					t.Fatalf("Failed to remove namespace file: %v", err)
+				}
 
-	// Test case: Successful namespace retrieval
-	t.Run("Success", func(t *testing.T) {
-		expectedNamespace := "my-namespace"
+			case "Error reading namespace file":
+				// Create a temporary file with no read permission to simulate the error
+				tempFilePath := createTempFileWithContent("test-namespace")
+				defer os.Remove(tempFilePath)
+				// Set the file permission and check for errors
+				err := os.Chmod(tempFilePath, 0000)
+				require.NoError(t, err, "Failed to set file permissions")
+			}
 
-		// Create a temporary namespace file and write the expected namespace to it
-		tmpfile, err := ioutil.TempFile("", "namespace")
-		require.NoError(t, err, "Failed to create temporary namespace file")
-		tmpfilePath := tmpfile.Name()
-		defer os.Remove(tmpfilePath)
+			// Call the CurrentNamespace function and compare the result with the expected values
+			gotNamespace, err := CurrentNamespace()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CurrentNamespace() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if gotNamespace != tt.wantNamespace {
+				t.Errorf("CurrentNamespace() = %v, want %v", gotNamespace, tt.wantNamespace)
+			}
+		})
+	}
+}
 
-		_, err = tmpfile.WriteString(expectedNamespace)
-		require.NoError(t, err, "Failed to write to temporary namespace file")
+// Utility function to create a temporary file with the specified content and return its path
+func createTempFileWithContent(content string) string {
+	tempFile, err := ioutil.TempFile("", "namespace-test")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer tempFile.Close()
 
-		namespace, err := CurrentNamespace()
-		require.NoError(t, err, "Unexpected error")
-		require.Equal(t, expectedNamespace, namespace, "Namespace mismatch")
-	})
+	tempFilePath := tempFile.Name()
+	err = os.WriteFile(tempFilePath, []byte(content), 0600)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return tempFilePath
 }

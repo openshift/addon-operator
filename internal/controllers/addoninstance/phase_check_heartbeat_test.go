@@ -5,13 +5,14 @@ import (
 	"testing"
 	"time"
 
-	av1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/controllers/addoninstance/internal/phase"
-	"github.com/openshift/addon-operator/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	av1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers/addoninstance/internal/phase"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 func TestPhaseCheckHeartbeatInterface(t *testing.T) {
@@ -176,8 +177,8 @@ func timeFixture() time.Time {
 	return time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC)
 }
 
-// The TestPhaseCheckHeartbeat_String tests to ensure that 
-// the String method correctly returns the expected string 
+// The TestPhaseCheckHeartbeat_String tests to ensure that
+// the String method correctly returns the expected string
 // representation of the PhaseCheckHeartbeat instance.
 func TestPhaseCheckHeartbeat_String(t *testing.T) {
 

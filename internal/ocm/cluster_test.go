@@ -1,15 +1,16 @@
 package ocm
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
 	"net/http"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// The TestClient_GetCLusterIDAndName function retrieves the cluster ID and cluster name stored 
+// The TestClient_GetCLusterIDAndName function retrieves the cluster ID and cluster name stored
 // within a Client object.
 func TestClient_GetClusterIDAndName(t *testing.T) {
-    tests := []struct {
+	tests := []struct {
 		name                string
 		opts                ClientOptions
 		expectedClusterID   string

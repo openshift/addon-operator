@@ -12,11 +12,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
+	monv1 "github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring/v1"
+
 	"github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
-	monv1 "github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring/v1"
 )
 
 func TestEnsureMonitoringStack_MissingConfig(t *testing.T) {
@@ -249,12 +250,12 @@ func TestGetWriteRelabelConfigFromAllowlist(t *testing.T) {
 	expectedResult := []monv1.RelabelConfig{
 		{
 			SourceLabels: []monv1.LabelName{"[__name__]"},
-			Separator:   "",
-			TargetLabel: "",
-			Regex:       "(cpu_usage|memory_usage|disk_space_used)",
-			Modulus:     0,
-			Replacement: "",
-			Action:      "keep",
+			Separator:    "",
+			TargetLabel:  "",
+			Regex:        "(cpu_usage|memory_usage|disk_space_used)",
+			Modulus:      0,
+			Replacement:  "",
+			Action:       "keep",
 		},
 	}
 
@@ -265,7 +266,7 @@ func TestGetWriteRelabelConfigFromAllowlist(t *testing.T) {
 }
 
 // TestMonitoringStackReconciler_Name ensures that the Name() method
-// of the monitoringStackReconciler returned the expected name defined by 
+// of the monitoringStackReconciler returned the expected name defined by
 // the MONITORING_STACK_RECONCILER_NAME constant.
 func TestMonitoringStackReconciler_Name(t *testing.T) {
 	r := &monitoringStackReconciler{}

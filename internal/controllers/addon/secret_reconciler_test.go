@@ -628,10 +628,10 @@ func TestGetDestinationSecretWithoutNamespace_WithSecretsUncachedFallback(t *tes
 	assert.NotNil(t, secret)
 }
 
-// TestAddonSecretPropagationReconciler_Name verifies that the method returns the expected string value. 
-//It ensures that the Name method is correctly implemented and that it consistently returns the predefined name.
+// TestAddonSecretPropagationReconciler_Name verifies that the method returns the expected string value.
+// It ensures that the Name method is correctly implemented and that it consistently returns the predefined name.
 func TestAddonSecretPropagationReconciler_Name(t *testing.T) {
-	
+
 	r := &addonSecretPropagationReconciler{}
 
 	expectedName := "secretPropogationReconciler"

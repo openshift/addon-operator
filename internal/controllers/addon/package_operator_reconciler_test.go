@@ -166,4 +166,3 @@ func TestPackageOperatorReconcilerLogic(t *testing.T) {
 		})
 	}
 }
-
