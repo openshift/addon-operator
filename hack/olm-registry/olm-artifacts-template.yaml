@@ -56,8 +56,6 @@ objects:
             namespace: openshift-addon-operator
           spec:
             sourceType: grpc
-            grpcPodConfig:
-              securityContextConfig: restricted
             image: ${REGISTRY_IMG}@${IMAGE_DIGEST}
             displayName: MTSRE Addon Operator
             publisher: Red Hat
