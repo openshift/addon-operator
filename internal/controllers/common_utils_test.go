@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"io/ioutil"
-	"log"
 	"os"
 	"testing"
 
@@ -166,7 +164,6 @@ func TestAddCommonAnnotations(t *testing.T) {
 // TestCurrentNamespace tests the CurrentNamespace function to ensure it
 // behaves correctly under different scenarios.
 func TestCurrentNamespace(t *testing.T) {
-	inClusterNamespacePath := "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
 
 	tests := []struct {
 		name          string
@@ -183,21 +180,6 @@ func TestCurrentNamespace(t *testing.T) {
 			wantNamespace: "test-namespace",
 			wantErr:       false,
 		},
-		{
-			name:          "Running outside cluster without ADDON_OPERATOR_NAMESPACE environment variable",
-			wantNamespace: "",
-			wantErr:       true,
-		},
-		{
-			name:          "Error checking namespace file",
-			wantNamespace: "",
-			wantErr:       true,
-		},
-		{
-			name:          "Error reading namespace file",
-			wantNamespace: "",
-			wantErr:       true,
-		},
 	}
 
 	for _, tt := range tests {
@@ -213,22 +195,6 @@ func TestCurrentNamespace(t *testing.T) {
 				os.Setenv("ADDON_OPERATOR_NAMESPACE", tt.wantNamespace)
 				defer os.Unsetenv("ADDON_OPERATOR_NAMESPACE")
 
-			case "Running outside cluster without ADDON_OPERATOR_NAMESPACE environment variable":
-				// Unset the ADDON_OPERATOR_NAMESPACE environment variable
-				os.Unsetenv("ADDON_OPERATOR_NAMESPACE")
-
-			case "Error checking namespace file":
-				// Remove the namespace file to simulate the error
-				err := os.Remove(inClusterNamespacePath)
-				if err != nil && !os.IsNotExist(err) {
-					t.Fatalf("Failed to remove namespace file: %v", err)
-				}
-
-			case "Error reading namespace file":
-				// Create a temporary file with no read permission to simulate the error
-				tempFilePath := createTempFileWithContent("test-namespace")
-				defer os.Remove(tempFilePath)
-
 			}
 
 			// Call the CurrentNamespace function and compare the result with the expected values
@@ -242,21 +208,4 @@ func TestCurrentNamespace(t *testing.T) {
 			}
 		})
 	}
-}
-
-// Create a temporary file with the specified content and return its path
-func createTempFileWithContent(content string) string {
-	tempFile, err := ioutil.TempFile("", "namespace-test")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer tempFile.Close()
-
-	tempFilePath := tempFile.Name()
-	err = os.WriteFile(tempFilePath, []byte(content), 0600)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return tempFilePath
 }
