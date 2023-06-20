@@ -6,9 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/stretchr/testify/require"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
 
 // TestClient_GetAddOnStatus verifies the behavior of the GetAddOnStatus method using
@@ -30,9 +31,9 @@ func TestClient_GetAddOnStatus(t *testing.T) {
 
 	// Create a new client with the mock server's URL
 	client := &Client{
-		opts:       ClientOptions{
-			Endpoint:   server.URL,
-			ClusterID:  "1ou",
+		opts: ClientOptions{
+			Endpoint:  server.URL,
+			ClusterID: "1ou",
 		},
 		httpClient: http.DefaultClient,
 	}
@@ -43,10 +44,10 @@ func TestClient_GetAddOnStatus(t *testing.T) {
 	require.NoError(t, err, "Client.GetAddOnStatus() returned an error")
 
 	expected := AddOnStatusResponse{
-		Kind:              "AddOnStatusResponse",
-		AddonID:           "addon-1",
-		CorrelationID:     "12345-6789",
-		StatusConditions:  []addonsv1alpha1.AddOnStatusCondition{},
+		Kind:             "AddOnStatusResponse",
+		AddonID:          "addon-1",
+		CorrelationID:    "12345-6789",
+		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{},
 	}
 
 	require.Equal(t, expected, res, "Client.GetAddOnStatus() returned unexpected result")
@@ -61,9 +62,9 @@ func TestClient_GetAddOnStatus(t *testing.T) {
 	defer serverError.Close()
 
 	clientError := &Client{
-		opts:       ClientOptions{
-			Endpoint:   serverError.URL,
-			ClusterID:  "1ou",
+		opts: ClientOptions{
+			Endpoint:  serverError.URL,
+			ClusterID: "1ou",
 		},
 		httpClient: http.DefaultClient,
 	}
@@ -94,17 +95,17 @@ func TestClient_PostAddOnStatus(t *testing.T) {
 
 	// Create a new client with the mock server's URL
 	client := &Client{
-		opts:       ClientOptions{
-			Endpoint:   server.URL,
-			ClusterID:  "your-cluster-id",
+		opts: ClientOptions{
+			Endpoint:  server.URL,
+			ClusterID: "your-cluster-id",
 		},
 		httpClient: http.DefaultClient,
 	}
 
 	// Prepare the payload for the PostAddOnStatus method
 	payload := AddOnStatusPostRequest{
-		AddonID: "addon-1",
-		CorrelationID: "12345-6789",
+		AddonID:          "addon-1",
+		CorrelationID:    "12345-6789",
 		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{},
 	}
 
@@ -117,10 +118,10 @@ func TestClient_PostAddOnStatus(t *testing.T) {
 	}
 
 	expected := AddOnStatusResponse{
-		Kind:              "AddOnStatusResponse",
-		AddonID:           "addon-1",
-		CorrelationID:     "12345-6789",
-		StatusConditions:  []addonsv1alpha1.AddOnStatusCondition{},
+		Kind:             "AddOnStatusResponse",
+		AddonID:          "addon-1",
+		CorrelationID:    "12345-6789",
+		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{},
 	}
 
 	require.Equal(t, expected, res, "Client.PostAddOnStatus() returned unexpected result")
@@ -135,9 +136,9 @@ func TestClient_PostAddOnStatus(t *testing.T) {
 	defer serverError.Close()
 
 	clientError := &Client{
-		opts:       ClientOptions{
-			Endpoint:   serverError.URL,
-			ClusterID:  "your-cluster-id",
+		opts: ClientOptions{
+			Endpoint:  serverError.URL,
+			ClusterID: "your-cluster-id",
 		},
 		httpClient: http.DefaultClient,
 	}
@@ -174,9 +175,9 @@ func TestClient_PatchAddOnStatus(t *testing.T) {
 
 	// Create a new client with the mock server's URL
 	client := &Client{
-		opts:       ClientOptions{
-			Endpoint:   server.URL,
-			ClusterID:  "1ou",
+		opts: ClientOptions{
+			Endpoint:  server.URL,
+			ClusterID: "1ou",
 		},
 		httpClient: http.DefaultClient,
 	}
@@ -200,9 +201,9 @@ func TestClient_PatchAddOnStatus(t *testing.T) {
 
 	// Check the result
 	expected := AddOnStatusResponse{
-		Kind:           "AddOnStatusResponse",
-		AddonID:        "addon-1",
-		CorrelationID:  "12345-6789",
+		Kind:          "AddOnStatusResponse",
+		AddonID:       "addon-1",
+		CorrelationID: "12345-6789",
 		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
 			{
 				StatusType:  "Ready",
@@ -223,9 +224,9 @@ func TestClient_PatchAddOnStatus(t *testing.T) {
 	defer serverError.Close()
 
 	clientError := &Client{
-		opts:       ClientOptions{
-			Endpoint:   serverError.URL,
-			ClusterID:  "1ou",
+		opts: ClientOptions{
+			Endpoint:  serverError.URL,
+			ClusterID: "1ou",
 		},
 		httpClient: http.DefaultClient,
 	}
