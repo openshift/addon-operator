@@ -4,12 +4,13 @@ import (
 	"context"
 	"testing"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 // Mock implementation of addonReconciler for testing
@@ -66,6 +67,19 @@ func TestWithMonitoringStackReconciler_ApplyToAddonReconciler(t *testing.T) {
 				},
 			},
 			initial: 1,
+		},
+		{
+			name: "Adds monitoringStackReconciler to nil subReconcilers",
+			fields: fields{
+				Client: c,
+				Scheme: testutil.NewTestSchemeWithAddonsv1alpha1AndMsov1alpha1(),
+			},
+			args: args{
+				config: &AddonReconciler{
+					subReconcilers: nil,
+				},
+			},
+			initial: 0,
 		},
 	}
 	for _, tt := range tests {

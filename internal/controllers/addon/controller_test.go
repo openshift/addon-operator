@@ -3,6 +3,7 @@ package addon
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sync"
 	"testing"
 
@@ -172,4 +173,106 @@ func TestAddonReconciler_GetOCMClusterInfo(t *testing.T) {
 
 	// Assert the expected result
 	assert.Equal(t, want, result, "Unexpected OCM cluster info")
+}
+
+// TestEnableGlobalPause ensures that the EnableGlobalPause method
+// sets the globalPause flag to true and does not procude any errors.
+func TestEnableGlobalPause(t *testing.T) {
+	client := testutil.NewClient()
+	ocmClient := ocmtest.NewClient()
+	r := AddonReconciler{
+		Client:         client,
+		ocmClient:      ocmClient,
+		Log:            logr.Discard(),
+		subReconcilers: []addonReconciler{},
+	}
+
+	addonList := &addonsv1alpha1.AddonList{}
+	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+
+	ctx := context.Background()
+
+	// Call the EnableGlobalPause method
+	err := r.EnableGlobalPause(ctx)
+
+	// Assert that no error occurred
+	assert.NoError(t, err)
+
+	// Assert that the globalPause flag is set to true
+	assert.True(t, r.globalPause)
+}
+
+// TestDisableGlobalPause ensures that the DisableGlobalPause method
+// sets the globalPause flag to false and does not product any errors.
+func TestDisableGlobalPause(t *testing.T) {
+	client := testutil.NewClient()
+	ocmClient := ocmtest.NewClient()
+	r := AddonReconciler{
+		Client:         client,
+		ocmClient:      ocmClient,
+		Log:            logr.Discard(),
+		subReconcilers: []addonReconciler{},
+	}
+
+	ctx := context.Background()
+
+	r.globalPause = true
+
+	addonList := &addonsv1alpha1.AddonList{}
+	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+
+	err := r.DisableGlobalPause(ctx)
+
+	// Assert that no error occurred
+	assert.NoError(t, err)
+
+	// Assert that the globalPause flag is set to false
+	assert.False(t, r.globalPause)
+}
+
+// TestInjectOCMClient ensures that the InjectOCMClient method properly injects
+// the ocmClient and does not produce any errors.
+func TestInjectOCMClient(t *testing.T) {
+	reconcilerMock := &mockAddonReconciler{}
+
+	client := testutil.NewClient()
+	ocmClient := &ocm.Client{}
+	r := &AddonReconciler{
+		Client:         client,
+		ocmClient:      nil,
+		Log:            logr.Discard(),
+		subReconcilers: []addonReconciler{},
+	}
+
+	ctx := context.Background()
+
+	addonList := &addonsv1alpha1.AddonList{}
+	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+
+	reconcilerMock.On("requeueAllAddons", ctx).Return(nil)
+
+	err := r.InjectOCMClient(ctx, ocmClient)
+
+	// Assert that no error occurred
+	assert.NoError(t, err)
+
+	// Assert that the ocmClient is injected properly
+	assert.Equal(t, ocmClient, r.ocmClient)
+}
+
+type mockAddonReconciler struct {
+	mock.Mock
+}
+
+// TestSetupWithManager_OperatorResourceHandlerNil validates that the
+// SetupWithManager method is not called with a nil operatorResourceHandler.
+func TestSetupWithManager_OperatorResourceHandlerNil(t *testing.T) {
+	reconciler := &AddonReconciler{
+		operatorResourceHandler: nil, // Set the operatorResourceHandler to nil
+	}
+
+	err := reconciler.SetupWithManager(nil)
+
+	expectedError := fmt.Errorf("operatorResourceHandler cannot be nil")
+	assert.EqualError(t, err, expectedError.Error())
 }

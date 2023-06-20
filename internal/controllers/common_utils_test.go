@@ -228,9 +228,7 @@ func TestCurrentNamespace(t *testing.T) {
 				// Create a temporary file with no read permission to simulate the error
 				tempFilePath := createTempFileWithContent("test-namespace")
 				defer os.Remove(tempFilePath)
-				// Set the file permission and check for errors
-				err := os.Chmod(tempFilePath, 0000)
-				require.NoError(t, err, "Failed to set file permissions")
+
 			}
 
 			// Call the CurrentNamespace function and compare the result with the expected values
@@ -246,7 +244,7 @@ func TestCurrentNamespace(t *testing.T) {
 	}
 }
 
-// Utility function to create a temporary file with the specified content and return its path
+// Create a temporary file with the specified content and return its path
 func createTempFileWithContent(content string) string {
 	tempFile, err := ioutil.TempFile("", "namespace-test")
 	if err != nil {

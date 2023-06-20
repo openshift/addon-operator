@@ -5,95 +5,73 @@ import (
 	"testing"
 
 	"github.com/go-logr/logr"
-	"github.com/mt-sre/client"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"k8s.io/apimachinery/pkg/runtime"
+	"github.com/openshift/addon-operator/internal/testutil"
 )
 
 func TestAddonOperatorReconciler_handleAddonOperatorCreation(t *testing.T) {
-	type fields struct {
-		Client              client.Client
-		UncachedClient      client.Client
-		Log                 logr.Logger
-		Scheme              *runtime.Scheme
-		GlobalPauseManager  globalPauseManager
-		OCMClientManager    ocmClientManager
-		Recorder            *metrics.Recorder
-		ClusterExternalID   string
-		FeatureTogglesState []string
+	mockClient := &testutil.Client{}
+
+	r := &AddonOperatorReconciler{
+		Client: mockClient,
+		Log:    logr.Logger{},
 	}
-	type args struct {
-		ctx context.Context
-		log logr.Logger
+
+	expectedObj := &addonsv1alpha1.AddonOperator{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: addonsv1alpha1.DefaultAddonOperatorName,
+		},
 	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			r := &AddonOperatorReconciler{
-				Client:              tt.fields.Client,
-				UncachedClient:      tt.fields.UncachedClient,
-				Log:                 tt.fields.Log,
-				Scheme:              tt.fields.Scheme,
-				GlobalPauseManager:  tt.fields.GlobalPauseManager,
-				OCMClientManager:    tt.fields.OCMClientManager,
-				Recorder:            tt.fields.Recorder,
-				ClusterExternalID:   tt.fields.ClusterExternalID,
-				FeatureTogglesState: tt.fields.FeatureTogglesState,
-			}
-			if err := r.handleAddonOperatorCreation(tt.args.ctx, tt.args.log); (err != nil) != tt.wantErr {
-				t.Errorf("AddonOperatorReconciler.handleAddonOperatorCreation() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+
+	// Set the expected behavior of the mock client's Create method
+	mockClient.On("Create", mock.Anything, expectedObj, mock.AnythingOfType("[]client.CreateOption")).Return(nil)
+
+	// Call the function being tested
+	err := r.handleAddonOperatorCreation(context.Background(), logr.Discard())
+
+	// Assert that no error occurred
+	assert.NoError(t, err)
+
+	// Verify the expectations on the mock client
+	mockClient.AssertExpectations(t)
 }
 
+// TestAddonOperatorReconciler_reportAddonOperatorReadinessStatus ensures that the
+// reportAddonOperatorReadinessStatus method updates the status of the AddonOperator.
 func TestAddonOperatorReconciler_reportAddonOperatorReadinessStatus(t *testing.T) {
-	type fields struct {
-		Client              client.Client
-		UncachedClient      client.Client
-		Log                 logr.Logger
-		Scheme              *runtime.Scheme
-		GlobalPauseManager  globalPauseManager
-		OCMClientManager    ocmClientManager
-		Recorder            *metrics.Recorder
-		ClusterExternalID   string
-		FeatureTogglesState []string
+	mockClient := &testutil.Client{
+		Mock:       mock.Mock{},
+		StatusMock: &testutil.StatusClient{},
 	}
-	type args struct {
-		ctx           context.Context
-		addonOperator *addonsv1alpha1.AddonOperator
+
+	addonOperator := &addonsv1alpha1.AddonOperator{
+		TypeMeta:   metav1.TypeMeta{},
+		ObjectMeta: metav1.ObjectMeta{Name: addonsv1alpha1.DefaultAddonOperatorName, Namespace: "test-namespace"},
+		Spec:       addonsv1alpha1.AddonOperatorSpec{},
+		Status:     addonsv1alpha1.AddonOperatorStatus{},
 	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
+
+	// Set the expected behavior of the mock client's Update method
+	mockClient.StatusMock.On("Update", mock.Anything, addonOperator, mock.AnythingOfType("[]client.SubResourceUpdateOption")).Return(nil)
+
+	r := &AddonOperatorReconciler{
+		Client: mockClient,
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			r := &AddonOperatorReconciler{
-				Client:              tt.fields.Client,
-				UncachedClient:      tt.fields.UncachedClient,
-				Log:                 tt.fields.Log,
-				Scheme:              tt.fields.Scheme,
-				GlobalPauseManager:  tt.fields.GlobalPauseManager,
-				OCMClientManager:    tt.fields.OCMClientManager,
-				Recorder:            tt.fields.Recorder,
-				ClusterExternalID:   tt.fields.ClusterExternalID,
-				FeatureTogglesState: tt.fields.FeatureTogglesState,
-			}
-			if err := r.reportAddonOperatorReadinessStatus(tt.args.ctx, tt.args.addonOperator); (err != nil) != tt.wantErr {
-				t.Errorf("AddonOperatorReconciler.reportAddonOperatorReadinessStatus() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+
+	err := r.reportAddonOperatorReadinessStatus(context.Background(), addonOperator)
+	assert.NoError(t, err)
+
+	// Verify the expectations on the mock client
+	mockClient.StatusMock.AssertExpectations(t)
+
+	// Assert the updated values in the AddonOperator object
+	assert.Equal(t, metav1.ConditionTrue, addonOperator.Status.Conditions[0].Status)
+	assert.Equal(t, addonsv1alpha1.AddonOperatorReasonReady, addonOperator.Status.Conditions[0].Reason)
+	assert.Equal(t, addonsv1alpha1.PhaseReady, addonOperator.Status.Phase)
+	assert.Equal(t, addonOperator.Generation, addonOperator.Status.ObservedGeneration)
+	assert.NotNil(t, addonOperator.Status.LastHeartbeatTime)
 }
