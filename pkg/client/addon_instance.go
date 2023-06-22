@@ -19,9 +19,9 @@ type AddonInstanceClient interface {
 	SendPulse(ctx context.Context, instance av1alpha1.AddonInstance, opts ...SendPulseOption) error
 }
 
-// NewAddonInstanceClient returns a configured AddonInstanceClient implementation
+// NewAddonInstanceClient returns a configured AddonInstanceClient
 // using the given client instance as a base.
-func NewAddonInstanceClient(client client.Client) *AddonInstanceClientImpl {
+func NewAddonInstanceClient(client client.Client) AddonInstanceClient {
 	return &AddonInstanceClientImpl{
 		client: client,
 	}
