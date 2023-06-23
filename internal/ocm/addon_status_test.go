@@ -35,7 +35,7 @@ func TestClient_GetAddOnStatus(t *testing.T) {
 			Endpoint:  server.URL,
 			ClusterID: "1ou",
 		},
-		httpClient: http.DefaultClient,
+		httpClient: server.Client(),
 	}
 
 	res, err := client.GetAddOnStatus(context.Background(), "addon-1")
@@ -66,7 +66,7 @@ func TestClient_GetAddOnStatus(t *testing.T) {
 			Endpoint:  serverError.URL,
 			ClusterID: "1ou",
 		},
-		httpClient: http.DefaultClient,
+		httpClient: serverError.Client(),
 	}
 
 	// Call the function to test

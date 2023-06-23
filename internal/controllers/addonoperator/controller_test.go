@@ -198,7 +198,7 @@ func TestEnqueueAddonOperator(t *testing.T) {
 	}
 
 	err := enqueueAddonOperator(ctx, &handler.EnqueueRequestForObject{}, q)
-	assert.NoError(t, err, "Expected no error")
+	require.NoError(t, err, "Expected no error")
 
 	// Check that a single request was added to the queue
 	assert.Equal(t, 1, q.Len(), "Expected 1 item in the queue")
@@ -210,9 +210,6 @@ func TestEnqueueAddonOperator(t *testing.T) {
 	assert.Equal(t, expectedRequest, request, "Expected request does not match the added request")
 }
 
-// The TestAccessTokenFromDockerConfig parses a Docker config JSON, extracts the
-// access token associated with the key and returns the token or error, if any failures
-// occurs during the process.
 func TestAccessTokenFromDockerConfig(t *testing.T) {
 	testCases := []struct {
 		name        string

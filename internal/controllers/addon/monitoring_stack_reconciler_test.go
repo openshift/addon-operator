@@ -2,7 +2,6 @@ package addon
 
 import (
 	"context"
-	"reflect"
 	"testing"
 
 	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
@@ -260,9 +259,7 @@ func TestGetWriteRelabelConfigFromAllowlist(t *testing.T) {
 	}
 
 	result := getWriteRelabelConfigFromAllowlist(allowlist)
-	if !reflect.DeepEqual(result, expectedResult) {
-		t.Errorf("Expected result to be %v, but got %v", expectedResult, result)
-	}
+	assert.Equal(t, expectedResult, result, "Expected result to be %v, but got %v", expectedResult, result)
 }
 
 // TestMonitoringStackReconciler_Name ensures that the Name() method

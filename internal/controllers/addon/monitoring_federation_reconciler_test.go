@@ -423,18 +423,14 @@ func TestMonitoringFederationReconcilerName(t *testing.T) {
 
 	got := r.Name()
 
-	if got != expected {
-		t.Errorf("Expected Name() to return %q, but got %q", expected, got)
-	}
+	assert.Equal(t, expected, got, "Expected Name() to return %q, but got %q", expected, got)
 }
 
 // TestMonitoringFederationReconcilerNameConstant checks if the constant name changes.
 func TestMonitoringFederationReconcilerNameConstant(t *testing.T) {
 	expected := "monitoringFederationReconciler"
 
-	if MONITORING_FEDERATION_RECONCILER_NAME != expected {
-		t.Errorf("Expected MONITORING_FEDERATION_RECONCILER_NAME to be %q, but got %q", expected, MONITORING_FEDERATION_RECONCILER_NAME)
-	}
+	assert.Equal(t, expected, MONITORING_FEDERATION_RECONCILER_NAME, "Expected MONITORING_FEDERATION_RECONCILER_NAME to be %q, but got %q", expected, MONITORING_FEDERATION_RECONCILER_NAME)
 }
 
 type mockClient struct {
@@ -460,7 +456,6 @@ func TestMonitoringFederationReconciler_GetOwnedServiceMonitorsViaCommonLabels_E
 	serviceMonitors, err := r.getOwnedServiceMonitorsViaCommonLabels(ctx, mockClient, addon)
 
 	// Check the error
-	require.Error(t, err, "Expected an error, but got nil")
 	expectedError := "could not list owned ServiceMonitors"
 	assert.EqualError(t, err, expectedError, "Expected error message")
 

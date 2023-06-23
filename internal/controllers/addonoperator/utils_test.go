@@ -44,7 +44,6 @@ func TestAddonOperatorReconciler_handleAddonOperatorCreation(t *testing.T) {
 // reportAddonOperatorReadinessStatus method updates the status of the AddonOperator.
 func TestAddonOperatorReconciler_reportAddonOperatorReadinessStatus(t *testing.T) {
 	mockClient := &testutil.Client{
-		Mock:       mock.Mock{},
 		StatusMock: &testutil.StatusClient{},
 	}
 
