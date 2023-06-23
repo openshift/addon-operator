@@ -3,9 +3,9 @@ package addon
 import (
 	"context"
 	"errors"
+	"fmt"
+	"sync"
 	"testing"
-
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 
 	"github.com/go-logr/logr"
 	multierror "github.com/hashicorp/go-multierror"
@@ -14,6 +14,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/ocm"
 	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -150,4 +151,128 @@ func expectedNumErrors(testCase reconcileErrorTestCase) int {
 		res += 1
 	}
 	return res
+}
+
+// The TestAddonReconciler_GetOCMClusterInfo function verifies that the GetOCMClusterInfo
+// method of the AddonReconciler struct returns the expected OCM cluster information.
+func TestAddonReconciler_GetOCMClusterInfo(t *testing.T) {
+	// Create a test instance of AddonReconciler
+	reconciler := &AddonReconciler{
+		ocmClientMux: sync.RWMutex{},
+		ocmClient:    ocmtest.NewClient(),
+	}
+
+	// Call the GetOCMClusterInfo function
+	result := reconciler.GetOCMClusterInfo()
+
+	// Set up the expected cluster info
+	want := OcmClusterInfo{
+		ID:   "1ou",
+		Name: "openshift-mock-cluster-name",
+	}
+
+	// Assert the expected result
+	assert.Equal(t, want, result, "Unexpected OCM cluster info")
+}
+
+// TestEnableGlobalPause ensures that the EnableGlobalPause method
+// sets the globalPause flag to true and does not procude any errors.
+func TestEnableGlobalPause(t *testing.T) {
+	client := testutil.NewClient()
+	ocmClient := ocmtest.NewClient()
+	r := AddonReconciler{
+		Client:         client,
+		ocmClient:      ocmClient,
+		Log:            logr.Discard(),
+		subReconcilers: []addonReconciler{},
+	}
+
+	addonList := &addonsv1alpha1.AddonList{}
+	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+
+	ctx := context.Background()
+
+	// Call the EnableGlobalPause method
+	err := r.EnableGlobalPause(ctx)
+
+	// Assert that no error occurred
+	assert.NoError(t, err)
+
+	// Assert that the globalPause flag is set to true
+	assert.True(t, r.globalPause)
+}
+
+// TestDisableGlobalPause ensures that the DisableGlobalPause method
+// sets the globalPause flag to false and does not product any errors.
+func TestDisableGlobalPause(t *testing.T) {
+	client := testutil.NewClient()
+	ocmClient := ocmtest.NewClient()
+	r := AddonReconciler{
+		Client:         client,
+		ocmClient:      ocmClient,
+		Log:            logr.Discard(),
+		subReconcilers: []addonReconciler{},
+	}
+
+	ctx := context.Background()
+
+	r.globalPause = true
+
+	addonList := &addonsv1alpha1.AddonList{}
+	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+
+	err := r.DisableGlobalPause(ctx)
+
+	// Assert that no error occurred
+	assert.NoError(t, err)
+
+	// Assert that the globalPause flag is set to false
+	assert.False(t, r.globalPause)
+}
+
+// TestInjectOCMClient ensures that the InjectOCMClient method properly injects
+// the ocmClient and does not produce any errors.
+func TestInjectOCMClient(t *testing.T) {
+	reconcilerMock := &mockAddonReconciler{}
+
+	client := testutil.NewClient()
+	ocmClient := &ocm.Client{}
+	r := &AddonReconciler{
+		Client:         client,
+		ocmClient:      nil,
+		Log:            logr.Discard(),
+		subReconcilers: []addonReconciler{},
+	}
+
+	ctx := context.Background()
+
+	addonList := &addonsv1alpha1.AddonList{}
+	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+
+	reconcilerMock.On("requeueAllAddons", ctx).Return(nil)
+
+	err := r.InjectOCMClient(ctx, ocmClient)
+
+	// Assert that no error occurred
+	assert.NoError(t, err)
+
+	// Assert that the ocmClient is injected properly
+	assert.Equal(t, ocmClient, r.ocmClient)
+}
+
+type mockAddonReconciler struct {
+	mock.Mock
+}
+
+// TestSetupWithManager_OperatorResourceHandlerNil validates that the
+// SetupWithManager method is not called with a nil operatorResourceHandler.
+func TestSetupWithManager_OperatorResourceHandlerNil(t *testing.T) {
+	reconciler := &AddonReconciler{
+		operatorResourceHandler: nil, // Set the operatorResourceHandler to nil
+	}
+
+	err := reconciler.SetupWithManager(nil)
+
+	expectedError := fmt.Errorf("operatorResourceHandler cannot be nil")
+	assert.EqualError(t, err, expectedError.Error())
 }

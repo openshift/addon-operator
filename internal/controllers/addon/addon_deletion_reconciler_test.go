@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -299,4 +300,18 @@ func TestAddonDeletionReconciler(t *testing.T) {
 		}
 	})
 
+}
+
+// The TestAddonDeletionReconciler_Name function, tests the Name
+// method of the addonDeletionReconciler type.
+func TestAddonDeletionReconciler_Name(t *testing.T) {
+	r := &addonDeletionReconciler{}
+
+	// The expected reconciler name
+	expectedName := "deletionReconciler"
+
+	name := r.Name()
+
+	// Verify that the reconciler name is correct
+	assert.Equal(t, expectedName, name)
 }

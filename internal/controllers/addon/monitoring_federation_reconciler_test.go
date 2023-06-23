@@ -415,3 +415,50 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_Prese
 	require.NoError(t, err)
 	c.AssertExpectations(t)
 }
+
+// Test_monitoringFederationReconcilerName returns the expected value of monitoringFederationReconciler.
+func TestMonitoringFederationReconcilerName(t *testing.T) {
+	r := &monitoringFederationReconciler{}
+	expected := MONITORING_FEDERATION_RECONCILER_NAME
+
+	got := r.Name()
+
+	assert.Equal(t, expected, got, "Expected Name() to return %q, but got %q", expected, got)
+}
+
+// TestMonitoringFederationReconcilerNameConstant checks if the constant name changes.
+func TestMonitoringFederationReconcilerNameConstant(t *testing.T) {
+	expected := "monitoringFederationReconciler"
+
+	assert.Equal(t, expected, MONITORING_FEDERATION_RECONCILER_NAME, "Expected MONITORING_FEDERATION_RECONCILER_NAME to be %q, but got %q", expected, MONITORING_FEDERATION_RECONCILER_NAME)
+}
+
+type mockClient struct {
+	client.Client
+	listError error
+}
+
+func (m *mockClient) List(ctx context.Context, list client.ObjectList, opts ...client.ListOption) error {
+	return m.listError
+}
+
+func TestMonitoringFederationReconciler_GetOwnedServiceMonitorsViaCommonLabels_Error(t *testing.T) {
+	mockErr := fmt.Errorf("mocked list error")
+	mockClient := &mockClient{
+		listError: mockErr,
+	}
+
+	ctx := context.Background()
+	addon := testutil.NewTestAddonWithMonitoringFederation()
+
+	r := &monitoringFederationReconciler{}
+
+	serviceMonitors, err := r.getOwnedServiceMonitorsViaCommonLabels(ctx, mockClient, addon)
+
+	// Check the error
+	expectedError := "could not list owned ServiceMonitors"
+	assert.EqualError(t, err, expectedError, "Expected error message")
+
+	// Check the serviceMonitors
+	assert.Nil(t, serviceMonitors, "Expected serviceMonitors to be nil")
+}

@@ -7,6 +7,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/types"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -208,4 +209,26 @@ func TestAddonMetrics_AddonConditions(t *testing.T) {
 		// addon_operator_paused{} 0
 		assert.Equal(t, float64(0), testutil.ToFloat64(recorder.addonOperatorPaused))
 	})
+}
+
+// TestInjectOCMAPIRequestDuration verifies the behavior of the InjectOCMAPIRequestDuration
+// method. It ensures the provided summary object is assigned to the ocmAPIRequestDuration field.
+func TestInjectOCMAPIRequestDuration(t *testing.T) {
+	r := &Recorder{}
+	summary := prometheus.NewSummary(prometheus.SummaryOpts{Name: "test_summary"})
+	r.InjectOCMAPIRequestDuration(summary)
+
+	// Verify that the injected summary is correctly assigned
+	assert.Equal(t, summary, r.ocmAPIRequestDuration, "Expected injected OCM API request duration summary to be %v", summary)
+}
+
+// TestInjectAddonServiceAPIRequestDuration verifies the behavior of the InjectAddonServiceAPIRequestDuration
+// method. It ensures that the provided summary object is assigned to the addonServiceAPIRequestDuration field.
+func TestInjectAddonServiceAPIRequestDuration(t *testing.T) {
+	r := &Recorder{}
+	summary := prometheus.NewSummary(prometheus.SummaryOpts{Name: "test_summary"})
+	r.InjectAddonServiceAPIRequestDuration(summary)
+
+	// Verify that the injected summary is correctly assigned
+	assert.Equal(t, summary, r.addonServiceAPIRequestDuration, "Expected injected addon service API request duration summary to be %v", summary)
 }

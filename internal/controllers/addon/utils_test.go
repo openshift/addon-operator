@@ -13,6 +13,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 
+	ctrl "sigs.k8s.io/controller-runtime"
+
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -863,4 +865,84 @@ func TestHasMonitoringStack(t *testing.T) {
 			assert.Equal(t, tc.expected, result)
 		})
 	}
+}
+
+// The TestReportLastOvservedAvailableCSV function ensures an addon's
+// LastObservedAvailableCSV field is set to the expected value.
+func TestReportLastObservedAvailableCSV(t *testing.T) {
+	addon := &addonsv1alpha1.Addon{
+		Status: addonsv1alpha1.AddonStatus{},
+	}
+
+	// Call the function under test
+	reportLastObservedAvailableCSV(addon, "test-csv")
+
+	// Assert that the LastObservedAvailableCSV field has been updated correctly
+	assert.Equal(t, "test-csv", addon.Status.LastObservedAvailableCSV)
+}
+
+// The TestReportAddonPauseStatus tests the behavior of the
+// reportAddonPauseStatus function.
+func TestReportAddonPauseStatus(t *testing.T) {
+	addon := &addonsv1alpha1.Addon{
+		TypeMeta:   metav1.TypeMeta{},
+		ObjectMeta: metav1.ObjectMeta{},
+		Spec:       addonsv1alpha1.AddonSpec{},
+		Status:     addonsv1alpha1.AddonStatus{},
+	}
+
+	// Call the reportAddonPauseStatus function
+	reason := "a reason"
+	reportAddonPauseStatus(addon, reason)
+
+	// Assert the expected status condition
+	expectedCondition := metav1.Condition{
+		Type:               addonsv1alpha1.Paused,
+		Status:             metav1.ConditionTrue,
+		Reason:             reason,
+		Message:            "",
+		ObservedGeneration: addon.Generation,
+	}
+
+	// Assert the expected condition is present
+	var found bool
+	for _, condition := range addon.Status.Conditions {
+		if condition.Type == expectedCondition.Type &&
+			condition.Status == expectedCondition.Status &&
+			condition.Reason == expectedCondition.Reason &&
+			condition.Message == expectedCondition.Message &&
+			condition.ObservedGeneration == expectedCondition.ObservedGeneration {
+			found = true
+			break
+		}
+	}
+
+	assert.True(t, found, "Expected condition not found")
+
+	// Assert the expected observed generation
+	assert.Equal(t, addon.Generation, addon.Status.ObservedGeneration)
+}
+
+// TestHandleExit tests the behavior of the handleExit function by
+// checking its return value under different conditions.
+func TestHandleExit(t *testing.T) {
+	t.Run("Retry result", func(t *testing.T) {
+		expectedResult := ctrl.Result{
+			RequeueAfter: defaultRetryAfterTime,
+		}
+		result := handleExit(resultRetry)
+		assert.Equal(t, expectedResult, result, "Expected %v, but got %v", expectedResult, result)
+	})
+
+	t.Run("Other result", func(t *testing.T) {
+		expectedResult := ctrl.Result{}
+		result := handleExit(resultStop)
+		assert.Equal(t, expectedResult, result, "Expected %v, but got %v", expectedResult, result)
+	})
+
+	t.Run("Result nil", func(t *testing.T) {
+		expectedResult := ctrl.Result{}
+		result := handleExit(resultNil)
+		assert.Equal(t, expectedResult, result, "Expected %v, but got %v", expectedResult, result)
+	})
 }

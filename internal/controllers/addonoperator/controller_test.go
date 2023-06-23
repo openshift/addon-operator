@@ -9,6 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/util/workqueue"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -145,4 +149,139 @@ func (r *globalPauseManagerMock) EnableGlobalPause(ctx context.Context) error {
 func (r *globalPauseManagerMock) DisableGlobalPause(ctx context.Context) error {
 	args := r.Called(ctx)
 	return args.Error(0)
+}
+
+// The TestAreSlicesEquivalent function tests the areSlicesEquivalent function
+// to verify whether it correctly determines if two slices are equivalent.
+func TestAreSlicesEquivalent(t *testing.T) {
+	testCases := []struct {
+		sliceA         []string
+		sliceB         []string
+		expectedResult bool
+	}{
+		// Equivalent addon slices
+		{
+			sliceA:         []string{"prometheus", "grafana", "rhods-dashboard"},
+			sliceB:         []string{"prometheus", "grafana", "rhods-dashboard"},
+			expectedResult: true,
+		},
+		// Non-equivalent addon slices
+		{
+			sliceA:         []string{"prometheus", "grafana", "rhods-dashboard"},
+			sliceB:         []string{"prometheus", "grafana", "redhat-rhoam-operator"},
+			expectedResult: false,
+		},
+		// Slices of different lengths
+		{
+			sliceA:         []string{"prometheus", "grafana"},
+			sliceB:         []string{"grafana", "prometheus", "redhat-rhoam-operator"},
+			expectedResult: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		result := areSlicesEquivalent(tc.sliceA, tc.sliceB)
+		assert.Equal(t, tc.expectedResult, result, "Unexpected result for slices %v and %v", tc.sliceA, tc.sliceB)
+	}
+}
+
+// The TestEnqueueAddonOperator tests the behavior of the enqueueAddonOperator function.
+// The enqueueAddonOperator function enqueues (adds an item of data awaiting processing to a queue)
+// a reconcile request for the default addon operator.
+func TestEnqueueAddonOperator(t *testing.T) {
+	ctx := context.Background()
+	q := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
+	expectedRequest := reconcile.Request{
+		NamespacedName: types.NamespacedName{
+			Name: addonsv1alpha1.DefaultAddonOperatorName,
+		},
+	}
+
+	err := enqueueAddonOperator(ctx, &handler.EnqueueRequestForObject{}, q)
+	require.NoError(t, err, "Expected no error")
+
+	// Check that a single request was added to the queue
+	assert.Equal(t, 1, q.Len(), "Expected 1 item in the queue")
+
+	// Retrieve the added request from the queue
+	item, _ := q.Get()
+	request, ok := item.(reconcile.Request)
+	assert.True(t, ok, "Expected item to be of type reconcile.Request")
+	assert.Equal(t, expectedRequest, request, "Expected request does not match the added request")
+}
+
+func TestAccessTokenFromDockerConfig(t *testing.T) {
+	testCases := []struct {
+		name        string
+		dockerJSON  []byte
+		expected    string
+		expectedErr string
+	}{
+		{
+			name: "ValidDockerConfig",
+			dockerJSON: []byte(`{
+				"auths": {
+					"cloud.openshift.com": {
+						"auth": "THIS_IS_AN_API_TOKEN"
+					}
+				}
+			}`),
+			expected: "THIS_IS_AN_API_TOKEN",
+		},
+		{
+			name:        "InvalidJSON",
+			dockerJSON:  []byte(`{invalid JSON}`),
+			expectedErr: "unmarshalling docker config json",
+		},
+		{
+			name:        "EmptyDockerConfig",
+			dockerJSON:  []byte(`{}`),
+			expectedErr: "missing token for cloud.openshift.com",
+		},
+		{
+			name: "InvalidToken",
+			dockerJSON: []byte(`{
+				"auths": {
+					"cloud.openshift.com": {
+						"auth": "INVALID_TOKEN"
+					}
+				}
+			}`),
+			expected: "INVALID_TOKEN",
+		},
+		{
+			name: "ErrorAccessingAuthKey",
+			dockerJSON: []byte(`{
+				"auths": {
+					"cloud.openshift.com": {
+						"invalid-key": "THIS_IS_AN_API_TOKEN"
+					}
+				}
+			}`),
+			expectedErr: "missing token for cloud.openshift.com",
+		},
+		{
+			name: "MissingToken",
+			dockerJSON: []byte(`{
+				"auths": {
+					"cloud.openshift.com": {}
+				}
+			}`),
+			expectedErr: "missing token for cloud.openshift.com",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			accessToken, err := accessTokenFromDockerConfig(tc.dockerJSON)
+
+			if tc.expectedErr != "" {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), tc.expectedErr)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expected, accessToken)
+			}
+		})
+	}
 }

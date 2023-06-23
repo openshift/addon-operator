@@ -11,11 +11,14 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
+
+	//	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 func TestEnsureWantedNamespaces_AddonWithoutNamespaces(t *testing.T) {
@@ -440,5 +443,52 @@ func TestEnsureDeletionOfUnwantedNamespaces_NoNamespacesInSpec_WithClientError(t
 	ctx := context.Background()
 	err := r.ensureDeletionOfUnwantedNamespaces(ctx, testutil.NewTestAddonWithoutNamespace())
 	require.EqualError(t, errors.Unwrap(err), timeoutErr.Error())
+	c.AssertExpectations(t)
+}
+
+// TestNamespaceReconcilerName tests that the Name method returns the
+// correct name for the namespaceReconciler instance.
+func TestNamespaceReconcilerName(t *testing.T) {
+	r := &namespaceReconciler{}
+
+	expectedName := "namespaceReconciler"
+
+	name := r.Name()
+
+	assert.Equal(t, expectedName, name)
+}
+
+// The Test_namespaceReconciler_Reconcile function validates the behavior
+// of the Reconcile method in various scenarios.
+func Test_namespaceReconciler_Reconcile(t *testing.T) {
+	c := testutil.NewClient()
+
+	r := &namespaceReconciler{
+		client: c,
+		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+	}
+
+	addon := testutil.NewTestAddonWithSingleNamespace()
+
+	c.On("Get", testutil.IsContext, testutil.IsObjectKey, testutil.IsCoreV1NamespacePtr, mock.Anything).Run(func(args mock.Arguments) {
+		arg := args.Get(2).(*corev1.Namespace)
+		testutil.NewTestExistingNamespace().DeepCopyInto(arg)
+	}).Return(nil)
+	c.On("Update", testutil.IsContext, testutil.IsCoreV1NamespacePtr, mock.Anything).Run(func(args mock.Arguments) {
+		arg := args.Get(1).(*corev1.Namespace)
+		arg.Status.Phase = corev1.NamespaceActive
+	}).Return(nil)
+
+	c.On("List", testutil.IsContext, testutil.IsCoreV1NamespaceListPtr, mock.Anything).
+		Return(nil)
+
+	ctx := context.Background()
+	// Call the Reconcile method
+	result, err := r.Reconcile(ctx, addon)
+
+	// Assert the expected result and error
+	require.NoError(t, err, "Expected no error during reconciliation")
+	require.Equal(t, reconcile.Result{}, result, "Expected empty result after reconciliation")
+
 	c.AssertExpectations(t)
 }

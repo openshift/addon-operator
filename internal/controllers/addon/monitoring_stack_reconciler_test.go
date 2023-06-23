@@ -11,6 +11,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
+	monv1 "github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring/v1"
+
 	"github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
@@ -238,4 +240,36 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestGetWriteRelabelConfigFromAllowlist tests the getWriteRelabelConfigFromAllowlist
+// function in the addon package.
+func TestGetWriteRelabelConfigFromAllowlist(t *testing.T) {
+	allowlist := []string{"cpu_usage", "memory_usage", "disk_space_used"}
+	expectedResult := []monv1.RelabelConfig{
+		{
+			SourceLabels: []monv1.LabelName{"[__name__]"},
+			Separator:    "",
+			TargetLabel:  "",
+			Regex:        "(cpu_usage|memory_usage|disk_space_used)",
+			Modulus:      0,
+			Replacement:  "",
+			Action:       "keep",
+		},
+	}
+
+	result := getWriteRelabelConfigFromAllowlist(allowlist)
+	assert.Equal(t, expectedResult, result, "Expected result to be %v, but got %v", expectedResult, result)
+}
+
+// TestMonitoringStackReconciler_Name ensures that the Name() method
+// of the monitoringStackReconciler returned the expected name defined by
+// the MONITORING_STACK_RECONCILER_NAME constant.
+func TestMonitoringStackReconciler_Name(t *testing.T) {
+	r := &monitoringStackReconciler{}
+	expectedName := MONITORING_STACK_RECONCILER_NAME
+
+	result := r.Name()
+
+	assert.Equal(t, expectedName, result)
 }

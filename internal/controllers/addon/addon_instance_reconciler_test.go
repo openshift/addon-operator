@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/meta"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -345,4 +344,15 @@ func TestReconcileAddonInstance(t *testing.T) {
 			mock.Anything,
 		)
 	})
+}
+
+// The TestAddonInstanceReconciler_Name functions verifies that the Name
+// method of the addonInstanceReconciler returns the expected name.
+func TestAddonInstanceReconciler_Name(t *testing.T) {
+	r := &addonInstanceReconciler{}
+	expectedName := ADDON_INSTANCE_RECONCILER_NAME
+
+	result := r.Name()
+
+	assert.Equal(t, expectedName, result, "Unexpected reconciler name")
 }
