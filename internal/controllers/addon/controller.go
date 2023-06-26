@@ -327,7 +327,7 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	// Handle addon deletion before checking for pause condition.
 	// This allows even paused addons to be deleted.
 	if !addon.DeletionTimestamp.IsZero() {
-		return ctrl.Result{}, r.handleAddonCRDeletion(ctx, addon)
+		return r.handleAddonCRDeletion(ctx, addon)
 	}
 
 	// check for global pause
