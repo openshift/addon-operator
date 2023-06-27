@@ -7,8 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -40,21 +42,29 @@ func TestHandleAddonDeletion(t *testing.T) {
 			operatorResourceHandler: operatorResourceHandlerMock,
 		}
 
+		c.StatusMock.
+			On("Update", mock.Anything, mock.Anything, mock.Anything).
+			Return(nil)
 		c.
 			On("Update", mock.Anything, mock.Anything, mock.Anything).
 			Return(nil)
+		c.
+			On("Delete", mock.Anything, mock.AnythingOfType("*v1alpha1.ClusterObjectTemplate"), mock.Anything).
+			Return(errors.NewNotFound(schema.GroupResource{}, ""))
 		operatorResourceHandlerMock.
 			On("Free", addonToDelete)
 
 		ctx := context.Background()
-		err := r.handleAddonCRDeletion(ctx, addonToDelete)
+		res, err := r.handleAddonCRDeletion(ctx, addonToDelete)
 		require.NoError(t, err)
+		require.True(t, res.IsZero())
 
 		assert.Empty(t, addonToDelete.Finalizers)                                    // finalizer is gone
 		assert.Equal(t, addonsv1alpha1.PhaseTerminating, addonToDelete.Status.Phase) // status is set
 
 		// Methods have been called
 		c.AssertExpectations(t)
+		c.StatusMock.AssertExpectations(t)
 
 		// test addon status condition
 		availableCond := meta.FindStatusCondition(addonToDelete.Status.Conditions, addonsv1alpha1.Available)
@@ -84,8 +94,9 @@ func TestHandleAddonDeletion(t *testing.T) {
 			On("Free", addonToDelete)
 
 		ctx := context.Background()
-		err := r.handleAddonCRDeletion(ctx, addonToDelete)
+		res, err := r.handleAddonCRDeletion(ctx, addonToDelete)
 		require.NoError(t, err)
+		require.True(t, res.IsZero())
 
 		// ensure no API calls are made,
 		// because the object is already deleted.
@@ -945,4 +956,25 @@ func TestHandleExit(t *testing.T) {
 		result := handleExit(resultNil)
 		assert.Equal(t, expectedResult, result, "Expected %v, but got %v", expectedResult, result)
 	})
+}
+func TestAddonReconciler_ensureClusterPackageDeletion(t *testing.T) {
+	c := testutil.NewClient()
+
+	c.
+		On("Delete",
+			mock.Anything,
+			mock.AnythingOfType("*v1alpha1.ClusterObjectTemplate"),
+			mock.Anything,
+		).
+		Return(nil)
+
+	r := &AddonReconciler{
+		Client: c,
+	}
+	addon := &addonsv1alpha1.Addon{}
+	addon.SetName("a-testtest")
+	ctx := context.Background()
+	res, err := r.ensureClusterPackageDeletion(ctx, addon)
+	require.NoError(t, err)
+	assert.Equal(t, defaultRetryAfterTime, res.RequeueAfter)
 }

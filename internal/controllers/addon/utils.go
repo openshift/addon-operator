@@ -10,10 +10,12 @@ import (
 	"github.com/go-logr/logr"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/apimachinery/pkg/util/rand"
+	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -56,25 +58,53 @@ func markedForDeletion(addon *addonsv1alpha1.Addon) bool {
 // Handle the deletion of an AddonCR.
 func (r *AddonReconciler) handleAddonCRDeletion(
 	ctx context.Context, addon *addonsv1alpha1.Addon,
-) error {
+) (res ctrl.Result, err error) {
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
 		// The finalizer is already gone and the deletion timestamp is set.
 		// kube-apiserver should have garbage collected this object already,
 		// this delete signal does not need further processing.
-		return nil
+		return res, nil
 	}
 
+	// Report that Addon is deleting.
 	reportTerminationStatus(addon)
+	if err := r.Status().Update(ctx, addon); err != nil {
+		return res, fmt.Errorf("updating Addon status: %w", err)
+	}
+
+	res, err = r.ensureClusterPackageDeletion(ctx, addon)
+	if err != nil {
+		return res, fmt.Errorf("ensure ClusterPackage deletion: %w", err)
+	}
+	if !res.IsZero() {
+		return res, nil
+	}
 
 	// Clear from CSV Event Handler
 	r.operatorResourceHandler.Free(addon)
 
 	controllerutil.RemoveFinalizer(addon, cacheFinalizer)
 	if err := r.Update(ctx, addon); err != nil {
-		return fmt.Errorf("failed to remove finalizer: %w", err)
+		return res, fmt.Errorf("failed to remove finalizer: %w", err)
 	}
 
-	return nil
+	return res, nil
+}
+
+func (r *AddonReconciler) ensureClusterPackageDeletion(
+	ctx context.Context, addon *addonsv1alpha1.Addon,
+) (res ctrl.Result, err error) {
+	cot := &pkov1alpha1.ClusterObjectTemplate{}
+	cot.SetName(addon.Name)
+	err = r.Delete(ctx, cot)
+	if err == nil {
+		res.RequeueAfter = defaultRetryAfterTime
+		return res, nil
+	}
+	if errors.IsNotFound(err) {
+		return res, nil
+	}
+	return res, err
 }
 
 // Report Addon status to communicate that everything is alright
