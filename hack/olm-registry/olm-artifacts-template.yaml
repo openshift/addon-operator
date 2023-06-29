@@ -59,6 +59,13 @@ objects:
             image: ${REGISTRY_IMG}@${IMAGE_DIGEST}
             displayName: MTSRE Addon Operator
             publisher: Red Hat
+            grpcPodConfig:
+              nodeSelector:
+                node-role.kubernetes.io: infra
+              tolerations:
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/infra
+                  operator: Exists
         - apiVersion: operators.coreos.com/v1
           kind: OperatorGroup
           metadata:
