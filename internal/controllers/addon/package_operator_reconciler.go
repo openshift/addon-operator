@@ -43,6 +43,7 @@ const (
 	PagerDutyKeyConfigKey      = "pagerDutyKey"
 	ParametersConfigKey        = "parameters"
 	TargetNamespaceConfigKey   = "targetNamespace"
+	SendgridConfigKey          = "smtp"
 )
 
 type OcmClusterInfo struct {
@@ -133,6 +134,19 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 						{
 							Key:         ".data.PAGERDUTY_KEY",
 							Destination: "." + PagerDutyKeyConfigKey,
+						},
+					},
+				},
+				{
+					Optional:   true,
+					APIVersion: "v1",
+					Kind:       "Secret",
+					Name:       addon.Name + "-smtp",
+					Namespace:  addonDestNamespace,
+					Items: []pkov1alpha1.ObjectTemplateSourceItem{
+						{
+							Key:         ".data",
+							Destination: "." + SendgridConfigKey,
 						},
 					},
 				},
