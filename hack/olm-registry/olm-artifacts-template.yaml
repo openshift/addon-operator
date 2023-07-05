@@ -49,6 +49,9 @@ objects:
             name: openshift-addon-operator
             labels:
               openshift.io/cluster-monitoring: "true"
+              pod-security.kubernetes.io/enforce: 'baseline'
+              pod-security.kubernetes.io/audit: 'baseline'
+              pod-security.kubernetes.io/warn: 'baseline'
         - apiVersion: operators.coreos.com/v1alpha1
           kind: CatalogSource
           metadata:
