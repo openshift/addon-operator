@@ -184,8 +184,8 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 					}
 
 					tests = append(tests, TestPKOSourcesData{
-						fmt.Sprintf("%s%s%s%s", parK, apK, dsK, pdK, sgK),
-						fmt.Sprintf("%s-%s-%s-%s", strings.ToLower(parK), strings.ToLower(apK), strings.ToLower(dsK), strings.ToLower(pdK), strings.ToLower(sgK)),
+						fmt.Sprintf("%s%s%s%s%s", parK, apK, dsK, pdK, sgK),
+						fmt.Sprintf("%s-%s-%s-%s-%s", strings.ToLower(parK), strings.ToLower(apK), strings.ToLower(dsK), strings.ToLower(pdK), strings.ToLower(sgK)),
 						parV, pkoImage,
 						apV, dsV, pdV, sgV,
 						status,

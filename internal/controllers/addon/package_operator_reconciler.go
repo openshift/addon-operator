@@ -43,7 +43,7 @@ const (
 	PagerDutyKeyConfigKey      = "pagerDutyKey"
 	ParametersConfigKey        = "parameters"
 	TargetNamespaceConfigKey   = "targetNamespace"
-	SendgridConfigKey          = "smtp"
+	SendGridConfigKey          = "smtp"
 )
 
 type OcmClusterInfo struct {
@@ -146,7 +146,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 					Items: []pkov1alpha1.ObjectTemplateSourceItem{
 						{
 							Key:         ".data",
-							Destination: "." + SendgridConfigKey,
+							Destination: "." + SendGridConfigKey,
 						},
 					},
 				},
