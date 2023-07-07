@@ -136,6 +136,7 @@ type TestPKOSourcesData struct {
 	deployAddonParametersSecret bool
 	deployDeadMansSnitchSecret  bool
 	deployPagerDutySecret       bool
+	deploySendGridSecret        bool
 	clusterPackageStatus        string
 }
 
@@ -160,6 +161,10 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 		"PdN": false,
 		"PdY": true,
 	}
+	sgValues := map[string]bool{
+		"SgN": false,
+		"SgY": true,
+	}	
 
 	// create all combinations
 	var tests []TestPKOSourcesData
@@ -167,28 +172,29 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 		for apK, apV := range apValues {
 			for dsK, dsV := range dsValues {
 				for pdK, pdV := range pdValues {
+					for sgK, sgV:= range sgValues {
 					pkoImage := pkoImageOptionalParams
-					if parV {
-						pkoImage = pkoImageRequiredParams
-					}
+					    if parV {
+						    pkoImage = pkoImageRequiredParams
+					    }
 
 					status := v1alpha1.PackageAvailable
-					if parV && (!apV || !dsV || !pdV) {
+					if parV && (!apV || !dsV || !pdV || !sgV) {
 						status = pkov1alpha1.PackageInvalid
 					}
 
 					tests = append(tests, TestPKOSourcesData{
-						fmt.Sprintf("%s%s%s%s", parK, apK, dsK, pdK),
-						fmt.Sprintf("%s-%s-%s-%s", strings.ToLower(parK), strings.ToLower(apK), strings.ToLower(dsK), strings.ToLower(pdK)),
+						fmt.Sprintf("%s%s%s%s", parK, apK, dsK, pdK, sgK),
+						fmt.Sprintf("%s-%s-%s-%s", strings.ToLower(parK), strings.ToLower(apK), strings.ToLower(dsK), strings.ToLower(pdK), strings.ToLower(sgK)),
 						parV, pkoImage,
-						apV, dsV, pdV,
+						apV, dsV, pdV, sgV,
 						status,
 					})
-				}
-			}
-		}
-	}
-
+				    }
+			    }
+		    }
+	    }
+    }
 	sort.Slice(tests, func(i, j int) bool {
 		return tests[i].name < tests[j].name
 	})
@@ -211,7 +217,9 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 			if test.deployPagerDutySecret {
 				s.createPagerDutySecret(ctx, testAddonName, testAddonNamespace)
 			}
-
+			if test.deploySendGridSecret {
+				s.createSendGridSecret(ctx, testAddonName, testAddonNamespace)
+			}
 			s.waitForClusterPackage(
 				ctx,
 				testAddonName,
@@ -220,6 +228,7 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 				test.deployAddonParametersSecret,
 				test.deployDeadMansSnitchSecret,
 				test.deployPagerDutySecret,
+				test.deploySendGridSecret,
 			)
 
 			s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
@@ -281,6 +290,11 @@ func (s *integrationTestSuite) createDeadMansSnitchSecret(ctx context.Context, a
 func (s *integrationTestSuite) createPagerDutySecret(ctx context.Context, addonName string, addonNamespace string) {
 	s.createSecret(ctx, addonName+"-pagerduty", addonNamespace, map[string][]byte{"PAGERDUTY_KEY": []byte(pagerDutyKeyValue)})
 }
+//create the Secret resource for SendGrid as defined here:
+// - https://mt-sre.github.io/docs/creating-addons/monitoring/ocm_sendgrid_service_integration/
+func (s *integrationTestSuite) createSendGridSecret(ctx context.Context, addonName string, addonNamespace string) {
+	s.createSecret(ctx, addonName+"-smtp", addonNamespace, map[string][]byte{"host": []byte("clusterID"), "password": []byte("pwd"), "port": []byte("1111"), "tls": []byte("true"), "username": []byte("user")})
+}
 
 func (s *integrationTestSuite) createSecret(ctx context.Context, name string, namespace string, data map[string][]byte) {
 	secret := &v1.Secret{
@@ -294,13 +308,13 @@ func (s *integrationTestSuite) createSecret(ctx context.Context, name string, na
 // wait until all the replicas in the Deployment inside the ClusterPackage are ready
 // and check if their env variables corresponds to the secrets
 func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonName string, addonNamespace string, conditionType string,
-	addonParametersValuePresent bool, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool,
+	addonParametersValuePresent bool, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool, sendGridValuePresent bool,
 ) {
 	logger := testutil.NewLogger(s.T())
 	cp := &v1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
 	err := integration.WaitForObject(ctx, s.T(),
 		defaultAddonAvailabilityTimeout, cp, "to be "+conditionType,
-		clusterPackageChecker(&logger, addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent, pagerDutyValuePresent))
+		clusterPackageChecker(&logger, addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent, pagerDutyValuePresent, sendGridValuePresent))
 	s.Require().NoError(err)
 }
 
@@ -311,6 +325,7 @@ func clusterPackageChecker(
 	addonParametersValuePresent bool,
 	deadMansSnitchUrlValuePresent bool,
 	pagerDutyValuePresent bool,
+	sendGridValuePresent bool,
 ) func(client.Object) (done bool, err error) {
 	if conditionType == v1alpha1.PackageInvalid {
 		return func(obj client.Object) (done bool, err error) {
@@ -361,7 +376,7 @@ func clusterPackageChecker(
 		ocmClusterName, present := addonsv1[addon.OcmClusterNameConfigKey]
 		ocmClusterNameValueOk := present && len(fmt.Sprintf("%v", ocmClusterName)) > 0
 
-		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk := false, false, false
+		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk, sendGridValueOk := false, false, false, false
 		if addonParametersValuePresent {
 			value, present := addonsv1[addon.ParametersConfigKey]
 			if present {
@@ -388,15 +403,28 @@ func clusterPackageChecker(
 			_, present := addonsv1[addon.PagerDutyKeyConfigKey]
 			pagerDutyValueOk = !present
 		}
+		if sendGridValuePresent {
+			value, present := addonsv1[addon.SendGridConfigKey]
+			if present {
+				jsonValue, err := json.Marshal(value)
+				if err == nil {
+					sendGridValueOk = string(jsonValue) == "{\"host\":\"clusterID\",\"password\":\"pwd\",\"port\":\"1111\",\"tls\":\"true\",\"username\":\"user\"}"
+				}
+			}
+		} else {
+			_, present := addonsv1[addon.SendGridConfigKey]
+			sendGridValueOk = !present
+		}
 
-		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, ocmClusterID=%t, ocmClusterName=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t",
+		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, ocmClusterID=%t, ocmClusterName=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t, sendGrid=%t",
 			targetNamespaceValueOk,
 			clusterIDValueOk,
 			ocmClusterIDValueOk,
 			ocmClusterNameValueOk,
 			addonParametersValueOk,
 			deadMansSnitchUrlValueOk,
-			pagerDutyValueOk))
+			pagerDutyValueOk,
+			sendGridValueOk))
 
 		result := targetNamespaceValueOk &&
 			clusterIDValueOk &&
@@ -404,7 +432,8 @@ func clusterPackageChecker(
 			ocmClusterNameValueOk &&
 			addonParametersValueOk &&
 			deadMansSnitchUrlValueOk &&
-			pagerDutyValueOk
+			pagerDutyValueOk &&
+			sendGridValueOk
 
 		logger.Info(fmt.Sprintf("result: %t", result))
 		return result, nil
