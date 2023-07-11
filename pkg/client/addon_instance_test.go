@@ -45,7 +45,7 @@ func TestAddonInstanceClientImplSendPulse(t *testing.T) {
 			},
 			Conditions: []metav1.Condition{
 				NewAddonInstanceConditionInstalled(
-					"True",
+					metav1.ConditionTrue,
 					av1alpha1.AddonInstanceInstalledReasonSetupComplete,
 					"All components up",
 				),
@@ -60,14 +60,19 @@ func TestAddonInstanceClientImplSendPulse(t *testing.T) {
 			},
 			Conditions: []metav1.Condition{
 				NewAddonInstanceConditionInstalled(
-					"True",
+					metav1.ConditionFalse,
 					av1alpha1.AddonInstanceInstalledReasonSetupComplete,
 					"All components up",
 				),
 				NewAddonInstanceConditionDegraded(
-					"True",
+					metav1.ConditionTrue,
 					"ServiceXUnavailable",
 					"Service X database is unreachable",
+				),
+				NewAddonInstanceConditionReadyToBeDeleted(
+					metav1.ConditionTrue,
+					av1alpha1.AddonReasonReadyToBeDeleted,
+					"Ready to be deleted",
 				),
 			},
 		},
