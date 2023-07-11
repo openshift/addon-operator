@@ -68,7 +68,7 @@ func hasReadyToBeDeletedStatusCondition(
 	instance *addonsv1alpha1.AddonInstance, expectedValue metav1.ConditionStatus) bool {
 	requiredCond := meta.FindStatusCondition(
 		instance.Status.Conditions,
-		string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+		addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted.String(),
 	)
 	if requiredCond == nil {
 		return false
