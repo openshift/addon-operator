@@ -77,6 +77,12 @@ func NewAddonInstanceConditionInstalled(status metav1.ConditionStatus, reason av
 	return newAddonInstanceCondition(av1alpha1.AddonInstanceConditionInstalled, status, reason.String(), msg)
 }
 
+// NewAddonInstanceConditionReadyToBeDeleted returns an AddonInstanceReadyToBeDeleted status condition
+// with the given status, reason, and message.
+func NewAddonInstanceConditionReadyToBeDeleted(status metav1.ConditionStatus, reason av1alpha1.AddonInstanceReadyToBeDeleted, msg string) metav1.Condition {
+	return newAddonInstanceCondition(av1alpha1.AddonInstanceConditionReadyToBeDeleted, status, reason.String(), msg)
+}
+
 func newAddonInstanceCondition(cond av1alpha1.AddonInstanceCondition, status metav1.ConditionStatus, reason, msg string) metav1.Condition {
 	return metav1.Condition{
 		Type:    cond.String(),

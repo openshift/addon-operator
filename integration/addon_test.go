@@ -530,7 +530,7 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 		// We act like the addon's operator and add the ready to deleted condition to our addon instance.
 
 		meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
-			Type:    string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+			Type:    addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted.String(),
 			Reason:  addonsv1alpha1.AddonInstanceReasonReadyToBeDeleted.String(),
 			Message: "Cleanup up resources.",
 			Status:  metav1.ConditionTrue,
@@ -685,7 +685,7 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 
 		// We act like the addon's operator and add the ready to deleted condition to our addon instance.
 		meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
-			Type:    string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+			Type:    addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted.String(),
 			Reason:  addonsv1alpha1.AddonInstanceReasonReadyToBeDeleted.String(),
 			Message: "Cleanup up resources.",
 			Status:  metav1.ConditionTrue,
