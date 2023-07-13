@@ -37,10 +37,11 @@ func (r *olmReconciler) ensureCatalogSource(
 			Namespace: commonConfig.Namespace,
 		},
 		Spec: operatorsv1alpha1.CatalogSourceSpec{
-			SourceType:  operatorsv1alpha1.SourceTypeGrpc,
-			Publisher:   catalogSourcePublisher,
-			DisplayName: addon.Spec.DisplayName,
-			Image:       commonConfig.CatalogSourceImage,
+			SourceType:    operatorsv1alpha1.SourceTypeGrpc,
+			Publisher:     catalogSourcePublisher,
+			DisplayName:   addon.Spec.DisplayName,
+			Image:         commonConfig.CatalogSourceImage,
+			GrpcPodConfig: &operatorsv1alpha1.GrpcPodConfig{SecurityContextConfig: operatorsv1alpha1.Restricted},
 		},
 	}
 	if len(commonConfig.PullSecretName) > 0 {
@@ -103,10 +104,11 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 				Namespace: targetNamespace,
 			},
 			Spec: operatorsv1alpha1.CatalogSourceSpec{
-				SourceType:  operatorsv1alpha1.SourceTypeGrpc,
-				Publisher:   catalogSourcePublisher,
-				DisplayName: addon.Spec.DisplayName,
-				Image:       additionalCatalogSrc.Image,
+				SourceType:    operatorsv1alpha1.SourceTypeGrpc,
+				Publisher:     catalogSourcePublisher,
+				DisplayName:   addon.Spec.DisplayName,
+				Image:         additionalCatalogSrc.Image,
+				GrpcPodConfig: &operatorsv1alpha1.GrpcPodConfig{SecurityContextConfig: operatorsv1alpha1.Restricted},
 			},
 		}
 
