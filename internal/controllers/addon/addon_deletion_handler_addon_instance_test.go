@@ -130,7 +130,7 @@ func TestAckReceivedFromAddonStrategyNew(t *testing.T) {
 				Status: addonsv1alpha1.AddonInstanceStatus{
 					Conditions: []v1.Condition{
 						{
-							Type:   string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+							Type:   addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted.String(),
 							Status: v1.ConditionUnknown,
 						},
 					},
@@ -145,7 +145,7 @@ func TestAckReceivedFromAddonStrategyNew(t *testing.T) {
 				Status: addonsv1alpha1.AddonInstanceStatus{
 					Conditions: []v1.Condition{
 						{
-							Type:   string(addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted),
+							Type:   addonsv1alpha1.AddonInstanceConditionReadyToBeDeleted.String(),
 							Status: v1.ConditionTrue,
 						},
 					},
