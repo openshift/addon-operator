@@ -30,6 +30,7 @@ spec:
 		merge
 			(.config | b64decMap)
 			(hasKey .config "%[4]s" | ternary (dict "%[4]s" (index .config "%[4]s" | b64decMap)) (dict))
+			(hasKey .config "%[13]s" | ternary (dict "%[13]s" (index .config "%[13]s" | b64decMap)) (dict))
 			(dict "%[5]s" "%[6]s" "%[7]s" "%[8]s" "%[9]s" "%[10]s" "%[11]s" "%[12]s")
 	)}}
 `
@@ -89,6 +90,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		OcmClusterIDConfigKey, ocmClusterInfo.ID,
 		OcmClusterNameConfigKey, ocmClusterInfo.Name,
 		TargetNamespaceConfigKey, addonDestNamespace,
+		SendGridConfigKey,
 	)
 
 	clusterObjectTemplate := &pkov1alpha1.ClusterObjectTemplate{
