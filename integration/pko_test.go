@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/go-logr/logr"
 	"github.com/google/uuid"
@@ -164,7 +166,7 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 	sgValues := map[string]bool{
 		"SgN": false,
 		"SgY": true,
-	}	
+	}
 
 	// create all combinations
 	var tests []TestPKOSourcesData
@@ -172,67 +174,103 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 		for apK, apV := range apValues {
 			for dsK, dsV := range dsValues {
 				for pdK, pdV := range pdValues {
-					for sgK, sgV:= range sgValues {
-					pkoImage := pkoImageOptionalParams
-					    if parV {
-						    pkoImage = pkoImageRequiredParams
-					    }
+					for sgK, sgV := range sgValues {
+						pkoImage := pkoImageOptionalParams
+						if parV {
+							pkoImage = pkoImageRequiredParams
+						}
 
-					status := v1alpha1.PackageAvailable
-					if parV && (!apV || !dsV || !pdV || !sgV) {
-						status = pkov1alpha1.PackageInvalid
+						status := v1alpha1.PackageAvailable
+						if parV && (!apV || !dsV || !pdV || !sgV) {
+							status = pkov1alpha1.PackageInvalid
+						}
+
+						tests = append(tests, TestPKOSourcesData{
+							fmt.Sprintf("%s%s%s%s%s", parK, apK, dsK, pdK, sgK),
+							fmt.Sprintf("%s-%s-%s-%s-%s", strings.ToLower(parK), strings.ToLower(apK), strings.ToLower(dsK), strings.ToLower(pdK), strings.ToLower(sgK)),
+							parV, pkoImage,
+							apV, dsV, pdV, sgV,
+							status,
+						})
 					}
-
-					tests = append(tests, TestPKOSourcesData{
-						fmt.Sprintf("%s%s%s%s%s", parK, apK, dsK, pdK, sgK),
-						fmt.Sprintf("%s-%s-%s-%s-%s", strings.ToLower(parK), strings.ToLower(apK), strings.ToLower(dsK), strings.ToLower(pdK), strings.ToLower(sgK)),
-						parV, pkoImage,
-						apV, dsV, pdV, sgV,
-						status,
-					})
-				    }
-			    }
-		    }
-	    }
-    }
+				}
+			}
+		}
+	}
 	sort.Slice(tests, func(i, j int) bool {
 		return tests[i].name < tests[j].name
 	})
 
-	for index, test := range tests {
-		s.Run(test.name, func() {
-			testAddonName := fmt.Sprintf("%s-%02d-%s", addonName, index, test.resourceSuffix)
-			testAddonNamespace := fmt.Sprintf("%s-%02d-%s", addonNamespace, index, test.resourceSuffix)
-			ctx := context.Background()
+	// number of parallel workers
+	numWorkers := 8
+	// create a WaitGroup to wait for all jobs to finish
+	var wg sync.WaitGroup
+	// set the WaitGroup counter to the total number of jobs
+	wg.Add(len(tests))
+	// launch workers
+	for i := 0; i < numWorkers; i++ {
+		go testWorker(s, i, numWorkers, &wg, tests)
+	}
+	// wait for all jobs to finish
+	timedOut := waitTimeout(&wg, 15*time.Minute)
+	// check that the timeout didn't trigger
+	s.Require().False(timedOut)
+}
 
-			addon := s.createAddon(ctx, testAddonName, testAddonNamespace, test.pkoImage)
-			s.waitForNamespace(ctx, testAddonNamespace)
+func testWorker(s *integrationTestSuite, workerID int, numWorkers int, wg *sync.WaitGroup, testSources []TestPKOSourcesData) {
+	testIdx := workerID
 
-			if test.deployAddonParametersSecret {
-				s.createAddonParametersSecret(ctx, testAddonName, testAddonNamespace)
-			}
-			if test.deployDeadMansSnitchSecret {
-				s.createDeadMansSnitchSecret(ctx, testAddonName, testAddonNamespace)
-			}
-			if test.deployPagerDutySecret {
-				s.createPagerDutySecret(ctx, testAddonName, testAddonNamespace)
-			}
-			if test.deploySendGridSecret {
-				s.createSendGridSecret(ctx, testAddonName, testAddonNamespace)
-			}
-			s.waitForClusterPackage(
-				ctx,
-				testAddonName,
-				testAddonNamespace,
-				test.clusterPackageStatus,
-				test.deployAddonParametersSecret,
-				test.deployDeadMansSnitchSecret,
-				test.deployPagerDutySecret,
-				test.deploySendGridSecret,
-			)
+	for counter := 1; testIdx < len(testSources); counter++ {
+		testSource := testSources[testIdx]
 
-			s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
-		})
+		testAddonName := fmt.Sprintf("%s-%02d-%s", addonName, testIdx, testSource.resourceSuffix)
+		testAddonNamespace := fmt.Sprintf("%s-%02d-%s", addonNamespace, testIdx, testSource.resourceSuffix)
+		ctx := context.Background()
+
+		addon := s.createAddon(ctx, testAddonName, testAddonNamespace, testSource.pkoImage)
+		s.waitForNamespace(ctx, testAddonNamespace)
+
+		if testSource.deployAddonParametersSecret {
+			s.createAddonParametersSecret(ctx, testAddonName, testAddonNamespace)
+		}
+		if testSource.deployDeadMansSnitchSecret {
+			s.createDeadMansSnitchSecret(ctx, testAddonName, testAddonNamespace)
+		}
+		if testSource.deployPagerDutySecret {
+			s.createPagerDutySecret(ctx, testAddonName, testAddonNamespace)
+		}
+		if testSource.deploySendGridSecret {
+			s.createSendGridSecret(ctx, testAddonName, testAddonNamespace)
+		}
+
+		s.waitForClusterPackage(
+			ctx,
+			testAddonName,
+			testAddonNamespace,
+			testSource.clusterPackageStatus,
+			testSource.deployAddonParametersSecret,
+			testSource.deployDeadMansSnitchSecret,
+			testSource.deployPagerDutySecret,
+			testSource.deploySendGridSecret,
+		)
+
+		s.addonCleanup(addon, ctx)
+		wg.Done()
+		testIdx = workerID + counter*numWorkers
+	}
+}
+
+func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
+	c := make(chan struct{})
+	go func() {
+		defer close(c)
+		wg.Wait()
+	}()
+	select {
+	case <-c:
+		return false // completed normally
+	case <-time.After(timeout):
+		return true // timed out
 	}
 }
 
@@ -290,7 +328,8 @@ func (s *integrationTestSuite) createDeadMansSnitchSecret(ctx context.Context, a
 func (s *integrationTestSuite) createPagerDutySecret(ctx context.Context, addonName string, addonNamespace string) {
 	s.createSecret(ctx, addonName+"-pagerduty", addonNamespace, map[string][]byte{"PAGERDUTY_KEY": []byte(pagerDutyKeyValue)})
 }
-//create the Secret resource for SendGrid as defined here:
+
+// create the Secret resource for SendGrid as defined here:
 // - https://mt-sre.github.io/docs/creating-addons/monitoring/ocm_sendgrid_service_integration/
 func (s *integrationTestSuite) createSendGridSecret(ctx context.Context, addonName string, addonNamespace string) {
 	s.createSecret(ctx, addonName+"-smtp", addonNamespace, map[string][]byte{"host": []byte("clusterID"), "password": []byte("pwd"), "port": []byte("1111"), "tls": []byte("true"), "username": []byte("user")})
@@ -312,7 +351,7 @@ func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonN
 ) {
 	logger := testutil.NewLogger(s.T())
 	cp := &v1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
-	err := integration.WaitForObject(ctx, s.T(),
+	err := integration.WaitForObjectWithInterval(ctx, s.T(), 20*time.Second,
 		defaultAddonAvailabilityTimeout, cp, "to be "+conditionType,
 		clusterPackageChecker(&logger, addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent, pagerDutyValuePresent, sendGridValuePresent))
 	s.Require().NoError(err)

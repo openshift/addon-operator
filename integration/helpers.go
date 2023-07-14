@@ -213,6 +213,15 @@ func WaitForObject(
 	object client.Object, reason string,
 	checkFn func(obj client.Object) (done bool, err error),
 ) error {
+	return WaitForObjectWithInterval(ctx, t, time.Second, timeout, object, reason, checkFn)
+}
+
+func WaitForObjectWithInterval(
+	ctx context.Context,
+	t *testing.T, interval time.Duration, timeout time.Duration,
+	object client.Object, reason string,
+	checkFn func(obj client.Object) (done bool, err error),
+) error {
 	gvk, err := apiutil.GVKForObject(object, Scheme)
 	if err != nil {
 		return err
@@ -222,7 +231,7 @@ func WaitForObject(
 	t.Logf("waiting %s on %s %s %s...",
 		timeout, gvk, key, reason)
 
-	return wait.PollImmediate(time.Second, timeout, func() (done bool, err error) {
+	return wait.PollImmediate(interval, timeout, func() (done bool, err error) {
 		err = Client.Get(ctx, client.ObjectKeyFromObject(object), object)
 		if err != nil {
 			//nolint:nilerr // retry on transient errors
