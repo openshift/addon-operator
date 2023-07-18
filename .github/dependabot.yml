@@ -7,3 +7,13 @@ updates:
   commit-message:
     prefix: fix
     include: scope
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: "weekly"
+  labels:
+  - "area/dependency"
+  - "ok-to-test"
+  commit-message:
+    prefix: fix
+    include: scope
