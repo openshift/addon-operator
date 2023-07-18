@@ -6,7 +6,7 @@ metadata:
 spec:
   sourceType: grpc
   grpcPodConfig:
-    securityContextConfig: restricted  
+    securityContextConfig: restricted
   publisher: Red Hat
   displayName: MTSRE Addon Operator
   image: quay.io/app-sre/addon-operator-index:main
