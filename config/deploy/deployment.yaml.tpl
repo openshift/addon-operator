@@ -38,6 +38,10 @@ spec:
           name: trusted-ca-bundle
           optional: true
         name: trusted-ca-bundle
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: metrics-relay-server
         image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
@@ -72,6 +76,11 @@ spec:
           requests:
             cpu: 100m
             memory: 30Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
       - name: manager
         image: quay.io/openshift/addon-operator:latest
         args:
@@ -99,3 +108,8 @@ spec:
           requests:
             cpu: 100m
             memory: 300Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
