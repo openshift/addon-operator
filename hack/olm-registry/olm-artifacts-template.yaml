@@ -69,6 +69,7 @@ objects:
                 - effect: NoSchedule
                   key: node-role.kubernetes.io/infra
                   operator: Exists
+              securityContextConfig: restricted
         - apiVersion: operators.coreos.com/v1
           kind: OperatorGroup
           metadata:
