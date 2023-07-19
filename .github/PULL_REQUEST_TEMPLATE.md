@@ -12,6 +12,6 @@ _Fixes #_
 
 ### Pre-checks (if applicable):
 - [ ] Tested latest changes against a cluster
-- [ ] Ran `make test-unit` command locally to run all the unit test and mock test into the local system
+- [ ] Ran `make test-unit` command locally to run all the unit tests and mock tests locally.
 - [ ] Included documentation changes with PR
 - [ ] Squashed your commits
