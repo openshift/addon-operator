@@ -10,7 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/magefile/mage v1.14.0
+	github.com/magefile/mage v1.15.0
 	github.com/mt-sre/client v0.2.0
 	github.com/mt-sre/devkube v0.6.3
 	github.com/novln/docker-parser v1.0.0
