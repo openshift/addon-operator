@@ -259,10 +259,6 @@ spec:
                 - mountPath: /etc/pki/ca-trust/extracted/pem
                   name: trusted-ca-bundle
                   readOnly: true
-              securityContext:
-                runAsNonRoot: true
-                seccompProfile:
-                  type: RuntimeDefault
               serviceAccountName: addon-operator
               tolerations:
               - effect: NoSchedule
@@ -336,15 +332,6 @@ spec:
                   requests:
                     cpu: 100m
                     memory: 30Mi
-                securityContext:
-                  allowPrivilegeEscalation: false
-                  capabilities:
-                    drop:
-                    - ALL
-              securityContext:
-                runAsNonRoot: true
-                seccompProfile:
-                  type: RuntimeDefault
               serviceAccountName: addon-operator
               tolerations:
               - effect: NoSchedule

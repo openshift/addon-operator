@@ -196,10 +196,6 @@ spec:
                     - matchExpressions:
                       - key: node-role.kubernetes.io/infra
                         operator: Exists
-              securityContext:
-                runAsNonRoot: true
-                seccompProfile:
-                  type: RuntimeDefault
               containers:
               - args:
                 - --secure-listen-address=0.0.0.0:8443
@@ -312,10 +308,6 @@ spec:
                         values:
                         - addon-operator-webhook-server
                     topologyKey: kubernetes.io/hostname
-              securityContext:
-                runAsNonRoot: true
-                seccompProfile:
-                  type: RuntimeDefault
               containers:
               - image: quay.io/openshift/addon-operator-webhook:latest
                 livenessProbe:
@@ -340,11 +332,6 @@ spec:
                   requests:
                     cpu: 100m
                     memory: 30Mi
-                securityContext:
-                  allowPrivilegeEscalation: false
-                  capabilities:
-                    drop:
-                    - ALL
               serviceAccountName: addon-operator
               tolerations:
               - effect: NoSchedule

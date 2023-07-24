@@ -15,6 +15,6 @@ WORKDIR /
 
 COPY addon-operator-manager /usr/local/bin/
 
-USER "noroot"
+USER 1001
 
 ENTRYPOINT ["/usr/local/bin/addon-operator-manager"]
