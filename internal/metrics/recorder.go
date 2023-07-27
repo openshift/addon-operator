@@ -87,7 +87,7 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 			Name:        "addon_operator_addon_health_info",
 			Help:        "Addon Health information",
 			ConstLabels: prometheus.Labels{"_id": clusterId},
-		}, []string{"name", "version"},
+		}, []string{"name", "version", "reason"},
 	)
 
 	// Register metrics if `register` is true
@@ -177,11 +177,10 @@ func (r *Recorder) RecordAddonMetrics(addon *addonsv1alpha1.Addon) {
 	r.addonState.lock.Lock()
 	defer r.addonState.lock.Unlock()
 
-	// reconcile addon_operator_addon_health_info
+	// record addon_operator_addon_health_info
 	r.recordAddonHealthInfo(addon)
 
 	// reconcile addon_operator_addons_(available|paused|total)
-
 	currCondition := addonConditions{
 		available: meta.IsStatusConditionTrue(addon.Status.Conditions, addonsv1alpha1.Available),
 		paused:    meta.IsStatusConditionTrue(addon.Status.Conditions, addonsv1alpha1.Paused),
@@ -241,15 +240,20 @@ func (r *Recorder) RecordAddonMetrics(addon *addonsv1alpha1.Addon) {
 }
 
 func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
+	// cleanup the gauge metric; deduplication
+	r.addonHealthInfo.Reset()
 
 	var (
 		// `healthStatus` defaults to unknown unless status conditions say otherwise
 		healthStatus = 2
-		healthCond   = meta.FindStatusCondition(addon.Status.Conditions,
-			addonsv1alpha1.Available)
+		healthReason = "Unknown"
 	)
 
+	// healthCond defines the addon's availability
+	healthCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
+
 	if healthCond != nil {
+		healthReason = healthCond.Reason
 		switch healthCond.Status {
 		case metav1.ConditionFalse:
 			healthStatus = 0
@@ -261,12 +265,17 @@ func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
 
 	}
 
-	addonVersion := "0.0.0" // default value when addon version is missing
+	// default value when addon version is missing
+	// This will be recorded only once
+	addonVersion := "0.0.0"
+
 	if addon.Status.ObservedVersion != "" {
 		addonVersion = addon.Status.ObservedVersion
 	}
 
-	r.addonHealthInfo.WithLabelValues(addon.Name,
+	r.addonHealthInfo.WithLabelValues(
+		addon.Name,
 		addonVersion,
+		healthReason,
 	).Set(float64(healthStatus))
 }
