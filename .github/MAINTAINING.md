@@ -161,9 +161,8 @@ The following images are used by Addon operator:
 * https://quay.io/repository/app-sre/addon-operator-webhook?tab=tags
 * https://quay.io/repository/app-sre/addon-operator-index?tab=tags
 * https://quay.io/repository/app-sre/addon-operator-bundle?tab=tags *
-* https://quay.io/repository/app-sre/addon-operator-package?tab=tags * 
+* https://quay.io/repository/app-sre/addon-operator-package?tab=tags *
 
 These images should be kept free from high level vulnerabilities.  CVE's can be solved by updating the base UBI Image. An example pull request for updating the images can be found here: https://github.com/openshift/addon-operator/pull/314/files
 
 \* Images are "FROM SCRATCH", so there's no Operating System on them and, as such, they don't support scans and will never have any CVEs.
-
