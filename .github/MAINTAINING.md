@@ -123,7 +123,7 @@ Jira tickets are created for every Addon Operator related task. These tickets ma
 
 2. **Refactor**
 
-   1. Refactorization strictly must not cause changes to change the current behavior of the Addon Operator service.
+   1. Refactorization strictly must not cause breaking changes to the current behavior of the Addon Operator service.
    2. Refactorization that requires huge code changes must be reviewed with more scrutiny and must even be discouraged to avoid inadvertently introducing bugs.
 
 
