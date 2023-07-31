@@ -151,7 +151,7 @@ The Addon Operator service runs in OSD production clusters, and while automated 
 
 2. **Alerts**
 
-   1. There must be sufficient service alerts that notify Site-Reliability Engineers who are responsible for the Addon Operator service in production OSD clusters.
+   1. There must be sufficient service alerts that notify Site Reliability Engineers who are responsible for the Addon Operator service in production OSD clusters.
 
 ## Images
 
