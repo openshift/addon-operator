@@ -35,7 +35,6 @@ The following are the properties of the Addon Operator codebase and its areas th
 
 **VCS**: <https://github.com/openshift/addon-operator>
 
-**Production Build**: <https://ci.int.devshift.net/job/openshift-addon-operator-gh-build-main/>
 
 **Production Branch**: main
 
