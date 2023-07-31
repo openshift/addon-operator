@@ -1,4 +1,4 @@
-# Welcome to Addon Operator Maintenance guide
+# Welcome to Addon Operator maintenance guide
 
 [Overview](#overview)
 
