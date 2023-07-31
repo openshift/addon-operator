@@ -93,6 +93,7 @@ func TestAddonMetrics_AddonHealth(t *testing.T) {
 				{
 					Type:   addonsv1alpha1.Available,
 					Status: metav1.ConditionFalse,
+					Reason: addonsv1alpha1.AddonReasonUnreadyCSV,
 				},
 			}),
 			expected: float64(0),
@@ -102,6 +103,7 @@ func TestAddonMetrics_AddonHealth(t *testing.T) {
 				{
 					Type:   addonsv1alpha1.Available,
 					Status: metav1.ConditionTrue,
+					Reason: addonsv1alpha1.AddonReasonFullyReconciled,
 				},
 			}),
 			expected: float64(1),
@@ -127,12 +129,20 @@ func TestAddonMetrics_AddonHealth(t *testing.T) {
 			// local copy of the addon
 			addon := tc.addon.DeepCopy()
 			addon.Name = fmt.Sprintf("%s-%d", addonNamePrefix, i)
+			addonConditions := addon.Status.Conditions
+
+			healthReason := "Unknown"
+
+			if len(addonConditions) != 0 {
+				healthReason = addonConditions[0].Reason
+			}
 
 			recorder.recordAddonHealthInfo(addon)
 			assert.Equal(t, float64(tc.expected), testutil.ToFloat64(
 				recorder.addonHealthInfo.WithLabelValues(
 					addon.Name,
 					"0.0.0",
+					healthReason,
 				),
 			))
 		})
