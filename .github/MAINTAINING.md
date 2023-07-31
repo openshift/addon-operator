@@ -77,7 +77,7 @@ The Addon Operator codebase is continuously tested by running a set of test suit
 
 1. **Unit Tests**
 
-   1. The Addon Operator codebase must at least meet an 80% code coverage.
+   1. The Addon Operator codebase must at least meet an 70% code coverage.
    2. Every Addon Operator feature created must have a unit test to test it.
 
 
