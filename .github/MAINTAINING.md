@@ -49,7 +49,7 @@ Changes to the Addon Operator codebase are continuously integrated and its areas
    1. The Addon Operator build job must be kept healthy at all times. 
    2. Build failures must be addressed as soon as possible to avoid development or release interruptions. 
    3. The Addon Operator build job alerts on build failures by sending these alerts to the slack channel #sd-mt-sre-alert
-   4. Most importantly, the Addon Operator codebase must be shippable at all times when it needs to be shipped.
+   4. Most importantly, the Addon Operator codebase must be production ready at all times.```
 
 
 ### Pull Requests
