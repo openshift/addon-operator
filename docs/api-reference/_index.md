@@ -169,6 +169,7 @@ AddonOperatorStatus defines the observed state of Addon
 | status_type |  | string | true |
 | status_value |  | metav1.ConditionStatus | true |
 | reason |  | string | true |
+| message |  | string | true |
 
 [Back to Group]()
 

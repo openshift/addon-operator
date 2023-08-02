@@ -382,6 +382,7 @@ type AddOnStatusCondition struct {
 	StatusType  string                 `json:"status_type"`
 	StatusValue metav1.ConditionStatus `json:"status_value"`
 	Reason      string                 `json:"reason"`
+	Message     string                 `json:"message"`
 }
 
 type OCMAddOnStatusHash struct {
