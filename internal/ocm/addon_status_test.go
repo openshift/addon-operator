@@ -23,6 +23,7 @@ func TestClient_GetAddOnStatus(t *testing.T) {
 			"kind": "AddOnStatusResponse",
 			"addon_id": "addon-1",
 			"correlation_id": "12345-6789",
+			"version": "2.0.13",
 			"status_conditions": []
 		}`))
 		require.NoError(t, err, "Error writing response")
@@ -47,6 +48,7 @@ func TestClient_GetAddOnStatus(t *testing.T) {
 		Kind:             "AddOnStatusResponse",
 		AddonID:          "addon-1",
 		CorrelationID:    "12345-6789",
+		AddonVersion:     "2.0.13",
 		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{},
 	}
 
@@ -87,6 +89,7 @@ func TestClient_PostAddOnStatus(t *testing.T) {
 			"kind": "AddOnStatusResponse",
 			"addon_id": "addon-1",
 			"correlation_id": "12345-6789",
+			"version": "2.0.13",
 			"status_conditions": []
 		}`))
 		require.NoError(t, err, "Error writing response")
@@ -106,6 +109,7 @@ func TestClient_PostAddOnStatus(t *testing.T) {
 	payload := AddOnStatusPostRequest{
 		AddonID:          "addon-1",
 		CorrelationID:    "12345-6789",
+		AddonVersion:     "2.0.13",
 		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{},
 	}
 
@@ -121,6 +125,7 @@ func TestClient_PostAddOnStatus(t *testing.T) {
 		Kind:             "AddOnStatusResponse",
 		AddonID:          "addon-1",
 		CorrelationID:    "12345-6789",
+		AddonVersion:     "2.0.13",
 		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{},
 	}
 
@@ -161,11 +166,13 @@ func TestClient_PatchAddOnStatus(t *testing.T) {
 			"kind": "AddOnStatusResponse",
 			"addon_id": "addon-1",
 			"correlation_id": "12345-6789",
+			"version": "2.0.13",
 			"status_conditions": [
 				{
 					"status_type": "Ready",
 					"status_value": "True",
-					"reason": "InstallationSuccessful"
+					"reason": "InstallationSuccessful",
+					"message": "InstallationSuccessful"
 				}
 			]
 		}`))
@@ -185,11 +192,13 @@ func TestClient_PatchAddOnStatus(t *testing.T) {
 	// Prepare the payload
 	payload := AddOnStatusPatchRequest{
 		CorrelationID: "12345-6789",
+		AddonVersion:  "2.0.13",
 		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
 			{
 				StatusType:  "Ready",
 				StatusValue: metav1.ConditionTrue,
 				Reason:      "InstallationSuccessful",
+				Message:     "InstallationSuccessful",
 			},
 		},
 	}
@@ -204,11 +213,13 @@ func TestClient_PatchAddOnStatus(t *testing.T) {
 		Kind:          "AddOnStatusResponse",
 		AddonID:       "addon-1",
 		CorrelationID: "12345-6789",
+		AddonVersion:  "2.0.13",
 		StatusConditions: []addonsv1alpha1.AddOnStatusCondition{
 			{
 				StatusType:  "Ready",
 				StatusValue: metav1.ConditionTrue,
 				Reason:      "InstallationSuccessful",
+				Message:     "InstallationSuccessful",
 			},
 		},
 	}

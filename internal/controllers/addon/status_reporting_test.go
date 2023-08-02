@@ -39,14 +39,16 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 				Name: "addon-1",
 			},
 			Spec: addonsv1alpha1.AddonSpec{
+				Version:       "2.0.13",
 				CorrelationID: "123",
 			},
 			Status: addonsv1alpha1.AddonStatus{
 				Conditions: []metav1.Condition{
 					{
-						Type:   addonsv1alpha1.Available,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonFullyReconciled,
+						Type:    addonsv1alpha1.Available,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonFullyReconciled,
+						Message: "AddonReasonFullyReconciled",
 					},
 				},
 				OCMReportedStatusHash: &addonsv1alpha1.OCMAddOnStatusHash{},
@@ -72,14 +74,16 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 				Name: "addon-1",
 			},
 			Spec: addonsv1alpha1.AddonSpec{
+				Version:       "2.0.13",
 				CorrelationID: "123",
 			},
 			Status: addonsv1alpha1.AddonStatus{
 				Conditions: []metav1.Condition{
 					{
-						Type:   addonsv1alpha1.Available,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonFullyReconciled,
+						Type:    addonsv1alpha1.Available,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonFullyReconciled,
+						Message: "AddonReasonFullyReconciled",
 					},
 				},
 			},
@@ -108,14 +112,16 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 				Name: "addon-1",
 			},
 			Spec: addonsv1alpha1.AddonSpec{
+				Version:       "2.0.13",
 				CorrelationID: "123",
 			},
 			Status: addonsv1alpha1.AddonStatus{
 				Conditions: []metav1.Condition{
 					{
-						Type:   addonsv1alpha1.Available,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonFullyReconciled,
+						Type:    addonsv1alpha1.Available,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonFullyReconciled,
+						Message: "AddonReasonFullyReconciled",
 					},
 				},
 			},
@@ -125,6 +131,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
 			AddonID:          "addon-1",
 			CorrelationID:    "123",
+			AddonVersion:     addon.Spec.Version,
 			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
@@ -163,19 +170,22 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 				Name: "addon-1",
 			},
 			Spec: addonsv1alpha1.AddonSpec{
+				Version:       "2.0.13",
 				CorrelationID: "1234",
 			},
 			Status: addonsv1alpha1.AddonStatus{
 				Conditions: []metav1.Condition{
 					{
-						Type:   addonsv1alpha1.Available,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonFullyReconciled,
+						Type:    addonsv1alpha1.Available,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonFullyReconciled,
+						Message: "AddonReasonFullyReconciled",
 					},
 					{
-						Type:   addonsv1alpha1.UpgradeStarted,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonUpgradeStarted,
+						Type:    addonsv1alpha1.UpgradeStarted,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonUpgradeStarted,
+						Message: "AddonReasonUpgradeStarted",
 					},
 				},
 				OCMReportedStatusHash: &addonsv1alpha1.OCMAddOnStatusHash{
@@ -189,6 +199,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
 			AddonID:          "addon-1",
 			CorrelationID:    addon.Spec.CorrelationID,
+			AddonVersion:     addon.Spec.Version,
 			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
@@ -228,19 +239,22 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 				Name: "addon-1",
 			},
 			Spec: addonsv1alpha1.AddonSpec{
+				Version:       "2.0.13",
 				CorrelationID: "1234",
 			},
 			Status: addonsv1alpha1.AddonStatus{
 				Conditions: []metav1.Condition{
 					{
-						Type:   addonsv1alpha1.Available,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonFullyReconciled,
+						Type:    addonsv1alpha1.Available,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonFullyReconciled,
+						Message: "AddonReasonFullyReconciled",
 					},
 					{
-						Type:   addonsv1alpha1.UpgradeStarted,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonUpgradeStarted,
+						Type:    addonsv1alpha1.UpgradeStarted,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonUpgradeStarted,
+						Message: "AddonReasonUpgradeStarted",
 					},
 				},
 				OCMReportedStatusHash: &addonsv1alpha1.OCMAddOnStatusHash{},
@@ -254,6 +268,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
 			AddonID:          "addon-1",
 			CorrelationID:    addon.Spec.CorrelationID,
+			AddonVersion:     addon.Spec.Version,
 			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
@@ -292,19 +307,22 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 				Name: "addon-1",
 			},
 			Spec: addonsv1alpha1.AddonSpec{
+				Version:       "2.0.13",
 				CorrelationID: "1234",
 			},
 			Status: addonsv1alpha1.AddonStatus{
 				Conditions: []metav1.Condition{
 					{
-						Type:   addonsv1alpha1.Available,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonFullyReconciled,
+						Type:    addonsv1alpha1.Available,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonFullyReconciled,
+						Message: "AddonReasonFullyReconciled",
 					},
 					{
-						Type:   addonsv1alpha1.UpgradeStarted,
-						Status: metav1.ConditionTrue,
-						Reason: addonsv1alpha1.AddonReasonUpgradeStarted,
+						Type:    addonsv1alpha1.UpgradeStarted,
+						Status:  metav1.ConditionTrue,
+						Reason:  addonsv1alpha1.AddonReasonUpgradeStarted,
+						Message: "AddonReasonUpgradeStarted",
 					},
 				},
 				OCMReportedStatusHash: &addonsv1alpha1.OCMAddOnStatusHash{
@@ -318,6 +336,7 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		ocmClient.On("PostAddOnStatus", mock.Anything, ocm.AddOnStatusPostRequest{
 			AddonID:          "addon-1",
 			CorrelationID:    addon.Spec.CorrelationID,
+			AddonVersion:     addon.Spec.Version,
 			StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 		}).Return(
 			ocm.AddOnStatusResponse{},
