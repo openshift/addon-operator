@@ -133,6 +133,7 @@ type addonStatusKey struct {
 type addonStatus struct {
 	AddonID       string `json:"addon_id"`
 	CorrelationID string `json:"correlation_id"`
+	AddonVersion  string `json:"version"`
 	// We dont care about this unmarshalling this field.
 	StatusConditions []interface{} `json:"status_conditions"`
 }
