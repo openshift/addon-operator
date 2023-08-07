@@ -15,6 +15,10 @@ spec:
       labels:
         app.kubernetes.io/name: addon-operator
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: addon-operator
       affinity:
         nodeAffinity:

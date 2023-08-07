@@ -20,6 +20,10 @@ spec:
       labels:
         app.kubernetes.io/name: addon-operator-webhook-server
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: addon-operator
       affinity:
         nodeAffinity:

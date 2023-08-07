@@ -1,5 +1,7 @@
 FROM quay.io/podman/stable
 
+USER 65532:65532
+
 RUN yum install -y \
   python3-pip make ncurses git && \
   pip3 install pre-commit && \

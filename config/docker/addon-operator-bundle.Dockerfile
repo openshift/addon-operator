@@ -7,5 +7,7 @@ LABEL operators.operatorframework.io.bundle.package.v1=addon-operator
 LABEL operators.operatorframework.io.bundle.channels.v1=alpha
 LABEL operators.operatorframework.io.bundle.channel.default.v1=alpha
 
+USER 65532:65532
+
 ADD manifests/*.yaml /manifests/
 ADD metadata/annotations.yaml /metadata/annotations.yaml
