@@ -84,6 +84,7 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		res, err := integration.OCMClient.GetAddOnStatus(ctx, addon.Name)
 		s.Require().NoError(err)
 		s.Require().Equal(addon.Name, res.AddonID)
+		s.Require().Equal(addon.Spec.Version, res.AddonVersion)
 		s.Require().Equal(len(res.StatusConditions), 2)
 
 		expectedConditions := map[string]string{
@@ -93,6 +94,7 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		for _, condition := range res.StatusConditions {
 			expectedVal, found := expectedConditions[condition.StatusType]
 			s.Require().True(found && expectedVal == string(condition.StatusValue))
+			s.Require().NotEmpty(condition.Message)
 		}
 	})
 
@@ -115,6 +117,7 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		res, err := integration.OCMClient.GetAddOnStatus(ctx, addon.Name)
 		s.Require().NoError(err)
 		s.Require().Equal(addon.Name, res.AddonID)
+		s.Require().Equal(addon.Spec.Version, res.AddonVersion)
 		s.Require().Equal(len(res.StatusConditions), 3)
 		expectedConditions := map[string]string{
 			addonsv1alpha1.Available: string(metav1.ConditionTrue),
@@ -125,6 +128,7 @@ func (s *integrationTestSuite) TestAddonStatusReporting() {
 		for _, condition := range res.StatusConditions {
 			expectedVal, found := expectedConditions[condition.StatusType]
 			s.Require().True(found && expectedVal == string(condition.StatusValue))
+			s.Require().NotEmpty(condition.Message)
 		}
 
 		// Assert that the addon object correctly updates its status block with the
