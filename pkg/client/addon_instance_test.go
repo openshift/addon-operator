@@ -71,7 +71,7 @@ func TestAddonInstanceClientImplSendPulse(t *testing.T) {
 				),
 				NewAddonInstanceConditionReadyToBeDeleted(
 					metav1.ConditionTrue,
-					av1alpha1.AddonReasonReadyToBeDeleted,
+					av1alpha1.AddonInstanceReasonReadyToBeDeleted,
 					"Ready to be deleted",
 				),
 			},

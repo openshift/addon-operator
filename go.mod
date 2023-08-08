@@ -1,6 +1,6 @@
 module github.com/openshift/addon-operator
 
-go 1.18
+go 1.19
 
 require (
 	github.com/blang/semver/v4 v4.0.0
@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/magefile/mage v1.15.0
-	github.com/mt-sre/client v0.2.0
+	github.com/mt-sre/client v0.2.3
 	github.com/mt-sre/devkube v0.6.3
 	github.com/novln/docker-parser v1.0.0
 	github.com/openshift/addon-operator/apis v0.0.0-20230309184833-806514f6132f
@@ -43,7 +43,7 @@ require (
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/aws/aws-sdk-go v1.44.218 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
+	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dennwc/varint v1.0.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.10.2 // indirect
