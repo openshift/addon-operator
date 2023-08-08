@@ -557,6 +557,7 @@ func HashCurrentAddonStatus(addon *addonsv1alpha1.Addon) string {
 	ocmAddonStatus := addonsv1alpha1.OCMAddOnStatus{
 		AddonID:          addon.Name,
 		CorrelationID:    addon.Spec.CorrelationID,
+		AddonVersion:     addon.Spec.Version,
 		StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 	}
 	return hashOCMAddonStatus(ocmAddonStatus)
