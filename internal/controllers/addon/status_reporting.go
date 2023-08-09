@@ -49,6 +49,7 @@ func (r *AddonReconciler) postAddonStatus(ctx context.Context, addon *addonsv1al
 	statusPayload := ocm.AddOnStatusPostRequest{
 		AddonID:          addon.Name,
 		CorrelationID:    addon.Spec.CorrelationID,
+		AddonVersion:     addon.Spec.Version,
 		StatusConditions: mapToAddonStatusConditions(addon.Status.Conditions),
 	}
 	r.recordAddonServiceRequestDuration(func() {
@@ -79,6 +80,7 @@ func mapToAddonStatusConditions(in []metav1.Condition) []addonsv1alpha1.AddOnSta
 			StatusType:  obj.Type,
 			StatusValue: obj.Status,
 			Reason:      obj.Reason,
+			Message:     obj.Message,
 		}
 	}
 	return res

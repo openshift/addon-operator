@@ -13,6 +13,8 @@ type AddOnStatusPostRequest struct {
 	AddonID string `json:"addon_id"`
 	// Correlation ID for co-relating current AddonCR revision and reported status.
 	CorrelationID string `json:"correlation_id"`
+	// Addon Version
+	AddonVersion string `json:"version"`
 	// Reported addon status conditions
 	StatusConditions []addonsv1alpha1.AddOnStatusCondition `json:"status_conditions"`
 }
@@ -20,6 +22,8 @@ type AddOnStatusPostRequest struct {
 type AddOnStatusPatchRequest struct {
 	// Correlation ID for co-relating current AddonCR revision and reported status.
 	CorrelationID string `json:"correlation_id"`
+	// Addon Version
+	AddonVersion string `json:"version"`
 	// Reported addon status conditions
 	StatusConditions []addonsv1alpha1.AddOnStatusCondition `json:"status_conditions"`
 }
@@ -31,6 +35,8 @@ type AddOnStatusResponse struct {
 	AddonID string `json:"addon_id"`
 	// Correlation ID for co-relating current AddonCR revision and reported status.
 	CorrelationID string `json:"correlation_id"`
+	// Addon Version
+	AddonVersion string `json:"version"`
 	// Reported addon status conditions
 	StatusConditions []addonsv1alpha1.AddOnStatusCondition `json:"status_conditions"`
 }

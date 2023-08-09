@@ -382,6 +382,7 @@ type AddOnStatusCondition struct {
 	StatusType  string                 `json:"status_type"`
 	StatusValue metav1.ConditionStatus `json:"status_value"`
 	Reason      string                 `json:"reason"`
+	Message     string                 `json:"message"`
 }
 
 type OCMAddOnStatusHash struct {
@@ -397,6 +398,8 @@ type OCMAddOnStatus struct {
 	AddonID string `json:"addonID"`
 	// Correlation ID for co-relating current AddonCR revision and reported status.
 	CorrelationID string `json:"correlationID"`
+	// Version of the addon
+	AddonVersion string `json:"version"`
 	// Reported addon status conditions
 	StatusConditions []AddOnStatusCondition `json:"statusConditions"`
 	// The most recent generation a status update was based on.

@@ -169,6 +169,7 @@ AddonOperatorStatus defines the observed state of Addon
 | status_type |  | string | true |
 | status_value |  | metav1.ConditionStatus | true |
 | reason |  | string | true |
+| message |  | string | true |
 
 [Back to Group]()
 
@@ -421,6 +422,7 @@ Struct used to hash the reported addon status (along with correlationID).
 | ----- | ----------- | ------ | -------- |
 | addonID | ID of the addon. | string | true |
 | correlationID | Correlation ID for co-relating current AddonCR revision and reported status. | string | true |
+| version | Version of the addon | string | true |
 | statusConditions | Reported addon status conditions | [][AddOnStatusCondition.addons.managed.openshift.io/v1alpha1](#addonstatusconditionaddonsmanagedopenshiftiov1alpha1) | true |
 | observedGeneration | The most recent generation a status update was based on. | int64 | true |
 
