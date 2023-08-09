@@ -14,6 +14,6 @@ WORKDIR /
 
 COPY addon-operator-webhook /usr/local/bin/
 
-USER "noroot"
+USER 1001
 
 ENTRYPOINT ["/usr/local/bin/addon-operator-webhook"]

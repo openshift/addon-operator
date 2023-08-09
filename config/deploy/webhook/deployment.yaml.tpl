@@ -42,6 +42,10 @@ spec:
           key: node-role.kubernetes.io/infra
         - effect: NoSchedule
           key: node-role.kubernetes.io/master
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: webhook
         image: quay.io/openshift/addon-operator-webhook:latest
@@ -70,6 +74,11 @@ spec:
           requests:
             cpu: 100m
             memory: 30Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
       volumes:
       - name: tls
         secret:

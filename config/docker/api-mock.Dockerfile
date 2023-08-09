@@ -14,6 +14,6 @@ WORKDIR /
 
 COPY api-mock /usr/local/bin/
 
-USER "noroot"
+USER 1001
 
 ENTRYPOINT ["/usr/local/bin/api-mock"]

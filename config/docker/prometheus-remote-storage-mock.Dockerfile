@@ -14,6 +14,6 @@ WORKDIR /
 
 COPY prometheus-remote-storage-mock /usr/local/bin/
 
-USER "noroot"
+USER 1001
 
 ENTRYPOINT ["/usr/local/bin/prometheus-remote-storage-mock"]
