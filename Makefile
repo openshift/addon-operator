@@ -304,3 +304,11 @@ push-image-%:
 # cleans the config/openshift folder for addon-operator-bundle openshift test folder
 clean-config-openshift:
 	@rm -rf "config/openshift/*"
+
+# ------------------
+##@ Codecov.io
+# ------------------
+
+.PHONY: coverage
+coverage:
+	hack/codecov.sh
