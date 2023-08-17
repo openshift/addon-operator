@@ -904,6 +904,7 @@ const (
 	opmVersion           = "1.24.0"
 	pkoCliVersion        = "1.6.1"
 	helmVersion          = "3.7.2"
+	govulncheckVersion   = "1.0.0"
 )
 
 type Dependency mg.Namespace
@@ -941,6 +942,11 @@ func (d Dependency) YQ() error {
 func (d Dependency) Goimports() error {
 	return depsDir.GoInstall("go-imports",
 		"golang.org/x/tools/cmd/goimports", goimportsVersion)
+}
+
+func (d Dependency) Govulncheck() error {
+	return depsDir.GoInstall("go-imports",
+		"golang.org/x/vuln/cmd/govulncheck", govulncheckVersion)
 }
 
 func (d Dependency) GolangciLint() error {
