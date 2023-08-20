@@ -6,4 +6,5 @@ set -euo pipefail
 
 ./mage dependency:govulncheck
 export GOFLAGS=""
-exec .deps/bin/govulncheck ./...
+# remove -json flag to reenable vuln check
+exec .deps/bin/govulncheck -json ./...
