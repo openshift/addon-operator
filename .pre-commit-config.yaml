@@ -42,6 +42,14 @@ repos:
     types: [go]
     require_serial: true # mage does not like multiple parallel compiles
 
+  - id: govulncheck
+    name: govulncheck
+    entry: hack/ensure-and-run-govulncheck.sh
+    language: script
+    pass_filenames: false
+    types: [go]
+    require_serial: true # mage does not like multiple parallel compiles
+
   - id: go-mod-tidy
     name: go-mod-tidy
     entry: make tidy

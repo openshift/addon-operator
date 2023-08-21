@@ -900,6 +900,7 @@ const (
 	yqVersion            = "4.12.0"
 	goimportsVersion     = "0.2.0"
 	golangciLintVersion  = "1.51.2"
+	govulncheckVersion   = "1.0.0"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.24.0"
 	pkoCliVersion        = "1.6.1"
@@ -946,6 +947,11 @@ func (d Dependency) Goimports() error {
 func (d Dependency) GolangciLint() error {
 	return depsDir.GoInstall("golangci-lint",
 		"github.com/golangci/golangci-lint/cmd/golangci-lint", golangciLintVersion)
+}
+
+func (d Dependency) Govulncheck() error {
+	return depsDir.GoInstall("govulncheck",
+		"golang.org/x/vuln/cmd/govulncheck", govulncheckVersion)
 }
 
 func (d Dependency) Helm() error {
