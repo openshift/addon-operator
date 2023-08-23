@@ -11,7 +11,7 @@ import (
 	k8sApiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	utilpointer "k8s.io/utils/pointer"
+	utilpointer "k8s.io/utils/ptr"
 
 	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 
@@ -93,7 +93,7 @@ func NewTestExistingNamespace() *corev1.Namespace {
 			Kind:       "foo-kind-something-else",
 			Name:       "foo-name-something-else",
 			UID:        "foo-uid-something-else",
-			Controller: utilpointer.Bool(true),
+			Controller: utilpointer.To(true),
 		},
 	}
 
@@ -266,7 +266,7 @@ func testOwnerRefs() []metav1.OwnerReference {
 			Kind:       "foo-kind",
 			Name:       "foo-name",
 			UID:        "foo-uid",
-			Controller: utilpointer.Bool(true),
+			Controller: utilpointer.To(true),
 		},
 	}
 }
