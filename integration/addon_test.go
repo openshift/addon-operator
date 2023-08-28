@@ -338,6 +338,7 @@ func (s *integrationTestSuite) TestAddonConditions() {
 		s.Require().NoError(err)
 
 		// wait until Addon has installed=true.
+		// i.e; Addon Instance has been installed & CSV phase has succeeded.
 		err = integration.WaitForObject(
 			ctx,
 			s.T(), defaultAddonAvailabilityTimeout, addon, "to be installed",
@@ -387,7 +388,6 @@ func (s *integrationTestSuite) TestAddonConditions() {
 		}
 		err = integration.Client.Create(ctx, deleteConfigMap)
 		s.Require().NoError(err)
-
 		// wait for installed=false condition to be reported.
 		err = integration.WaitForObject(
 			ctx,

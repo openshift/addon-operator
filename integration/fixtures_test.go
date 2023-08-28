@@ -114,8 +114,10 @@ func addonWithVersion(version string, catalogSrc string) *addonsv1alpha1.Addon {
 		},
 		Spec: addonsv1alpha1.AddonSpec{
 			DeleteAckRequired: true,
-			Version:           version,
-			DisplayName:       "addon-oisafbo12",
+			// TODO: Modify reference-addon to report addon instance as installed without depending on the addon's availability
+			// InstallAckRequired: true,
+			Version:     version,
+			DisplayName: "addon-oisafbo12",
 			Namespaces: []addonsv1alpha1.AddonNamespace{
 				{Name: "namespace-onbgdions"},
 				{Name: "namespace-pioghfndb"},

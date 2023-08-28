@@ -112,6 +112,7 @@ func reportReadinessStatus(addon *addonsv1alpha1.Addon) {
 	meta.SetStatusCondition(&addon.Status.Conditions, metav1.Condition{
 		Type:               addonsv1alpha1.Available,
 		Status:             metav1.ConditionTrue,
+		Message:            "All components are ready.",
 		Reason:             addonsv1alpha1.AddonReasonFullyReconciled,
 		ObservedGeneration: addon.Generation,
 	})
@@ -172,7 +173,7 @@ func reportAddonReadyToBeDeletedStatus(addon *addonsv1alpha1.Addon, value metav1
 			Type:               addonsv1alpha1.ReadyToBeDeleted,
 			Status:             value,
 			Reason:             addonsv1alpha1.AddonReasonReadyToBeDeleted,
-			Message:            "Addon is ready to deleted.",
+			Message:            "Addon is ready to be deleted.",
 			ObservedGeneration: addon.Generation,
 		})
 		addon.Status.ObservedGeneration = addon.Generation
@@ -181,7 +182,7 @@ func reportAddonReadyToBeDeletedStatus(addon *addonsv1alpha1.Addon, value metav1
 			Type:               addonsv1alpha1.ReadyToBeDeleted,
 			Status:             value,
 			Reason:             addonsv1alpha1.AddonReasonNotReadyToBeDeleted,
-			Message:            "Addon is not yet ready to deleted.",
+			Message:            "Addon is not yet ready to be deleted.",
 			ObservedGeneration: addon.Generation,
 		})
 		addon.Status.ObservedGeneration = addon.Generation
@@ -193,7 +194,7 @@ func reportAddonDeletionTimedOut(addon *addonsv1alpha1.Addon) {
 		Type:               addonsv1alpha1.DeleteTimeout,
 		Status:             metav1.ConditionTrue,
 		Reason:             addonsv1alpha1.AddonReasonDeletionTimedOut,
-		Message:            "Addon deletion is timed out.",
+		Message:            "Addon deletion has timed out.",
 		ObservedGeneration: addon.Generation,
 	})
 	addon.Status.ObservedGeneration = addon.Generation
@@ -327,8 +328,13 @@ func reportUnreadyCSV(addon *addonsv1alpha1.Addon, message string) {
 	reportPendingStatus(addon, addonsv1alpha1.AddonReasonUnreadyCSV,
 		fmt.Sprintf("ClusterServiceVersion is not ready: %s", message))
 }
+
 func reportMissingCSV(addon *addonsv1alpha1.Addon) {
 	reportPendingStatus(addon, addonsv1alpha1.AddonReasonMissingCSV, "ClusterServiceVersion is missing.")
+}
+
+func reportPendingAddonInstanceInstallation(addon *addonsv1alpha1.Addon) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonInstanceNotInstalled, "Addon instance is not yet installed.")
 }
 
 func reportUnreadyMonitoringFederation(addon *addonsv1alpha1.Addon, message string) {

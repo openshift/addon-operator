@@ -323,6 +323,7 @@ AddonSpec defines the desired state of Addon.
 | correlationID | Correlation ID for co-relating current AddonCR revision and reported status. | string | false |
 | install | Defines how an Addon is installed. This field is immutable. | [AddonInstallSpec.addons.managed.openshift.io/v1alpha1](#addoninstallspecaddonsmanagedopenshiftiov1alpha1) | true |
 | deleteAckRequired | Defines whether the addon needs acknowledgment from the underlying addon's operator before deletion. | bool | true |
+| installAckRequired | Defines if the addon needs installation acknowledgment from its corresponding addon instance. | bool | true |
 | upgradePolicy | UpgradePolicy enables status reporting via upgrade policies. | *[AddonUpgradePolicy.addons.managed.openshift.io/v1alpha1](#addonupgradepolicyaddonsmanagedopenshiftiov1alpha1) | false |
 | monitoring | Defines how an addon is monitored. | *[MonitoringSpec.addons.managed.openshift.io/v1alpha1](#monitoringspecaddonsmanagedopenshiftiov1alpha1) | false |
 | secretPropagation | Settings for propagating secrets from the Addon Operator install namespace into Addon namespaces. | *[AddonSecretPropagation.addons.managed.openshift.io/v1alpha1](#addonsecretpropagationaddonsmanagedopenshiftiov1alpha1) | false |
