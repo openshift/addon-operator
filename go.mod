@@ -17,7 +17,7 @@ require (
 	github.com/openshift/addon-operator/apis v0.0.0-20230309184833-806514f6132f
 	github.com/openshift/api v0.0.0-20211122204231-b094ceff1955
 	github.com/operator-framework/api v0.17.3
-	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.63.0
+	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.65.2
 	github.com/prometheus/client_golang v1.15.1
 	github.com/prometheus/client_model v0.4.0
 	github.com/prometheus/common v0.44.0
@@ -25,14 +25,14 @@ require (
 	github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring v0.61.1-rhobs1
 	github.com/rhobs/observability-operator v0.0.20
 	github.com/stretchr/testify v1.8.4
-	k8s.io/api v0.26.7
-	k8s.io/apiextensions-apiserver v0.26.7
-	k8s.io/apimachinery v0.26.7
-	k8s.io/client-go v0.26.7
+	k8s.io/api v0.27.1
+	k8s.io/apiextensions-apiserver v0.27.1
+	k8s.io/apimachinery v0.27.1
+	k8s.io/client-go v0.27.1
 	k8s.io/kubectl v0.26.2
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
 	package-operator.run/apis v1.8.0
-	sigs.k8s.io/controller-runtime v0.14.5
+	sigs.k8s.io/controller-runtime v0.14.6
 	sigs.k8s.io/kind v0.17.0
 	sigs.k8s.io/yaml v1.3.0
 )
@@ -108,7 +108,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/component-base v0.26.7 // indirect
+	k8s.io/component-base v0.27.1 // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230308215209-15aac26d736a // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
