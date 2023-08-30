@@ -40,6 +40,8 @@ func TestObserveOperatorResource(t *testing.T) {
 	testCases := map[string]struct {
 		operatorResource       *operatorsv1.Operator
 		addonStatus            *addonsv1alpha1.AddonStatus
+		addonInstanceStatus    *addonsv1alpha1.AddonInstanceStatus
+		installAckRequired     bool
 		deleteConfigMapPresent *bool
 		expected               Expected
 	}{
@@ -112,7 +114,7 @@ func TestObserveOperatorResource(t *testing.T) {
 				Result:     resultNil,
 			},
 		},
-		"sets installed condition": {
+		"sets installed condition when install ack is not required": {
 			operatorResource: &operatorsv1.Operator{
 				Status: operatorsv1.OperatorStatus{
 					Components: &operatorsv1.Components{
@@ -139,6 +141,74 @@ func TestObserveOperatorResource(t *testing.T) {
 			expected: Expected{
 				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue), availableCondition()},
 				Result:     resultNil,
+			},
+		},
+		"sets installed condition when install ack is required": {
+			operatorResource: &operatorsv1.Operator{
+				Status: operatorsv1.OperatorStatus{
+					Components: &operatorsv1.Components{
+						LabelSelector: nil,
+						Refs: []operatorsv1.RichReference{
+							{
+								ObjectReference: &corev1.ObjectReference{
+									Kind:       "ClusterServiceVersion",
+									Namespace:  referenceAddonNamespace,
+									Name:       referenceAddonOperatorResourceName,
+									APIVersion: "operators.coreos.com/v1alpha1",
+								},
+								Conditions: []operatorsv1.Condition{
+									{
+										Type:   "Succeeded",
+										Status: "True",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			installAckRequired: true,
+			addonInstanceStatus: &addonsv1alpha1.AddonInstanceStatus{
+				Conditions: []metav1.Condition{addonInstanceInstalledCondition()},
+			},
+			expected: Expected{
+				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue), availableCondition()},
+				Result:     resultNil,
+			},
+		},
+		"does not set installed condition when install ack is required and addon instance is not installed": {
+			operatorResource: &operatorsv1.Operator{
+				Status: operatorsv1.OperatorStatus{
+					Components: &operatorsv1.Components{
+						LabelSelector: nil,
+						Refs: []operatorsv1.RichReference{
+							{
+								ObjectReference: &corev1.ObjectReference{
+									Kind:       "ClusterServiceVersion",
+									Namespace:  referenceAddonNamespace,
+									Name:       referenceAddonOperatorResourceName,
+									APIVersion: "operators.coreos.com/v1alpha1",
+								},
+								Conditions: []operatorsv1.Condition{
+									{
+										Type:   "Succeeded",
+										Status: "True",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			addonInstanceStatus: &addonsv1alpha1.AddonInstanceStatus{
+				// Empty condition here denotes that the addon's operator is yet to mark its
+				// addon instance as installed
+				Conditions: []metav1.Condition{},
+			},
+			installAckRequired: true,
+			expected: Expected{
+				Conditions: []metav1.Condition{pendingAddonInstanceInstallCondition()},
+				Result:     resultRetry,
 			},
 		},
 		"sets uninstalled condition when delete config map is present and CSV is missing": {
@@ -193,6 +263,7 @@ func TestObserveOperatorResource(t *testing.T) {
 			}
 
 			r := &olmReconciler{
+				client:                  c,
 				uncachedClient:          c,
 				scheme:                  testutil.NewTestSchemeWithAddonsv1alpha1(),
 				operatorResourceHandler: operatorResourceHandler,
@@ -213,6 +284,21 @@ func TestObserveOperatorResource(t *testing.T) {
 						},
 					},
 				},
+			}
+
+			if tc.installAckRequired {
+				addon.Spec.InstallAckRequired = true
+
+				c.On(
+					"Get",
+					mock.Anything,
+					mock.Anything,
+					mock.IsType(&addonsv1alpha1.AddonInstance{}),
+					mock.Anything,
+				).Run(func(args mock.Arguments) {
+					addonInstance := args.Get(2).(*addonsv1alpha1.AddonInstance)
+					addonInstance.Status = *tc.addonInstanceStatus
+				}).Return(nil)
 			}
 
 			if tc.deleteConfigMapPresent != nil && *tc.deleteConfigMapPresent {
@@ -273,11 +359,21 @@ func installedCondition(value metav1.ConditionStatus) metav1.Condition {
 	}
 }
 
+func addonInstanceInstalledCondition() metav1.Condition {
+	return metav1.Condition{
+		Type:    addonsv1alpha1.AddonInstanceConditionInstalled.String(),
+		Status:  metav1.ConditionTrue,
+		Reason:  addonsv1alpha1.AddonInstanceInstalledReasonSetupComplete.String(),
+		Message: "Addon Instance has been successfully installed.",
+	}
+}
+
 func availableCondition() metav1.Condition {
 	return metav1.Condition{
-		Type:   addonsv1alpha1.Available,
-		Status: metav1.ConditionTrue,
-		Reason: addonsv1alpha1.AddonReasonFullyReconciled,
+		Type:    addonsv1alpha1.Available,
+		Status:  metav1.ConditionTrue,
+		Message: "All components are ready.",
+		Reason:  addonsv1alpha1.AddonReasonFullyReconciled,
 	}
 }
 
@@ -296,6 +392,15 @@ func missingCSVCondition() metav1.Condition {
 		Status:  metav1.ConditionFalse,
 		Reason:  addonsv1alpha1.AddonReasonMissingCSV,
 		Message: "ClusterServiceVersion is missing.",
+	}
+}
+
+func pendingAddonInstanceInstallCondition() metav1.Condition {
+	return metav1.Condition{
+		Type:    addonsv1alpha1.Available,
+		Status:  metav1.ConditionFalse,
+		Reason:  addonsv1alpha1.AddonReasonInstanceNotInstalled,
+		Message: "Addon instance is not yet installed.",
 	}
 }
 

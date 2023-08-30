@@ -237,6 +237,10 @@ spec:
                 required:
                 - type
                 type: object
+              installAckRequired:
+                description: Defines if the addon needs installation acknowledgment
+                  from its corresponding addon instance.
+                type: boolean
               monitoring:
                 description: Defines how an addon is monitored.
                 properties:

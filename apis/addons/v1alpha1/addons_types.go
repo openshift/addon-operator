@@ -48,6 +48,11 @@ type AddonSpec struct {
 	// +optional
 	DeleteAckRequired bool `json:"deleteAckRequired"`
 
+	// Defines if the addon needs installation acknowledgment
+	// from its corresponding addon instance.
+	// +optional
+	InstallAckRequired bool `json:"installAckRequired"`
+
 	// UpgradePolicy enables status reporting via upgrade policies.
 	UpgradePolicy *AddonUpgradePolicy `json:"upgradePolicy,omitempty"`
 
@@ -313,6 +318,9 @@ const (
 
 	// Addon has timed out waiting for acknowledgement from the underlying addon.
 	AddonReasonDeletionTimedOut = "AddonReasonDeletionTimedOut"
+
+	// Addon Instance is not yet installed.
+	AddonReasonInstanceNotInstalled = "AddonInstanceNotInstalled"
 )
 
 type AddonNamespace struct {
