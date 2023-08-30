@@ -1,6 +1,6 @@
 module github.com/openshift/addon-operator/apis
 
-go 1.19
+go 1.20
 
 require (
 	github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring v0.61.1-rhobs1
