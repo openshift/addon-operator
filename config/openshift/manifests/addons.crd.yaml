@@ -1,9 +1,7 @@
-apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.6.2
-  creationTimestamp: null
+    controller-gen.kubebuilder.io/version: v0.12.1
   name: addons.addons.managed.openshift.io
 spec:
   group: addons.managed.openshift.io
@@ -26,10 +24,10 @@ spec:
       openAPIV3Schema:
         description: "Addon is the Schema for the Addons API \n **Example** ```yaml
           apiVersion: addons.managed.openshift.io/v1alpha1 kind: Addon metadata: \n
-          \tname: reference-addon \n spec: \n \tdisplayName: An amazing example addon!
-          \tnamespaces: \t- name: reference-addon \tinstall: \t  type: OLMOwnNamespace
-          \t  olmOwnNamespace: \t    namespace: reference-addon \t    packageName:
-          reference-addon \t    channel: alpha \t    catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+          name: reference-addon \n spec: \n displayName: An amazing example addon!
+          namespaces: - name: reference-addon install: type: OLMOwnNamespace olmOwnNamespace:
+          namespace: reference-addon packageName: reference-addon channel: alpha catalogSourceImage:
+          quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
           \n ```"
         properties:
           apiVersion:
@@ -316,6 +314,7 @@ spec:
                                     required:
                                     - key
                                     type: object
+                                    x-kubernetes-map-type: atomic
                                   secret:
                                     description: Secret containing data to use for
                                       the targets.
@@ -337,6 +336,7 @@ spec:
                                     required:
                                     - key
                                     type: object
+                                    x-kubernetes-map-type: atomic
                                 type: object
                               clientSecret:
                                 description: The secret containing the OAuth2 client
@@ -359,6 +359,7 @@ spec:
                                 required:
                                 - key
                                 type: object
+                                x-kubernetes-map-type: atomic
                               endpointParams:
                                 additionalProperties:
                                   type: string
@@ -442,6 +443,7 @@ spec:
                                 TODO: Add other useful fields. apiVersion, kind, uid?'
                               type: string
                           type: object
+                          x-kubernetes-map-type: atomic
                         sourceSecret:
                           description: Source secret name in the Addon Operator install
                             namespace.
@@ -451,6 +453,7 @@ spec:
                                 TODO: Add other useful fields. apiVersion, kind, uid?'
                               type: string
                           type: object
+                          x-kubernetes-map-type: atomic
                       required:
                       - destinationSecret
                       - sourceSecret
@@ -488,14 +491,12 @@ spec:
                   description: "Condition contains details for one aspect of the current
                     state of this API Resource. --- This struct is intended for direct
                     use as an array at the field path .status.conditions.  For example,
-                    \n \ttype FooStatus struct{ \t    // Represents the observations
-                    of a foo's current state. \t    // Known .status.conditions.type
-                    are: \"Available\", \"Progressing\", and \"Degraded\" \t    //
-                    +patchMergeKey=type \t    // +patchStrategy=merge \t    // +listType=map
-                    \t    // +listMapKey=type \t    Conditions []metav1.Condition
+                    \n type FooStatus struct{ // Represents the observations of a
+                    foo's current state. // Known .status.conditions.type are: \"Available\",
+                    \"Progressing\", and \"Degraded\" // +patchMergeKey=type // +patchStrategy=merge
+                    // +listType=map // +listMapKey=type Conditions []metav1.Condition
                     `json:\"conditions,omitempty\" patchStrategy:\"merge\" patchMergeKey:\"type\"
-                    protobuf:\"bytes,1,rep,name=conditions\"` \n \t    // other fields
-                    \t}"
+                    protobuf:\"bytes,1,rep,name=conditions\"` \n // other fields }"
                   properties:
                     lastTransitionTime:
                       description: lastTransitionTime is the last time the condition
@@ -612,9 +613,3 @@ spec:
     storage: true
     subresources:
       status: {}
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []

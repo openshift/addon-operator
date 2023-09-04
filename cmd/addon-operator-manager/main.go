@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -21,12 +22,12 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -51,6 +52,8 @@ func init() {
 	_ = operatorsv1alpha1.AddToScheme(scheme)
 	_ = configv1.AddToScheme(scheme)
 	_ = monitoringv1.AddToScheme(scheme)
+
+	ctrl.SetLogger(setupLog)
 }
 
 func initReconcilers(mgr ctrl.Manager,
@@ -235,16 +238,18 @@ func setup() error {
 		LeaderElection:             opts.EnableLeaderElection,
 		LeaderElectionID:           "8a4hp84a6s.addon-operator-lock",
 		LeaderElectionNamespace:    opts.LeaderElectionNamespace,
-		NewCache: cache.BuilderWithOptions(cache.Options{
-			SelectorsByObject: cache.SelectorsByObject{
+		MapperProvider:             apiutil.NewDynamicRESTMapper,
+		Cache: cache.Options{
+			ByObject: map[client.Object]cache.ByObject{
 				&corev1.Secret{}: {
 					Label: labels.SelectorFromSet(labels.Set{
 						controllers.CommonCacheLabel: controllers.CommonCacheValue,
 					}),
 				},
 			},
-		}),
+		},
 	})
+
 	if err != nil {
 		return fmt.Errorf("unable to start manager: %w", err)
 	}

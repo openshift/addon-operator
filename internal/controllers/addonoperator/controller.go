@@ -28,7 +28,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 const (
@@ -51,8 +50,7 @@ func (r *AddonOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&addonsv1alpha1.AddonOperator{}).
 		WithEventFilter(predicate.GenerationChangedPredicate{}).
-		Watches(source.Func(enqueueAddonOperator),
-			&handler.EnqueueRequestForObject{}). // initial enqueue for creating the object
+		Watches(&addonsv1alpha1.AddonOperator{}, &handler.EnqueueRequestForObject{}). // initial enqueue for creating the object
 		Complete(r)
 }
 

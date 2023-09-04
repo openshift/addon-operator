@@ -191,7 +191,7 @@ func WaitToBeGone(ctx context.Context, t *testing.T, timeout time.Duration, obje
 	t.Logf("waiting %s for %s %s to be gone...",
 		timeout, gvk, key)
 
-	return wait.PollImmediate(defaultWaitPollInterval, timeout, func() (done bool, err error) {
+	return wait.PollUntilContextTimeout(ctx, defaultWaitPollInterval, timeout, true, func(ctx context.Context) (done bool, err error) {
 		err = Client.Get(ctx, key, object)
 
 		if errors.IsNotFound(err) {
@@ -231,7 +231,7 @@ func WaitForObjectWithInterval(
 	t.Logf("waiting %s on %s %s %s...",
 		timeout, gvk, key, reason)
 
-	return wait.PollImmediate(interval, timeout, func() (done bool, err error) {
+	return wait.PollUntilContextTimeout(ctx, interval, timeout, true, func(ctx context.Context) (done bool, err error) {
 		err = Client.Get(ctx, client.ObjectKeyFromObject(object), object)
 		if err != nil {
 			//nolint:nilerr // retry on transient errors

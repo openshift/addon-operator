@@ -249,16 +249,14 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager, opts ...AddonReconc
 		Owns(&operatorsv1alpha1.Subscription{}).
 		Owns(&addonsv1alpha1.AddonInstance{}).
 		Owns(&monitoringv1.ServiceMonitor{}).
-		Watches(&source.Kind{
-			Type: &corev1.Secret{},
-		}, &handler.EnqueueRequestForOwner{
-			OwnerType:    &addonsv1alpha1.Addon{},
-			IsController: false, // We don't "control" the source secret, so we are only adding ourselves as owner/watcher
-		}).
-		Watches(&source.Kind{
-			Type: &operatorsv1.Operator{},
-		}, r.operatorResourceHandler, builder.OnlyMetadata).
-		Watches(&source.Channel{ // Requeue everything when entering/leaving global pause.
+		WatchesRawSource(source.Kind(
+			mgr.GetCache(), &corev1.Secret{}),
+			handler.EnqueueRequestForOwner(r.Scheme, mgr.GetRESTMapper(), &addonsv1alpha1.Addon{})).
+		WatchesRawSource(source.Kind(
+			mgr.GetCache(), &operatorsv1.Operator{}),
+			r.operatorResourceHandler, builder.OnlyMetadata,
+		).
+		WatchesRawSource(&source.Channel{ // Requeue everything when entering/leaving global pause.
 			Source: r.addonRequeueCh,
 		}, &handler.EnqueueRequestForObject{})
 

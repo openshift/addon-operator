@@ -1,9 +1,7 @@
-apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.6.2
-  creationTimestamp: null
+    controller-gen.kubebuilder.io/version: v0.12.1
   name: addoninstances.addons.managed.openshift.io
 spec:
   group: addons.managed.openshift.io
@@ -26,10 +24,10 @@ spec:
       openAPIV3Schema:
         description: "AddonInstance is a managed service facing interface to get configuration
           and report status back. \n **Example** ```yaml apiVersion: addons.managed.openshift.io/v1alpha1
-          kind: AddonInstance metadata: \n \tname: addon-instance \tnamespace: my-addon-namespace
-          \n spec: \n \theartbeatUpdatePeriod: 30s \n status: \n \tlastHeartbeatTime:
-          2021-10-11T08:14:50Z \tconditions: \t- type: addons.managed.openshift.io/Healthy
-          \t  status: \"True\" \n ```"
+          kind: AddonInstance metadata: \n name: addon-instance namespace: my-addon-namespace
+          \n spec: \n heartbeatUpdatePeriod: 30s \n status: \n lastHeartbeatTime:
+          2021-10-11T08:14:50Z conditions: - type: addons.managed.openshift.io/Healthy
+          status: \"True\" \n ```"
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -67,14 +65,12 @@ spec:
                   description: "Condition contains details for one aspect of the current
                     state of this API Resource. --- This struct is intended for direct
                     use as an array at the field path .status.conditions.  For example,
-                    \n \ttype FooStatus struct{ \t    // Represents the observations
-                    of a foo's current state. \t    // Known .status.conditions.type
-                    are: \"Available\", \"Progressing\", and \"Degraded\" \t    //
-                    +patchMergeKey=type \t    // +patchStrategy=merge \t    // +listType=map
-                    \t    // +listMapKey=type \t    Conditions []metav1.Condition
+                    \n type FooStatus struct{ // Represents the observations of a
+                    foo's current state. // Known .status.conditions.type are: \"Available\",
+                    \"Progressing\", and \"Degraded\" // +patchMergeKey=type // +patchStrategy=merge
+                    // +listType=map // +listMapKey=type Conditions []metav1.Condition
                     `json:\"conditions,omitempty\" patchStrategy:\"merge\" patchMergeKey:\"type\"
-                    protobuf:\"bytes,1,rep,name=conditions\"` \n \t    // other fields
-                    \t}"
+                    protobuf:\"bytes,1,rep,name=conditions\"` \n // other fields }"
                   properties:
                     lastTransitionTime:
                       description: lastTransitionTime is the last time the condition
@@ -146,9 +142,3 @@ spec:
     storage: true
     subresources:
       status: {}
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []

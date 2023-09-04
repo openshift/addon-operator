@@ -2,7 +2,6 @@ package addon
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -76,7 +75,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 	addonDestNamespace := extractDestinationNamespace(addon)
 
 	if len(addonDestNamespace) < 1 {
-		return ctrl.Result{}, errors.New(fmt.Sprintf("no destination namespace configured in addon %s", addon.Name))
+		return ctrl.Result{}, fmt.Errorf("no destination namespace configured in addon %s", addon.Name)
 	}
 
 	ocmClusterInfo := r.OcmClusterInfo()

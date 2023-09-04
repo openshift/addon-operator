@@ -269,7 +269,8 @@ func addonOwnedTestServiceMonitorAlteredSpec(addon *addonsv1alpha1.Addon) *monit
 
 func testServiceMonitorAlteredSpec(addon *addonsv1alpha1.Addon) *monitoringv1.ServiceMonitor {
 	serviceMonitor := testServiceMonitor(addon)
-	serviceMonitor.Spec.SampleLimit = 10
+	sampleLimit := uint64(10)
+	serviceMonitor.Spec.SampleLimit = &sampleLimit
 
 	return serviceMonitor
 }

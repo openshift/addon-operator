@@ -112,23 +112,23 @@ type operatorResourceHandlerMock struct {
 var _ operatorResourceHandler = (*operatorResourceHandlerMock)(nil)
 
 // Create is called in response to an create event - e.g. Pod Creation.
-func (m *operatorResourceHandlerMock) Create(e event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Create(_ context.Context, e event.CreateEvent, q workqueue.RateLimitingInterface) {
 	m.Called(e, q)
 }
 
 // Update is called in response to an update event -  e.g. Pod Updated.
-func (m *operatorResourceHandlerMock) Update(e event.UpdateEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Update(_ context.Context, e event.UpdateEvent, q workqueue.RateLimitingInterface) {
 	m.Called(e, q)
 }
 
 // Delete is called in response to a delete event - e.g. Pod Deleted.
-func (m *operatorResourceHandlerMock) Delete(e event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Delete(_ context.Context, e event.DeleteEvent, q workqueue.RateLimitingInterface) {
 	m.Called(e, q)
 }
 
 // Generic is called in response to an event of an unknown type or a synthetic event triggered as a cron or
 // external trigger request - e.g. reconcile Autoscaling, or a Webhook.
-func (m *operatorResourceHandlerMock) Generic(e event.GenericEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Generic(_ context.Context, e event.GenericEvent, q workqueue.RateLimitingInterface) {
 	m.Called(e, q)
 }
 
