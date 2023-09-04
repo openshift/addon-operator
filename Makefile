@@ -155,7 +155,6 @@ lint:
 ## Runs code-generators and unittests.
 test-unit: generate
 	@echo "running unit tests..."
-	#./mage test:unit
 	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/...
 .PHONY: test-unit
 
@@ -310,7 +309,6 @@ clean-config-openshift:
 # ------------------
 ##@ Codecov.io
 # ------------------
-
 .PHONY: coverage
 coverage:
 	hack/codecov.sh
