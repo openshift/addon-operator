@@ -46,6 +46,7 @@ ENABLE_WEBHOOK?="false"
 ENABLE_MONITORING?="false"
 ENABLE_REMOTE_STORAGE_MOCK="true"
 WEBHOOK_PORT?=8080
+TESTOPTS?=-cover -race -v
 
 # Container
 IMAGE_ORG?=quay.io/app-sre
@@ -154,7 +155,7 @@ lint:
 ## Runs code-generators and unittests.
 test-unit: generate
 	@echo "running unit tests..."
-	./mage test:unit
+	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/...
 .PHONY: test-unit
 
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster
@@ -304,3 +305,10 @@ push-image-%:
 # cleans the config/openshift folder for addon-operator-bundle openshift test folder
 clean-config-openshift:
 	@rm -rf "config/openshift/*"
+
+# ------------------
+##@ Codecov.io
+# ------------------
+.PHONY: coverage
+coverage:
+	hack/codecov.sh
