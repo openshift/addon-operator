@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8-1037
+FROM registry.access.redhat.com/ubi8/ubi:8.8-1032
 
 LABEL operators.operatorframework.io.bundle.mediatype.v1=registry+v1
 LABEL operators.operatorframework.io.bundle.manifests.v1=manifests/
