@@ -1,19 +1,14 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8-1014
-
-# shadow-utils contains adduser and groupadd binaries
-RUN microdnf install shadow-utils \
-	&& groupadd --gid 1000 noroot \
-	&& adduser \
-	--no-create-home \
-	--no-user-group \
-	--uid 1000 \
-	--gid 1000 \
-	noroot
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8-1037
 
 WORKDIR /
 
 COPY addon-operator-webhook /usr/local/bin/
 
 USER 1001
+
+ENV CGO_ENABLED=1
+
+# force the binary to behave as if FIPS mode were enabled.
+ENV OPENSSL_FORCE_FIPS_MODE=1
 
 ENTRYPOINT ["/usr/local/bin/addon-operator-webhook"]
