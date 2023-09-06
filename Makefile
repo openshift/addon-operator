@@ -47,6 +47,7 @@ ENABLE_MONITORING?="false"
 ENABLE_REMOTE_STORAGE_MOCK="true"
 WEBHOOK_PORT?=8080
 TESTOPTS?=-cover -race -v
+GOVULNCHECK_VERSION=v1.0.1
 
 # Container
 IMAGE_ORG?=quay.io/app-sre
@@ -312,3 +313,9 @@ clean-config-openshift:
 .PHONY: coverage
 coverage:
 	hack/codecov.sh
+
+ensure-govulncheck:
+	@ls $(GOPATH)/bin/govulncheck 1>/dev/null || go install golang.org/x/vuln/cmd/govulncheck@${GOVULNCHECK_VERSION}
+
+scan: ensure-govulncheck
+	govulncheck ./...
