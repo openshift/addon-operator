@@ -49,7 +49,6 @@ WEBHOOK_PORT?=8080
 TESTOPTS?=-cover -race -v
 GOVULNCHECK_VERSION=v1.0.1
 
-
 # Container
 IMAGE_ORG?=quay.io/app-sre
 ADDON_OPERATOR_MANAGER_IMAGE?=$(IMAGE_ORG)/addon-operator-manager:$(VERSION)
