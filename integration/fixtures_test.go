@@ -114,10 +114,8 @@ func addonWithVersion(version string, catalogSrc string) *addonsv1alpha1.Addon {
 		},
 		Spec: addonsv1alpha1.AddonSpec{
 			DeleteAckRequired: true,
-			// TODO: Modify reference-addon to report addon instance as installed without depending on the addon's availability
-			// InstallAckRequired: true,
-			Version:     version,
-			DisplayName: "addon-oisafbo12",
+			Version:           version,
+			DisplayName:       "addon-oisafbo12",
 			Namespaces: []addonsv1alpha1.AddonNamespace{
 				{Name: "namespace-onbgdions"},
 				{Name: "namespace-pioghfndb"},
@@ -128,6 +126,38 @@ func addonWithVersion(version string, catalogSrc string) *addonsv1alpha1.Addon {
 					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
 						Namespace:          "namespace-onbgdions",
 						CatalogSourceImage: catalogSrc,
+						Channel:            "alpha",
+						PackageName:        "reference-addon",
+						Config: &addonsv1alpha1.SubscriptionConfig{
+							EnvironmentVariables: referenceAddonConfigEnvObjects,
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func addonWithInstallAck() *addonsv1alpha1.Addon {
+	return &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-oisafbo12",
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			DeleteAckRequired:  true,
+			InstallAckRequired: true,
+			Version:            "v0.1.0",
+			DisplayName:        "addon-oisafbo12",
+			Namespaces: []addonsv1alpha1.AddonNamespace{
+				{Name: "namespace-onbgdions"},
+				{Name: "namespace-pioghfndb"},
+			},
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace:          "namespace-onbgdions",
+						CatalogSourceImage: referenceAddonCatalogSourceImageWorking,
 						Channel:            "alpha",
 						PackageName:        "reference-addon",
 						Config: &addonsv1alpha1.SubscriptionConfig{
