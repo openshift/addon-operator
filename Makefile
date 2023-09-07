@@ -11,7 +11,7 @@ GOLANGCI_LINT_VERSION:=v1.43.0
 OPM_VERSION:=v1.24.0
 
 # Build Flags
-export CGO_ENABLED:=1
+export CGO_ENABLED:=0
 BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 SHORT_SHA=$(shell git rev-parse --short HEAD)
 VERSION?=${SHORT_SHA}

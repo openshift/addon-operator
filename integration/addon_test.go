@@ -407,6 +407,88 @@ func (s *integrationTestSuite) TestAddonConditions() {
 		s.Require().Equal(addonsv1alpha1.AddonReasonMissingCSV, availableCond.Reason)
 	})
 
+	s.Run("sets_installed=true_with_install_ack_required", func() {
+		// Remove addon before starting the test.
+		s.addonCleanup(addon, ctx)
+
+		addon := addonWithInstallAck()
+
+		err := integration.Client.Create(ctx, addon)
+		s.Require().NoError(err)
+
+		addonCSV := &operatorsv1alpha1.ClusterServiceVersion{
+			ObjectMeta: metav1.ObjectMeta{
+				Namespace: "namespace-onbgdions",
+				Name:      "reference-addon.v0.1.0",
+			},
+		}
+
+		// Assert that the csv phase has succeeded while the
+		// addon is being installed.
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addonCSV, "to have succeeded phase",
+			func(obj client.Object) (done bool, err error) {
+				csv := obj.(*operatorsv1alpha1.ClusterServiceVersion)
+				return csv.Status.Phase == operatorsv1alpha1.CSVPhaseSucceeded, nil
+			})
+		s.Require().NoError(err)
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		// Assert that the addon's installed condition is false.
+		// i.e. even though the csv phase has succeeded, addon doesn't report as installed.
+		s.Require().True(meta.IsStatusConditionFalse(addon.Status.Conditions, addonsv1alpha1.Installed))
+
+		instance := &addonsv1alpha1.AddonInstance{}
+		err = integration.Client.Get(ctx, types.NamespacedName{
+			Name:      addonsv1alpha1.DefaultAddonInstanceName,
+			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
+		}, instance)
+		s.Require().NoError(err)
+
+		// Assert 'Installed' condition is not present in addon instance.
+		s.Require().Nil(meta.FindStatusCondition(instance.Status.Conditions, addonsv1alpha1.AddonInstanceConditionInstalled.String()))
+
+		// We impersonate the addon's operator and report its addon instance as installed.
+		meta.SetStatusCondition(&instance.Status.Conditions, metav1.Condition{
+			Type:    addonsv1alpha1.AddonInstanceConditionInstalled.String(),
+			Reason:  addonsv1alpha1.AddonReasonInstanceInstalled,
+			Message: "Addon instance is installed",
+			Status:  metav1.ConditionTrue,
+		})
+
+		err = integration.Client.Status().Update(ctx, instance)
+		s.Require().NoError(err)
+
+		// Wait until addon has installed=true.
+		// i.e. Addon Instance has been installed & CSV phase has succeeded.
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to be installed",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.Installed), nil
+			})
+		s.Require().NoError(err)
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		// Assert that the required conditions are met.
+		instanceInstalledCond := meta.FindStatusCondition(instance.Status.Conditions, addonsv1alpha1.AddonInstanceConditionInstalled.String())
+		s.Require().NotNil(instanceInstalledCond)
+		s.Require().Equal(metav1.ConditionTrue, instanceInstalledCond.Status)
+		availableCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
+		s.Require().NotNil(availableCond)
+		s.Require().Equal(metav1.ConditionTrue, availableCond.Status)
+		addonInstalledCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Installed)
+		s.Require().NotNil(addonInstalledCond)
+		s.Require().Equal(metav1.ConditionTrue, addonInstalledCond.Status)
+	})
+
 	s.T().Cleanup(func() {
 		s.addonCleanup(addon, ctx)
 	})

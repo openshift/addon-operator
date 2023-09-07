@@ -319,8 +319,11 @@ const (
 	// Addon has timed out waiting for acknowledgement from the underlying addon.
 	AddonReasonDeletionTimedOut = "AddonReasonDeletionTimedOut"
 
-	// Addon Instance is not yet installed.
+	// Addon instance is not yet installed.
 	AddonReasonInstanceNotInstalled = "AddonInstanceNotInstalled"
+
+	// Addon instance has been successfully installed.
+	AddonReasonInstanceInstalled = "AddonInstanceInstalled"
 )
 
 type AddonNamespace struct {
