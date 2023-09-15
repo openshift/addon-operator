@@ -87,7 +87,11 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 			Name:        "addon_operator_addon_health_info",
 			Help:        "Addon Health information",
 			ConstLabels: prometheus.Labels{"_id": clusterId},
-		}, []string{"name", "version", "reason"},
+		}, []string{
+			"name",
+			"version",
+			"reason",
+		},
 	)
 
 	// Register metrics if `register` is true
@@ -240,13 +244,14 @@ func (r *Recorder) RecordAddonMetrics(addon *addonsv1alpha1.Addon) {
 }
 
 func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
-	// cleanup the gauge metric; deduplication
-	r.addonHealthInfo.Reset()
-
 	var (
 		// `healthStatus` defaults to unknown unless status conditions say otherwise
 		healthStatus = 2
 		healthReason = "Unknown"
+
+		// default value when addon version is missing
+		// This will be recorded only once
+		addonVersion = "0.0.0"
 	)
 
 	// healthCond defines the addon's availability
@@ -265,13 +270,14 @@ func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
 
 	}
 
-	// default value when addon version is missing
-	// This will be recorded only once
-	addonVersion := "0.0.0"
-
 	if addon.Status.ObservedVersion != "" {
 		addonVersion = addon.Status.ObservedVersion
 	}
+
+	// Drop metric when state changes of the same addon; de-duplication
+	r.addonHealthInfo.DeletePartialMatch(prometheus.Labels{
+		"name": addon.Name,
+	})
 
 	r.addonHealthInfo.WithLabelValues(
 		addon.Name,
