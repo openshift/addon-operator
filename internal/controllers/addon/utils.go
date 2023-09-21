@@ -333,6 +333,10 @@ func reportMissingCSV(addon *addonsv1alpha1.Addon) {
 	reportPendingStatus(addon, addonsv1alpha1.AddonReasonMissingCSV, "ClusterServiceVersion is missing.")
 }
 
+func reportInstallPlanPending(addon *addonsv1alpha1.Addon) {
+	reportPendingStatus(addon, addonsv1alpha1.AddonReasonInstallPlanPending, "InstallPlan is waiting for approval.")
+}
+
 func reportPendingAddonInstanceInstallation(addon *addonsv1alpha1.Addon) {
 	reportPendingStatus(addon, addonsv1alpha1.AddonReasonInstanceNotInstalled, "Addon instance is not yet installed.")
 }

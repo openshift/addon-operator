@@ -20,6 +20,37 @@ func (r *olmReconciler) observeOperatorResource(
 	addon *addonsv1alpha1.Addon,
 	csvKey client.ObjectKey,
 ) (requeueResult, error) {
+	installOLMCommon, err := addon.GetInstallOLMCommon()
+	if err != nil {
+		return resultRetry, err
+	}
+
+	currentSub, err := r.GetSubscription(
+		ctx,
+		SubscriptionName(addon),
+		installOLMCommon.Namespace,
+	)
+	if err != nil {
+		return resultRetry, err
+	}
+
+	if currentSub.GetInstallPlanApproval() == operatorsv1alpha1.ApprovalManual {
+		currentIp, err := r.GetInstallPlan(
+			ctx,
+			currentSub.Status.InstallPlanRef.Name,
+			currentSub.Status.InstallPlanRef.Namespace,
+		)
+		if err != nil {
+			return resultRetry, err
+		}
+
+		if currentIp.Status.Phase == operatorsv1alpha1.InstallPlanPhaseRequiresApproval {
+			reportInstallPlanPending(addon)
+			// CSV will not be available at this stage
+			return resultNil, nil
+		}
+	}
+
 	operatorKey := client.ObjectKey{
 		Namespace: "",
 		Name:      generateOperatorResourceName(addon),

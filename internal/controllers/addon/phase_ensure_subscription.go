@@ -30,15 +30,11 @@ func (r *olmReconciler) ensureSubscription(
 	client.ObjectKey,
 	error,
 ) {
-	var commonInstallOptions addonsv1alpha1.AddonInstallOLMCommon
-	switch addon.Spec.Install.Type {
-	case addonsv1alpha1.OLMAllNamespaces:
-		commonInstallOptions = addon.Spec.Install.
-			OLMAllNamespaces.AddonInstallOLMCommon
-	case addonsv1alpha1.OLMOwnNamespace:
-		commonInstallOptions = addon.Spec.Install.
-			OLMOwnNamespace.AddonInstallOLMCommon
+	commonInstallOptions, err := addon.GetInstallOLMCommon()
+	if err != nil {
+		return resultNil, client.ObjectKey{}, err
 	}
+
 	subscriptionConfigObject := createSubscriptionConfigObject(commonInstallOptions)
 	desiredSubscription := &operatorsv1alpha1.Subscription{
 		ObjectMeta: metav1.ObjectMeta{
@@ -108,11 +104,11 @@ func (r *olmReconciler) reconcileSubscription(
 	ctx context.Context,
 	subscription *operatorsv1alpha1.Subscription,
 ) (currentSubscription *operatorsv1alpha1.Subscription, err error) {
-	currentSubscription = &operatorsv1alpha1.Subscription{}
-	err = r.client.Get(ctx, client.ObjectKey{
-		Name:      subscription.Name,
-		Namespace: subscription.Namespace,
-	}, currentSubscription)
+	currentSubscription, err = r.GetSubscription(
+		ctx,
+		subscription.Name,
+		subscription.Namespace,
+	)
 	if err != nil {
 		if apierrors.IsNotFound(err) {
 			return subscription, r.client.Create(ctx, subscription)

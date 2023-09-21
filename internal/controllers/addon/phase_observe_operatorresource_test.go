@@ -2,6 +2,7 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/openshift/addon-operator/internal/testutil"
 
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
+	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -38,13 +40,29 @@ func TestObserveOperatorResource(t *testing.T) {
 	}
 
 	testCases := map[string]struct {
-		operatorResource       *operatorsv1.Operator
-		addonStatus            *addonsv1alpha1.AddonStatus
-		addonInstanceStatus    *addonsv1alpha1.AddonInstanceStatus
-		installAckRequired     bool
-		deleteConfigMapPresent *bool
-		expected               Expected
+		operatorResource           *operatorsv1.Operator
+		addonStatus                *addonsv1alpha1.AddonStatus
+		addonInstanceStatus        *addonsv1alpha1.AddonInstanceStatus
+		isSubNotFound              bool
+		isInstallOLMCommonNotFound bool
+		observedSubscription       operatorsv1alpha1.Subscription
+		observedInstallPlan        operatorsv1alpha1.InstallPlan
+		installAckRequired         bool
+		deleteConfigMapPresent     *bool
+		expected                   Expected
 	}{
+		"should return an error when addon install olm common is not found": {
+			isInstallOLMCommonNotFound: true,
+			expected: Expected{
+				Result: resultRetry,
+			},
+		},
+		"should return an error when subscription is not found": {
+			isSubNotFound: true,
+			expected: Expected{
+				Result: resultRetry,
+			},
+		},
 		"No Operator Resource Present": {
 			operatorResource: &operatorsv1.Operator{},
 			expected: Expected{
@@ -242,19 +260,36 @@ func TestObserveOperatorResource(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			c := testutil.NewClient()
-			call := c.
+
+			mockGetCall1 := c.On("Get",
+				mock.Anything,
+				mock.IsType(client.ObjectKey{}),
+				testutil.IsOperatorsV1Alpha1SubscriptionPtr,
+				mock.Anything,
+			)
+
+			if tc.isSubNotFound {
+				mockGetCall1.Return(errors.New("sub not found"))
+			} else if tc.isInstallOLMCommonNotFound {
+				mockGetCall1.Return(errors.New("addon install olm common not found"))
+			} else {
+				tc.observedSubscription = mockSubscription(false)
+				mockGetCall1.Run(func(args mock.Arguments) {
+					tc.observedSubscription.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.Subscription))
+				}).Return(nil)
+			}
+
+			mockGetCall2 := c.
 				On("Get",
 					mock.Anything,
 					mock.IsType(client.ObjectKey{}),
 					testutil.IsOperatorsV1OperatorPtr,
 					mock.Anything,
-				)
-			call = call.
-				Run(func(args mock.Arguments) {
-					tc.operatorResource.DeepCopyInto(args.Get(2).(*operatorsv1.Operator))
-				})
+				).Run(func(args mock.Arguments) {
+				tc.operatorResource.DeepCopyInto(args.Get(2).(*operatorsv1.Operator))
+			})
 
-			call.Return(nil)
+			mockGetCall2.Return(nil)
 
 			operatorResourceHandler := internalhandler.NewOperatorResourceHandler()
 			csvKey := client.ObjectKey{
@@ -330,13 +365,106 @@ func TestObserveOperatorResource(t *testing.T) {
 				addon.Status = *tc.addonStatus
 			}
 
-			_, err := r.observeOperatorResource(context.Background(), addon, csvKey)
-			require.NoError(t, err)
+			var res requeueResult
+			var err error
+			if tc.isSubNotFound || tc.isInstallOLMCommonNotFound {
+				res, err = r.observeOperatorResource(context.Background(), addon, csvKey)
+				require.Error(t, err)
+			} else {
+				_, err := r.observeOperatorResource(context.Background(), addon, csvKey)
+				require.NoError(t, err)
+				res, err = r.observeOperatorResource(context.Background(), addon, csvKey)
+				require.NoError(t, err)
+				c.AssertExpectations(t)
+				assertEqualConditions(t, tc.expected.Conditions, addon.Status.Conditions)
+			}
+			assert.Equal(t, tc.expected.Result, res)
+		})
+	}
+}
+
+// Test olm reconciler when install plan is in pending state
+func TestObserveOperatorResourceInstallPlanPending(t *testing.T) {
+	type Expected struct {
+		Conditions []metav1.Condition
+		Result     requeueResult
+	}
+
+	testCases := map[string]struct {
+		observedSubscription operatorsv1alpha1.Subscription
+		observedInstallPlan  operatorsv1alpha1.InstallPlan
+		expected             Expected
+	}{
+		"should set condition to install plan waiting for approval": {
+			expected: Expected{
+				Conditions: []metav1.Condition{installPlanPending()},
+				Result:     resultNil,
+			},
+		},
+	}
+
+	for name, tc := range testCases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			c := testutil.NewClient()
+
+			// Gets the current subscription
+			mockGetCall1 := c.On("Get",
+				mock.Anything,
+				mock.IsType(client.ObjectKey{}),
+				testutil.IsOperatorsV1Alpha1SubscriptionPtr,
+				mock.Anything,
+			)
+
+			tc.observedSubscription = mockSubscription(true)
+			tc.observedInstallPlan = mockInstallPlan(true)
+			mockGetCall1.Run(func(args mock.Arguments) {
+				tc.observedSubscription.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.Subscription))
+			}).Return(nil)
+
+			// Gets the installplan from the current subscription
+			c.On("Get",
+				mock.Anything,
+				mock.IsType(client.ObjectKey{}),
+				testutil.IsOperatorsV1Alpha1InstallPtr,
+				mock.Anything,
+			).Run(func(args mock.Arguments) {
+				tc.observedInstallPlan.DeepCopyInto(args.Get(2).(*operatorsv1alpha1.InstallPlan))
+			}).Return(nil)
+
+			csvKey := client.ObjectKey{
+				Namespace: referenceAddonNamespace,
+				Name:      referenceAddonCSVName,
+			}
+
+			r := &olmReconciler{
+				client:         c,
+				uncachedClient: c,
+				scheme:         testutil.NewTestSchemeWithAddonsv1alpha1(),
+			}
+
+			addon := &addonsv1alpha1.Addon{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: referenceAddonName,
+				},
+				Spec: addonsv1alpha1.AddonSpec{
+					Install: addonsv1alpha1.AddonInstallSpec{
+						Type: addonsv1alpha1.OLMAllNamespaces,
+						OLMAllNamespaces: &addonsv1alpha1.AddonInstallOLMAllNamespaces{
+							AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+								Namespace:   referenceAddonNamespace,
+								PackageName: referenceAddonPackageName,
+							},
+						},
+					},
+				},
+			}
+
 			res, err := r.observeOperatorResource(context.Background(), addon, csvKey)
 			require.NoError(t, err)
+			assertEqualConditions(t, tc.expected.Conditions, addon.Status.Conditions)
 			c.AssertExpectations(t)
 			assert.Equal(t, tc.expected.Result, res)
-			assertEqualConditions(t, tc.expected.Conditions, addon.Status.Conditions)
 		})
 	}
 }
@@ -395,6 +523,15 @@ func missingCSVCondition() metav1.Condition {
 	}
 }
 
+func installPlanPending() metav1.Condition {
+	return metav1.Condition{
+		Type:    addonsv1alpha1.Available,
+		Status:  metav1.ConditionFalse,
+		Reason:  addonsv1alpha1.AddonReasonInstallPlanPending,
+		Message: "InstallPlan is waiting for approval.",
+	}
+}
+
 func pendingAddonInstanceInstallCondition() metav1.Condition {
 	return metav1.Condition{
 		Type:    addonsv1alpha1.Available,
@@ -434,4 +571,44 @@ type nonTransientCondition struct {
 	Status  metav1.ConditionStatus
 	Reason  string
 	Message string
+}
+
+func mockInstallPlan(isPending bool) operatorsv1alpha1.InstallPlan {
+	installSpec := operatorsv1alpha1.InstallPlanSpec{
+		Approval: operatorsv1alpha1.ApprovalManual,
+	}
+	installStatus := operatorsv1alpha1.InstallPlanStatus{
+		Phase: operatorsv1alpha1.InstallPlanPhaseRequiresApproval,
+	}
+
+	if !isPending {
+		installSpec.Approval = operatorsv1alpha1.ApprovalAutomatic
+		installStatus.Phase = operatorsv1alpha1.InstallPlanPhaseRequiresApproval
+	}
+
+	return operatorsv1alpha1.InstallPlan{
+		Spec:   installSpec,
+		Status: installStatus,
+	}
+}
+
+func mockSubscription(isInstallPlanApprovalManual bool) operatorsv1alpha1.Subscription {
+	installPlanRef := corev1.ObjectReference{
+		Name:      "installplan",
+		Namespace: "namespace",
+	}
+	subSpec := operatorsv1alpha1.SubscriptionSpec{
+		InstallPlanApproval: operatorsv1alpha1.ApprovalAutomatic,
+	}
+	if isInstallPlanApprovalManual {
+		subSpec.InstallPlanApproval = operatorsv1alpha1.ApprovalManual
+	}
+	subStatus := operatorsv1alpha1.SubscriptionStatus{
+		InstallPlanRef: &installPlanRef,
+	}
+	subscription := operatorsv1alpha1.Subscription{
+		Spec:   &subSpec,
+		Status: subStatus,
+	}
+	return subscription
 }
