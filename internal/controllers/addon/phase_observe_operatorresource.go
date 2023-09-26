@@ -41,7 +41,7 @@ func (r *olmReconciler) observeOperatorResource(
 			currentSub.Status.InstallPlanRef.Namespace,
 		)
 		if err != nil {
-			return resultRetry, err
+			return resultNil, err
 		}
 
 		if currentIp.Status.Phase == operatorsv1alpha1.InstallPlanPhaseRequiresApproval {
