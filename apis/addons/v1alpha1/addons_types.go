@@ -1,6 +1,8 @@
 package v1alpha1
 
 import (
+	"errors"
+
 	monv1 "github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -324,6 +326,9 @@ const (
 
 	// Addon instance has been successfully installed.
 	AddonReasonInstanceInstalled = "AddonInstanceInstalled"
+
+	// Addon's Install Plan is pending due to some condition such as a manual approval.
+	AddonReasonInstallPlanPending = "AddonInstallPlanPending"
 )
 
 type AddonNamespace struct {
@@ -484,6 +489,21 @@ func (a *Addon) UpgradeCompleteForCurrentVersion() bool {
 	return a.Status.UpgradePolicy != nil &&
 		a.Status.UpgradePolicy.Version == a.Spec.Version &&
 		a.Status.UpgradePolicy.Value == AddonUpgradePolicyValueCompleted
+}
+
+// Gets the AddonInstallOLMCommon by Install Type
+func (a *Addon) GetInstallOLMCommon() (AddonInstallOLMCommon, error) {
+	switch a.Spec.Install.Type {
+	case OLMAllNamespaces:
+		if a.Spec.Install.OLMAllNamespaces != nil {
+			return a.Spec.Install.OLMAllNamespaces.AddonInstallOLMCommon, nil
+		}
+	case OLMOwnNamespace:
+		if a.Spec.Install.OLMOwnNamespace != nil {
+			return a.Spec.Install.OLMOwnNamespace.AddonInstallOLMCommon, nil
+		}
+	}
+	return AddonInstallOLMCommon{}, errors.New("addon install OLM common not found")
 }
 
 // AddonList contains a list of Addon

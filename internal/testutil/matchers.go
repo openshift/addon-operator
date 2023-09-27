@@ -29,6 +29,7 @@ var (
 	IsOperatorsV1Alpha1CatalogSourcePtr = mock.IsType(&operatorsv1alpha1.CatalogSource{})
 	IsOperatorsV1Alpha1SubscriptionPtr  = mock.IsType(&operatorsv1alpha1.Subscription{})
 	IsOperatorsV1OperatorPtr            = mock.IsType(&operatorsv1.Operator{})
+	IsOperatorsV1Alpha1InstallPtr       = mock.IsType(&operatorsv1alpha1.InstallPlan{})
 
 	// prom
 	IsMonitoringV1ServiceMonitorPtr = mock.IsType(&monitoringv1.ServiceMonitor{})

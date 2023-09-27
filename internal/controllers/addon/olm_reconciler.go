@@ -93,3 +93,38 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 func (r *olmReconciler) Name() string {
 	return OLM_RECONCILER_NAME
 }
+
+// Gets a subscription by ObjectKey
+func (r *olmReconciler) GetSubscription(
+	ctx context.Context,
+	name string,
+	namespace string,
+) (*operatorsv1alpha1.Subscription, error) {
+	destSub := operatorsv1alpha1.Subscription{}
+	key := client.ObjectKey{
+		Name:      name,
+		Namespace: namespace,
+	}
+
+	if err := r.client.Get(ctx, key, &destSub); err != nil {
+		return nil, err
+	}
+	return &destSub, nil
+}
+
+// Gets an InstallPlan by ObjectKey
+func (r *olmReconciler) GetInstallPlan(
+	ctx context.Context,
+	name string,
+	namespace string,
+) (*operatorsv1alpha1.InstallPlan, error) {
+	destIp := operatorsv1alpha1.InstallPlan{}
+	key := client.ObjectKey{
+		Name:      name,
+		Namespace: namespace,
+	}
+	if err := r.client.Get(ctx, key, &destIp); err != nil {
+		return nil, err
+	}
+	return &destIp, nil
+}
