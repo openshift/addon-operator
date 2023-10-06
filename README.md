@@ -115,7 +115,7 @@ This command will:
 make setup-addon-operator-crds
 
 # Make sure we run against the new kind cluster.
-export KUBECONFIG=$PWD/.cache/integration/kubeconfig
+export KUBECONFIG=$PWD/.cache/dev-env/kubeconfig
 
 # Set Addon operator namespace environment variable
 export ADDON_OPERATOR_NAMESPACE=addon-operator
@@ -153,7 +153,7 @@ Make sure to:
 
 ## Monitoring and metrics
 
-The AddonOperator is instrumented with the prometheus-client provided by controller-runtime to record some useful Addon metrics.
+The Addon Operator is instrumented with the prometheus-client provided by controller-runtime to record some useful Addon metrics.
 
 | Metric name                                 | Type       | Description                                                                             |
 |---------------------------------------------|------------|-----------------------------------------------------------------------------------------|
@@ -163,6 +163,36 @@ The AddonOperator is instrumented with the prometheus-client provided by control
 | `addon_operator_addon_health_info`          | `GaugeVec` | Addon Health information (0 - Unhealthy; 1 - Healthy; 2 - Unknown)                      |
 
 See [Quickstart](https://github.com/openshift/addon-operator#quickstart--develop-integration-tests) for instructions on how to setup a local monitoring stack for development / testing.
+
+## How to: Test metrics locally
+
+The Addon Operator metrics can be exposed locally by port forwarding the `addon-operator-metrics` service which allows users to access the service running inside a Kubernetes cluster from their local machine.
+
+- Run Addon Operator locally:
+
+```bash
+➜ export ENABLE_MONITORING=true
+
+➜ make test-setup
+```
+
+- Ensure you have the `KUBECONFIG` environment variable setup:
+
+```bash
+➜ export KUBECONFIG=/.cache/dev-env/kubeconfig.yaml
+```
+
+- Forward traffic from port `8443` on the `addon-operator-metrics` service:
+
+```bash
+➜ kubectl port-forward service/addon-operator-metrics -n addon-operator 8443:8443
+```
+
+- Fetch the metrics:
+
+```bash
+➜ curl -k https://localhost:8443/metrics
+```
 
 ## Releasing
 
