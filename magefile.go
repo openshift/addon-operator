@@ -31,6 +31,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/yaml"
@@ -53,7 +54,7 @@ var (
 	depsDir  magedeps.DependencyDirectory
 	cacheDir string
 
-	logger           logr.Logger
+	logger           logr.Logger = stdr.New(nil)
 	containerRuntime string
 )
 
@@ -896,14 +897,14 @@ func (Test) IntegrationShort() error {
 // Dependency Versions
 const (
 	controllerGenVersion = "0.6.2"
-	kindVersion          = "0.11.1"
-	yqVersion            = "4.12.0"
-	goimportsVersion     = "0.2.0"
-	golangciLintVersion  = "1.51.2"
+	kindVersion          = "0.20.0"
+	yqVersion            = "4.35.1"
+	goimportsVersion     = "0.12.0"
+	golangciLintVersion  = "1.54.2"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.24.0"
 	pkoCliVersion        = "1.6.1"
-	helmVersion          = "3.7.2"
+	helmVersion          = "3.12.2"
 )
 
 type Dependency mg.Namespace
@@ -1433,6 +1434,8 @@ func (d Dev) init() error {
 		setupContainerRuntime,
 		Dependency.Kind,
 	)
+
+	ctrl.SetLogger(logger)
 
 	clusterInitializers := dev.WithClusterInitializers{
 		dev.ClusterLoadObjectsFromHttp{

@@ -15,7 +15,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	"github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers/addon"
 	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -23,13 +22,13 @@ import (
 
 var (
 	addonWithoutPKO = testutil.NewTestAddonWithSingleNamespace()
-	addonWithPKO    = &addonsv1alpha1.Addon{
+	addonWithPKO    = &v1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{Name: "test-addon"},
-		Spec: addonsv1alpha1.AddonSpec{
-			Install: addonsv1alpha1.AddonInstallSpec{
-				Type: addonsv1alpha1.OLMOwnNamespace,
-				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
-					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+		Spec: v1alpha1.AddonSpec{
+			Install: v1alpha1.AddonInstallSpec{
+				Type: v1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &v1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: v1alpha1.AddonInstallOLMCommon{
 						Namespace: "test-ns",
 					},
 				},

@@ -20,7 +20,7 @@ func NewStatusError(msg string) *k8sApiErrors.StatusError {
 			Message: fmt.Sprintf("%s %s",
 				"admission webhook \"vaddons.managed.openshift.io\" denied the request:",
 				msg),
-			Reason: metav1.StatusReason(msg),
+			Reason: metav1.StatusReasonForbidden,
 			Code:   403,
 		},
 	}

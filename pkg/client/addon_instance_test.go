@@ -89,6 +89,7 @@ func TestAddonInstanceClientImplSendPulse(t *testing.T) {
 
 			c := fake.NewClientBuilder().
 				WithScheme(scheme).
+				WithStatusSubresource(&tc.Instance).
 				WithObjects(&tc.Instance).
 				Build()
 
