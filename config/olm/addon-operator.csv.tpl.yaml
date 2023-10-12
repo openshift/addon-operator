@@ -114,6 +114,7 @@ spec:
           resources:
           - clusterserviceversions
           - operators
+          - installplans
           verbs:
           - watch
           - get
