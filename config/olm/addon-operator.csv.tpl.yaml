@@ -101,6 +101,7 @@ spec:
           - operatorgroups
           - catalogsources
           - subscriptions
+          - installplans
           verbs:
           - create
           - delete
