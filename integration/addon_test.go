@@ -492,6 +492,84 @@ func (s *integrationTestSuite) TestAddonConditions() {
 	s.T().Cleanup(func() {
 		s.addonCleanup(addon, ctx)
 	})
+
+	s.Run("test_installplan_pending_condition", func() {
+		// remove addon before starting the test.
+		s.addonCleanup(addon, ctx)
+
+		addon := addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorkingLatest)
+
+		err := integration.Client.Create(ctx, addon)
+		s.Require().NoError(err)
+
+		// wait until the addon has installed.
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to be installed",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionTrue(
+					a.Status.Conditions, addonsv1alpha1.Installed), nil
+			})
+		s.Require().NoError(err)
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		// Fetch addon subscription
+		subscription := &operatorsv1alpha1.Subscription{}
+		err = integration.Client.Get(ctx, client.ObjectKey{
+			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
+			Name:      addonUtil.SubscriptionName(addon),
+		}, subscription)
+		s.Require().NoError(err)
+
+		// Impersonate addon maintainer and patch install plan approval to manual.
+		subscription.Spec.InstallPlanApproval = operatorsv1alpha1.ApprovalManual
+		subscription.Status.State = operatorsv1alpha1.SubscriptionStateUpgradePending
+		err = integration.Client.Update(ctx, subscription)
+		s.Require().NoError(err)
+
+		// Fetch addon installplan
+		installPlan := &operatorsv1alpha1.InstallPlan{}
+		err = integration.Client.Get(ctx, client.ObjectKey{
+			Namespace: addon.Spec.Install.OLMOwnNamespace.Namespace,
+			Name:      subscription.Status.InstallPlanRef.Name,
+		}, installPlan)
+		s.Require().NoError(err)
+
+		installPlan.Spec.Approval = operatorsv1alpha1.ApprovalManual
+		installPlan.Spec.Approved = false
+		err = integration.Client.Update(ctx, installPlan)
+		s.Require().NoError(err)
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(installPlan), installPlan)
+		s.Require().NoError(err)
+
+		installPlan.Status.Phase = operatorsv1alpha1.InstallPlanPhaseRequiresApproval
+		err = integration.Client.Status().Update(ctx, installPlan)
+		s.Require().NoError(err)
+
+		// wait until the addon reports as unavailable.
+		err = integration.WaitForObject(
+			ctx,
+			s.T(), defaultAddonAvailabilityTimeout, addon, "to be unavailable",
+			func(obj client.Object) (done bool, err error) {
+				a := obj.(*addonsv1alpha1.Addon)
+				return meta.IsStatusConditionFalse(
+					a.Status.Conditions, addonsv1alpha1.Available), nil
+			})
+		s.Require().NoError(err)
+
+		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+		s.Require().NoError(err)
+
+		// Assert pending installplan approval reason is reported.
+		availableCond := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
+		s.Require().NotNil(availableCond)
+		s.Require().Equal(metav1.ConditionFalse, availableCond.Status)
+		s.Require().Equal(addonsv1alpha1.AddonReasonInstallPlanPending, availableCond.Reason)
+	})
 }
 
 func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
