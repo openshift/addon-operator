@@ -15,9 +15,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 	"github.com/openshift/addon-operator/internal/ocm"
 	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
 	"github.com/openshift/addon-operator/internal/testutil"
+	promTestUtil "github.com/prometheus/client_golang/prometheus/testutil"
 )
 
 type reconcileErrorTestCase struct {
@@ -275,4 +278,39 @@ func TestSetupWithManager_OperatorResourceHandlerNil(t *testing.T) {
 
 	expectedError := fmt.Errorf("operatorResourceHandler cannot be nil")
 	assert.EqualError(t, err, expectedError.Error())
+}
+
+// TestReconcilerErrors tests the returned wrapped errors
+// coming from subreconcilers.
+func TestReconcilerErrorsMetricCollection(t *testing.T) {
+	metrics.NewRecorder(false, "cluster id")
+	client := testutil.NewClient()
+	ocmClient := ocmtest.NewClient()
+	r := AddonReconciler{
+		Client:         client,
+		ocmClient:      ocmClient,
+		Log:            logr.Discard(),
+		subReconcilers: []addonReconciler{},
+	}
+
+	r.subReconcilers = append(r.subReconcilers, &mockSubReconciler{returnErr: true})
+
+	// Mock getting of addon object
+	addon := testutil.NewTestAddonWithCatalogSourceImage()
+	client.On("Get", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
+		passedAddon := (args.Get(2)).(*addonsv1alpha1.Addon)
+		*passedAddon = *addon
+	}).Return(errors.New("addon not found"))
+
+	// Invoke reconciler
+	r.Reconcile(context.Background(), reconcile.Request{})
+	reconErrMetric := metrics.MetricsRecorder().GetControllerReconcileErrorMetric()
+	assert.Equal(t, 1, promTestUtil.CollectAndCount(reconErrMetric))
+	currentMetricVal := promTestUtil.ToFloat64(
+		reconErrMetric.WithLabelValues(
+			"addon",
+			controllers.ErrAddonNotFound.Error(),
+		),
+	)
+	assert.Equal(t, float64(1), currentMetricVal)
 }

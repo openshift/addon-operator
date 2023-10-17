@@ -44,6 +44,7 @@ func (r *monitoringStackReconciler) Reconcile(ctx context.Context,
 		if errors.Is(err, errMonitoringStackSpecNotFound) {
 			return reconcile.Result{}, nil
 		}
+		err = errors.Join(err, controllers.ErrEnsureCreateMonitoringStack)
 		return reconcile.Result{}, err
 	}
 

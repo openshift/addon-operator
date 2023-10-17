@@ -9,6 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/metrics"
 	"github.com/openshift/addon-operator/internal/ocm"
 )
 
@@ -63,10 +64,10 @@ func (r *AddonReconciler) statusReportingRequired(addon *addonsv1alpha1.Addon) b
 }
 
 func (r *AddonReconciler) recordAddonServiceRequestDuration(reqFunc func()) {
-	if r.Recorder != nil {
+	if metrics.IsMetricsRecorderInitialized() {
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
 			us := v * 1000000 // convert to microseconds
-			r.Recorder.RecordAddonServiceAPIRequests(us)
+			metrics.MetricsRecorder().RecordAddonServiceAPIRequests(us)
 		}))
 		defer timer.ObserveDuration()
 	}

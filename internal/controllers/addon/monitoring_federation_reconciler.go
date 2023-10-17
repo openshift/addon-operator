@@ -44,14 +44,19 @@ func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
 
 		return ctrl.Result{}, nil
 	} else if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure ServiceMonitor: %w", err)
+		err = errors.Join(err, controllers.ErrEnsureCreateServiceMonitor)
+		return ctrl.Result{}, err
 	} else if !result.IsZero() {
 		return result, nil
 	}
 
 	// Remove possibly unwanted monitoring federation
 	if err := r.ensureDeletionOfUnwantedMonitoringFederation(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted ServiceMonitors: %w", err)
+		err = errors.Join(
+			err,
+			controllers.ErrEnsureDeleteUnwantedServiceMonitor,
+		)
+		return ctrl.Result{}, err
 	}
 	return reconcile.Result{}, nil
 }

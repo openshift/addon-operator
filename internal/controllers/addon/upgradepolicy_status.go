@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/openshift/addon-operator/internal/metrics"
 	"github.com/openshift/addon-operator/internal/ocm"
 
 	"github.com/go-logr/logr"
@@ -182,11 +183,11 @@ func (r *AddonReconciler) handleGetUpgradePolicyState(ctx context.Context,
 }
 
 func (r *AddonReconciler) recordOCMRequestDuration(reqFunc func()) {
-	if r.Recorder != nil {
+	if metrics.IsMetricsRecorderInitialized() {
 		// TODO: do not count metrics when API returns 5XX response
 		timer := prometheus.NewTimer(prometheus.ObserverFunc(func(v float64) {
 			us := v * 1000000 // convert to microseconds
-			r.Recorder.RecordOCMAPIRequests(us)
+			metrics.MetricsRecorder().RecordOCMAPIRequests(us)
 		}))
 		defer timer.ObserveDuration()
 	}

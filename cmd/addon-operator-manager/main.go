@@ -77,9 +77,8 @@ func initReconcilers(mgr ctrl.Manager,
 	clusterExternalID := string(cv.Spec.ClusterID)
 
 	// Create metrics recorder
-	var recorder *metrics.Recorder
 	if enableRecorder {
-		recorder = metrics.NewRecorder(true, clusterExternalID)
+		metrics.NewRecorder(true, clusterExternalID)
 	}
 
 	addonReconciler := addoncontroller.NewAddonReconciler(
@@ -87,7 +86,6 @@ func initReconcilers(mgr ctrl.Manager,
 		uncachedClient,
 		ctrl.Log.WithName("controllers").WithName("Addon"),
 		mgr.GetScheme(),
-		recorder,
 		clusterExternalID,
 		namespace,
 		enableStatusReporting,
@@ -104,7 +102,6 @@ func initReconcilers(mgr ctrl.Manager,
 		Scheme:              mgr.GetScheme(),
 		GlobalPauseManager:  addonReconciler,
 		OCMClientManager:    addonReconciler,
-		Recorder:            recorder,
 		ClusterExternalID:   clusterExternalID,
 		FeatureTogglesState: strings.Split(addonOperatorInCluster.Spec.FeatureFlags, ","),
 	}).SetupWithManager(mgr); err != nil {

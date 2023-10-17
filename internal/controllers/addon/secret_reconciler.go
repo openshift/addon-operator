@@ -2,10 +2,11 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -28,12 +29,17 @@ type addonSecretPropagationReconciler struct {
 func (r *addonSecretPropagationReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	if addon.Spec.SecretPropagation == nil ||
 		len(addon.Spec.SecretPropagation.Secrets) == 0 {
+		err := r.cleanupUnknownSecrets(ctx, map[client.ObjectKey]struct{}{}, addon)
+		if err != nil {
+			err = errors.Join(err, controllers.ErrCleanupUnknownSecrets)
+		}
 		// just ensure all propagated secrets are gone
-		return ctrl.Result{}, r.cleanupUnknownSecrets(ctx, map[client.ObjectKey]struct{}{}, addon)
+		return ctrl.Result{}, err
 	}
 
 	destinationSecretsWithoutNamespace, result, err := r.getDestinationSecretsWithoutNamespace(ctx, addon)
 	if err != nil {
+		err := errors.Join(err, controllers.ErrGetDestinationSecretsWithoutNamespace)
 		return ctrl.Result{}, err
 	}
 	if !result.IsZero() {
@@ -42,11 +48,13 @@ func (r *addonSecretPropagationReconciler) Reconcile(ctx context.Context, addon 
 
 	knownSecrets, err := r.reconcileSecretsInAddonNamespaces(ctx, destinationSecretsWithoutNamespace, addon)
 	if err != nil {
+		err := errors.Join(err, controllers.ErrEnsureSecretsInAddonNamespaces)
 		return ctrl.Result{}, err
 	}
 
 	if err := r.cleanupUnknownSecrets(ctx, knownSecrets, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("propagated secret cleanup: %w", err)
+		err := errors.Join(err, controllers.ErrCleanupUnknownSecrets)
+		return ctrl.Result{}, err
 	}
 
 	return ctrl.Result{}, nil
@@ -105,10 +113,10 @@ func (r *addonSecretPropagationReconciler) getReferencedSecret(
 	referencedSecret := &corev1.Secret{}
 
 	err := r.cachedClient.Get(ctx, secretKey, referencedSecret)
-	if errors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		// the referenced secret might not be labeled correctly for the cache to pick up,
 		// fallback to a uncached read to discover.
-		if err := r.uncachedClient.Get(ctx, secretKey, referencedSecret); errors.IsNotFound(err) {
+		if err := r.uncachedClient.Get(ctx, secretKey, referencedSecret); apiErrors.IsNotFound(err) {
 			// Secret does not exist for sure, break and keep retrying later.
 			reportPendingStatus(addon, addonsv1alpha1.AddonReasonMissingSecretForPropagation, err.Error())
 			return nil, ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil
@@ -184,8 +192,8 @@ func reconcileSecret(
 	ctx context.Context, c client.Client, desiredSecret *corev1.Secret) error {
 	actualSecret := &corev1.Secret{}
 	err := c.Get(ctx, client.ObjectKeyFromObject(desiredSecret), actualSecret)
-	if errors.IsNotFound(err) {
-		if err := c.Create(ctx, desiredSecret); err != nil && !errors.IsAlreadyExists(err) {
+	if apiErrors.IsNotFound(err) {
+		if err := c.Create(ctx, desiredSecret); err != nil && !apiErrors.IsAlreadyExists(err) {
 			return fmt.Errorf("creating secret: %w", err)
 		}
 		return nil

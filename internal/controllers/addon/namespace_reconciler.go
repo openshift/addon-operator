@@ -2,6 +2,7 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	corev1 "k8s.io/api/core/v1"
@@ -30,14 +31,16 @@ func (r *namespaceReconciler) Reconcile(ctx context.Context,
 	// Ensure wanted namespaces
 	result, err := r.ensureWantedNamespaces(ctx, addon)
 	if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure wanted Namespaces: %w", err)
+		err = errors.Join(err, controllers.ErrEnsureCreateNamespaces)
+		return ctrl.Result{}, err
 	} else if !result.IsZero() {
 		return result, nil
 	}
 
 	// Ensure unwanted namespaces are removed
 	if err := r.ensureDeletionOfUnwantedNamespaces(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted Namespaces: %w", err)
+		err = errors.Join(err, controllers.ErrEnsureDeleteNamespaces)
+		return ctrl.Result{}, err
 	}
 	return reconcile.Result{}, nil
 }

@@ -14,6 +14,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
 
 	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 )
@@ -67,9 +68,17 @@ func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
 
 func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	if addon.Spec.AddonPackageOperator == nil {
-		return ctrl.Result{}, r.ensureClusterObjectTemplateTornDown(ctx, addon)
+		err := r.ensureClusterObjectTemplateTornDown(ctx, addon)
+		if err != nil {
+			err = errors.Join(err, controllers.ErrEnsureClusterObjectTemplateTornDown)
+		}
+		return ctrl.Result{}, err
 	}
-	return r.reconcileClusterObjectTemplate(ctx, addon)
+	result, err := r.reconcileClusterObjectTemplate(ctx, addon)
+	if err != nil {
+		err = errors.Join(err, controllers.ErrEnsureClusterObjectTemplate)
+	}
+	return result, err
 }
 
 func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {

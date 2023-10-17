@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/openshift/addon-operator/internal/metrics"
-
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -22,6 +20,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 	"github.com/openshift/addon-operator/internal/ocm"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -35,6 +35,8 @@ const (
 	defaultAddonOperatorRequeueTime = time.Minute
 )
 
+var reconErr = metrics.NewReconcileError("addoninstance")
+
 type AddonOperatorReconciler struct {
 	client.Client
 	UncachedClient      client.Client
@@ -42,7 +44,6 @@ type AddonOperatorReconciler struct {
 	Scheme              *runtime.Scheme
 	GlobalPauseManager  globalPauseManager
 	OCMClientManager    ocmClientManager
-	Recorder            *metrics.Recorder
 	ClusterExternalID   string
 	FeatureTogglesState []string // no need to guard this with a mutex considering the fact that no two goroutines would ever try to update it as this is only initialized at startup
 }
@@ -76,17 +77,23 @@ func (r *AddonOperatorReconciler) Reconcile(
 
 	defer func() {
 		// update metrics
-		if r.Recorder != nil {
-			r.Recorder.SetAddonOperatorPaused(meta.IsStatusConditionTrue(
+		if metrics.IsMetricsRecorderInitialized() {
+			metrics.MetricsRecorder().SetAddonOperatorPaused(meta.IsStatusConditionTrue(
 				addonOperator.Status.Conditions, addonsv1alpha1.AddonOperatorPaused))
 		}
 	}()
 	// Create default AddonOperator object if it doesn't exist
 	if apierrors.IsNotFound(err) {
 		log.Info("default AddonOperator not found")
-		return ctrl.Result{}, r.handleAddonOperatorCreation(ctx, log)
+		reconErr.RecordAsMetric(controllers.ErrDefaultAddonOperatorNotFound)
+		createErr := r.handleAddonOperatorCreation(ctx, log)
+		if createErr != nil {
+			reconErr.RecordAsMetric(controllers.ErrCreateAddonOperator)
+		}
+		return ctrl.Result{}, createErr
 	}
 	if err != nil {
+		reconErr.RecordAsMetric(controllers.ErrDefaultAddonOperatorNotFound)
 		return ctrl.Result{}, err
 	}
 
@@ -98,10 +105,12 @@ func (r *AddonOperatorReconciler) Reconcile(
 	}
 
 	if err := r.handleGlobalPause(ctx, addonOperator); err != nil {
+		reconErr.RecordAsMetric(controllers.ErrAddonOperatorHandleGlobalPause)
 		return ctrl.Result{}, fmt.Errorf("handling global pause: %w", err)
 	}
 
 	if err := r.handleOCMClient(ctx, log, addonOperator); err != nil {
+		reconErr.RecordAsMetric(controllers.ErrCreateOCMClient)
 		return ctrl.Result{}, fmt.Errorf("handling OCM client: %w", err)
 	}
 
@@ -110,6 +119,7 @@ func (r *AddonOperatorReconciler) Reconcile(
 
 	err = r.reportAddonOperatorReadinessStatus(ctx, addonOperator)
 	if err != nil {
+		reconErr.RecordAsMetric(controllers.ErrReportAddonOperatorReadinessStatus)
 		return ctrl.Result{}, err
 	}
 	return ctrl.Result{RequeueAfter: defaultAddonOperatorRequeueTime}, nil

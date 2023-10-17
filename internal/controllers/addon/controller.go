@@ -37,11 +37,18 @@ const (
 	cacheFinalizer        = "addons.managed.openshift.io/cache"
 )
 
+var (
+	reconErr    = metrics.NewReconcileError("addon")
+	subReconErr = metrics.NewReconcileError(
+		"addon",
+		metrics.WithSubReconcileError(true),
+	)
+)
+
 type AddonReconciler struct {
 	client.Client
 	Log               logr.Logger
 	Scheme            *runtime.Scheme
-	Recorder          *metrics.Recorder
 	UncachedClient    client.Client
 	ClusterExternalID string
 	// Namespace the AddonOperator is deployed into
@@ -72,7 +79,6 @@ func NewAddonReconciler(
 	uncachedClient client.Client,
 	log logr.Logger,
 	scheme *runtime.Scheme,
-	recorder *metrics.Recorder,
 	clusterExternalID string,
 	addonOperatorNamespace string,
 	enableStatusReporting bool,
@@ -84,7 +90,6 @@ func NewAddonReconciler(
 		UncachedClient:          uncachedClient,
 		Log:                     log,
 		Scheme:                  scheme,
-		Recorder:                recorder,
 		ClusterExternalID:       clusterExternalID,
 		AddonOperatorNamespace:  addonOperatorNamespace,
 		operatorResourceHandler: operatorResourceHandler,
@@ -278,14 +283,15 @@ func (r *AddonReconciler) Reconcile(
 
 	addon := &addonsv1alpha1.Addon{}
 	if err := r.Get(ctx, req.NamespacedName, addon); err != nil {
+		reconErr.RecordAsMetric(controllers.ErrAddonNotFound)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	reconcileResult, reconcileErr := r.reconcile(ctx, addon, logger)
 
 	// Update metrics only if a Recorder is initialized
-	if r.Recorder != nil {
-		r.Recorder.RecordAddonMetrics(addon)
+	if metrics.IsMetricsRecorderInitialized() {
+		metrics.MetricsRecorder().RecordAddonMetrics(addon)
 	}
 	errors := r.syncWithExternalAPIs(ctx, logger, addon)
 
@@ -364,6 +370,7 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
 		controllerutil.AddFinalizer(addon, cacheFinalizer)
 		if err := r.Update(ctx, addon); err != nil {
+			reconErr.RecordAsMetric(controllers.ErrAddFinalizer)
 			return ctrl.Result{}, fmt.Errorf("failed to add finalizer: %w", err)
 		}
 	}
@@ -371,6 +378,7 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	// Run each sub reconciler serially
 	for _, reconciler := range r.subReconcilers {
 		if result, err := reconciler.Reconcile(ctx, addon); err != nil {
+			subReconErr.RecordAsMetric(err)
 			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", reconciler.Name(), err)
 		} else if !result.IsZero() {
 			return result, nil

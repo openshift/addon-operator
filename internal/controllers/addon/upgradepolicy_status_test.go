@@ -83,7 +83,6 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 		r := &AddonReconciler{
 			Client:    client,
 			ocmClient: ocmClient,
-			Recorder:  recorder,
 		}
 
 		var Version = "1.0.0"
@@ -198,7 +197,6 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 		r := &AddonReconciler{
 			Client:    client,
 			ocmClient: ocmClient,
-			Recorder:  recorder,
 		}
 		log := testutil.NewLogger(t)
 		addon := &addonsv1alpha1.Addon{

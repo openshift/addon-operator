@@ -8,6 +8,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/metrics"
 	"github.com/openshift/addon-operator/internal/ocm"
 )
 
@@ -31,8 +32,8 @@ func (r *AddonOperatorReconciler) handleAddonOperatorCreation(
 			Name: addonsv1alpha1.DefaultAddonOperatorName,
 		},
 	}
-	if r.Recorder != nil {
-		r.Recorder.SetAddonOperatorPaused(false)
+	if metrics.IsMetricsRecorderInitialized() {
+		metrics.MetricsRecorder().SetAddonOperatorPaused(false)
 	}
 	log.Info("creating default AddonOperator object")
 	err := r.Create(ctx, defaultAddonOperator)

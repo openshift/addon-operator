@@ -2,6 +2,7 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -9,6 +10,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/controllers"
 )
 
 const (
@@ -54,11 +56,13 @@ func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1
 
 	for _, handler := range r.handlers {
 		if err := handler.NotifyAddon(ctx, addon); err != nil {
+			err = errors.Join(err, controllers.ErrNotifyAddon)
 			return ctrl.Result{}, err
 		}
 		// If ack is received from the underlying addon, we report ReadyToBeDeleted = true.
 		ackReceived, err := handler.AckReceivedFromAddon(ctx, addon)
 		if err != nil {
+			err = errors.Join(err, controllers.ErrAckReceivedFromAddon)
 			return ctrl.Result{}, err
 		}
 		if ackReceived {

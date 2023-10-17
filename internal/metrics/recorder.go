@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"errors"
 	"sync"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -36,10 +37,20 @@ type Recorder struct {
 	ocmAPIRequestDuration          prometheus.Summary
 	addonServiceAPIRequestDuration prometheus.Summary
 	addonHealthInfo                *prometheus.GaugeVec
+	controllerReconcileError       *prometheus.GaugeVec
 	// .. TODO: More metrics!
 }
 
 type addonCountLabel string
+
+// Represents an error that happened in a reconciler's reconcile loop
+type ReconcileError struct {
+	controller           string
+	errorReason          string
+	isSubReconcilerError bool
+}
+
+type ReconcileErrorOpt = func(*ReconcileError)
 
 var (
 	available addonCountLabel = "available"
@@ -47,7 +58,14 @@ var (
 	total     addonCountLabel = "total"
 )
 
+// A singleton recorder for collecting prometheus metrics
+var metricsRecorder *Recorder
+
 func NewRecorder(register bool, clusterId string) *Recorder {
+	if metricsRecorder != nil {
+		// Ensure there is only one instance of Recorder
+		return metricsRecorder
+	}
 
 	addonsCount := prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -94,6 +112,17 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 		},
 	)
 
+	controllerReconcileError := prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name:        "addon_operator_reconcile_error",
+			Help:        "Addon Operator Controller Reconcile Error",
+			ConstLabels: prometheus.Labels{"_id": clusterId},
+		}, []string{
+			"controller",
+			"error_reason",
+		},
+	)
+
 	// Register metrics if `register` is true
 	// This allows us to skip registering metrics
 	// and re-use the recorder when testing.
@@ -107,7 +136,7 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 		)
 	}
 
-	return &Recorder{
+	metricsRecorder = &Recorder{
 		addonState: &addonState{
 			conditionMap: map[string]addonConditions{},
 		},
@@ -116,7 +145,9 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 		ocmAPIRequestDuration:          ocmAPIReqDuration,
 		addonServiceAPIRequestDuration: addonServiceAPIReqDuration,
 		addonHealthInfo:                addonHealthInfo,
+		controllerReconcileError:       controllerReconcileError,
 	}
+	return metricsRecorder
 }
 
 // InjectOCMAPIRequestDuration allows us to override `r.ocmAPIRequestDuration` metric
@@ -284,4 +315,57 @@ func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
 		addonVersion,
 		healthReason,
 	).Set(float64(healthStatus))
+}
+
+func (r *Recorder) GetControllerReconcileErrorMetric() *prometheus.GaugeVec {
+	return MetricsRecorder().controllerReconcileError
+}
+
+// Returns the singleton instance of Recorder
+func MetricsRecorder() *Recorder {
+	return metricsRecorder
+}
+
+func IsMetricsRecorderInitialized() bool {
+	return metricsRecorder != nil
+}
+
+// Creates a reconcile error object
+func NewReconcileError(
+	controller string,
+	opts ...ReconcileErrorOpt,
+) *ReconcileError {
+	err := &ReconcileError{
+		controller: controller,
+	}
+	for _, opt := range opts {
+		opt(err)
+	}
+	return err
+}
+
+func WithSubReconcileError(cond bool) ReconcileErrorOpt {
+	return func(e *ReconcileError) {
+		e.isSubReconcilerError = cond
+	}
+}
+
+// Records a reconcile error as a prometheus metric
+func (r *ReconcileError) RecordAsMetric(err error) {
+	if MetricsRecorder() == nil {
+		return
+	}
+	newErr := err.Error()
+	// Retrieve the specific subreconciler error if present
+	if r.isSubReconcilerError {
+		unwrapped := errors.Unwrap(err)
+		if unwrapped != nil {
+			newErr = unwrapped.Error()
+		}
+	}
+	r.errorReason = newErr
+	MetricsRecorder().controllerReconcileError.WithLabelValues(
+		r.controller,
+		r.errorReason,
+	).Inc()
 }

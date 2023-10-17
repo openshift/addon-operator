@@ -104,7 +104,6 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		r := &AddonReconciler{
 			Client:    client,
 			ocmClient: ocmClient,
-			Recorder:  recorder,
 		}
 		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{
@@ -162,7 +161,6 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		r := &AddonReconciler{
 			Client:    client,
 			ocmClient: ocmClient,
-			Recorder:  recorder,
 		}
 		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{
@@ -231,7 +229,6 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		r := &AddonReconciler{
 			Client:    client,
 			ocmClient: ocmClient,
-			Recorder:  recorder,
 		}
 		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{
@@ -299,7 +296,6 @@ func TestHandleAddonStatusReporting(t *testing.T) {
 		r := &AddonReconciler{
 			Client:    client,
 			ocmClient: ocmClient,
-			Recorder:  recorder,
 		}
 		r.statusReportingEnabled = true
 		addon := &addonsv1alpha1.Addon{

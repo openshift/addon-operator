@@ -2,10 +2,11 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"k8s.io/apimachinery/pkg/api/equality"
-	"k8s.io/apimachinery/pkg/api/errors"
+	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -28,7 +29,8 @@ func (r *addonInstanceReconciler) Reconcile(ctx context.Context,
 	addon *addonsv1alpha1.Addon) (reconcile.Result, error) {
 	// Ensure the creation of the corresponding AddonInstance in .spec.install.olmOwnNamespace/.spec.install.olmAllNamespaces namespace
 	if err := r.ensureAddonInstance(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure the creation of addoninstance: %w", err)
+		err = errors.Join(err, controllers.ErrEnsureCreateAddonInstance)
+		return ctrl.Result{}, err
 	}
 	return reconcile.Result{}, nil
 }
@@ -73,7 +75,7 @@ func (r *addonInstanceReconciler) reconcileAddonInstance(
 	ctx context.Context, desiredAddonInstance *addonsv1alpha1.AddonInstance) error {
 	currentAddonInstance := &addonsv1alpha1.AddonInstance{}
 	err := r.client.Get(ctx, client.ObjectKeyFromObject(desiredAddonInstance), currentAddonInstance)
-	if errors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return r.client.Create(ctx, desiredAddonInstance)
 	}
 	if err != nil {
