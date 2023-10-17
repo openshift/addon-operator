@@ -7,11 +7,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
-	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	aoapis "github.com/openshift/addon-operator/apis"
 	"github.com/openshift/addon-operator/internal/webhooks"
@@ -68,22 +66,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Register webhooks as handlers
-	wbServer := mgr.GetWebhookServer()
+	webhook := webhooks.NewAddonWebhook(
+		webhooks.NewDefaultAddonValidator(),
+	)
 
-	wbHandler := &webhooks.AddonWebhookHandler{
-		Log:    log.Log.WithName("validating webhooks").WithName("Addon"),
-		Client: mgr.GetClient(),
-	}
-
-	if err = wbHandler.InjectDecoder(admission.NewDecoder(mgr.GetScheme())); err != nil {
-		setupLog.Error(err, "unable to inject decoder")
+	if err := webhook.SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "setting up addon webhooks with manager")
 		os.Exit(1)
 	}
-
-	wbServer.Register("/validate-addon", &webhook.Admission{
-		Handler: wbHandler,
-	})
 
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")

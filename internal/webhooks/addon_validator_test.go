@@ -10,7 +10,16 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/testutil"
+
+	"github.com/stretchr/testify/require"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
+
+func TestAddonValidatorInterfaces(t *testing.T) {
+	t.Parallel()
+
+	require.Implements(t, new(admission.CustomValidator), new(DefaultAddonValidator))
+}
 
 func Test_validateInstallSpec(t *testing.T) {
 	testCases := []struct {

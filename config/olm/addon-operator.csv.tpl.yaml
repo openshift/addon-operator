@@ -404,6 +404,6 @@ spec:
     sideEffects: None
     targetPort: 8080
     type: ValidatingAdmissionWebhook
-    webhookPath: /validate-addon
+    webhookPath: /validate-addons-managed-openshift-io-v1alpha1-addon
 status:
   cleanup: {}

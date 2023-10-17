@@ -13,7 +13,7 @@ webhooks:
     service:
       name: webhook-service
       namespace: addon-operator
-      path: /validate-addon
+      path: /validate-addons-managed-openshift-io-v1alpha1-addon
   failurePolicy: Fail
   name: vaddons.managed.openshift.io
   rules:

@@ -1,15 +1,21 @@
 package webhooks
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
 	"k8s.io/apimachinery/pkg/api/equality"
+	"k8s.io/apimachinery/pkg/runtime"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/go-logr/logr"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
+
+	av1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
 
 var (
+	errInvalidObject                        = errors.New("invalid object")
 	errSpecInstallTypeInvalid               = errors.New("invalid Addon .spec.install.type")
 	errSpecInstallOwnNamespaceRequired      = errors.New(".spec.install.olmOwnNamespace is required when .spec.install.type = OLMOwnNamespace")
 	errSpecInstallAllNamespacesRequired     = errors.New(".spec.install.olmAllNamespaces is required when .spec.install.type = OLMAllNamespaces")
@@ -17,7 +23,61 @@ var (
 	errAdditionalCatalogSourceNameCollision = errors.New("additional catalog source name collides with the main catalog source name")
 )
 
-func validateAddon(addon *addonsv1alpha1.Addon) error {
+func NewDefaultAddonValidator(opts ...DefaultAddonValidatorOption) *DefaultAddonValidator {
+	var cfg DefaultAddonValidatorConfig
+
+	cfg.Option(opts...)
+	cfg.Default()
+
+	return &DefaultAddonValidator{
+		cfg: cfg,
+	}
+}
+
+type DefaultAddonValidator struct {
+	cfg DefaultAddonValidatorConfig
+}
+
+func (v *DefaultAddonValidator) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
+	addon, ok := obj.(*av1alpha1.Addon)
+	if !ok {
+		return nil, fmt.Errorf("casting object of type %T to Addon: %w", obj, errInvalidObject)
+	}
+
+	if err := validateAddon(addon); err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (v *DefaultAddonValidator) ValidateUpdate(ctx context.Context, oldObj, newObj runtime.Object) (admission.Warnings, error) {
+	oldAddon, ok := oldObj.(*av1alpha1.Addon)
+	if !ok {
+		return nil, fmt.Errorf("casting object of type %T to Addon: %w", oldObj, errInvalidObject)
+	}
+
+	addon, ok := newObj.(*av1alpha1.Addon)
+	if !ok {
+		return nil, fmt.Errorf("casting object of type %T to Addon: %w", newObj, errInvalidObject)
+	}
+
+	if err := validateAddon(addon); err != nil {
+		return nil, err
+	}
+
+	if err := validateAddonImmutability(addon, oldAddon); err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (v *DefaultAddonValidator) ValidateDelete(ctx context.Context, _ runtime.Object) (admission.Warnings, error) {
+	return nil, nil
+}
+
+func validateAddon(addon *av1alpha1.Addon) error {
 	if err := validateInstallSpec(addon.Spec.Install, addon.Name); err != nil {
 		return err
 	}
@@ -27,12 +87,12 @@ func validateAddon(addon *addonsv1alpha1.Addon) error {
 	return nil
 }
 
-func validateSecretPropagation(addon *addonsv1alpha1.Addon) error {
+func validateSecretPropagation(addon *av1alpha1.Addon) error {
 	var pullSecretName string
 	switch addon.Spec.Install.Type {
-	case addonsv1alpha1.OLMAllNamespaces:
+	case av1alpha1.OLMAllNamespaces:
 		pullSecretName = addon.Spec.Install.OLMAllNamespaces.PullSecretName
-	case addonsv1alpha1.OLMOwnNamespace:
+	case av1alpha1.OLMOwnNamespace:
 		pullSecretName = addon.Spec.Install.OLMOwnNamespace.PullSecretName
 	}
 
@@ -51,14 +111,14 @@ func validateSecretPropagation(addon *addonsv1alpha1.Addon) error {
 	return fmt.Errorf("pullSecretName %q not found as destination in secretPropagation", pullSecretName)
 }
 
-func validateInstallSpec(addonSpecInstall addonsv1alpha1.AddonInstallSpec, addonName string) error {
+func validateInstallSpec(addonSpecInstall av1alpha1.AddonInstallSpec, addonName string) error {
 	if addonSpecInstall.OLMAllNamespaces != nil &&
 		addonSpecInstall.OLMOwnNamespace != nil {
 		return errSpecInstallConfigMutuallyExclusive
 	}
 
 	switch addonSpecInstall.Type {
-	case addonsv1alpha1.OLMOwnNamespace:
+	case av1alpha1.OLMOwnNamespace:
 		if addonSpecInstall.OLMOwnNamespace == nil {
 			// missing configuration
 			return errSpecInstallOwnNamespaceRequired
@@ -75,7 +135,7 @@ func validateInstallSpec(addonSpecInstall addonsv1alpha1.AddonInstallSpec, addon
 
 		return nil
 
-	case addonsv1alpha1.OLMAllNamespaces:
+	case av1alpha1.OLMAllNamespaces:
 		if addonSpecInstall.OLMAllNamespaces == nil {
 			// missing configuration
 			return errSpecInstallAllNamespacesRequired
@@ -105,7 +165,7 @@ var (
 	errInstallImmutable     = errors.New(".spec.install is immutable, except for .catalogSourceImage")
 )
 
-func validateAddonImmutability(addon, oldAddon *addonsv1alpha1.Addon) error {
+func validateAddonImmutability(addon, oldAddon *av1alpha1.Addon) error {
 	if addon.Spec.Install.Type != oldAddon.Spec.Install.Type {
 		return errInstallTypeImmutable
 	}
@@ -148,4 +208,24 @@ func validateAddonImmutability(addon, oldAddon *addonsv1alpha1.Addon) error {
 		return errInstallImmutable
 	}
 	return nil
+}
+
+type DefaultAddonValidatorConfig struct {
+	Log logr.Logger
+}
+
+func (c *DefaultAddonValidatorConfig) Option(opts ...DefaultAddonValidatorOption) {
+	for _, opt := range opts {
+		opt.ConfigureDefaultAddonValidator(c)
+	}
+}
+
+type DefaultAddonValidatorOption interface {
+	ConfigureDefaultAddonValidator(*DefaultAddonValidatorConfig)
+}
+
+func (c *DefaultAddonValidatorConfig) Default() {
+	if c.Log.GetSink() == nil {
+		c.Log = logr.Discard()
+	}
 }
