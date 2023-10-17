@@ -119,6 +119,7 @@ func TestController(t *testing.T) {
 			c := fake.NewClientBuilder().
 				WithScheme(scheme).
 				WithObjects(&tc.Request.Instance).
+				WithStatusSubresource(&tc.Request.Instance).
 				Build()
 
 			var mPhase PhaseMock

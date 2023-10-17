@@ -14,7 +14,6 @@ import (
 	monv1 "github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring/v1"
 
 	"github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
 )
@@ -231,10 +230,10 @@ func TestPropagateMonitoringStackStatusToAddon(t *testing.T) {
 			require.Equal(t, tc.expectedAvailableStatusToPropagate, isMonitoringStackAvailable)
 
 			if !isMonitoringStackAvailable {
-				require.Equal(t, addonsv1alpha1.AddonReasonUnreadyMonitoringStack, addon.Status.Conditions[0].Reason)
+				require.Equal(t, v1alpha1.AddonReasonUnreadyMonitoringStack, addon.Status.Conditions[0].Reason)
 				require.Equal(t, metav1.ConditionFalse, addon.Status.Conditions[0].Status)
 				require.Equal(t, tc.expectedAddonStatusMessage, addon.Status.Conditions[0].Message)
-				require.Equal(t, addonsv1alpha1.PhasePending, addon.Status.Phase)
+				require.Equal(t, v1alpha1.PhasePending, addon.Status.Phase)
 			} else {
 				require.Zero(t, len(addon.Status.Conditions))
 			}

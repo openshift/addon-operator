@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -106,4 +107,18 @@ func (c *StatusClient) Patch(
 func (c *StatusClient) Create(ctx context.Context, obj client.Object, obj2 client.Object, opts ...client.SubResourceCreateOption) error {
 	args := c.Called(ctx, obj, obj2, opts)
 	return args.Error(0)
+}
+
+// GroupVersionKindFor implements client.Client.
+func (*Client) GroupVersionKindFor(obj runtime.Object) (schema.GroupVersionKind, error) {
+	return schema.GroupVersionKind{
+		Group:   "group",
+		Version: "version",
+		Kind:    "kind",
+	}, nil
+}
+
+// IsObjectNamespaced implements client.Client.
+func (*Client) IsObjectNamespaced(obj runtime.Object) (bool, error) {
+	return true, nil
 }

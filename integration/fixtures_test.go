@@ -16,20 +16,25 @@ import (
 
 var (
 	// Version: v0.1.0
+	// nolint - gosec G101 false-positive
 	referenceAddonCatalogSourceImageWorking = "quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd"
 
 	// version v0.6.7
+	// nolint - gosec G101 false-positive
 	referenceAddonCatalogSourceImageWorkingv6 = "quay.io/osd-addons/reference-addon-index@sha256:5e19fa26ab71861ec8522b0e56a92c61fc84718c6a794e57db307164ce05a90f"
 
 	// version v0.5.0
+	// nolint - gosec G101 false-positive
 	referenceAddonCatalogSourceImageWorkingv5 = "quay.io/osd-addons/reference-addon-index@sha256:ccd0ab7962a7f185e9c0783319b649a17695442855208948363eac4acf6e0b5b"
 
 	// Latest
+	// nolint - gosec G101 false-positive
 	referenceAddonCatalogSourceImageWorkingLatest = "quay.io/osd-addons/reference-addon-index@sha256:2403bcb6d6f61ba3cd9d3a4653edeb852026a1edc0c49f416d3df5008dad37e8"
 
 	// The latest bundle in this index image deploys a version of our referene-addon where InstallPlan and CSV never succeed
 	// because the deployed operator pod is deliberately broken through invalid readiness and liveness probes.
 	// Version: v0.1.3
+	// nolint - gosec G101 false-positive
 	referenceAddonCatalogSourceImageBroken = "quay.io/osd-addons/reference-addon-index@sha256:9e6306e310d585610d564412780d58ec54cb24a67d7cdabfc067ab733295010a"
 	referenceAddonConfigEnvObjects         = []addonsv1alpha1.EnvObject{
 		{Name: "TESTING1", Value: "TRUE"},

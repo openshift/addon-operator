@@ -9,7 +9,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	aoapis "github.com/openshift/addon-operator/apis"
 	"github.com/openshift/addon-operator/internal/webhooks"
@@ -41,10 +43,13 @@ func main() {
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                 scheme,
-		MetricsBindAddress:     "0",
-		Port:                   port,
-		CertDir:                certDir,
+		Scheme:  scheme,
+		Metrics: server.Options{BindAddress: "0"},
+		WebhookServer: webhook.NewServer(
+			webhook.Options{
+				Port:    port,
+				CertDir: certDir,
+			}),
 		HealthProbeBindAddress: probeAddr,
 	})
 	if err != nil {
@@ -64,12 +69,20 @@ func main() {
 	}
 
 	// Register webhooks as handlers
-	wbh := mgr.GetWebhookServer()
-	wbh.Register("/validate-addon", &webhook.Admission{
-		Handler: &webhooks.AddonWebhookHandler{
-			Log:    log.Log.WithName("validating webhooks").WithName("Addon"),
-			Client: mgr.GetClient(),
-		},
+	wbServer := mgr.GetWebhookServer()
+
+	wbHandler := &webhooks.AddonWebhookHandler{
+		Log:    log.Log.WithName("validating webhooks").WithName("Addon"),
+		Client: mgr.GetClient(),
+	}
+
+	if err = wbHandler.InjectDecoder(admission.NewDecoder(mgr.GetScheme())); err != nil {
+		setupLog.Error(err, "unable to inject decoder")
+		os.Exit(1)
+	}
+
+	wbServer.Register("/validate-addon", &webhook.Admission{
+		Handler: wbHandler,
 	})
 
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {

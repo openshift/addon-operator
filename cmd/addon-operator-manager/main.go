@@ -28,8 +28,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
 	aoapis "github.com/openshift/addon-operator/apis"
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
@@ -51,6 +54,8 @@ func init() {
 	_ = operatorsv1alpha1.AddToScheme(scheme)
 	_ = configv1.AddToScheme(scheme)
 	_ = monitoringv1.AddToScheme(scheme)
+
+	log.SetLogger(zap.New(zap.UseDevMode(true)))
 }
 
 func initReconcilers(mgr ctrl.Manager,
@@ -227,23 +232,28 @@ func setup() error {
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                     scheme,
-		MetricsBindAddress:         opts.MetricsAddr,
-		HealthProbeBindAddress:     opts.ProbeAddr,
-		Port:                       9443,
+		Scheme: scheme,
+		Metrics: server.Options{
+			BindAddress: opts.MetricsAddr,
+		},
+		HealthProbeBindAddress: opts.ProbeAddr,
+		WebhookServer: webhook.NewServer(
+			webhook.Options{
+				Port: 9443,
+			}),
 		LeaderElectionResourceLock: "leases",
 		LeaderElection:             opts.EnableLeaderElection,
 		LeaderElectionID:           "8a4hp84a6s.addon-operator-lock",
 		LeaderElectionNamespace:    opts.LeaderElectionNamespace,
-		NewCache: cache.BuilderWithOptions(cache.Options{
-			SelectorsByObject: cache.SelectorsByObject{
+		Cache: cache.Options{
+			ByObject: map[client.Object]cache.ByObject{
 				&corev1.Secret{}: {
 					Label: labels.SelectorFromSet(labels.Set{
 						controllers.CommonCacheLabel: controllers.CommonCacheValue,
 					}),
 				},
 			},
-		}),
+		},
 	})
 	if err != nil {
 		return fmt.Errorf("unable to start manager: %w", err)

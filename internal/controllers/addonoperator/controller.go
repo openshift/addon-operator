@@ -51,8 +51,7 @@ func (r *AddonOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&addonsv1alpha1.AddonOperator{}).
 		WithEventFilter(predicate.GenerationChangedPredicate{}).
-		Watches(source.Func(enqueueAddonOperator),
-			&handler.EnqueueRequestForObject{}). // initial enqueue for creating the object
+		WatchesRawSource(source.Func(enqueueAddonOperator), &handler.EnqueueRequestForObject{}).
 		Complete(r)
 }
 
@@ -61,6 +60,7 @@ func enqueueAddonOperator(ctx context.Context, h handler.EventHandler,
 	q.Add(reconcile.Request{NamespacedName: types.NamespacedName{
 		Name: addonsv1alpha1.DefaultAddonOperatorName,
 	}})
+
 	return nil
 }
 
