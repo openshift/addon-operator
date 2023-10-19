@@ -30,13 +30,13 @@ func (s *integrationTestSuite) TestAddonInstallSpec() {
 			addon: testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{
 				Type: addonsv1alpha1.OLMOwnNamespace,
 			}, addonName),
-			err: testutil.NewStatusError(".spec.install.olmOwnNamespace is required when .spec.install.type = OLMOwnNamespace"),
+			err: testutil.NewStatusError("validating addon: validating install spec: .spec.install.olmOwnNamespace is required when .spec.install.type = OLMOwnNamespace"),
 		},
 		{
 			addon: testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{
 				Type: addonsv1alpha1.OLMAllNamespaces,
 			}, addonName),
-			err: testutil.NewStatusError(".spec.install.olmAllNamespaces is required when .spec.install.type = OLMAllNamespaces"),
+			err: testutil.NewStatusError("validating addon: validating install spec: .spec.install.olmAllNamespaces is required when .spec.install.type = OLMAllNamespaces"),
 		},
 		{
 			addon: testutil.NewAddonWithInstallSpec(addonsv1alpha1.AddonInstallSpec{

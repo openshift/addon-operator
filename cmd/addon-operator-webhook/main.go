@@ -66,11 +66,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	webhook := webhooks.NewAddonWebhook(
+	webhooks := webhooks.NewAddonWebhooks(
 		webhooks.NewDefaultAddonValidator(),
 	)
 
-	if err := webhook.SetupWithManager(mgr); err != nil {
+	if err := webhooks.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "setting up addon webhooks with manager")
 		os.Exit(1)
 	}

@@ -8,17 +8,17 @@ import (
 	av1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 )
 
-func NewAddonWebhook(validator admission.CustomValidator) *AddonWebhook {
-	return &AddonWebhook{
+func NewAddonWebhooks(validator admission.CustomValidator) *AddonWebhooks {
+	return &AddonWebhooks{
 		validator: validator,
 	}
 }
 
-type AddonWebhook struct {
+type AddonWebhooks struct {
 	validator admission.CustomValidator
 }
 
-func (w *AddonWebhook) SetupWithManager(mgr ctrl.Manager) error {
+func (w *AddonWebhooks) SetupWithManager(mgr ctrl.Manager) error {
 	return builder.WebhookManagedBy(mgr).
 		For(&av1alpha1.Addon{}).
 		WithValidator(w.validator).
