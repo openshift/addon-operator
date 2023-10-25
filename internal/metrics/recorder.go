@@ -1,6 +1,8 @@
 package metrics
 
 import (
+	"errors"
+	"fmt"
 	"sync"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -36,10 +38,19 @@ type Recorder struct {
 	ocmAPIRequestDuration          prometheus.Summary
 	addonServiceAPIRequestDuration prometheus.Summary
 	addonHealthInfo                *prometheus.GaugeVec
+	reconcileError                 *prometheus.CounterVec
 	// .. TODO: More metrics!
 }
 
 type addonCountLabel string
+
+// Represents an error that happened in a reconciler's reconcile loop
+type ReconcileError struct {
+	controller           string
+	reason               string
+	isSubReconcilerError bool
+	recorder             *Recorder
+}
 
 var (
 	available addonCountLabel = "available"
@@ -94,6 +105,17 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 		},
 	)
 
+	reconcileError := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name:        "addon_operator_reconcile_error",
+			Help:        "Addon Operator Controller Reconcile Error",
+			ConstLabels: prometheus.Labels{"_id": clusterId},
+		}, []string{
+			"controller",
+			"reason",
+		},
+	)
+
 	// Register metrics if `register` is true
 	// This allows us to skip registering metrics
 	// and re-use the recorder when testing.
@@ -104,6 +126,7 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 			ocmAPIReqDuration,
 			addonServiceAPIReqDuration,
 			addonHealthInfo,
+			reconcileError,
 		)
 	}
 
@@ -116,6 +139,7 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 		ocmAPIRequestDuration:          ocmAPIReqDuration,
 		addonServiceAPIRequestDuration: addonServiceAPIReqDuration,
 		addonHealthInfo:                addonHealthInfo,
+		reconcileError:                 reconcileError,
 	}
 }
 
@@ -284,4 +308,57 @@ func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
 		addonVersion,
 		healthReason,
 	).Set(float64(healthStatus))
+}
+
+func (r *Recorder) GetReconcileErrorMetric() *prometheus.CounterVec {
+	return r.reconcileError
+}
+
+// Creates a reconcile error object
+func NewReconcileError(
+	controller string,
+	recorder *Recorder,
+	isSubReconcilerError bool,
+) *ReconcileError {
+	err := &ReconcileError{
+		controller:           controller,
+		recorder:             recorder,
+		isSubReconcilerError: isSubReconcilerError,
+	}
+	return err
+}
+
+// Reports a reconcile error as a prometheus metric
+func (r *ReconcileError) Report(err error) {
+	if r.recorder == nil {
+		return
+	}
+	newErr := err.Error()
+	// Retrieve the specific subreconciler error if present
+	if r.isSubReconcilerError {
+		if unwrapped := errors.Unwrap(err); unwrapped != nil {
+			newErr = unwrapped.Error()
+		}
+	}
+	r.reason = newErr
+	r.recorder.reconcileError.WithLabelValues(
+		r.controller,
+		r.reason,
+	).Inc()
+}
+
+func (r *ReconcileError) Reason() string {
+	return r.reason
+}
+
+// Wraps 2 errors and handles nil errors
+func (r *ReconcileError) Join(err1 error, err2 error) error {
+	if err1 == nil || err2 == nil {
+		return err1
+	}
+	return fmt.Errorf("%s %w", err1.Error(), err2)
+}
+
+func (r *ReconcileError) SetRecorder(rec *Recorder) {
+	r.recorder = rec
 }

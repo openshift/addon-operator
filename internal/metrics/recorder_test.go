@@ -1,9 +1,11 @@
 package metrics
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/prometheus/client_golang/prometheus"
+	promTestUtil "github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -89,4 +91,69 @@ func TestRecorder_RecordAddonServiceAPIRequests(t *testing.T) {
 			assert.NotNil(t, summary)
 		})
 	}
+}
+
+// Tests ReconcileError
+func TestReconcileError(t *testing.T) {
+	expect_controller_name := "addon"
+	expect_reconciler_error := "a top-level reconciler error"
+	expect_subreconciler_error := "a sub reconciler error"
+	var recorder *Recorder
+	reconErr := NewReconcileError(
+		expect_controller_name,
+		recorder,
+		false,
+	)
+	subReconErr := NewReconcileError(
+		expect_controller_name,
+		recorder,
+		true,
+	)
+
+	// 1. Ensure it does not panic when no metrics recorder was created
+	reconErr.Report(fmt.Errorf("an error"))
+
+	recorder = NewRecorder(true, "clusterID")
+	reconErr.SetRecorder(recorder)
+	subReconErr.SetRecorder(recorder)
+
+	errFromReconciler := fmt.Errorf(expect_reconciler_error)
+	errFromSubReconciler := fmt.Errorf(expect_subreconciler_error)
+	err := reconErr.Join(errFromReconciler, errFromSubReconciler)
+
+	// 2. Ensure error from reconciler is processed correctly
+	reconErr.Report(errFromReconciler)
+	assert.Equal(t, errFromReconciler.Error(), reconErr.Reason())
+
+	// 3. Ensure error from reconciler is processed correctly
+	subReconErr.Report(err)
+	assert.Equal(t, expect_subreconciler_error, subReconErr.Reason())
+
+	// 4. Ensure metric is collected
+	metric := recorder.GetReconcileErrorMetric()
+	assert.NotNil(t, metric)
+	// Ensure 2 values were collected due to the calls to Report
+	assert.Equal(t, 2, promTestUtil.CollectAndCount(metric))
+	// Ensure top-level reconciler error was collected
+	controllerMetricVal := promTestUtil.ToFloat64(
+		metric.WithLabelValues(
+			expect_controller_name,
+			expect_reconciler_error,
+		),
+	)
+	assert.Equal(t, float64(1), controllerMetricVal)
+	controllerMetricVal = promTestUtil.ToFloat64(
+		metric.WithLabelValues(
+			expect_controller_name,
+			expect_subreconciler_error,
+		),
+	)
+	assert.Equal(t, float64(1), controllerMetricVal)
+
+	// 5. Ensure Join is returing as expected when values are nil
+	var nilErr error
+	err = reconErr.Join(nilErr, errFromSubReconciler)
+	assert.Equal(t, nilErr, err)
+	err = reconErr.Join(errFromReconciler, nilErr)
+	assert.Equal(t, errFromReconciler, err)
 }

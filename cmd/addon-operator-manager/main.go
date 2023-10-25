@@ -129,6 +129,7 @@ func initReconcilers(mgr ctrl.Manager,
 				aictrl.WithLog{Log: addonInstancePhaseLog.WithName("checkHeartbeat")},
 			),
 		},
+		aictrl.WithRecorder{Recorder: recorder},
 	)
 
 	if err := addonInstanceCtrl.SetupWithManager(mgr); err != nil {
