@@ -1,3 +1,19 @@
+/*
+Copyright 2023.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package v1alpha1
 
 import (
@@ -9,7 +25,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// AddonSpec defines the desired state of Addon.
+// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
+// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+
+// AddonSpec defines the desired state of Addon
 type AddonSpec struct {
 	// Human readable name for this addon.
 	// +kubebuilder:validation:MinLength=1
@@ -463,12 +482,13 @@ const (
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="Status",type="string",JSONPath=".status.phase"
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+
+// Addon is the Schema for the addons API
 type Addon struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec AddonSpec `json:"spec,omitempty"`
-	// +kubebuilder:default={phase:Pending}
+	Spec   AddonSpec   `json:"spec,omitempty"`
 	Status AddonStatus `json:"status,omitempty"`
 }
 
@@ -506,8 +526,9 @@ func (a *Addon) GetInstallOLMCommon() (AddonInstallOLMCommon, error) {
 	return AddonInstallOLMCommon{}, errors.New("addon install OLM common not found")
 }
 
+//+kubebuilder:object:root=true
+
 // AddonList contains a list of Addon
-// +kubebuilder:object:root=true
 type AddonList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
@@ -515,5 +536,5 @@ type AddonList struct {
 }
 
 func init() {
-	register(&Addon{}, &AddonList{})
+	SchemeBuilder.Register(&Addon{}, &AddonList{})
 }

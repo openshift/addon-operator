@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 )
 
 func newTestAddon(uid string, conditions []metav1.Condition) *addonsv1alpha1.Addon {

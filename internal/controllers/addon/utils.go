@@ -19,7 +19,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 )
 
 // use this type for exit handling

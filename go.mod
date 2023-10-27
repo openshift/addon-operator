@@ -116,4 +116,4 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.3.0 // indirect
 )
 
-replace github.com/openshift/addon-operator/apis => ./apis
+replace github.com/openshift/addon-operator/api => ./api

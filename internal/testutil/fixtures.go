@@ -15,7 +15,7 @@ import (
 
 	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 )
 
 func NewTestSchemeWithAddonsv1alpha1() *runtime.Scheme {

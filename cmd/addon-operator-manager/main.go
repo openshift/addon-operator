@@ -34,8 +34,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	aoapis "github.com/openshift/addon-operator/apis"
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
 	aictrl "github.com/openshift/addon-operator/internal/controllers/addoninstance"
 	aocontroller "github.com/openshift/addon-operator/internal/controllers/addonoperator"
@@ -49,7 +48,7 @@ var (
 
 func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
-	_ = aoapis.AddToScheme(scheme)
+	_ = addonsv1alpha1.AddToScheme(scheme)
 	_ = operatorsv1.AddToScheme(scheme)
 	_ = operatorsv1alpha1.AddToScheme(scheme)
 	_ = configv1.AddToScheme(scheme)

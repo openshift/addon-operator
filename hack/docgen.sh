@@ -22,4 +22,4 @@ cat << 'EOF' >> ./docs/api-reference/_index.md
 The `addons.managed.openshift.io` API group in managed OpenShift contains all Addon related API objects.
 
 EOF
-find ./apis/addons/v1alpha1 -name '*types.go'  | xargs ./bin/docgen >> ./docs/api-reference/_index.md
+find ./api/v1alpha1 -name '*types.go'  | xargs ./bin/docgen >> ./docs/api-reference/_index.md

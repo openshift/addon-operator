@@ -26,7 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	internalhandler "github.com/openshift/addon-operator/internal/controllers/addon/handler"
 	"github.com/openshift/addon-operator/internal/ocm"
 )

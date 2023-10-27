@@ -7,7 +7,7 @@ import (
 	v1 "k8s.io/api/admission/v1"
 	adminv1beta1 "k8s.io/api/admission/v1beta1"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/client"

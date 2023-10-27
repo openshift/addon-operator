@@ -26,13 +26,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: "Addon is the Schema for the Addons API \n **Example** ```yaml
-          apiVersion: addons.managed.openshift.io/v1alpha1 kind: Addon metadata: \n
-          \tname: reference-addon \n spec: \n \tdisplayName: An amazing example addon!
-          \tnamespaces: \t- name: reference-addon \tinstall: \t  type: OLMOwnNamespace
-          \t  olmOwnNamespace: \t    namespace: reference-addon \t    packageName:
-          reference-addon \t    channel: alpha \t    catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
-          \n ```"
+        description: Addon is the Schema for the addons API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -47,7 +41,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: AddonSpec defines the desired state of Addon.
+            description: AddonSpec defines the desired state of Addon
             properties:
               commonAnnotations:
                 additionalProperties:
@@ -479,8 +473,6 @@ spec:
             - install
             type: object
           status:
-            default:
-              phase: Pending
             description: AddonStatus defines the observed state of Addon
             properties:
               conditions:

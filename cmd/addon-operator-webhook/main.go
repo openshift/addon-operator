@@ -13,7 +13,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
-	aoapis "github.com/openshift/addon-operator/apis"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/internal/webhooks"
 )
 
@@ -23,7 +23,7 @@ var (
 )
 
 func init() {
-	_ = aoapis.AddToScheme(scheme)
+	_ = addonsv1alpha1.AddToScheme(scheme)
 }
 
 func main() {

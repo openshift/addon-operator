@@ -36,7 +36,7 @@ import (
 	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/yaml"
 
-	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	aoapisv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 
 	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
@@ -604,14 +604,14 @@ func (Generate) code() error {
 	manifestsCmd := exec.Command("controller-gen",
 		"crd:crdVersions=v1", "rbac:roleName=addon-operator-manager",
 		"paths=./...", "output:crd:artifacts:config=../config/deploy")
-	manifestsCmd.Dir = workDir + "/apis"
+	manifestsCmd.Dir = workDir + "/api"
 	if err := manifestsCmd.Run(); err != nil {
 		return fmt.Errorf("generating kubernetes manifests: %w", err)
 	}
 
 	// code gen
 	codeCmd := exec.Command("controller-gen", "object", "paths=./...")
-	codeCmd.Dir = workDir + "/apis"
+	codeCmd.Dir = workDir + "/api"
 	if err := codeCmd.Run(); err != nil {
 		return fmt.Errorf("generating deep copy methods: %w", err)
 	}
