@@ -88,6 +88,10 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 	ctx context.Context, addon *addonsv1alpha1.Addon,
 ) (requeueResult, error) {
 	if !HasAdditionalCatalogSources(addon) {
+		// cleanup old AdditionalCatalogSources when moving from existing AdditionalCatalogSources to no AdditionalCatalogSources
+		if err := cleanupOldAdditionalCatalogSources(ctx, r.client, addon); err != nil {
+			return resultNil, fmt.Errorf("propagated secret cleanup: %w", err)
+		}
 		return resultNil, nil
 	}
 	additionalCatalogSrcs, targetNamespace, pullSecret, stop := parseAddonInstallConfigForAdditionalCatalogSources(
@@ -180,4 +184,27 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 	}
 
 	return currentCatalogSource, nil
+}
+
+func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, addon *addonsv1alpha1.Addon) error {
+	//Get the catlog source from Addon
+	knownCatsrc := CatalogSourceName(addon)
+	catalogSourceList := &operatorsv1alpha1.CatalogSourceList{}
+	// Get a List of all Catlog Source Managed by the addon
+	if err := c.List(ctx, catalogSourceList, client.MatchingLabelsSelector{
+		Selector: controllers.CommonLabelsAsLabelSelector(addon),
+	}); err != nil {
+		return fmt.Errorf("listing catsrc for delete check: %w", err)
+	}
+	for i := range catalogSourceList.Items {
+		catalogsrc := &catalogSourceList.Items[i]
+		if catalogsrc.Name != knownCatsrc {
+			if err := c.Delete(ctx, catalogsrc); err != nil {
+				return fmt.Errorf("deleting unknown propagated secret: %w", err)
+			}
+		}
+
+	}
+	return nil
+
 }
