@@ -611,7 +611,7 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 		}
 	})
 
-	addon = addonWithVersion("v0.1.0", referenceAddonCatalogSourceImageWorkingLatest)
+	addon = addonWithAdditionalCatalogSourceCleanup()
 	errs := integration.Client.Update(ctx, addon)
 	s.Require().NoError(errs)
 	err = integration.WaitForObject(

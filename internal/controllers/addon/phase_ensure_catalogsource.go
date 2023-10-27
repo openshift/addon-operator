@@ -200,7 +200,7 @@ func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, ad
 		catalogsrc := &catalogSourceList.Items[i]
 		if catalogsrc.Name != knownCatsrc {
 			if err := c.Delete(ctx, catalogsrc); err != nil {
-				return fmt.Errorf("deleting unknown propagated secret: %w", err)
+				return fmt.Errorf("deleting additional catsrc failed : %w", err)
 			}
 		}
 
