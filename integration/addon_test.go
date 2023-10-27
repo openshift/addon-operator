@@ -611,7 +611,7 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 		}
 	})
 
-	addon = addonWithAdditionalCatalogSourceCleanup()
+	addon.Spec.Install.OLMOwnNamespace.AdditionalCatalogSources = nil
 	errs := integration.Client.Update(ctx, addon)
 	s.Require().NoError(errs)
 	err = integration.WaitForObject(
