@@ -90,7 +90,7 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 	if !HasAdditionalCatalogSources(addon) {
 		// cleanup old AdditionalCatalogSources when moving from existing AdditionalCatalogSources to no AdditionalCatalogSources
 		if err := cleanupOldAdditionalCatalogSources(ctx, r.client, addon); err != nil {
-			return resultNil, fmt.Errorf("propagated secret cleanup: %w", err)
+			return resultNil, fmt.Errorf("unused additional catsrc cleanup: %w", err)
 		}
 		return resultNil, nil
 	}
@@ -191,10 +191,13 @@ func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, ad
 	knownCatsrc := CatalogSourceName(addon)
 	catalogSourceList := &operatorsv1alpha1.CatalogSourceList{}
 	// Get a List of all Catlog Source Managed by the addon
-	if err := c.List(ctx, catalogSourceList, client.MatchingLabelsSelector{
-		Selector: controllers.CommonLabelsAsLabelSelector(addon),
+	selector := controllers.CommonLabelsAsLabelSelector(addon)
+	if err := c.List(ctx, catalogSourceList, &client.ListOptions{
+		LabelSelector: client.MatchingLabelsSelector{
+			Selector: selector,
+		},
 	}); err != nil {
-		return fmt.Errorf("listing catsrc for delete check: %w", err)
+		return fmt.Errorf("listing additional catsrc for delete failed: %w", err)
 	}
 	for i := range catalogSourceList.Items {
 		catalogsrc := &catalogSourceList.Items[i]
