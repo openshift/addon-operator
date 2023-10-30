@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: selectorsyncset-template
+parameters:
+  - name: REGISTRY_IMG
+    required: true
+  - name: IMAGE_TAG
+    required: true
+  - name: IMAGE_DIGEST
+    required: true
+  - name: REPO_NAME
+    value: addon-operator
+    required: true
+  - name: DISPLAY_NAME
+    value: Managed Upgrade Operator
+    required: true
+  - name: OCM_BASE_URL
+    value: http://api-mock.api-mock.svc.cluster.local
+    required: true
+  - name: FEATURE_TOGGLES
+    value: ""
+    required: true
+  - name: FEATURE_FLAGS
+    value: ""
+    required: true
+objects:
+  - apiVersion: hive.openshift.io/v1
+    kind: SelectorSyncSet
+    metadata:
+      annotations:
+        component-display-name: ${DISPLAY_NAME}
+        component-name: ${REPO_NAME}
+        telemeter-query: csv_succeeded{_id="$CLUSTER_ID",name=~"${REPO_NAME}.*",exported_namespace=~"openshift-.*",namespace="openshift-operator-lifecycle-manager"} == 1
+      labels:
+        managed.openshift.io/gitHash: ${IMAGE_TAG}
+        managed.openshift.io/gitRepoName: ${REPO_NAME}
+        managed.openshift.io/osd: "true"
+      name: addon-operator
+    spec:
+      clusterDeploymentSelector:
+        matchLabels:
+          api.openshift.com/managed: "true"
+      resourceApplyMode: Sync
+      resources:
+        - apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: openshift-addon-operator
+            labels:
+              openshift.io/cluster-monitoring: "true"
+              pod-security.kubernetes.io/enforce: 'baseline'
+              pod-security.kubernetes.io/audit: 'baseline'
+              pod-security.kubernetes.io/warn: 'baseline'
+        - apiVersion: operators.coreos.com/v1alpha1
+          kind: CatalogSource
+          metadata:
+            name: addon-operator-catalog
+            namespace: openshift-addon-operator
+          spec:
+            sourceType: grpc
+            image: ${REGISTRY_IMG}@${IMAGE_DIGEST}
+            displayName: MTSRE Addon Operator
+            publisher: Red Hat
+            grpcPodConfig:
+              nodeSelector:
+                node-role.kubernetes.io: infra
+              tolerations:
+                - effect: NoSchedule
+                  key: node-role.kubernetes.io/infra
+                  operator: Exists
+              securityContextConfig: restricted
+        - apiVersion: operators.coreos.com/v1
+          kind: OperatorGroup
+          metadata:
+            name: addon-operator-og
+            namespace: openshift-addon-operator
+            annotations:
+              olm.operatorframework.io/exclude-global-namespace-resolution: "true"
+          spec:
+            targetNamespaces:
+              - openshift-addon-operator
+        - apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: addon-operator
+            namespace: openshift-addon-operator
+          spec:
+            channel: stable
+            name: addon-operator
+            source: addon-operator-catalog
+            sourceNamespace: openshift-addon-operator
+        - apiVersion: addons.managed.openshift.io/v1alpha1
+          kind: AddonOperator
+          metadata:
+            name: addon-operator
+          spec:
+            featureFlags: ${FEATURE_FLAGS}
+            ocm:
+              endpoint: ${OCM_BASE_URL}
+              secret:
+                name: pull-secret
+                namespace: openshift-config
