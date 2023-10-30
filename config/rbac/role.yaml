@@ -1,0 +1,85 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addoninstances
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addoninstances/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addoninstances/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addonoperators
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addonoperators/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addonoperators/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addons
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addons/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addons/status
+  verbs:
+  - get
+  - patch
+  - update

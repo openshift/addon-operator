@@ -1,0 +1,31 @@
+# permissions for end users to edit addoninstances.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: addoninstance-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: addon-operator
+    app.kubernetes.io/part-of: addon-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: addoninstance-editor-role
+rules:
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addoninstances
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - addons.managed.openshift.io
+  resources:
+  - addoninstances/status
+  verbs:
+  - get
