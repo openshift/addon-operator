@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/magefile/mage v1.15.0
-	github.com/mt-sre/client v0.2.3
+	github.com/mt-sre/client v0.2.5
 	github.com/mt-sre/devkube v0.7.1
 	github.com/novln/docker-parser v1.0.0
 	github.com/openshift/addon-operator/apis v0.0.0-20230908020307-fe70c681ed8b
