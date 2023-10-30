@@ -202,9 +202,11 @@ func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, ad
 	for i := range catalogSourceList.Items {
 		catalogsrc := &catalogSourceList.Items[i]
 		if catalogsrc.Name != knownCatsrc {
+			fmt.Println("deleting the unused additional catlog source : ", catalogsrc.Name)
 			if err := c.Delete(ctx, catalogsrc); err != nil {
 				return fmt.Errorf("deleting additional catsrc failed : %w", err)
 			}
+
 		}
 
 	}

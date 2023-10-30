@@ -593,7 +593,6 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
 	s.Require().NoError(err)
 	s.Assert().Equal(addon.Spec.Version, addon.Status.ObservedVersion, "addon version should be reported")
-
 	s.Run("test_additional_catalogsource", func() {
 		catalogSourceList := &operatorsv1alpha1.CatalogSourceList{}
 		err := integration.Client.List(ctx, catalogSourceList,
@@ -627,6 +626,8 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
 	s.Require().NoError(err)
 	s.Assert().Equal(addon.Spec.Version, addon.Status.ObservedVersion, "addon version should be reported")
+	//This will give the Reconciler the time to cleanup the unused catlog source
+	time.Sleep(8 * time.Minute)
 	s.Run("test_additional_catalogsource_cleanup_process", func() {
 		catalogSourceList := &operatorsv1alpha1.CatalogSourceList{}
 		err := integration.Client.List(ctx, catalogSourceList,
