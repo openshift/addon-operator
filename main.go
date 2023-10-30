@@ -32,8 +32,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
-	"github.com/openshift/addon-operator/controllers"
 	"github.com/openshift/addon-operator/controllers/addon"
+	"github.com/openshift/addon-operator/controllers/addonoperator"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -97,20 +97,20 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Addon")
 		os.Exit(1)
 	}
-	if err = (&controllers.AddonOperatorReconciler{
+	if err = (&addonoperator.AddonOperatorReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "AddonOperator")
 		os.Exit(1)
 	}
-	if err = (&controllers.AddonInstanceReconciler{
+	/*if err = (&controllers.AddonInstanceReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "AddonInstance")
 		os.Exit(1)
-	}
+	}*/
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
