@@ -33,6 +33,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
+	"github.com/openshift/addon-operator/controllers/addon"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -89,7 +90,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.AddonReconciler{
+	if err = (&addon.AddonReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
