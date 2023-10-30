@@ -94,6 +94,11 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 		}
 		return resultNil, nil
 	}
+	// cleanup old AdditionalCatalogSources when moving from existing AdditionalCatalogSources to less number of AdditionalCatalogSources
+	if err := cleanupOldAdditionalCatalogSources(ctx, r.client, addon); err != nil {
+		return resultNil, fmt.Errorf("unused additional catsrc cleanup: %w", err)
+	}
+
 	additionalCatalogSrcs, targetNamespace, pullSecret, stop := parseAddonInstallConfigForAdditionalCatalogSources(
 		controllers.LoggerFromContext(ctx),
 		addon,
@@ -187,11 +192,25 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 }
 
 func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, addon *addonsv1alpha1.Addon) error {
-	//Get the catlog source from Addon
-	knownCatsrc := CatalogSourceName(addon)
+	//Get the catlog source from Addon and make it part of a List
+	knownCatsrc := []string{CatalogSourceName(addon)}
 	catalogSourceList := &operatorsv1alpha1.CatalogSourceList{}
 	// Get a List of all Catlog Source Managed by the addon
 	selector := controllers.CommonLabelsAsLabelSelector(addon)
+	// List of Additional Catsrc if any
+	additionalCatalogSrcs, _, _, stop := parseAddonInstallConfigForAdditionalCatalogSources(
+		controllers.LoggerFromContext(ctx),
+		addon,
+	)
+
+	if stop {
+		return fmt.Errorf("listing additional catsrc while cleanup")
+	}
+	for _, acs := range additionalCatalogSrcs {
+		knownCatsrc = append(knownCatsrc, acs.Name)
+	}
+
+	fmt.Println("List of Known Catlog/Additional CS :", knownCatsrc)
 	if err := c.List(ctx, catalogSourceList, &client.ListOptions{
 		LabelSelector: client.MatchingLabelsSelector{
 			Selector: selector,
@@ -201,12 +220,13 @@ func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, ad
 	}
 	for i := range catalogSourceList.Items {
 		catalogsrc := &catalogSourceList.Items[i]
-		if catalogsrc.Name != knownCatsrc {
-			fmt.Println("deleting the unused additional catlog source : ", catalogsrc.Name)
-			if err := c.Delete(ctx, catalogsrc); err != nil {
-				return fmt.Errorf("deleting additional catsrc failed : %w", err)
+		for _, cs := range knownCatsrc {
+			if catalogsrc.Name != cs {
+				fmt.Println("deleting the unused additional catlog source : ", catalogsrc.Name)
+				if err := c.Delete(ctx, catalogsrc); err != nil {
+					return fmt.Errorf("deleting additional catsrc failed : %w", err)
+				}
 			}
-
 		}
 
 	}

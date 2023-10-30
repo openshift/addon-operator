@@ -215,6 +215,42 @@ func addonWithAdditionalCatalogSource() *addonsv1alpha1.Addon {
 	}
 }
 
+func addonWithLessAdditionalCatalogSource() *addonsv1alpha1.Addon {
+	return &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "addon-oisafbo123",
+		},
+		Spec: addonsv1alpha1.AddonSpec{
+			Version:     "v0.3.0",
+			DisplayName: "addon-oisafbo12",
+			Namespaces: []addonsv1alpha1.AddonNamespace{
+				{Name: "namespace-onbgdions1"},
+				{Name: "namespace-pioghfndb1"},
+			},
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace:          "namespace-onbgdions1",
+						CatalogSourceImage: referenceAddonCatalogSourceImageWorking,
+						Channel:            "alpha",
+						PackageName:        "reference-addon",
+						Config: &addonsv1alpha1.SubscriptionConfig{
+							EnvironmentVariables: referenceAddonConfigEnvObjects,
+						},
+						AdditionalCatalogSources: []addonsv1alpha1.AdditionalCatalogSource{
+							{
+								Name:  "test-1",
+								Image: referenceAddonCatalogSourceImageWorking,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
 func addon_AllNamespaces() *addonsv1alpha1.Addon {
 	return &addonsv1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{
