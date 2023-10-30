@@ -10,4 +10,32 @@ plugins:
   scorecard.sdk.operatorframework.io/v2: {}
 projectName: addon-operator
 repo: github.com/openshift/addon-operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: managed.openshift.io
+  group: addons
+  kind: Addon
+  path: github.com/openshift/addon-operator/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: managed.openshift.io
+  group: addons
+  kind: AddonOperator
+  path: github.com/openshift/addon-operator/api/v1alpha1
+  version: v1alpha1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: managed.openshift.io
+  group: addons
+  kind: AddonInstance
+  path: github.com/openshift/addon-operator/api/v1alpha1
+  version: v1alpha1
 version: "3"
