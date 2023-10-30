@@ -610,10 +610,11 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 			s.Assert().Equal(expectedImages[ctlgSrc.Name], ctlgSrc.Spec.Image)
 		}
 	})
-
+	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
+	s.Require().NoError(err)
 	addon.Spec.Install.OLMOwnNamespace.AddonInstallOLMCommon.AdditionalCatalogSources = nil
-	errs := integration.Client.Update(ctx, addon)
-	s.Require().NoError(errs)
+	err = integration.Client.Update(ctx, addon)
+	s.Require().NoError(err)
 	err = integration.WaitForObject(
 		ctx,
 		s.T(), defaultAddonAvailabilityTimeout, addon, "to be Available",
