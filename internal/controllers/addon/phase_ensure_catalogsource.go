@@ -220,16 +220,22 @@ func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, ad
 	}
 	for i := range catalogSourceList.Items {
 		catalogsrc := &catalogSourceList.Items[i]
-		for _, cs := range knownCatsrc {
-			if catalogsrc.Name != cs {
-				fmt.Println("deleting the unused additional catlog source : ", catalogsrc.Name)
-				if err := c.Delete(ctx, catalogsrc); err != nil {
-					return fmt.Errorf("deleting additional catsrc failed : %w", err)
-				}
+		// once we move to 1.21 we can use slices.Contains
+		if !Contains(knownCatsrc, catalogsrc.Name) {
+			fmt.Println("deleting the unused additional catlog source : ", catalogsrc.Name)
+			if err := c.Delete(ctx, catalogsrc); err != nil {
+				return fmt.Errorf("deleting additional catsrc failed : %w", err)
 			}
 		}
-
 	}
 	return nil
+}
 
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }

@@ -611,9 +611,15 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 	})
 
 	// With lesser number of Additional Catlog source
+	s.T().Log("Lesser Additional Catlog Source")
 	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
 	s.Require().NoError(err)
-	addon = addonWithLessAdditionalCatalogSource()
+	addon.Spec.Install.OLMOwnNamespace.AddonInstallOLMCommon.AdditionalCatalogSources = []addonsv1alpha1.AdditionalCatalogSource{
+		{
+			Name:  "test-1",
+			Image: referenceAddonCatalogSourceImageWorking,
+		},
+	}
 	err = integration.Client.Update(ctx, addon)
 	s.Require().NoError(err)
 	err = integration.WaitForObject(
@@ -636,8 +642,9 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 			client.InNamespace(addon.Spec.Install.OLMOwnNamespace.Namespace),
 		)
 		s.Assert().NoError(err, "could not get CatalogSource %s", addon.Name)
-		s.Assert().Equal(1, len(catalogSourceList.Items))
+		s.Assert().Equal(2, len(catalogSourceList.Items))
 		expectedImages := map[string]string{
+			"test-1":                           referenceAddonCatalogSourceImageWorking,
 			addonUtil.CatalogSourceName(addon): referenceAddonCatalogSourceImageWorking,
 		}
 		for _, ctlgSrc := range catalogSourceList.Items {
@@ -646,6 +653,7 @@ func (s *integrationTestSuite) TestAddonWithAdditionalCatalogSrc() {
 	})
 
 	// With Zero Additional Catlog Source
+	s.T().Log("Zero Additional Catlog Source")
 	err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
 	s.Require().NoError(err)
 	addon.Spec.Install.OLMOwnNamespace.AddonInstallOLMCommon.AdditionalCatalogSources = nil
