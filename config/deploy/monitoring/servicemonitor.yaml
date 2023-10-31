@@ -1,0 +1,42 @@
+# To be used for local development and testing only
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: addon-operator-servicemonitor
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: addon-operator
+spec:
+  namespaceSelector:
+    matchNames:
+      - openshift-addon-operator
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: addon-operator
+  endpoints:
+    ### TODO: get rid of `port: http` in the future
+    - port: http
+      interval: 10s
+      path: /metrics
+    - port: https
+      interval: 10s
+      path: /metrics
+      tlsConfig:
+        insecureSkipVerify: true
+        ### ALERT! - Only use insecureSkipVerify: true for test / dev environment
+        ### For production-grade environment, it's recommended to have a dedicated secret injected with TLS config
+        ### and that secret should be fed to the service monitor's tls config like the following way:
+        # ca:
+        #   secret:
+        #     name: <secret-name-containing-tls-config>
+        #     key: ca.crt
+        #     optional: false
+        # cert:
+        #   secret:
+        #     name: <secret-name-containing-tls-config>
+        #     key: tls.crt
+        #     optional: false
+        # keySecret:
+        #   name: <secret-name-containing-tls-config>
+        #   key: tls.key
+        #   optional: false

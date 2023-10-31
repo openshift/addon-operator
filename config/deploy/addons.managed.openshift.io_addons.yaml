@@ -1,0 +1,622 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.6.2
+  creationTimestamp: null
+  name: addons.addons.managed.openshift.io
+spec:
+  group: addons.managed.openshift.io
+  names:
+    kind: Addon
+    listKind: AddonList
+    plural: addons
+    singular: addon
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.phase
+      name: Status
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: "Addon is the Schema for the Addons API \n **Example** ```yaml
+          apiVersion: addons.managed.openshift.io/v1alpha1 kind: Addon metadata: \n
+          \tname: reference-addon \n spec: \n \tdisplayName: An amazing example addon!
+          \tnamespaces: \t- name: reference-addon \tinstall: \t  type: OLMOwnNamespace
+          \t  olmOwnNamespace: \t    namespace: reference-addon \t    packageName:
+          reference-addon \t    channel: alpha \t    catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+          \n ```"
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: AddonSpec defines the desired state of Addon.
+            properties:
+              commonAnnotations:
+                additionalProperties:
+                  type: string
+                description: Annotations to be applied to all resources.
+                type: object
+              commonLabels:
+                additionalProperties:
+                  type: string
+                description: Labels to be applied to all resources.
+                type: object
+              correlationID:
+                description: Correlation ID for co-relating current AddonCR revision
+                  and reported status.
+                type: string
+              deleteAckRequired:
+                description: Defines whether the addon needs acknowledgment from the
+                  underlying addon's operator before deletion.
+                type: boolean
+              displayName:
+                description: Human readable name for this addon.
+                minLength: 1
+                type: string
+              install:
+                description: Defines how an Addon is installed. This field is immutable.
+                properties:
+                  olmAllNamespaces:
+                    description: OLMAllNamespaces config parameters. Present only
+                      if Type = OLMAllNamespaces.
+                    properties:
+                      additionalCatalogSources:
+                        description: Additional catalog source objects to be created
+                          in the cluster
+                        items:
+                          properties:
+                            image:
+                              description: Image url of the additional catalog source
+                              minLength: 1
+                              type: string
+                            name:
+                              description: Name of the additional catalog source
+                              minLength: 1
+                              type: string
+                          required:
+                          - image
+                          - name
+                          type: object
+                        type: array
+                      catalogSourceImage:
+                        description: Defines the CatalogSource image.
+                        minLength: 1
+                        type: string
+                      channel:
+                        description: Channel for the Subscription object.
+                        minLength: 1
+                        type: string
+                      config:
+                        description: Configs to be passed to subscription OLM object
+                        properties:
+                          env:
+                            description: Array of env variables to be passed to the
+                              subscription object.
+                            items:
+                              properties:
+                                name:
+                                  description: Name of the environment variable
+                                  minLength: 1
+                                  type: string
+                                value:
+                                  description: Value of the environment variable
+                                  minLength: 1
+                                  type: string
+                              required:
+                              - name
+                              - value
+                              type: object
+                            type: array
+                        required:
+                        - env
+                        type: object
+                      namespace:
+                        description: Namespace to install the Addon into.
+                        minLength: 1
+                        type: string
+                      packageName:
+                        description: Name of the package to install via OLM. OLM will
+                          resove this package name to install the matching bundle.
+                        minLength: 1
+                        type: string
+                      pullSecretName:
+                        description: Reference to a secret of type kubernetes.io/dockercfg
+                          or kubernetes.io/dockerconfigjson in the addon operators
+                          installation namespace. The secret referenced here, will
+                          be made available to the addon in the addon installation
+                          namespace, as addon-pullsecret prior to installing the addon
+                          itself.
+                        type: string
+                    required:
+                    - catalogSourceImage
+                    - channel
+                    - namespace
+                    - packageName
+                    type: object
+                  olmOwnNamespace:
+                    description: OLMOwnNamespace config parameters. Present only if
+                      Type = OLMOwnNamespace.
+                    properties:
+                      additionalCatalogSources:
+                        description: Additional catalog source objects to be created
+                          in the cluster
+                        items:
+                          properties:
+                            image:
+                              description: Image url of the additional catalog source
+                              minLength: 1
+                              type: string
+                            name:
+                              description: Name of the additional catalog source
+                              minLength: 1
+                              type: string
+                          required:
+                          - image
+                          - name
+                          type: object
+                        type: array
+                      catalogSourceImage:
+                        description: Defines the CatalogSource image.
+                        minLength: 1
+                        type: string
+                      channel:
+                        description: Channel for the Subscription object.
+                        minLength: 1
+                        type: string
+                      config:
+                        description: Configs to be passed to subscription OLM object
+                        properties:
+                          env:
+                            description: Array of env variables to be passed to the
+                              subscription object.
+                            items:
+                              properties:
+                                name:
+                                  description: Name of the environment variable
+                                  minLength: 1
+                                  type: string
+                                value:
+                                  description: Value of the environment variable
+                                  minLength: 1
+                                  type: string
+                              required:
+                              - name
+                              - value
+                              type: object
+                            type: array
+                        required:
+                        - env
+                        type: object
+                      namespace:
+                        description: Namespace to install the Addon into.
+                        minLength: 1
+                        type: string
+                      packageName:
+                        description: Name of the package to install via OLM. OLM will
+                          resove this package name to install the matching bundle.
+                        minLength: 1
+                        type: string
+                      pullSecretName:
+                        description: Reference to a secret of type kubernetes.io/dockercfg
+                          or kubernetes.io/dockerconfigjson in the addon operators
+                          installation namespace. The secret referenced here, will
+                          be made available to the addon in the addon installation
+                          namespace, as addon-pullsecret prior to installing the addon
+                          itself.
+                        type: string
+                    required:
+                    - catalogSourceImage
+                    - channel
+                    - namespace
+                    - packageName
+                    type: object
+                  type:
+                    description: Type of installation.
+                    enum:
+                    - OLMOwnNamespace
+                    - OLMAllNamespaces
+                    type: string
+                required:
+                - type
+                type: object
+              installAckRequired:
+                description: Defines if the addon needs installation acknowledgment
+                  from its corresponding addon instance.
+                type: boolean
+              monitoring:
+                description: Defines how an addon is monitored.
+                properties:
+                  federation:
+                    description: Configuration parameters to be injected in the ServiceMonitor
+                      used for federation. The target prometheus server found by matchLabels
+                      needs to serve service-ca signed TLS traffic (https://docs.openshift.com/container-platform/4.6/security/certificate_types_descriptions/service-ca-certificates.html),
+                      and it needs to be runing inside the namespace specified by
+                      `.monitoring.federation.namespace` with the service name 'prometheus'.
+                    properties:
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: List of labels used to discover the prometheus
+                          server(s) to be federated.
+                        minProperties: 1
+                        type: object
+                      matchNames:
+                        description: List of series names to federate from the prometheus
+                          server.
+                        items:
+                          type: string
+                        type: array
+                      namespace:
+                        description: Namespace where the prometheus server is running.
+                        minLength: 1
+                        type: string
+                      portName:
+                        description: The name of the service port fronting the prometheus
+                          server.
+                        minLength: 1
+                        type: string
+                    required:
+                    - matchLabels
+                    - matchNames
+                    - namespace
+                    - portName
+                    type: object
+                  monitoringStack:
+                    description: Settings For Monitoring Stack
+                    properties:
+                      rhobsRemoteWriteConfig:
+                        description: Settings for RHOBS Remote Write
+                        properties:
+                          allowlist:
+                            description: List of metrics to push to RHOBS. Any metric
+                              not listed here is dropped.
+                            items:
+                              type: string
+                            type: array
+                          oauth2:
+                            description: OAuth2 config for the remote write URL
+                            properties:
+                              clientId:
+                                description: The secret or configmap containing the
+                                  OAuth2 client id
+                                properties:
+                                  configMap:
+                                    description: ConfigMap containing data to use
+                                      for the targets.
+                                    properties:
+                                      key:
+                                        description: The key to select.
+                                        type: string
+                                      name:
+                                        description: 'Name of the referent. More info:
+                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                          TODO: Add other useful fields. apiVersion,
+                                          kind, uid?'
+                                        type: string
+                                      optional:
+                                        description: Specify whether the ConfigMap
+                                          or its key must be defined
+                                        type: boolean
+                                    required:
+                                    - key
+                                    type: object
+                                  secret:
+                                    description: Secret containing data to use for
+                                      the targets.
+                                    properties:
+                                      key:
+                                        description: The key of the secret to select
+                                          from.  Must be a valid secret key.
+                                        type: string
+                                      name:
+                                        description: 'Name of the referent. More info:
+                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                          TODO: Add other useful fields. apiVersion,
+                                          kind, uid?'
+                                        type: string
+                                      optional:
+                                        description: Specify whether the Secret or
+                                          its key must be defined
+                                        type: boolean
+                                    required:
+                                    - key
+                                    type: object
+                                type: object
+                              clientSecret:
+                                description: The secret containing the OAuth2 client
+                                  secret
+                                properties:
+                                  key:
+                                    description: The key of the secret to select from.  Must
+                                      be a valid secret key.
+                                    type: string
+                                  name:
+                                    description: 'Name of the referent. More info:
+                                      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                      TODO: Add other useful fields. apiVersion, kind,
+                                      uid?'
+                                    type: string
+                                  optional:
+                                    description: Specify whether the Secret or its
+                                      key must be defined
+                                    type: boolean
+                                required:
+                                - key
+                                type: object
+                              endpointParams:
+                                additionalProperties:
+                                  type: string
+                                description: Parameters to append to the token URL
+                                type: object
+                              scopes:
+                                description: OAuth2 scopes used for the token request
+                                items:
+                                  type: string
+                                type: array
+                              tokenUrl:
+                                description: The URL to fetch the token from
+                                minLength: 1
+                                type: string
+                            required:
+                            - clientId
+                            - clientSecret
+                            - tokenUrl
+                            type: object
+                          url:
+                            description: 'RHOBS endpoints where your data is sent
+                              to It varies by environment: - Staging: https://observatorium-mst.stage.api.openshift.com/api/metrics/v1/<tenant
+                              id>/api/v1/receive - Production: https://observatorium-mst.api.openshift.com/api/metrics/v1/<tenant
+                              id>/api/v1/receive'
+                            type: string
+                        required:
+                        - url
+                        type: object
+                    type: object
+                type: object
+              namespaces:
+                description: Defines a list of Kubernetes Namespaces that belong to
+                  this Addon. Namespaces listed here will be created prior to installation
+                  of the Addon and will be removed from the cluster when the Addon
+                  is deleted. Collisions with existing Namespaces will result in the
+                  existing Namespaces being adopted.
+                items:
+                  properties:
+                    annotations:
+                      additionalProperties:
+                        type: string
+                      description: Annotations to be added to the namespace
+                      type: object
+                    labels:
+                      additionalProperties:
+                        type: string
+                      description: Labels to be added to the namespace
+                      type: object
+                    name:
+                      description: Name of the KubernetesNamespace.
+                      minLength: 1
+                      type: string
+                  required:
+                  - name
+                  type: object
+                type: array
+              packageOperator:
+                description: defines the PackageOperator image as part of the addon
+                  Spec
+                properties:
+                  image:
+                    type: string
+                required:
+                - image
+                type: object
+              pause:
+                description: Pause reconciliation of Addon when set to True
+                type: boolean
+              secretPropagation:
+                description: Settings for propagating secrets from the Addon Operator
+                  install namespace into Addon namespaces.
+                properties:
+                  secrets:
+                    items:
+                      properties:
+                        destinationSecret:
+                          description: Destination secret name in every Addon namespace.
+                          properties:
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?'
+                              type: string
+                          type: object
+                        sourceSecret:
+                          description: Source secret name in the Addon Operator install
+                            namespace.
+                          properties:
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?'
+                              type: string
+                          type: object
+                      required:
+                      - destinationSecret
+                      - sourceSecret
+                      type: object
+                    type: array
+                required:
+                - secrets
+                type: object
+              upgradePolicy:
+                description: UpgradePolicy enables status reporting via upgrade policies.
+                properties:
+                  id:
+                    description: Upgrade policy id.
+                    type: string
+                required:
+                - id
+                type: object
+              version:
+                description: Version of the Addon to deploy. Used for reporting via
+                  status and metrics.
+                type: string
+            required:
+            - displayName
+            - install
+            type: object
+          status:
+            default:
+              phase: Pending
+            description: AddonStatus defines the observed state of Addon
+            properties:
+              conditions:
+                description: Conditions is a list of status conditions ths object
+                  is in.
+                items:
+                  description: "Condition contains details for one aspect of the current
+                    state of this API Resource. --- This struct is intended for direct
+                    use as an array at the field path .status.conditions.  For example,
+                    \n \ttype FooStatus struct{ \t    // Represents the observations
+                    of a foo's current state. \t    // Known .status.conditions.type
+                    are: \"Available\", \"Progressing\", and \"Degraded\" \t    //
+                    +patchMergeKey=type \t    // +patchStrategy=merge \t    // +listType=map
+                    \t    // +listMapKey=type \t    Conditions []metav1.Condition
+                    `json:\"conditions,omitempty\" patchStrategy:\"merge\" patchMergeKey:\"type\"
+                    protobuf:\"bytes,1,rep,name=conditions\"` \n \t    // other fields
+                    \t}"
+                  properties:
+                    lastTransitionTime:
+                      description: lastTransitionTime is the last time the condition
+                        transitioned from one status to another. This should be when
+                        the underlying condition changed.  If that is not known, then
+                        using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: message is a human readable message indicating
+                        details about the transition. This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: observedGeneration represents the .metadata.generation
+                        that the condition was set based upon. For instance, if .metadata.generation
+                        is currently 12, but the .status.conditions[x].observedGeneration
+                        is 9, the condition is out of date with respect to the current
+                        state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: reason contains a programmatic identifier indicating
+                        the reason for the condition's last transition. Producers
+                        of specific condition types may define expected values and
+                        meanings for this field, and whether the values are considered
+                        a guaranteed API. The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                        --- Many .condition.type values are consistent across resources
+                        like Available, but because arbitrary conditions can be useful
+                        (see .node.status.conditions), the ability to deconflict is
+                        important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+              lastObservedAvailableCSV:
+                description: Namespaced name of the csv(available) that was last observed.
+                type: string
+              observedGeneration:
+                description: The most recent generation observed by the controller.
+                format: int64
+                type: integer
+              observedVersion:
+                description: Observed version of the Addon on the cluster, only present
+                  when .spec.version is populated.
+                type: string
+              ocmReportedStatusHash:
+                description: Tracks the last addon status reported to OCM.
+                properties:
+                  observedGeneration:
+                    description: The most recent generation a status update was based
+                      on.
+                    format: int64
+                    type: integer
+                  statusHash:
+                    description: Hash of the last reported status.
+                    type: string
+                required:
+                - observedGeneration
+                - statusHash
+                type: object
+              phase:
+                description: 'DEPRECATED: This field is not part of any API contract
+                  it will go away as soon as kubectl can print conditions! Human readable
+                  status - please use .Conditions from code'
+                type: string
+              upgradePolicy:
+                description: Tracks last reported upgrade policy status.
+                properties:
+                  id:
+                    description: Upgrade policy id.
+                    type: string
+                  observedGeneration:
+                    description: The most recent generation a status update was based
+                      on.
+                    format: int64
+                    type: integer
+                  value:
+                    description: Upgrade policy value.
+                    type: string
+                  version:
+                    description: Upgrade Policy Version.
+                    type: string
+                required:
+                - id
+                - observedGeneration
+                - value
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

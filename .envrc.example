@@ -1,0 +1,10 @@
+# https://direnv.net/
+# alternative: you can also `source .envrc
+
+if [[ -f ".cache/integration/kubeconfig" ]]; then
+	export KUBECONFIG=$PWD/.cache/integration/kubeconfig
+fi
+
+# possible values are: podman | docker
+# if unset, a script will auto-detect your runtime
+export CONTAINER_RUNTIME="docker"

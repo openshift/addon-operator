@@ -1,0 +1,32 @@
+apiVersion: addons.managed.openshift.io/v1alpha1
+kind: Addon
+metadata:
+  name: reference-addon
+spec:
+  displayName: An aimazing example addon!
+  namespaces:
+  - name: reference-addon
+  install:
+    type: OLMOwnNamespace
+    olmOwnNamespace:
+      namespace: reference-addon
+      packageName: reference-addon
+      channel: alpha
+      catalogSourceImage: quay.io/osd-addons/reference-addon-index@sha256:2403bcb6d6f61ba3cd9d3a4653edeb852026a1edc0c49f416d3df5008dad37e8
+      additionalCatalogSources:
+      - name: test-1
+        image: quay.io/osd-addons/reference-addon-index@sha256:58cb1c4478a150dc44e6c179d709726516d84db46e4e130a5227d8b76456b5bd
+  version: 1.0.0
+  upgradePolicy:
+    id: 123-456-789
+  monitoring:
+    monitoringStack:
+      rhobsRemoteWriteConfig:
+        url: prometheus-remote-storage-mock.prometheus-remote-storage-mock:1234
+    federation:
+      namespace: "reference-addon"
+      matchNames:
+      - reference_addon_foos_per_second
+      portName: "portName"
+      matchLabels:
+        prometheus: reference-addon
