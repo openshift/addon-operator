@@ -1039,8 +1039,8 @@ github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJ
 github.com/morikuni/aec v1.0.0/go.mod h1:BbKIizmSmc5MMPqRYbxO4ZU0S0+P200+tUnFx7PXmsc=
 github.com/mrunalp/fileutils v0.5.0/go.mod h1:M1WthSahJixYnrXQl/DFQuteStB1weuxD2QJNHXfbSQ=
 github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae/go.mod h1:qAyveg+e4CE+eKJXWVjKXM4ck2QobLqTDytGJbLLhJg=
-github.com/mt-sre/client v0.2.3 h1:/Z+wfs/RepGJIc8mGHmU8jdhqfWQH/tBHLsf3RTtZ50=
-github.com/mt-sre/client v0.2.3/go.mod h1:MRZr3Dpqwg57BBdTTExm2bHGcs6VjYt32EnecPG5FF8=
+github.com/mt-sre/client v0.2.5 h1:pA+nHAKqIxP9MHKqUIhuIAot0Qqt3ePturh8cyubS1A=
+github.com/mt-sre/client v0.2.5/go.mod h1:2nVhbZoaT1cwOtQOOz2ktuyB1IgliYOUyaFQw/aY1CQ=
 github.com/mt-sre/devkube v0.7.1 h1:DrmkDHGDgK6SEQztK/WD/mJM5dfFQV2hFLv+gk9eNaY=
 github.com/mt-sre/devkube v0.7.1/go.mod h1:Ku/qf9PfvDiPFvlzVeFusHSo0nvjhZCFz3YYgQdD8CQ=
 github.com/munnerz/goautoneg v0.0.0-20120707110453-a547fc61f48d/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
