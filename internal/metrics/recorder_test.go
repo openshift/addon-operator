@@ -98,6 +98,7 @@ func TestReconcileError(t *testing.T) {
 	expect_controller_name := "addon"
 	expect_reconciler_error := "a top-level reconciler error"
 	expect_subreconciler_error := "a sub reconciler error"
+	expect_addon_name := "reference-addon"
 	var recorder *Recorder
 	reconErr := NewReconcileError(
 		expect_controller_name,
@@ -111,7 +112,7 @@ func TestReconcileError(t *testing.T) {
 	)
 
 	// 1. Ensure it does not panic when no metrics recorder was created
-	reconErr.Report(fmt.Errorf("an error"))
+	reconErr.Report(fmt.Errorf("an error"), expect_addon_name)
 
 	recorder = NewRecorder(true, "clusterID")
 	reconErr.SetRecorder(recorder)
@@ -122,11 +123,11 @@ func TestReconcileError(t *testing.T) {
 	err := reconErr.Join(errFromReconciler, errFromSubReconciler)
 
 	// 2. Ensure error from reconciler is processed correctly
-	reconErr.Report(errFromReconciler)
+	reconErr.Report(errFromReconciler, expect_addon_name)
 	assert.Equal(t, errFromReconciler.Error(), reconErr.Reason())
 
 	// 3. Ensure error from reconciler is processed correctly
-	subReconErr.Report(err)
+	subReconErr.Report(err, expect_addon_name)
 	assert.Equal(t, expect_subreconciler_error, subReconErr.Reason())
 
 	// 4. Ensure metric is collected
@@ -139,6 +140,7 @@ func TestReconcileError(t *testing.T) {
 		metric.WithLabelValues(
 			expect_controller_name,
 			expect_reconciler_error,
+			expect_addon_name,
 		),
 	)
 	assert.Equal(t, float64(1), controllerMetricVal)
@@ -146,6 +148,7 @@ func TestReconcileError(t *testing.T) {
 		metric.WithLabelValues(
 			expect_controller_name,
 			expect_subreconciler_error,
+			expect_addon_name,
 		),
 	)
 	assert.Equal(t, float64(1), controllerMetricVal)

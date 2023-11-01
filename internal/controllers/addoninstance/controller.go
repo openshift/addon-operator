@@ -47,7 +47,7 @@ func (c *Controller) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 	reconErr := metrics.NewReconcileError("addoninstance", c.cfg.Recorder, true)
 	instance, err := c.client.Get(ctx, req.Name, req.Namespace)
 	if err != nil {
-		reconErr.Report(controllers.ErrGetAddonInstance)
+		reconErr.Report(controllers.ErrGetAddonInstance, req.Name)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
@@ -55,7 +55,7 @@ func (c *Controller) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		log.Info("updating status conditions")
 
 		if err := c.client.UpdateStatus(ctx, instance); err != nil {
-			reconErr.Report(controllers.ErrUpdateAddonInstanceStatus)
+			reconErr.Report(controllers.ErrUpdateAddonInstanceStatus, req.Name)
 			log.Error(err, "updating AddonInstance status")
 		}
 	}()
@@ -72,7 +72,7 @@ func (c *Controller) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		}
 
 		if err := res.Error(); err != nil {
-			reconErr.Report(controllers.ErrExecuteAddonInstanceReconcilePhase)
+			reconErr.Report(controllers.ErrExecuteAddonInstanceReconcilePhase, req.Name)
 			return ctrl.Result{}, fmt.Errorf("executing phase %q: %w", p, err)
 		}
 	}

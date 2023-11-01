@@ -283,7 +283,7 @@ func (r *AddonReconciler) Reconcile(
 
 	addon := &addonsv1alpha1.Addon{}
 	if err := r.Get(ctx, req.NamespacedName, addon); err != nil {
-		reconErr.Report(controllers.ErrGetAddon)
+		reconErr.Report(controllers.ErrGetAddon, addon.Name)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
@@ -296,7 +296,7 @@ func (r *AddonReconciler) Reconcile(
 	errors := r.syncWithExternalAPIs(ctx, logger, addon)
 
 	if errors.ErrorOrNil() != nil {
-		reconErr.Report(controllers.ErrSyncWithExternalAPIs)
+		reconErr.Report(controllers.ErrSyncWithExternalAPIs, addon.Name)
 	}
 
 	// append reconcilerErr
@@ -376,7 +376,7 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
 		controllerutil.AddFinalizer(addon, cacheFinalizer)
 		if err := r.Update(ctx, addon); err != nil {
-			reconErr.Report(controllers.ErrUpdateAddon)
+			reconErr.Report(controllers.ErrUpdateAddon, addon.Name)
 			return ctrl.Result{}, fmt.Errorf("failed to add finalizer: %w", err)
 		}
 	}
@@ -384,7 +384,7 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	// Run each sub reconciler serially
 	for _, reconciler := range r.subReconcilers {
 		if result, err := reconciler.Reconcile(ctx, addon); err != nil {
-			subReconErr.Report(err)
+			subReconErr.Report(err, addon.Name)
 			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", reconciler.Name(), err)
 		} else if !result.IsZero() {
 			return result, nil

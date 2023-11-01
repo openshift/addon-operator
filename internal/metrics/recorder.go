@@ -113,6 +113,7 @@ func NewRecorder(register bool, clusterId string) *Recorder {
 		}, []string{
 			"controller",
 			"reason",
+			"cr_name",
 		},
 	)
 
@@ -328,8 +329,9 @@ func NewReconcileError(
 	return err
 }
 
-// Reports a reconcile error as a prometheus metric
-func (r *ReconcileError) Report(err error) {
+// Reports a reconcile error as a prometheus metric. The parameter crName
+// is the name of the CR being reconciled by the controller.
+func (r *ReconcileError) Report(err error, crName string) {
 	if r.recorder == nil {
 		return
 	}
@@ -344,6 +346,7 @@ func (r *ReconcileError) Report(err error) {
 	r.recorder.reconcileError.WithLabelValues(
 		r.controller,
 		r.reason,
+		crName,
 	).Inc()
 }
 
