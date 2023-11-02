@@ -90,9 +90,9 @@ version:
 .PHONY: version
 
 ## Cleans cached binaries, dependencies and container image tars.
-clean: delete-kind-cluster
+clean-binaries: delete-kind-cluster
 	@rm -rf bin .cache
-.PHONY: clean
+.PHONY: clean-binaries
 
 # ---------
 ##@ Compile
@@ -129,18 +129,18 @@ tidy:
 # ------------
 
 ## Generate deepcopy code, kubernetes manifests and docs.
-generate:
+generate-all:
 	./mage generate:all
-.PHONY: generate
+.PHONY: generate-all
 
 # ---------------------
 ##@ Testing and Linting
 # ---------------------
 
 ## Runs code-generators, checks for clean directory and lints the source code.
-lint:
+lint-mage:
 	./mage test:lint
-.PHONY: lint
+.PHONY: lint-mage
 
 ## Runs unittests.
 test-unit:
