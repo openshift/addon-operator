@@ -14,8 +14,6 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/magefile/mage/mg"
 	"github.com/mt-sre/devkube/dev"
-	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
-	"github.com/openshift/addon-operator/internal/featuretoggle"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -23,6 +21,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/yaml"
+
+	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
 
 type Dev mg.Namespace
