@@ -41,6 +41,7 @@ func (w WithPackageOperatorReconciler) ApplyToAddonReconciler(config *AddonRecon
 		Scheme:         w.Scheme,
 		ClusterID:      config.ClusterExternalID,
 		OcmClusterInfo: config.GetOCMClusterInfo,
+		recorder:       config.Recorder,
 	}
 	config.subReconcilers = append(config.subReconcilers, poReconciler)
 }

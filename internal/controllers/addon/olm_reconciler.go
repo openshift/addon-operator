@@ -2,7 +2,6 @@ package addon
 
 import (
 	"context"
-	"fmt"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -12,6 +11,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
 	"github.com/openshift/addon-operator/internal/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 const OLM_RECONCILER_NAME = "olmReconciler"
@@ -21,6 +21,7 @@ type olmReconciler struct {
 	client                  client.Client
 	uncachedClient          client.Client
 	operatorResourceHandler operatorResourceHandler
+	recorder                *metrics.Recorder
 }
 
 func (r *olmReconciler) Reconcile(ctx context.Context,
@@ -28,11 +29,13 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 	log := controllers.LoggerFromContext(ctx)
 
 	var err error
+	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 
 	// Phase 1.
 	// Ensure OperatorGroup
 	if requeueResult, err := r.ensureOperatorGroup(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure OperatorGroup: %w", err)
+		err = reconErr.Join(err, controllers.ErrEnsureOperatorGroup)
+		return ctrl.Result{}, err
 	} else if requeueResult != resultNil {
 		return handleExit(requeueResult), nil
 	}
@@ -43,7 +46,8 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 	// as the CatalogSources will never report 'ready' if OLM
 	// cannot verify the status of the GRPC connection.
 	if requeueResult, err := r.ensureCatalogSourcesNetworkPolicy(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure NetworkPolicy for CatalogSources: %w", err)
+		err = reconErr.Join(err, controllers.ErrEnsureNetworkPolicy)
+		return ctrl.Result{}, err
 	} else if requeueResult != resultNil {
 		return handleExit(requeueResult), nil
 	}
@@ -55,7 +59,8 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 		requeueResult requeueResult
 	)
 	if requeueResult, catalogSource, err = r.ensureCatalogSource(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure CatalogSource: %w", err)
+		err = reconErr.Join(err, controllers.ErrEnsureCatalogSource)
+		return ctrl.Result{}, err
 	} else if requeueResult != resultNil {
 		return handleExit(requeueResult), nil
 	}
@@ -63,7 +68,8 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 	// Phase 4.
 	// Ensure Additional CatalogSources
 	if requeueResult, err = r.ensureAdditionalCatalogSources(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure additional CatalogSource: %w", err)
+		err = reconErr.Join(err, controllers.ErrEnsureAdditionalCatalogSource)
+		return ctrl.Result{}, err
 	} else if requeueResult != resultNil {
 		return handleExit(requeueResult), nil
 	}
@@ -74,7 +80,8 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 		ctx, log.WithName("phase-ensure-subscription"),
 		addon, catalogSource)
 	if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure Subscription: %w", err)
+		err = reconErr.Join(err, controllers.ErrReconcileSubscription)
+		return ctrl.Result{}, err
 	} else if requeueResult != resultNil {
 		return handleExit(requeueResult), nil
 	}
@@ -82,7 +89,8 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 	// Phase 6
 	// Observe operator API
 	if requeueResult, err := r.observeOperatorResource(ctx, addon, currentCSVKey); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to observe current CSV: %w", err)
+		err = reconErr.Join(err, controllers.ErrObserveCSV)
+		return ctrl.Result{}, err
 	} else if requeueResult != resultNil {
 		return handleExit(requeueResult), nil
 	}
