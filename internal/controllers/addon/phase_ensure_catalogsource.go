@@ -89,13 +89,13 @@ func (r *olmReconciler) ensureAdditionalCatalogSources(
 ) (requeueResult, error) {
 	if !HasAdditionalCatalogSources(addon) {
 		// cleanup old AdditionalCatalogSources when moving from existing AdditionalCatalogSources to no AdditionalCatalogSources
-		if err := cleanupOldAdditionalCatalogSources(ctx, r.client, addon); err != nil {
+		if err := cleanupUnusedAdditionalCatalogSources(ctx, r.client, addon); err != nil {
 			return resultNil, fmt.Errorf("unused additional catsrc cleanup: %w", err)
 		}
 		return resultNil, nil
 	}
 	// cleanup old AdditionalCatalogSources when moving from existing AdditionalCatalogSources to less number of AdditionalCatalogSources
-	if err := cleanupOldAdditionalCatalogSources(ctx, r.client, addon); err != nil {
+	if err := cleanupUnusedAdditionalCatalogSources(ctx, r.client, addon); err != nil {
 		return resultNil, fmt.Errorf("unused additional catsrc cleanup: %w", err)
 	}
 
@@ -191,7 +191,7 @@ func reconcileCatalogSource(ctx context.Context, c client.Client, catalogSource 
 	return currentCatalogSource, nil
 }
 
-func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, addon *addonsv1alpha1.Addon) error {
+func cleanupUnusedAdditionalCatalogSources(ctx context.Context, c client.Client, addon *addonsv1alpha1.Addon) error {
 	//Get the catlog source from Addon and make it part of a List
 	knownCatsrc := []string{CatalogSourceName(addon)}
 	catalogSourceList := &operatorsv1alpha1.CatalogSourceList{}
@@ -231,9 +231,9 @@ func cleanupOldAdditionalCatalogSources(ctx context.Context, c client.Client, ad
 	return nil
 }
 
-func Contains(a []string, x string) bool {
-	for _, n := range a {
-		if x == n {
+func Contains(list []string, element string) bool {
+	for _, val := range list {
+		if element == val {
 			return true
 		}
 	}

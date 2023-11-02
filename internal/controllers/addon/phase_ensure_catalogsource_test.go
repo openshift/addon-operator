@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"k8s.io/apimachinery/pkg/api/equality"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"github.com/stretchr/testify/assert"
@@ -158,12 +159,48 @@ func TestEnsureCatalogSource_Create(t *testing.T) {
 func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 	addon := testutil.NewTestAddonWithAdditionalCatalogSources()
 	c := testutil.NewClient()
+	catsrcdelete := &operatorsv1alpha1.CatalogSource{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test-addon-1-catalog",
+			Namespace: "test",
+		},
+	}
+
+	catsrclist := &operatorsv1alpha1.CatalogSourceList{
+		Items: []operatorsv1alpha1.CatalogSource{
+
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "addon-addon-1-catalog",
+				},
+			},
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-1",
+				},
+			},
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-2",
+				},
+			},
+			*catsrcdelete,
+		},
+	}
+	c.On("List", mock.Anything, testutil.IsOperatorsV1Alpha1CatalogSourceListPtr, mock.Anything).Run(func(args mock.Arguments) {
+		arg := args.Get(1).(*operatorsv1alpha1.CatalogSourceList)
+		catsrcList := *catsrclist
+		catsrcList.DeepCopyInto(arg)
+	}).Return(nil)
+	c.On("Delete", mock.Anything, catsrcdelete, mock.Anything).
+		Return(nil)
 	c.On("Get",
 		mock.Anything,
 		testutil.IsObjectKey,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
 		mock.Anything,
 	).Return(testutil.NewTestErrNotFound())
+
 	c.On("Create",
 		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
@@ -192,6 +229,42 @@ func TestEnsureAdditionalCatalogSource_Create(t *testing.T) {
 func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 	addon := testutil.NewTestAddonWithAdditionalCatalogSources()
 	c := testutil.NewClient()
+
+	catsrcdelete := &operatorsv1alpha1.CatalogSource{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test-addon-1-catalog",
+			Namespace: "test",
+		},
+	}
+
+	catsrclist := &operatorsv1alpha1.CatalogSourceList{
+		Items: []operatorsv1alpha1.CatalogSource{
+
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "addon-addon-1-catalog",
+				},
+			},
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-1",
+				},
+			},
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-2",
+				},
+			},
+			*catsrcdelete,
+		},
+	}
+	c.On("List", mock.Anything, testutil.IsOperatorsV1Alpha1CatalogSourceListPtr, mock.Anything).Run(func(args mock.Arguments) {
+		arg := args.Get(1).(*operatorsv1alpha1.CatalogSourceList)
+		catsrcList := *catsrclist
+		catsrcList.DeepCopyInto(arg)
+	}).Return(nil)
+	c.On("Delete", mock.Anything, catsrcdelete, mock.Anything).
+		Return(nil)
 	c.On("Get",
 		mock.Anything,
 		testutil.IsObjectKey,
@@ -203,6 +276,7 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 			LastObservedState: "READY",
 		}
 	}).Return(nil)
+
 	c.On("Update",
 		mock.Anything,
 		testutil.IsOperatorsV1Alpha1CatalogSourcePtr,
@@ -212,6 +286,7 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 		client: c,
 		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
 	}
+
 	log := testutil.NewLogger(t)
 	ctx := controllers.ContextWithLogger(context.Background(), log)
 	requeueResult, err := r.ensureAdditionalCatalogSources(ctx, addon)
@@ -220,6 +295,7 @@ func TestEnsureAdditionalCatalogSource_Update(t *testing.T) {
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", 2)
 	c.AssertNumberOfCalls(t, "Update", 2)
+
 }
 
 func TestEnsureCatalogSource_Update(t *testing.T) {

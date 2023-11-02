@@ -25,11 +25,12 @@ var (
 	IsNetworkingV1NetworkPolicyPtr = mock.IsType(&networkingv1.NetworkPolicy{})
 
 	// olm
-	IsOperatorsV1OperatorGroupPtr       = mock.IsType(&operatorsv1.OperatorGroup{})
-	IsOperatorsV1Alpha1CatalogSourcePtr = mock.IsType(&operatorsv1alpha1.CatalogSource{})
-	IsOperatorsV1Alpha1SubscriptionPtr  = mock.IsType(&operatorsv1alpha1.Subscription{})
-	IsOperatorsV1OperatorPtr            = mock.IsType(&operatorsv1.Operator{})
-	IsOperatorsV1Alpha1InstallPtr       = mock.IsType(&operatorsv1alpha1.InstallPlan{})
+	IsOperatorsV1OperatorGroupPtr           = mock.IsType(&operatorsv1.OperatorGroup{})
+	IsOperatorsV1Alpha1CatalogSourcePtr     = mock.IsType(&operatorsv1alpha1.CatalogSource{})
+	IsOperatorsV1Alpha1SubscriptionPtr      = mock.IsType(&operatorsv1alpha1.Subscription{})
+	IsOperatorsV1OperatorPtr                = mock.IsType(&operatorsv1.Operator{})
+	IsOperatorsV1Alpha1InstallPtr           = mock.IsType(&operatorsv1alpha1.InstallPlan{})
+	IsOperatorsV1Alpha1CatalogSourceListPtr = mock.IsType(&operatorsv1alpha1.CatalogSourceList{})
 
 	// prom
 	IsMonitoringV1ServiceMonitorPtr = mock.IsType(&monitoringv1.ServiceMonitor{})
