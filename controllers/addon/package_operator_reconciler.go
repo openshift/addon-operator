@@ -13,6 +13,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
+	"github.com/openshift/addon-operator/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 
 	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 )
@@ -60,22 +62,34 @@ type PackageOperatorReconciler struct {
 	Scheme         *runtime.Scheme
 	ClusterID      string
 	OcmClusterInfo OcmClusterInfoGetter
+	recorder       *metrics.Recorder
 }
 
 func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
 
 func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 	if addon.Spec.AddonPackageOperator == nil {
-		return ctrl.Result{}, r.ensureClusterObjectTemplateTornDown(ctx, addon)
+		err := r.ensureClusterObjectTemplateTornDown(ctx, addon)
+		if err != nil {
+			err = reconErr.Join(err, controllers.ErrEnsureDeleteClusterObjectTemplate)
+		}
+		return ctrl.Result{}, err
 	}
+
 	return r.reconcileClusterObjectTemplate(ctx, addon)
 }
 
 func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	addonDestNamespace := extractDestinationNamespace(addon)
+	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 
 	if len(addonDestNamespace) < 1 {
-		return ctrl.Result{}, fmt.Errorf("no destination namespace configured in addon %s", addon.Name)
+		err := reconErr.Join(
+			fmt.Errorf("no destination namespace configured in addon %s", addon.Name),
+			controllers.ErrReconcileClusterObjectTemplate,
+		)
+		return ctrl.Result{}, err
 	}
 
 	ocmClusterInfo := r.OcmClusterInfo()
@@ -156,23 +170,40 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 	}
 
 	if err := controllerutil.SetControllerReference(addon, clusterObjectTemplate, r.Scheme); err != nil {
-		return ctrl.Result{}, fmt.Errorf("setting owner reference: %w", err)
+		newErr := reconErr.Join(
+			fmt.Errorf("setting owner reference: %w", err),
+			controllers.ErrReconcileClusterObjectTemplate,
+		)
+		return ctrl.Result{}, newErr
 	}
 
 	existingClusterObjectTemplate, err := r.getExistingClusterObjectTemplate(ctx, addon)
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
 			if err := r.Client.Create(ctx, clusterObjectTemplate); err != nil {
-				return ctrl.Result{}, fmt.Errorf("creating ClusterObjectTemplate object: %w", err)
+				newErr := reconErr.Join(
+					fmt.Errorf("creating ClusterObjectTemplate object: %w", err),
+					controllers.ErrReconcileClusterObjectTemplate,
+				)
+
+				return ctrl.Result{}, newErr
 			}
 			return ctrl.Result{}, nil
 		}
-		return ctrl.Result{}, fmt.Errorf("getting ClusterObjectTemplate object: %w", err)
+		newErr := reconErr.Join(
+			fmt.Errorf("getting ClusterObjectTemplate object: %w", err),
+			controllers.ErrReconcileClusterObjectTemplate,
+		)
+		return ctrl.Result{}, newErr
 	}
 
 	clusterObjectTemplate.ResourceVersion = existingClusterObjectTemplate.ResourceVersion
 	if err := r.Client.Update(ctx, clusterObjectTemplate); err != nil {
-		return ctrl.Result{}, fmt.Errorf("updating ClusterObjectTemplate object: %w", err)
+		newErr := reconErr.Join(
+			fmt.Errorf("updating ClusterObjectTemplate object: %w", err),
+			controllers.ErrReconcileClusterObjectTemplate,
+		)
+		return ctrl.Result{}, newErr
 	}
 	r.updateAddonStatus(addon, existingClusterObjectTemplate)
 

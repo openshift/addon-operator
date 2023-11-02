@@ -16,13 +16,15 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 const NAMESPACE_RECONCILER_NAME = "namespaceReconciler"
 
 type namespaceReconciler struct {
-	client client.Client
-	scheme *runtime.Scheme
+	client   client.Client
+	scheme   *runtime.Scheme
+	recorder *metrics.Recorder
 }
 
 func (r *namespaceReconciler) Reconcile(ctx context.Context,

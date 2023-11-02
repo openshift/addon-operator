@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-logr/logr"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 type WithClock struct{ Clock Clock }
@@ -38,4 +39,13 @@ type WithThresholdMultiplier int64
 
 func (w WithThresholdMultiplier) ConfigurePhaseCheckHeartbeat(c *PhaseCheckHeartbeatConfig) {
 	c.ThresholdMultiplier = int64(w)
+}
+
+type WithRecorder struct {
+	Recorder *metrics.Recorder
+}
+
+// Configures the metrics recorder
+func (w WithRecorder) ConfigureController(c *ControllerConfig) {
+	c.Recorder = w.Recorder
 }

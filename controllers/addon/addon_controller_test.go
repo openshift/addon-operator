@@ -14,7 +14,11 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
+	promTestUtil "github.com/prometheus/client_golang/prometheus/testutil"
+
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
+	"github.com/openshift/addon-operator/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 	"github.com/openshift/addon-operator/internal/ocm"
 	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -26,7 +30,10 @@ type reconcileErrorTestCase struct {
 	statusUpdateErrPresent    bool
 }
 
-var _ addonReconciler = (*mockSubReconciler)(nil)
+var (
+	_                   addonReconciler = (*mockSubReconciler)(nil)
+	errMockSubReconcile                 = errors.New("failed to reconcile")
+)
 
 type mockSubReconciler struct {
 	returnErr bool
@@ -38,7 +45,7 @@ func (m *mockSubReconciler) Name() string {
 
 func (m *mockSubReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	if m.returnErr {
-		return ctrl.Result{}, errors.New("failed to reconcile")
+		return ctrl.Result{}, errMockSubReconcile
 	}
 	return ctrl.Result{}, nil
 }
@@ -86,13 +93,16 @@ func TestReconcileErrorHandling(t *testing.T) {
 			statusUpdateErrPresent:    true,
 		},
 	}
-	for _, testCase := range testCases {
+	for idx, testCase := range testCases {
 		client := testutil.NewClient()
 		ocmClient := ocmtest.NewClient()
+		recorder := metrics.NewRecorder(true, fmt.Sprintf("clusterID-%v", idx))
+
 		r := AddonReconciler{
 			Client:         client,
 			ocmClient:      ocmClient,
 			Log:            logr.Discard(),
+			Recorder:       recorder,
 			subReconcilers: []addonReconciler{},
 		}
 
@@ -135,6 +145,32 @@ func TestReconcileErrorHandling(t *testing.T) {
 			multiErr, ok := err.(*multierror.Error) //nolint
 			assert.True(t, ok, "expected multi error")
 			assert.Equal(t, expectedNumErrors(testCase), multiErr.Len())
+		}
+
+		metric := recorder.GetReconcileErrorMetric()
+		assert.NotNil(t, metric)
+
+		if testCase.externalAPISyncErrPresent {
+			// Ensure sync error during reconcile was collected as a metric
+			controllerMetricVal := promTestUtil.ToFloat64(
+				metric.WithLabelValues(
+					"addon",
+					controllers.ErrSyncWithExternalAPIs.Error(),
+					addon.Name,
+				),
+			)
+			assert.True(t, controllerMetricVal > 0)
+		}
+		if testCase.reconcilerErrPresent {
+			// Ensure reconcile error was collected as a metric
+			controllerMetricVal := promTestUtil.ToFloat64(
+				metric.WithLabelValues(
+					"addon",
+					errMockSubReconcile.Error(),
+					addon.Name,
+				),
+			)
+			assert.True(t, controllerMetricVal > 0)
 		}
 	}
 }

@@ -11,7 +11,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	av1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
+	"github.com/openshift/addon-operator/controllers"
 	"github.com/openshift/addon-operator/controllers/addoninstance/internal/phase"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 func NewController(c client.Client, opts ...ControllerOption) *Controller {
@@ -42,9 +44,10 @@ func (c *Controller) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		"namespace", req.Namespace,
 		"name", req.Name,
 	)
-
+	reconErr := metrics.NewReconcileError("addoninstance", c.cfg.Recorder, true)
 	instance, err := c.client.Get(ctx, req.Name, req.Namespace)
 	if err != nil {
+		reconErr.Report(controllers.ErrGetAddonInstance, req.Name)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
@@ -52,6 +55,7 @@ func (c *Controller) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		log.Info("updating status conditions")
 
 		if err := c.client.UpdateStatus(ctx, instance); err != nil {
+			reconErr.Report(controllers.ErrUpdateAddonInstanceStatus, req.Name)
 			log.Error(err, "updating AddonInstance status")
 		}
 	}()
@@ -68,6 +72,7 @@ func (c *Controller) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 		}
 
 		if err := res.Error(); err != nil {
+			reconErr.Report(controllers.ErrExecuteAddonInstanceReconcilePhase, req.Name)
 			return ctrl.Result{}, fmt.Errorf("executing phase %q: %w", p, err)
 		}
 	}
@@ -81,6 +86,7 @@ type ControllerConfig struct {
 	Log             logr.Logger
 	PollingInterval time.Duration
 	SerialPhases    []Phase
+	Recorder        *metrics.Recorder
 }
 
 func (c *ControllerConfig) Option(opts ...ControllerOption) {

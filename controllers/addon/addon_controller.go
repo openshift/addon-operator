@@ -97,11 +97,13 @@ func NewAddonReconciler(
 					&legacyDeletionHandler{client: client, uncachedClient: uncachedClient},
 					&addonInstanceDeletionHandler{client: client},
 				},
+				recorder: recorder,
 			},
 			// Step 2: Reconcile Namespace
 			&namespaceReconciler{
-				client: client,
-				scheme: scheme,
+				client:   client,
+				scheme:   scheme,
+				recorder: recorder,
 			},
 			// Step 3: Reconcile Addon pull secrets
 			&addonSecretPropagationReconciler{
@@ -109,11 +111,13 @@ func NewAddonReconciler(
 				uncachedClient:         uncachedClient,
 				scheme:                 scheme,
 				addonOperatorNamespace: addonOperatorNamespace,
+				recorder:               recorder,
 			},
 			// Step 4: Reconcile AddonInstance object
 			&addonInstanceReconciler{
-				client: client,
-				scheme: scheme,
+				client:   client,
+				scheme:   scheme,
+				recorder: recorder,
 			},
 			// Step 5: Reconcile OLM objects
 			&olmReconciler{
@@ -121,11 +125,13 @@ func NewAddonReconciler(
 				uncachedClient:          uncachedClient,
 				scheme:                  scheme,
 				operatorResourceHandler: operatorResourceHandler,
+				recorder:                recorder,
 			},
 			// Step 6: Reconcile Monitoring Federation
 			&monitoringFederationReconciler{
-				client: client,
-				scheme: scheme,
+				client:   client,
+				scheme:   scheme,
+				recorder: recorder,
 			},
 		},
 	}
@@ -273,9 +279,11 @@ func (r *AddonReconciler) Reconcile(
 ) (ctrl.Result, error) {
 	logger := r.Log.WithValues("addon", req.NamespacedName.String())
 	ctx = controllers.ContextWithLogger(ctx, logger)
+	reconErr := metrics.NewReconcileError("addon", r.Recorder, false)
 
 	addon := &addonsv1alpha1.Addon{}
 	if err := r.Get(ctx, req.NamespacedName, addon); err != nil {
+		reconErr.Report(controllers.ErrGetAddon, addon.Name)
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
@@ -286,6 +294,10 @@ func (r *AddonReconciler) Reconcile(
 		r.Recorder.RecordAddonMetrics(addon)
 	}
 	errors := r.syncWithExternalAPIs(ctx, logger, addon)
+
+	if errors.ErrorOrNil() != nil {
+		reconErr.Report(controllers.ErrSyncWithExternalAPIs, addon.Name)
+	}
 
 	// append reconcilerErr
 	errors = multierror.Append(errors, reconcileErr)
@@ -322,6 +334,8 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	log logr.Logger,
 ) (ctrl.Result, error) {
 	ctx = controllers.ContextWithLogger(ctx, log)
+	reconErr := metrics.NewReconcileError("addon", r.Recorder, false)
+	subReconErr := metrics.NewReconcileError("addon", r.Recorder, true)
 	// Handle addon deletion before checking for pause condition.
 	// This allows even paused addons to be deleted.
 	if !addon.DeletionTimestamp.IsZero() {
@@ -362,6 +376,7 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	if !controllerutil.ContainsFinalizer(addon, cacheFinalizer) {
 		controllerutil.AddFinalizer(addon, cacheFinalizer)
 		if err := r.Update(ctx, addon); err != nil {
+			reconErr.Report(controllers.ErrUpdateAddon, addon.Name)
 			return ctrl.Result{}, fmt.Errorf("failed to add finalizer: %w", err)
 		}
 	}
@@ -369,6 +384,7 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	// Run each sub reconciler serially
 	for _, reconciler := range r.subReconcilers {
 		if result, err := reconciler.Reconcile(ctx, addon); err != nil {
+			subReconErr.Report(err, addon.Name)
 			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", reconciler.Name(), err)
 		} else if !result.IsZero() {
 			return result, nil

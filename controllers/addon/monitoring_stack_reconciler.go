@@ -20,6 +20,7 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 const MONITORING_STACK_RECONCILER_NAME = "monitoringStackReconciler"
@@ -27,8 +28,9 @@ const MONITORING_STACK_RECONCILER_NAME = "monitoringStackReconciler"
 var errMonitoringStackSpecNotFound = fmt.Errorf("monitoring stack spec not found")
 
 type monitoringStackReconciler struct {
-	client client.Client
-	scheme *runtime.Scheme
+	client   client.Client
+	scheme   *runtime.Scheme
+	recorder *metrics.Recorder
 }
 
 func (r *monitoringStackReconciler) Name() string {
@@ -37,11 +39,13 @@ func (r *monitoringStackReconciler) Name() string {
 
 func (r *monitoringStackReconciler) Reconcile(ctx context.Context,
 	addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 
 	// ensure creation of MonitoringStack object
 	latestMonitoringStack, err := r.ensureMonitoringStack(ctx, addon)
 	if err != nil {
 		if errors.Is(err, errMonitoringStackSpecNotFound) {
+			err = reconErr.Join(err, controllers.ErrEnsureCreateMonitoringStack)
 			return reconcile.Result{}, nil
 		}
 		return reconcile.Result{}, err

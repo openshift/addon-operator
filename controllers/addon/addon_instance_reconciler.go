@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"k8s.io/apimachinery/pkg/api/equality"
-	"k8s.io/apimachinery/pkg/api/errors"
+	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -15,20 +15,24 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 const ADDON_INSTANCE_RECONCILER_NAME = "addonInstanceReconciler"
 
 type addonInstanceReconciler struct {
-	client client.Client
-	scheme *runtime.Scheme
+	client   client.Client
+	scheme   *runtime.Scheme
+	recorder *metrics.Recorder
 }
 
 func (r *addonInstanceReconciler) Reconcile(ctx context.Context,
 	addon *addonsv1alpha1.Addon) (reconcile.Result, error) {
+	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 	// Ensure the creation of the corresponding AddonInstance in .spec.install.olmOwnNamespace/.spec.install.olmAllNamespaces namespace
 	if err := r.ensureAddonInstance(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure the creation of addoninstance: %w", err)
+		err = reconErr.Join(err, controllers.ErrEnsureCreateAddonInstance)
+		return ctrl.Result{}, err
 	}
 	return reconcile.Result{}, nil
 }
@@ -73,7 +77,7 @@ func (r *addonInstanceReconciler) reconcileAddonInstance(
 	ctx context.Context, desiredAddonInstance *addonsv1alpha1.AddonInstance) error {
 	currentAddonInstance := &addonsv1alpha1.AddonInstance{}
 	err := r.client.Get(ctx, client.ObjectKeyFromObject(desiredAddonInstance), currentAddonInstance)
-	if errors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return r.client.Create(ctx, desiredAddonInstance)
 	}
 	if err != nil {

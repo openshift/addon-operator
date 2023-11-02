@@ -19,18 +19,21 @@ import (
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 const MONITORING_FEDERATION_RECONCILER_NAME = "monitoringFederationReconciler"
 
 type monitoringFederationReconciler struct {
-	client client.Client
-	scheme *runtime.Scheme
+	client   client.Client
+	scheme   *runtime.Scheme
+	recorder *metrics.Recorder
 }
 
 func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
 	addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	log := controllers.LoggerFromContext(ctx)
+	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 
 	// Possibly ensure monitoring federation
 	// Normally this would be configured before the addon workload is installed
@@ -44,14 +47,19 @@ func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
 
 		return ctrl.Result{}, nil
 	} else if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure ServiceMonitor: %w", err)
+		err = reconErr.Join(err, controllers.ErrEnsureCreateServiceMonitor)
+		return ctrl.Result{}, err
 	} else if !result.IsZero() {
 		return result, nil
 	}
 
 	// Remove possibly unwanted monitoring federation
 	if err := r.ensureDeletionOfUnwantedMonitoringFederation(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted ServiceMonitors: %w", err)
+		err = reconErr.Join(
+			err,
+			controllers.ErrEnsureDeleteServiceMonitor,
+		)
+		return ctrl.Result{}, err
 	}
 	return reconcile.Result{}, nil
 }

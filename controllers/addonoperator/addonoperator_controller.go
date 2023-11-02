@@ -22,6 +22,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
+	"github.com/openshift/addon-operator/controllers"
 	"github.com/openshift/addon-operator/internal/ocm"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -81,12 +82,17 @@ func (r *AddonOperatorReconciler) Reconcile(
 				addonOperator.Status.Conditions, addonsv1alpha1.AddonOperatorPaused))
 		}
 	}()
+
+	reconErr := metrics.NewReconcileError("addonoperator", r.Recorder, false)
+
 	// Create default AddonOperator object if it doesn't exist
 	if apierrors.IsNotFound(err) {
 		log.Info("default AddonOperator not found")
+		reconErr.Report(controllers.ErrGetDefaultAddonOperator, addonsv1alpha1.DefaultAddonOperatorName)
 		return ctrl.Result{}, r.handleAddonOperatorCreation(ctx, log)
 	}
 	if err != nil {
+		reconErr.Report(controllers.ErrGetDefaultAddonOperator, addonsv1alpha1.DefaultAddonOperatorName)
 		return ctrl.Result{}, err
 	}
 
@@ -98,10 +104,12 @@ func (r *AddonOperatorReconciler) Reconcile(
 	}
 
 	if err := r.handleGlobalPause(ctx, addonOperator); err != nil {
+		reconErr.Report(controllers.ErrAddonOperatorHandleGlobalPause, addonOperator.Name)
 		return ctrl.Result{}, fmt.Errorf("handling global pause: %w", err)
 	}
 
 	if err := r.handleOCMClient(ctx, log, addonOperator); err != nil {
+		reconErr.Report(controllers.ErrCreateOCMClient, addonOperator.Name)
 		return ctrl.Result{}, fmt.Errorf("handling OCM client: %w", err)
 	}
 
@@ -110,6 +118,7 @@ func (r *AddonOperatorReconciler) Reconcile(
 
 	err = r.reportAddonOperatorReadinessStatus(ctx, addonOperator)
 	if err != nil {
+		reconErr.Report(controllers.ErrReportAddonOperatorStatus, addonOperator.Name)
 		return ctrl.Result{}, err
 	}
 	return ctrl.Result{RequeueAfter: defaultAddonOperatorRequeueTime}, nil

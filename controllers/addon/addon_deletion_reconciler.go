@@ -9,6 +9,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
+	"github.com/openshift/addon-operator/controllers"
+	"github.com/openshift/addon-operator/internal/metrics"
 )
 
 const (
@@ -34,6 +36,7 @@ func (c defaultClock) Now() time.Time {
 type addonDeletionReconciler struct {
 	clock    clock
 	handlers []addonDeletionHandler
+	recorder *metrics.Recorder
 }
 
 func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
@@ -52,13 +55,17 @@ func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1
 	// We set ReadyToBeDeleted=false status condition in response to the delete signal received from OCM.
 	reportAddonReadyToBeDeletedStatus(addon, metav1.ConditionFalse)
 
+	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
+
 	for _, handler := range r.handlers {
 		if err := handler.NotifyAddon(ctx, addon); err != nil {
+			err = reconErr.Join(err, controllers.ErrNotifyAddon)
 			return ctrl.Result{}, err
 		}
 		// If ack is received from the underlying addon, we report ReadyToBeDeleted = true.
 		ackReceived, err := handler.AckReceivedFromAddon(ctx, addon)
 		if err != nil {
+			err = reconErr.Join(err, controllers.ErrAckReceivedFromAddon)
 			return ctrl.Result{}, err
 		}
 		if ackReceived {
