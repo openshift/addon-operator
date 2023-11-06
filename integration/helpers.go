@@ -37,8 +37,7 @@ import (
 
 	obov1alpha1 "github.com/rhobs/observability-operator/pkg/apis/monitoring/v1alpha1"
 
-	aoapis "github.com/openshift/addon-operator/apis"
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/internal/ocm"
 )
 
@@ -65,7 +64,7 @@ func init() {
 	// Client/Scheme setup.
 	AddToSchemes := runtime.SchemeBuilder{
 		clientgoscheme.AddToScheme,
-		aoapis.AddToScheme,
+		addonsv1alpha1.AddToScheme,
 		apiextensionsv1.AddToScheme,
 		operatorsv1.AddToScheme,
 		operatorsv1alpha1.AddToScheme,

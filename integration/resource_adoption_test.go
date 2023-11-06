@@ -13,10 +13,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
+	"github.com/openshift/addon-operator/controllers"
+	addonUtil "github.com/openshift/addon-operator/controllers/addon"
 	"github.com/openshift/addon-operator/integration"
-	"github.com/openshift/addon-operator/internal/controllers"
-	addonUtil "github.com/openshift/addon-operator/internal/controllers/addon"
 )
 
 func (s *integrationTestSuite) TestResourceAdoption() {

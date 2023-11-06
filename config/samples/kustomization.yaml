@@ -1,0 +1,6 @@
+## Append samples you want in your CSV to this file as resources ##
+resources:
+- addons_v1alpha1_addon.yaml
+- addons_v1alpha1_addonoperator.yaml
+- addons_v1alpha1_addoninstance.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

@@ -1,0 +1,12 @@
+apiVersion: addons.managed.openshift.io/v1alpha1
+kind: AddonInstance
+metadata:
+  labels:
+    app.kubernetes.io/name: addoninstance
+    app.kubernetes.io/instance: addoninstance-sample
+    app.kubernetes.io/part-of: addon-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: addon-operator
+  name: addoninstance-sample
+spec:
+  # TODO(user): Add fields here
