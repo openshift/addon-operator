@@ -122,7 +122,6 @@ helm:
 
 ## Run go mod tidy in all go modules
 tidy:
-	@cd apis; go mod tidy
 	@go mod tidy
 
 # ------------
@@ -156,7 +155,7 @@ lint:
 ## Runs code-generators and unittests.
 test-unit: generate
 	@echo "running unit tests..."
-	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/...
+	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/... ./controllers/...
 .PHONY: test-unit
 
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster

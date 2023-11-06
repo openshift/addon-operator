@@ -93,6 +93,7 @@ func TestReconcileErrorHandling(t *testing.T) {
 			statusUpdateErrPresent:    true,
 		},
 	}
+
 	for idx, testCase := range testCases {
 		client := testutil.NewClient()
 		ocmClient := ocmtest.NewClient()

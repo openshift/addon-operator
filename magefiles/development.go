@@ -22,7 +22,7 @@ import (
 	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/yaml"
 
-	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	aoapisv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
 
