@@ -1,24 +1,16 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: addon-operator
+  name: prometheus-k8s
   namespace: addon-operator
 rules:
 - apiGroups:
   - ""
   resources:
-  - events
-  verbs:
-  - create
-- apiGroups:
-  - coordination.k8s.io
-  resources:
-  - leases
+  - services
+  - endpoints
+  - pods
   verbs:
   - get
   - list
   - watch
-  - create
-  - update
-  - patch
-  - delete
