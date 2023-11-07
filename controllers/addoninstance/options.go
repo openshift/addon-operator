@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-logr/logr"
+
 	"github.com/openshift/addon-operator/internal/metrics"
 )
 
