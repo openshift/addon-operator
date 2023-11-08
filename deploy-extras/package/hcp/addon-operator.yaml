@@ -67,7 +67,7 @@ spec:
           value: /etc/openshift/kubeconfig/kubeconfig
         - name: ADDON_OPERATOR_NAMESPACE
           value: addon-operator
-        image: quay.io/sbasabat_openshift/addon-operator-manager:a756847
+        image: quay.io/app-sre/addon-operator-manager:a49e288
         livenessProbe:
           httpGet:
             path: /healthz

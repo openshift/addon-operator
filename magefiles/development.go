@@ -48,13 +48,13 @@ func (d Dev) init() error {
 		},
 		dev.ClusterLoadObjectsFromFiles{
 			// OCP APIs required by the AddonOperator.
-			"config/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
-			"config/ocp/config-operator_01_proxy.crd.yaml",
-			"config/ocp/cluster-version.yaml",
-			"config/ocp/monitoring.coreos.com_servicemonitors.yaml",
+			"deploy-extras/development/ocp/cluster-version-operator_01_clusterversion.crd.yaml",
+			"deploy-extras/development/ocp/config-operator_01_proxy.crd.yaml",
+			"deploy-extras/development/ocp/cluster-version.yaml",
+			"deploy-extras/development/ocp/monitoring.coreos.com_servicemonitors.yaml",
 
 			// OpenShift console to interact with OLM.
-			"hack/openshift-console.yaml",
+			"deploy-extras/development/ocp/openshift-console.yaml",
 		},
 	}
 
@@ -203,7 +203,7 @@ func (d Dev) deploy(
 }
 
 func renderPrometheusRemoteStorageMockDeployment(ctx context.Context, cluster *dev.Cluster) (*appsv1.Deployment, error) {
-	objs, err := dev.LoadKubernetesObjectsFromFile("config/deploy/prometheus-remote-storage-mock/deployment.yaml.tpl")
+	objs, err := dev.LoadKubernetesObjectsFromFile("deploy-extras/development/prometheus-remote-storage-mock/deployment.yaml.tpl")
 	if err != nil {
 		return nil, fmt.Errorf("failed to load the prometheus-remote-storage-mock deployment.yaml.tpl: %w", err)
 	}
@@ -236,8 +236,8 @@ func (d Dev) deployPrometheusRemoteStorageMock(ctx context.Context, cluster *dev
 	}
 
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
-		"config/deploy/prometheus-remote-storage-mock/namespace.yaml",
-		"config/deploy/prometheus-remote-storage-mock/service.yaml",
+		"deploy-extras/development/prometheus-remote-storage-mock/namespace.yaml",
+		"deploy-extras/development/prometheus-remote-storage-mock/service.yaml",
 	}); err != nil {
 		return fmt.Errorf("failed to load the prometheus-remote-storage-mock's namespace/service: %w", err)
 	}
@@ -251,7 +251,7 @@ func (d Dev) deployPrometheusRemoteStorageMock(ctx context.Context, cluster *dev
 // deploy the API Mock server from local files.
 func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 	objs, err := dev.LoadKubernetesObjectsFromFile(
-		"config/deploy/api-mock/deployment.yaml.tpl")
+		"deploy-extras/development/api-mock/deployment.yaml.tpl")
 	if err != nil {
 		return fmt.Errorf("loading api-mock deployment.yaml.tpl: %w", err)
 	}
@@ -280,8 +280,8 @@ func (d Dev) deployAPIMock(ctx context.Context, cluster *dev.Cluster) error {
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
-		"config/deploy/api-mock/00-namespace.yaml",
-		"config/deploy/api-mock/api-mock.yaml",
+		"deploy-extras/development/api-mock/00-namespace.yaml",
+		"deploy-extras/development/api-mock/api-mock.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
@@ -346,9 +346,9 @@ func postClusterCreationFeatureToggleSetup(ctx context.Context, cluster *dev.Clu
 // deploy the Addon Operator Manager from local files.
 func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluster) error {
 	deployment := &appsv1.Deployment{}
-	err := loadAndConvertIntoObject(cluster.Scheme, "config/deploy/deployment.yaml.tpl", deployment)
+	err := loadAndConvertIntoObject(cluster.Scheme, "deploy-extras/development/deployment.yaml.tmpl", deployment)
 	if err != nil {
-		return fmt.Errorf("loading addon-operator-manager deployment.yaml.tpl: %w", err)
+		return fmt.Errorf("loading addon-operator-manager deployment.yaml.tmpl: %w", err)
 	}
 
 	// Replace image
@@ -359,14 +359,18 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
-		"config/deploy/00-namespace.yaml",
-		"config/deploy/01-metrics-server-tls-secret.yaml",
-		"config/deploy/addons.managed.openshift.io_addoninstances.yaml",
-		"config/deploy/addons.managed.openshift.io_addonoperators.yaml",
-		"config/deploy/addons.managed.openshift.io_addons.yaml",
-		"config/deploy/metrics.service.yaml",
-		"config/deploy/rbac.yaml",
-		"config/deploy/trusted_ca_bundle_configmap.yaml",
+		"deploy-extras/development/00-namespace.yaml",
+		"deploy-extras/development/01-metrics-server-tls-secret.yaml",
+		"deploy/crds/addons.managed.openshift.io_addoninstances.yaml",
+		"deploy/crds/addons.managed.openshift.io_addonoperators.yaml",
+		"deploy/crds/addons.managed.openshift.io_addons.yaml",
+		"deploy/metrics-service.yaml",
+		"deploy/serviceaccount.yaml",
+		"deploy/role.yaml",
+		"deploy/rolebinding.yaml",
+		"deploy/clusterrole.yaml",
+		"deploy/clusterrolebinding.yaml",
+		"deploy/trusted_ca_bundle_configmap.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
@@ -383,7 +387,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 // Addon Operator Webhook server from local files.
 func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluster) error {
 	deployment := &appsv1.Deployment{}
-	err := loadAndConvertIntoObject(cluster.Scheme, "config/deploy/webhook/deployment.yaml.tpl", deployment)
+	err := loadAndConvertIntoObject(cluster.Scheme, "deploy-extras/webhook/deployment.yaml.tpl", deployment)
 	if err != nil {
 		return fmt.Errorf("loading addon-operator-webhook deployment.yaml.tpl: %w", err)
 	}
@@ -396,9 +400,9 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
-		"config/deploy/webhook/00-tls-secret.yaml",
-		"config/deploy/webhook/service.yaml",
-		"config/deploy/webhook/validatingwebhookconfig.yaml",
+		"deploy-extras/webhook/00-tls-secret.yaml",
+		"deploy-extras/webhook/service.yaml",
+		"deploy-extras/webhook/validatingwebhookconfig.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
 	}
