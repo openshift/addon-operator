@@ -17,6 +17,7 @@ require (
 	github.com/openshift/addon-operator/apis v0.0.0-20230908020307-fe70c681ed8b
 	github.com/openshift/api v0.0.0-20230911150451-1b50bb45038b
 	github.com/operator-framework/api v0.18.0
+	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.68.0
 	github.com/prometheus/client_golang v1.17.0
 	github.com/prometheus/client_model v0.5.0
 	github.com/prometheus/common v0.45.0

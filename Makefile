@@ -133,16 +133,6 @@ generate:
 	./mage generate:all
 .PHONY: generate
 
-# Makes sandwich
-# https://xkcd.com/149/
-sandwich:
-ifneq ($(shell id -u), 0)
-	@echo "What? Make it yourself."
-else
-	@echo "Okay."
-endif
-.PHONY: sandwich
-
 # ---------------------
 ##@ Testing and Linting
 # ---------------------
@@ -197,8 +187,7 @@ run-addon-operator-manager:
 
 ## Run cmd/% against $KUBECONFIG.
 run-%: generate
-	go run -ldflags "-w $(LD_FLAGS)" \
-		./cmd/$*/*.go \
+	go run -ldflags "-w $(LD_FLAGS)" . \
 			-pprof-addr="127.0.0.1:8065" \
 			-metrics-addr="0"
 
@@ -236,7 +225,7 @@ setup-addon-operator:
 
 ## Installs Addon Operator CRDs in to the currently selected cluster.
 setup-addon-operator-crds: generate
-	@for crd in $(wildcard config/deploy/*.openshift.io_*.yaml); do \
+	@for crd in $(wildcard deploy/crds/*.openshift.io_*.yaml); do \
 		kubectl apply -f $$crd; \
 	done
 .PHONY: setup-addon-operator-crds

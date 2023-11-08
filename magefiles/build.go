@@ -97,6 +97,7 @@ func (Build) cmd(cmd, goos, goarch string) error {
 	}
 
 	bin := path.Join("bin", cmd)
+
 	if len(goos) != 0 && len(goarch) != 0 {
 		// change bin path to point to a subdirectory when cross compiling
 		bin = path.Join("bin", goos+"_"+goarch, cmd)
@@ -104,43 +105,20 @@ func (Build) cmd(cmd, goos, goarch string) error {
 		env["GOARCH"] = goarch
 	}
 
-	if err := sh.RunWithV(
-		env,
-		"go", "build", "-v", "-o", bin, "./cmd/"+cmd,
-	); err != nil {
-		return fmt.Errorf("compiling cmd/%s: %w", cmd, err)
-	}
-	return nil
-}
-
-// Builds the main manager from the root directory.
-func (Build) manager(goos, goarch string) error {
-	mg.Deps(Build.init)
-
-	var bin string
-	cmd := "addon-operator-manager"
-
-	env := map[string]string{
-		"GOFLAGS": "",
-		"LDFLAGS": ldFlags,
-	}
-
-	_, cgoOK := os.LookupEnv("CGO_ENABLED")
-	if !cgoOK {
-		env["CGO_ENABLED"] = "0"
-	}
-
-	if len(goos) != 0 && len(goarch) != 0 {
-		bin = path.Join("bin", goos+"_"+goarch, cmd)
-		env["GOOS"] = goos
-		env["GOARCH"] = goarch
-	}
-
-	if err := sh.RunWithV(
-		env,
-		"go", "build", "-v", "-o", bin, ".",
-	); err != nil {
-		return fmt.Errorf("compiling addon-operator-manager: %v", err)
+	if cmd == "addon-operator-manager" {
+		if err := sh.RunWithV(
+			env,
+			"go", "build", "-v", "-o", bin, ".",
+		); err != nil {
+			return fmt.Errorf("compiling addon-operator-manager: %v", err)
+		}
+	} else {
+		if err := sh.RunWithV(
+			env,
+			"go", "build", "-v", "-o", bin, "./cmd/"+cmd,
+		); err != nil {
+			return fmt.Errorf("compiling cmd/%s: %w", cmd, err)
+		}
 	}
 	return nil
 }
@@ -148,7 +126,7 @@ func (Build) manager(goos, goarch string) error {
 // Default build target for CI/CD to build binaries
 func (Build) All() {
 	mg.Deps(
-		mg.F(Build.manager, "linux", "amd64"),
+		mg.F(Build.cmd, "addon-operator-manager", "linux", "amd64"),
 		mg.F(Build.cmd, "addon-operator-webhook", "linux", "amd64"),
 		mg.F(Build.cmd, "api-mock", "linux", "amd64"),
 		mg.F(Build.cmd, "mage", "", ""),
@@ -202,13 +180,6 @@ func (b Build) ImageBuild(cmd string) error {
 	case "addon-operator-package":
 		return b.buildPackageOperatorImage(imageCacheDir)
 
-	case "addon-operator-manager":
-		deps := []interface{}{
-			mg.F(Build.manager, "linux", "amd64"),
-			mg.F(populateCmdCache, imageCacheDir, cmd),
-		}
-		imageBuildInfo := newImageBuildInfo(cmd, imageCacheDir)
-		return dev.BuildImage(imageBuildInfo, deps)
 	default:
 		deps := []interface{}{
 			mg.F(Build.cmd, cmd, "linux", "amd64"),
