@@ -24,6 +24,7 @@ require (
 	github.com/prometheus/prometheus v1.8.2-0.20211105201321-411021ada9ab
 	github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring v0.66.0-rhobs1
 	github.com/rhobs/observability-operator v0.0.25
+	github.com/sethvargo/go-retry v0.2.4
 	github.com/stretchr/testify v1.8.4
 	k8s.io/api v0.28.3
 	k8s.io/apiextensions-apiserver v0.28.3

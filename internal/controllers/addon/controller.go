@@ -2,6 +2,7 @@ package addon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -293,24 +294,29 @@ func (r *AddonReconciler) Reconcile(
 	if r.Recorder != nil {
 		r.Recorder.RecordAddonMetrics(addon)
 	}
-	errors := r.syncWithExternalAPIs(ctx, logger, addon)
+	multiErr := r.syncWithExternalAPIs(ctx, logger, addon)
 
-	if errors.ErrorOrNil() != nil {
-		reconErr.Report(controllers.ErrSyncWithExternalAPIs, addon.Name)
+	if multiErr.ErrorOrNil() != nil {
+		var ocmErr ocm.OCMError
+		if errors.As(multiErr, &ocmErr) {
+			reconErr.Report(controllers.ErrOCMClientRequest, addon.Name)
+		} else {
+			reconErr.Report(controllers.ErrSyncWithExternalAPIs, addon.Name)
+		}
 	}
 
 	// append reconcilerErr
-	errors = multierror.Append(errors, reconcileErr)
+	multiErr = multierror.Append(multiErr, reconcileErr)
 
 	// We report the observed version regardless of whether the addon
 	// is available or not.
 	reportObservedVersion(addon)
 
 	if statusErr := r.Status().Update(ctx, addon); statusErr != nil {
-		errors = multierror.Append(errors, statusErr)
-		return reconcile.Result{}, errors
+		multiErr = multierror.Append(multiErr, statusErr)
+		return reconcile.Result{}, multiErr
 	}
-	return reconcileResult, errors.ErrorOrNil()
+	return reconcileResult, multiErr.ErrorOrNil()
 }
 
 func (r *AddonReconciler) syncWithExternalAPIs(ctx context.Context, logger logr.Logger, addon *addonsv1alpha1.Addon) *multierror.Error {
