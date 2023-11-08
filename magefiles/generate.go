@@ -25,7 +25,7 @@ func (Generate) code() error {
 
 	manifestsCmd := exec.Command("controller-gen",
 		"crd:crdVersions=v1", "rbac:roleName=addon-operator-manager",
-		"paths=./...", "output:crd:artifacts:config=../config/deploy")
+		"paths=./...", "output:crd:artifacts:config=../deploy")
 	manifestsCmd.Dir = workDir + "/api"
 	if err := manifestsCmd.Run(); err != nil {
 		return fmt.Errorf("generating kubernetes manifests: %w", err)

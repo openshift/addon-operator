@@ -129,7 +129,7 @@ tidy:
 # ------------
 
 ## Generate deepcopy code, kubernetes manifests and docs.
-generate: openshift-ci-test-build
+generate:
 	./mage generate:all
 .PHONY: generate
 
@@ -152,7 +152,7 @@ lint:
 	./mage test:lint
 .PHONY: lint
 
-## Runs code-generators and unittests.
+## Runs unittests.
 test-unit: generate
 	@echo "running unit tests..."
 	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/... ./controllers/...

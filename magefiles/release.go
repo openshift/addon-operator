@@ -30,7 +30,7 @@ func Prepare_Release() error {
 	}
 
 	// read CSV
-	csvTemplate, err := os.ReadFile(path.Join(workDir, "config/olm/addon-operator.csv.tpl.yaml"))
+	csvTemplate, err := os.ReadFile(path.Join(workDir, "deploy-extras/olm/addon-operator.csv.tpl.yaml"))
 	if err != nil {
 		return fmt.Errorf("reading CSV template: %w", err)
 	}
@@ -50,7 +50,7 @@ func Prepare_Release() error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile("config/olm/addon-operator.csv.tpl.yaml",
+	if err := os.WriteFile("deploy-extras/olm/addon-operator.csv.tpl.yaml",
 		csvBytes, os.ModePerm); err != nil {
 		return err
 	}
