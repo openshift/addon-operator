@@ -375,7 +375,7 @@ func pod_metricsClient() *corev1.Pod {
 					Name: "tls",
 					VolumeSource: corev1.VolumeSource{
 						Secret: &corev1.SecretVolumeSource{
-							SecretName: "metrics-server-cert",
+							SecretName: "tls-manager-metrics",
 						},
 					},
 				},

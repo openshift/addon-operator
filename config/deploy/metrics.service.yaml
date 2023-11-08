@@ -6,9 +6,9 @@ metadata:
   namespace: addon-operator
   labels:
     app.kubernetes.io/name: addon-operator
-  # In production, the following annotation will make service-ca-operator to create a Secret called `metrics-server-cert` on the fly and manage its lifecycle
+  # In production, the following annotation will make service-ca-operator to create a Secret called `tls-manager-metrics` on the fly and manage its lifecycle
   annotations:
-    service.beta.openshift.io/serving-cert-secret-name: metrics-server-cert
+    service.beta.openshift.io/serving-cert-secret-name: tls-manager-metrics
 spec:
   ports:
     - port: 8443

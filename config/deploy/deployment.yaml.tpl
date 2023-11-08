@@ -27,9 +27,9 @@ spec:
       - effect: NoSchedule
         key: node-role.kubernetes.io/infra
       volumes:
-      - name: tls
+      - name: tls-manager-metrics
         secret:
-          secretName: metrics-server-cert
+          secretName: tls-manager-metrics
       - configMap:
           defaultMode: 420
           items:
@@ -43,52 +43,21 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - name: metrics-relay-server
-        image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
-        args:
-        - "--secure-listen-address=0.0.0.0:8443"
-        - "--upstream=http://127.0.0.1:8080/"
-        - "--tls-cert-file=/tmp/k8s-metrics-server/serving-certs/tls.crt"
-        - "--tls-private-key-file=/tmp/k8s-metrics-server/serving-certs/tls.key"
-        - "--logtostderr=true"
-        - "--ignore-paths=/metrics,/healthz"
-        - "--v=10"  ### only for dev
-        volumeMounts:
-        - name: tls
-          mountPath: "/tmp/k8s-metrics-server/serving-certs/"
-          readOnly: true
+      - name: manager
         ports:
         - containerPort: 8443
-        readinessProbe:
-          tcpSocket:
-            port: 8443
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          tcpSocket:
-            port: 8443
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          limits:
-            cpu: 100m
-            memory: 30Mi
-          requests:
-            cpu: 100m
-            memory: 30Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-      - name: manager
         image: quay.io/openshift/addon-operator:latest
         args:
         - --enable-leader-election
+        - --metrics-addr=:8443
+        - --metrics-cert-dir=/etc/tls/manager/metrics
         volumeMounts:
         - mountPath: /etc/pki/ca-trust/extracted/pem
           name: trusted-ca-bundle
           readOnly: true
+        volumeMounts:
+        - mountPath: /etc/tls/manager/metrics
+          name: tls-manager-metrics
         livenessProbe:
           httpGet:
             path: /healthz

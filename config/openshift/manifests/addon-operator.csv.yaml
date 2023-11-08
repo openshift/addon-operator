@@ -199,39 +199,9 @@ spec:
                         operator: Exists
               containers:
               - args:
-                - --secure-listen-address=0.0.0.0:8443
-                - --upstream=http://127.0.0.1:8080/
-                - --tls-cert-file=/tmp/k8s-metrics-server/serving-certs/tls.crt
-                - --tls-private-key-file=/tmp/k8s-metrics-server/serving-certs/tls.key
-                - --logtostderr=true
-                - --ignore-paths=/metrics,/healthz
-                image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
-                livenessProbe:
-                  initialDelaySeconds: 15
-                  periodSeconds: 20
-                  tcpSocket:
-                    port: 8443
-                name: metrics-relay-server
-                ports:
-                - containerPort: 8443
-                readinessProbe:
-                  initialDelaySeconds: 5
-                  periodSeconds: 10
-                  tcpSocket:
-                    port: 8443
-                resources:
-                  limits:
-                    cpu: 100m
-                    memory: 30Mi
-                  requests:
-                    cpu: 100m
-                    memory: 30Mi
-                volumeMounts:
-                - mountPath: /tmp/k8s-metrics-server/serving-certs/
-                  name: tls
-                  readOnly: true
-              - args:
                 - --enable-leader-election
+                - --metrics-addr=:8443
+                - --metrics-cert-dir=/etc/tls/manager/metrics
                 env:
                 - name: ENABLE_STATUS_REPORTING
                   value: "true"
@@ -243,6 +213,8 @@ spec:
                   initialDelaySeconds: 15
                   periodSeconds: 20
                 name: manager
+                ports:
+                - containerPort: 8443
                 readinessProbe:
                   httpGet:
                     path: /readyz
@@ -260,14 +232,16 @@ spec:
                 - mountPath: /etc/pki/ca-trust/extracted/pem
                   name: trusted-ca-bundle
                   readOnly: true
+                - mountPath: /etc/tls/manager/metrics
+                  name: tls-manager-metrics
               serviceAccountName: addon-operator
               tolerations:
               - effect: NoSchedule
                 key: node-role.kubernetes.io/infra
               volumes:
-              - name: tls
+              - name: tls-manager-metrics
                 secret:
-                  secretName: metrics-server-cert
+                  secretName: tls-manager-metrics
               - configMap:
                   defaultMode: 420
                   items:

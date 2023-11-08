@@ -232,10 +232,8 @@ func setup() error {
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme: scheme,
-		Metrics: server.Options{
-			BindAddress: opts.MetricsAddr,
-		},
+		Scheme:                 scheme,
+		Metrics:                getMetricsOpts(opts),
 		HealthProbeBindAddress: opts.ProbeAddr,
 		WebhookServer: webhook.NewServer(
 			webhook.Options{
@@ -290,6 +288,19 @@ func setup() error {
 		return fmt.Errorf("problem running manager: %w", err)
 	}
 	return nil
+}
+
+func getMetricsOpts(opts options) server.Options {
+	metricsOpts := server.Options{
+		BindAddress: opts.MetricsAddr,
+	}
+
+	if opts.MetricsCertDir != "" {
+		metricsOpts.SecureServing = true
+		metricsOpts.CertDir = opts.MetricsCertDir
+	}
+
+	return metricsOpts
 }
 
 func main() {
