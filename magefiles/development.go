@@ -133,6 +133,15 @@ func (d Dev) Integration(ctx context.Context) error {
 	return nil
 }
 
+// Support running of single test cases for local dev only.
+func (d Dev) IntegrationRun(ctx context.Context, testName string) error {
+	mg.SerialDeps(
+		Dev.Deploy,
+	)
+	mg.SerialDeps(mg.F(Test.IntegrationRun, testName))
+	return nil
+}
+
 func (d Dev) LoadImage(image string) error {
 	mg.Deps(
 		mg.F(Build.ImageBuild, image),
