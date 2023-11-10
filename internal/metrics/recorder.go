@@ -359,7 +359,7 @@ func (r *ReconcileError) Join(err1 error, err2 error) error {
 	if err1 == nil || err2 == nil {
 		return err1
 	}
-	return fmt.Errorf("%s %w", err1.Error(), err2)
+	return fmt.Errorf("%v %w", err1.Error(), err2)
 }
 
 func (r *ReconcileError) SetRecorder(rec *Recorder) {

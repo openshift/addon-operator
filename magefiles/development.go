@@ -346,9 +346,9 @@ func postClusterCreationFeatureToggleSetup(ctx context.Context, cluster *dev.Clu
 // deploy the Addon Operator Manager from local files.
 func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluster) error {
 	deployment := &appsv1.Deployment{}
-	err := loadAndConvertIntoObject(cluster.Scheme, "deploy-extras/development/deployment.yaml.tmpl", deployment)
+	err := loadAndConvertIntoObject(cluster.Scheme, "deploy/deployment.yaml", deployment)
 	if err != nil {
-		return fmt.Errorf("loading addon-operator-manager deployment.yaml.tmpl: %w", err)
+		return fmt.Errorf("loading addon-operator-manager deployment.yaml: %w", err)
 	}
 
 	// Replace image
@@ -387,9 +387,9 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 // Addon Operator Webhook server from local files.
 func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluster) error {
 	deployment := &appsv1.Deployment{}
-	err := loadAndConvertIntoObject(cluster.Scheme, "deploy-extras/webhook/deployment.yaml.tpl", deployment)
+	err := loadAndConvertIntoObject(cluster.Scheme, "deploy-extras/webhook/deployment.yaml", deployment)
 	if err != nil {
-		return fmt.Errorf("loading addon-operator-webhook deployment.yaml.tpl: %w", err)
+		return fmt.Errorf("loading addon-operator-webhook deployment.yaml: %w", err)
 	}
 
 	// Replace image
