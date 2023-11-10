@@ -2,7 +2,7 @@ SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 
 # Dependency Versions
-CONTROLLER_GEN_VERSION:=v0.6.2
+CONTROLLER_GEN_VERSION:=v0.11.1
 OLM_VERSION:=v0.20.0
 KIND_VERSION:=v0.20.0
 YQ_VERSION:=v4@v4.12.0
@@ -122,7 +122,6 @@ helm:
 
 ## Run go mod tidy in all go modules
 tidy:
-	@cd apis; go mod tidy
 	@go mod tidy
 
 # ------------
@@ -130,19 +129,9 @@ tidy:
 # ------------
 
 ## Generate deepcopy code, kubernetes manifests and docs.
-generate: openshift-ci-test-build
+generate:
 	./mage generate:all
 .PHONY: generate
-
-# Makes sandwich
-# https://xkcd.com/149/
-sandwich:
-ifneq ($(shell id -u), 0)
-	@echo "What? Make it yourself."
-else
-	@echo "Okay."
-endif
-.PHONY: sandwich
 
 # ---------------------
 ##@ Testing and Linting
@@ -153,10 +142,10 @@ lint:
 	./mage test:lint
 .PHONY: lint
 
-## Runs code-generators and unittests.
+## Runs unittests.
 test-unit: generate
 	@echo "running unit tests..."
-	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/...
+	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/... ./controllers/...
 .PHONY: test-unit
 
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster
@@ -198,8 +187,7 @@ run-addon-operator-manager:
 
 ## Run cmd/% against $KUBECONFIG.
 run-%: generate
-	go run -ldflags "-w $(LD_FLAGS)" \
-		./cmd/$*/*.go \
+	go run -ldflags "-w $(LD_FLAGS)" . \
 			-pprof-addr="127.0.0.1:8065" \
 			-metrics-addr="0"
 
@@ -237,7 +225,7 @@ setup-addon-operator:
 
 ## Installs Addon Operator CRDs in to the currently selected cluster.
 setup-addon-operator-crds: generate
-	@for crd in $(wildcard config/deploy/*.openshift.io_*.yaml); do \
+	@for crd in $(wildcard deploy/crds/*.openshift.io_*.yaml); do \
 		kubectl apply -f $$crd; \
 	done
 .PHONY: setup-addon-operator-crds

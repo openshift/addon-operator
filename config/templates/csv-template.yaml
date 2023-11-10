@@ -1,0 +1,45 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  name: addon-operator-0.0.1
+  namespace: placeholder
+  annotations:
+    categories: A list of comma separated categories that your operator falls under.
+    certified: "false"
+    description: Addon Operator coordinates the lifecycle of Addons in managed OpenShift.
+    containerImage: quay.io/openshift/addon-operator:latest
+    support: Red Hat SRE
+spec:
+  displayName: Managed OpenShift Addon Operator
+  description: Addon Operator coordinates the lifecycle of Addons in managed OpenShift.
+  keywords:
+    - kubernetes
+    - ingress
+    - openshift
+    - multi-cluster
+    - cluster
+  version: 0.0.1
+  provider:
+    name: Red Hat, Inc
+  maturity: stable
+  installModes:
+    - type: OwnNamespace
+      supported: true
+    - type: SingleNamespace
+      supported: true
+    - type: MultiNamespace
+      supported: false
+    - type: AllNamespaces
+      supported: false
+  install:
+    strategy: deployment
+    spec:
+      clusterPermissions:
+        - serviceAccountName: addon-operator
+          # Rules will be added here by boilerplate/openshift/golang-osd-operator/csv-generate
+      deployments:
+        - name: addon-operator
+          # Deployment spec will be added here by boilerplate/openshift/golang-osd-operator/csv-generate
+  customresourcedefinitions:
+    owned:
+    # CRD's will be added here by boilerplate/openshift/golang-osd-operator/csv-generate
