@@ -12,7 +12,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"k8s.io/apimachinery/pkg/api/meta"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 )
 
 // addonState is a helper type that will help us
@@ -359,7 +359,7 @@ func (r *ReconcileError) Join(err1 error, err2 error) error {
 	if err1 == nil || err2 == nil {
 		return err1
 	}
-	return fmt.Errorf("%s %w", err1.Error(), err2)
+	return fmt.Errorf("%v %w", err1.Error(), err2)
 }
 
 func (r *ReconcileError) SetRecorder(rec *Recorder) {

@@ -10,7 +10,7 @@ import (
 
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
+	addoncontroller "github.com/openshift/addon-operator/controllers/addon"
 )
 
 const AddonsPlugAndPlayFeatureToggleIdentifier = "ADDONS_PLUG_AND_PLAY"

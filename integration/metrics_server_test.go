@@ -44,16 +44,6 @@ func (s *integrationTestSuite) TestMetricsServer() {
 		s.Assert().Equal("404 page not found", httpsCurlCallResult)
 	})
 
-	s.Run("test_http_endpoint", func() {
-		httpMetricsAddr := fmt.Sprintf("http://addon-operator-metrics.%s.svc:8080/healthz", integration.AddonOperatorNamespace)
-
-		command := []string{"curl", httpMetricsAddr}
-
-		httpCurlCallResult, _, err := integration.ExecCommandInPod(pod.Namespace, pod.Name, pod.Spec.Containers[0].Name, command)
-		s.Require().NoError(err)
-		s.Assert().Equal("404 page not found", httpCurlCallResult)
-	})
-
 	s.T().Cleanup(func() {
 		s.T().Logf("waiting for pod %s/%s to be deleted...", pod.Namespace, pod.Name)
 

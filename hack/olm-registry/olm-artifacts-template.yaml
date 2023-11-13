@@ -13,7 +13,7 @@ parameters:
     value: addon-operator
     required: true
   - name: DISPLAY_NAME
-    value: Managed Upgrade Operator
+    value: Addon Operator
     required: true
   - name: OCM_BASE_URL
     value: http://api-mock.api-mock.svc.cluster.local
@@ -60,7 +60,7 @@ objects:
           spec:
             sourceType: grpc
             image: ${REGISTRY_IMG}@${IMAGE_DIGEST}
-            displayName: MTSRE Addon Operator
+            displayName: Addon Operator
             publisher: Red Hat
             grpcPodConfig:
               nodeSelector:

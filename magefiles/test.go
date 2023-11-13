@@ -20,7 +20,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 
-	aoapisv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	aoapisv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/internal/featuretoggle"
 )
 
@@ -50,7 +50,7 @@ func (Test) Unit() error {
 	return sh.RunWithV(map[string]string{
 		// needed to enable race detector -race
 		"CGO_ENABLED": "1",
-	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...", "./pkg/...")
+	}, "go", "test", "-cover", "-v", "-race", "./internal/...", "./cmd/...", "./pkg/...", "./controllers/...")
 }
 
 // Integration tests

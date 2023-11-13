@@ -9,7 +9,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 
 	"github.com/mt-sre/devkube/dev"
 
@@ -101,7 +101,7 @@ func (m *MonitoringStackFeatureToggle) PreClusterCreationSetup(ctx context.Conte
 }
 
 func renderObservabilityOperatorCatalogSource(ctx context.Context, cluster *dev.Cluster) (*operatorsv1alpha1.CatalogSource, error) {
-	objs, err := dev.LoadKubernetesObjectsFromFile("config/deploy/observability-operator/catalog-source.yaml.tpl")
+	objs, err := dev.LoadKubernetesObjectsFromFile("deploy-extras/development/observability-operator/catalog-source.yaml.tpl")
 	if err != nil {
 		return nil, fmt.Errorf("failed to load the prometheus-remote-storage-mock deployment.yaml.tpl: %w", err)
 	}
@@ -125,7 +125,7 @@ func (m *MonitoringStackFeatureToggle) PostClusterCreationSetup(ctx context.Cont
 	}
 
 	if err := clusterCreated.CreateAndWaitFromFiles(ctx, []string{
-		"config/deploy/observability-operator/namespace.yaml",
+		"deploy-extras/development/observability-operator/namespace.yaml",
 	}); err != nil {
 		return fmt.Errorf("failed to load the namespace for observability-operator: %w", err)
 	}
@@ -135,8 +135,8 @@ func (m *MonitoringStackFeatureToggle) PostClusterCreationSetup(ctx context.Cont
 	}
 
 	if err := clusterCreated.CreateAndWaitFromFiles(ctx, []string{
-		"config/deploy/observability-operator/operator-group.yaml",
-		"config/deploy/observability-operator/subscription.yaml",
+		"deploy-extras/development/observability-operator/operator-group.yaml",
+		"deploy-extras/development/observability-operator/subscription.yaml",
 	}); err != nil {
 		return fmt.Errorf("failed to load the operator-group/subscription for observability-operator: %w", err)
 	}

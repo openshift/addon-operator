@@ -122,7 +122,6 @@ helm:
 
 ## Run go mod tidy in all go modules
 tidy:
-	@cd apis; go mod tidy
 	@go mod tidy
 
 # ------------
@@ -130,19 +129,9 @@ tidy:
 # ------------
 
 ## Generate deepcopy code, kubernetes manifests and docs.
-generate: openshift-ci-test-build
+generate:
 	./mage generate:all
 .PHONY: generate
-
-# Makes sandwich
-# https://xkcd.com/149/
-sandwich:
-ifneq ($(shell id -u), 0)
-	@echo "What? Make it yourself."
-else
-	@echo "Okay."
-endif
-.PHONY: sandwich
 
 # ---------------------
 ##@ Testing and Linting
@@ -153,10 +142,10 @@ lint:
 	./mage test:lint
 .PHONY: lint
 
-## Runs code-generators and unittests.
+## Runs unittests.
 test-unit: generate
 	@echo "running unit tests..."
-	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/...
+	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/... ./controllers/...
 .PHONY: test-unit
 
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster
@@ -198,8 +187,7 @@ run-addon-operator-manager:
 
 ## Run cmd/% against $KUBECONFIG.
 run-%: generate
-	go run -ldflags "-w $(LD_FLAGS)" \
-		./cmd/$*/*.go \
+	go run -ldflags "-w $(LD_FLAGS)" . \
 			-pprof-addr="127.0.0.1:8065" \
 			-metrics-addr="0"
 
@@ -237,7 +225,7 @@ setup-addon-operator:
 
 ## Installs Addon Operator CRDs in to the currently selected cluster.
 setup-addon-operator-crds: generate
-	@for crd in $(wildcard config/deploy/*.openshift.io_*.yaml); do \
+	@for crd in $(wildcard deploy/crds/*.openshift.io_*.yaml); do \
 		kubectl apply -f $$crd; \
 	done
 .PHONY: setup-addon-operator-crds
@@ -282,16 +270,16 @@ openshift-ci-test-build: \
 	@echo "preparing files for config/openshift ${IMAGE_ORG}/${IMAGE_NAME}:${VERSION}..."
 	@mkdir -p "config/openshift/manifests";
 	@mkdir -p "config/openshift/metadata";
-	@cp "config/docker/${IMAGE_NAME}.Dockerfile" "config/openshift/${IMAGE_NAME}.Dockerfile";
-	@cp "config/olm/annotations.yaml" "config/openshift/metadata";
-	@cp "config/olm/metrics.service.yaml" "config/openshift/manifests/metrics.service.yaml";
-	@cp "config/olm/addon-operator-servicemonitor.yaml" "config/openshift/manifests/addon-operator-servicemonitor.yaml";
-	@cp "config/olm/prometheus-role.yaml" "config/openshift/manifests/prometheus-role.yaml";
-	@cp "config/olm/prometheus-rb.yaml" "config/openshift/manifests/prometheus-rb.yaml";
-	@cp "config/olm/addon-operator.csv.yaml" "config/openshift/manifests/addon-operator.csv.yaml";
-	@tail -n"+3" "config/deploy/addons.managed.openshift.io_addons.yaml" > "config/openshift/manifests/addons.crd.yaml";
-	@tail -n"+3" "config/deploy/addons.managed.openshift.io_addonoperators.yaml" > "config/openshift/manifests/addonoperators.crd.yaml";
-	@tail -n"+3" "config/deploy/addons.managed.openshift.io_addoninstances.yaml" > "config/openshift/manifests/addoninstances.crd.yaml";
+	@cp "deploy-extras/docker/${IMAGE_NAME}.Dockerfile" "config/openshift/${IMAGE_NAME}.Dockerfile";
+	@cp "deploy-extras/olm/annotations.yaml" "config/openshift/metadata";
+	@cp "deploy/metrics-service.yaml" "config/openshift/manifests/metrics.service.yaml";
+	@cp "deploy/servicemonitor.yaml" "config/openshift/manifests/addon-operator-servicemonitor.yaml";
+	@cp "deploy/prometheus-role.yaml" "config/openshift/manifests/prometheus-role.yaml";
+	@cp "deploy/prometheus-rolebinding.yaml" "config/openshift/manifests/prometheus-rb.yaml";
+	@cp "deploy-extras/olm/addon-operator.csv.yaml" "config/openshift/manifests/addon-operator.csv.yaml";
+	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addons.yaml" > "config/openshift/manifests/addons.crd.yaml";
+	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addonoperators.yaml" > "config/openshift/manifests/addonoperators.crd.yaml";
+	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addoninstances.yaml" > "config/openshift/manifests/addoninstances.crd.yaml";
 
 .SECONDEXPANSION:
 

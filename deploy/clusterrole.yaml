@@ -1,0 +1,135 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: addon-operator
+rules:
+- apiGroups:
+  - "addons.managed.openshift.io"
+  resources:
+  - addons
+  - addons/status
+  - addons/finalizers
+  - addonoperators
+  - addonoperators/status
+  - addonoperators/finalizers
+  - addoninstances
+  - addoninstances/status
+  - addoninstances/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - patch
+- apiGroups:
+  - "addons.managed.openshift.io"
+  resources:
+  - addonoperators
+  - addonoperators/status
+  - addonoperators/finalizers
+  - addoninstances
+  - addoninstances/status
+  - addoninstances/finalizers
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - secrets
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+  - update
+- apiGroups:
+  - operators.coreos.com
+  resources:
+  - operatorgroups
+  - catalogsources
+  - subscriptions
+  - installplans
+  verbs:
+  - create
+  - delete
+  - update
+  - watch
+  - get
+  - list
+  - patch
+- apiGroups:
+  - operators.coreos.com
+  resources:
+  - clusterserviceversions
+  - operators
+  verbs:
+  - watch
+  - get
+  - list
+- apiGroups:
+  - config.openshift.io
+  resources:
+  - clusterversions
+  verbs:
+  - watch
+  - get
+  - list
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  verbs:
+  - create
+  - delete
+  - update
+  - watch
+  - get
+  - list
+  - patch
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - create
+  - delete
+  - update
+  - watch
+  - get
+  - list
+  - patch
+- apiGroups:
+  - monitoring.rhobs
+  resources:
+  - monitoringstacks
+  verbs:
+  - create
+  - delete
+  - update
+  - watch
+  - get
+  - list
+  - patch
+- apiGroups:
+  - package-operator.run
+  resources:
+  - clusterobjecttemplates
+  verbs:
+  - create
+  - delete
+  - update
+  - watch
+  - get
+  - list
+  - patch

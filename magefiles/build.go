@@ -97,6 +97,7 @@ func (Build) cmd(cmd, goos, goarch string) error {
 	}
 
 	bin := path.Join("bin", cmd)
+
 	if len(goos) != 0 && len(goarch) != 0 {
 		// change bin path to point to a subdirectory when cross compiling
 		bin = path.Join("bin", goos+"_"+goarch, cmd)
@@ -104,11 +105,20 @@ func (Build) cmd(cmd, goos, goarch string) error {
 		env["GOARCH"] = goarch
 	}
 
-	if err := sh.RunWithV(
-		env,
-		"go", "build", "-v", "-o", bin, "./cmd/"+cmd,
-	); err != nil {
-		return fmt.Errorf("compiling cmd/%s: %w", cmd, err)
+	if cmd == "addon-operator-manager" {
+		if err := sh.RunWithV(
+			env,
+			"go", "build", "-v", "-o", bin, ".",
+		); err != nil {
+			return fmt.Errorf("compiling addon-operator-manager: %v", err)
+		}
+	} else {
+		if err := sh.RunWithV(
+			env,
+			"go", "build", "-v", "-o", bin, "./cmd/"+cmd,
+		); err != nil {
+			return fmt.Errorf("compiling cmd/%s: %w", cmd, err)
+		}
 	}
 	return nil
 }
@@ -215,27 +225,27 @@ func populateOLMBundleCache(imageCacheDir string) error {
 
 		// Copy files for build environment
 		{"cp", "-a",
-			"config/docker/addon-operator-bundle.Dockerfile",
+			"deploy-extras/docker/addon-operator-bundle.Dockerfile",
 			imageCacheDir + "/Dockerfile"},
 
-		{"cp", "-a", "config/olm/addon-operator.csv.yaml", manifestsDir},
-		{"cp", "-a", "config/olm/metrics.service.yaml", manifestsDir},
-		{"cp", "-a", "config/olm/addon-operator-servicemonitor.yaml", manifestsDir},
-		{"cp", "-a", "config/olm/prometheus-role.yaml", manifestsDir},
-		{"cp", "-a", "config/olm/prometheus-rb.yaml", manifestsDir},
-		{"cp", "-a", "config/olm/annotations.yaml", metadataDir},
-		{"cp", "-a", "config/olm/trusted_ca_bundle_configmap.yaml", manifestsDir},
+		{"cp", "-a", "deploy-extras/olm/addon-operator.csv.yaml", manifestsDir},
+		{"cp", "-a", "deploy/metrics-service.yaml", manifestsDir},
+		{"cp", "-a", "deploy/servicemonitor.yaml", manifestsDir},
+		{"cp", "-a", "deploy/prometheus-role.yaml", manifestsDir},
+		{"cp", "-a", "deploy/prometheus-rolebinding.yaml", manifestsDir},
+		{"cp", "-a", "deploy-extras/olm/annotations.yaml", metadataDir},
+		{"cp", "-a", "deploy-extras/olm/trusted_ca_bundle_configmap.yaml", manifestsDir},
 		// copy CRDs
 		// The first few lines of the CRD file need to be removed:
 		// https://github.com/operator-framework/operator-registry/issues/222
 		{"bash", "-c", "tail -n+3 " +
-			"config/deploy/addons.managed.openshift.io_addons.yaml " +
+			"deploy/crds/addons.managed.openshift.io_addons.yaml " +
 			"> " + path.Join(manifestsDir, "addons.yaml")},
 		{"bash", "-c", "tail -n+3 " +
-			"config/deploy/addons.managed.openshift.io_addonoperators.yaml " +
+			"deploy/crds/addons.managed.openshift.io_addonoperators.yaml " +
 			"> " + path.Join(manifestsDir, "addonoperators.yaml")},
 		{"bash", "-c", "tail -n+3 " +
-			"config/deploy/addons.managed.openshift.io_addoninstances.yaml " +
+			"deploy/crds/addons.managed.openshift.io_addoninstances.yaml " +
 			"> " + path.Join(manifestsDir, "addoninstances.yaml")},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
@@ -259,11 +269,11 @@ func populatePkgCache(imageCacheDir string) error {
 	manifestsDir := path.Join(imageCacheDir, "manifests")
 	for _, command := range [][]string{
 		{"mkdir", "-p", manifestsDir},
-		{"bash", "-c", "cp config/package/hc/*.yaml " + manifestsDir},
-		{"cp", "config/package/hcp/addon-operator.yaml", manifestsDir},
-		{"cp", "config/package/hcp/metrics.service.yaml", manifestsDir},
-		{"cp", "config/package/manifest.yaml", manifestsDir},
-		{"cp", "config/package/addon-operator-package.Containerfile", manifestsDir},
+		{"bash", "-c", "cp deploy-extras/package/hc/*.yaml " + manifestsDir},
+		{"cp", "deploy-extras/package/hcp/addon-operator.yaml", manifestsDir},
+		{"cp", "deploy-extras/package/hcp/metrics.service.yaml", manifestsDir},
+		{"cp", "deploy-extras/package/manifest.yaml", manifestsDir},
+		{"cp", "deploy-extras/package/addon-operator-package.Containerfile", manifestsDir},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
 			return err
@@ -291,7 +301,7 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	)
 
 	deployment := &appsv1.Deployment{}
-	err := loadAndUnmarshalIntoObject("config/package/hcp/addon-operator-template.yaml", deployment)
+	err := loadAndUnmarshalIntoObject("deploy-extras/package/hcp/addon-operator-template.yaml", deployment)
 	if err != nil {
 		return fmt.Errorf("loading addon-operator-template.yaml: %w", err)
 	}
@@ -309,7 +319,7 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile("config/package/hcp/addon-operator.yaml",
+	if err := os.WriteFile("deploy-extras/package/hcp/addon-operator.yaml",
 		depBytes, os.ModePerm); err != nil {
 		return err
 	}
@@ -324,7 +334,7 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 
 func (b Build) TemplateAddonOperatorCSV() error {
 	// convert unstructured.Unstructured to CSV
-	csvTemplate, err := os.ReadFile(path.Join(workDir, "config/olm/addon-operator.csv.tpl.yaml"))
+	csvTemplate, err := os.ReadFile(path.Join(workDir, "deploy-extras/olm/addon-operator.csv.tpl.yaml"))
 	if err != nil {
 		return fmt.Errorf("reading CSV template: %w", err)
 	}
@@ -369,7 +379,7 @@ func (b Build) TemplateAddonOperatorCSV() error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile("config/olm/addon-operator.csv.yaml",
+	if err := os.WriteFile("deploy-extras/olm/addon-operator.csv.yaml",
 		csvBytes, os.ModePerm); err != nil {
 		return err
 	}
@@ -454,7 +464,7 @@ func cleanImageCache(imageCacheDir string) error {
 func populateCmdCache(imageCacheDir, cmd string) error {
 	commands := [][]string{
 		{"cp", "-a", "bin/linux_amd64/" + cmd, imageCacheDir + "/" + cmd},
-		{"cp", "-a", "config/docker/" + cmd + ".Dockerfile", imageCacheDir + "/Dockerfile"},
+		{"cp", "-a", "deploy-extras/docker/" + cmd + ".Dockerfile", imageCacheDir + "/Dockerfile"},
 	}
 	for _, command := range commands {
 		if err := sh.Run(command[0], command[1:]...); err != nil {

@@ -4,7 +4,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	addoncontroller "github.com/openshift/addon-operator/internal/controllers/addon"
+	addoncontroller "github.com/openshift/addon-operator/controllers/addon"
 )
 
 func GetAvailableFeatureToggles(opts ...availableFeatureTogglesGetterOpts) []FeatureToggleHandler {

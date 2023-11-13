@@ -8,7 +8,7 @@ import (
 	"github.com/mt-sre/devkube/dev"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	addonsv1alpha1 "github.com/openshift/addon-operator/apis/addons/v1alpha1"
+	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 )
 
 type FeatureToggleHandler interface {
