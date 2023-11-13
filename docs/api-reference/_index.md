@@ -361,7 +361,7 @@ AddonInstanceList contains a list of AddonInstance
 
 ### AddonInstanceSpec.api.managed.openshift.io/v1alpha1
 
-AddonInstanceSpec defines the desired state of AddonInstance
+AddonInstanceSpec defines the configuration to consider while taking AddonInstance-related decisions such as HeartbeatTimeouts
 
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |

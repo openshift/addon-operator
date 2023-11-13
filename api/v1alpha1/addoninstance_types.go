@@ -23,10 +23,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
-// AddonInstanceSpec defines the desired state of AddonInstance
+// AddonInstanceSpec defines the configuration to consider while taking AddonInstance-related decisions such as HeartbeatTimeouts
 type AddonInstanceSpec struct {
 	// This field indicates whether the addon is marked for deletion.
 	// +optional

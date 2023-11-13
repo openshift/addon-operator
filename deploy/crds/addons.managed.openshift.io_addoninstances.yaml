@@ -41,7 +41,8 @@ spec:
           metadata:
             type: object
           spec:
-            description: AddonInstanceSpec defines the desired state of AddonInstance
+            description: AddonInstanceSpec defines the configuration to consider while
+              taking AddonInstance-related decisions such as HeartbeatTimeouts
             properties:
               heartbeatUpdatePeriod:
                 default: 10s
