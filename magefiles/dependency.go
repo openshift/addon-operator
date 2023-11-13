@@ -14,7 +14,7 @@ import (
 
 // Dependency Versions
 const (
-	controllerGenVersion = "0.11.1"
+	controllerGenVersion = "0.6.2"
 	kindVersion          = "0.20.0"
 	yqVersion            = "4.35.1"
 	goimportsVersion     = "0.12.0"

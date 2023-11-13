@@ -2,7 +2,7 @@ SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 
 # Dependency Versions
-CONTROLLER_GEN_VERSION:=v0.11.1
+CONTROLLER_GEN_VERSION:=v0.6.2
 OLM_VERSION:=v0.20.0
 KIND_VERSION:=v0.20.0
 YQ_VERSION:=v4@v4.12.0
@@ -270,16 +270,16 @@ openshift-ci-test-build: \
 	@echo "preparing files for config/openshift ${IMAGE_ORG}/${IMAGE_NAME}:${VERSION}..."
 	@mkdir -p "config/openshift/manifests";
 	@mkdir -p "config/openshift/metadata";
-	@cp "config/docker/${IMAGE_NAME}.Dockerfile" "config/openshift/${IMAGE_NAME}.Dockerfile";
-	@cp "config/olm/annotations.yaml" "config/openshift/metadata";
-	@cp "config/olm/metrics.service.yaml" "config/openshift/manifests/metrics.service.yaml";
-	@cp "config/olm/addon-operator-servicemonitor.yaml" "config/openshift/manifests/addon-operator-servicemonitor.yaml";
-	@cp "config/olm/prometheus-role.yaml" "config/openshift/manifests/prometheus-role.yaml";
-	@cp "config/olm/prometheus-rb.yaml" "config/openshift/manifests/prometheus-rb.yaml";
-	@cp "config/olm/addon-operator.csv.yaml" "config/openshift/manifests/addon-operator.csv.yaml";
-	@tail -n"+3" "config/deploy/addons.managed.openshift.io_addons.yaml" > "config/openshift/manifests/addons.crd.yaml";
-	@tail -n"+3" "config/deploy/addons.managed.openshift.io_addonoperators.yaml" > "config/openshift/manifests/addonoperators.crd.yaml";
-	@tail -n"+3" "config/deploy/addons.managed.openshift.io_addoninstances.yaml" > "config/openshift/manifests/addoninstances.crd.yaml";
+	@cp "deploy-extras/docker/${IMAGE_NAME}.Dockerfile" "config/openshift/${IMAGE_NAME}.Dockerfile";
+	@cp "deploy-extras/olm/annotations.yaml" "config/openshift/metadata";
+	@cp "deploy/metrics-service.yaml" "config/openshift/manifests/metrics.service.yaml";
+	@cp "deploy/servicemonitor.yaml" "config/openshift/manifests/addon-operator-servicemonitor.yaml";
+	@cp "deploy/prometheus-role.yaml" "config/openshift/manifests/prometheus-role.yaml";
+	@cp "deploy/prometheus-rolebinding.yaml" "config/openshift/manifests/prometheus-rb.yaml";
+	@cp "deploy-extras/olm/addon-operator.csv.yaml" "config/openshift/manifests/addon-operator.csv.yaml";
+	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addons.yaml" > "config/openshift/manifests/addons.crd.yaml";
+	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addonoperators.yaml" > "config/openshift/manifests/addonoperators.crd.yaml";
+	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addoninstances.yaml" > "config/openshift/manifests/addoninstances.crd.yaml";
 
 .SECONDEXPANSION:
 
