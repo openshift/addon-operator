@@ -182,6 +182,19 @@ func initPprof(mgr ctrl.Manager, addr string) {
 	}
 }
 
+func fetchMetricsOptions(opts options) server.Options {
+	metricsOpts := server.Options{
+		BindAddress: opts.MetricsAddr,
+	}
+
+	if opts.MetricsTlsDir != "" {
+		metricsOpts.SecureServing = true
+		metricsOpts.CertDir = opts.MetricsTlsDir
+	}
+
+	return metricsOpts
+}
+
 func setup() error {
 	// Create a client that does not cache resources cluster-wide.
 	uncachedClient, err := client.New(
@@ -237,10 +250,8 @@ func setup() error {
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme: scheme,
-		Metrics: server.Options{
-			BindAddress: opts.MetricsAddr,
-		},
+		Scheme:                 scheme,
+		Metrics:                fetchMetricsOptions(opts),
 		HealthProbeBindAddress: opts.ProbeAddr,
 		WebhookServer: webhook.NewServer(
 			webhook.Options{

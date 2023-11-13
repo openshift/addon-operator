@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: addon-operator
   annotations:
-    service.beta.openshift.io/serving-cert-secret-name: metrics-server-cert
+    service.beta.openshift.io/serving-cert-secret-name: manager-metrics-tls
     package-operator.run/phase: hosted-control-plane
 spec:
   type: ClusterIP

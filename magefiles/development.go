@@ -351,7 +351,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 		return fmt.Errorf("loading addon-operator-manager deployment.yaml: %w", err)
 	}
 
-	// Replace image
+	// Replace image & disable metrics tls
 	patchDeployment(deployment, "addon-operator-manager", "manager")
 
 	ctx = logr.NewContext(ctx, logger)
@@ -412,7 +412,7 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 	return nil
 }
 
-// Replaces `container`'s image.
+// Replaces `container`'s image and disables metrics TLS
 func patchDeployment(deployment *appsv1.Deployment, name string, container string) {
 	image := getImageName(name)
 
@@ -429,6 +429,10 @@ func patchDeployment(deployment *appsv1.Deployment, name string, container strin
 					Value: "true",
 				},
 			}
+
+			// Remove '--metrics-tls-dir' arg
+			containerObj.Args = removeArg(containerObj.Args, 2)
+
 			break
 		}
 	}
@@ -467,4 +471,11 @@ func loadAndUnmarshalIntoObject(filePath string, out interface{}) error {
 		return err
 	}
 	return nil
+}
+
+// Removes i-th element from a slice and returns it.
+// The order of the slice/array will change.
+func removeArg(a []string, i int) []string {
+	a[i] = a[len(a)-1]
+	return a[:len(a)-1]
 }

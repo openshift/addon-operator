@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type options struct {
@@ -12,6 +13,7 @@ type options struct {
 	EnableMetricsRecorder   bool
 	LeaderElectionNamespace string
 	MetricsAddr             string
+	MetricsTlsDir           string
 	Namespace               string
 	PprofAddr               string
 	ProbeAddr               string
@@ -59,6 +61,16 @@ func (o *options) parseFlags() {
 		"metrics-addr",
 		o.MetricsAddr,
 		"The address the metric endpoint binds to.",
+	)
+
+	flag.StringVar(
+		&o.MetricsTlsDir,
+		"metrics-tls-dir",
+		o.MetricsTlsDir,
+		strings.Join([]string{
+			"The directory containing the TLS certificate for secure metrics propagation.",
+			"If unset metrics will be served without TLS.",
+		}, " "),
 	)
 
 	flag.StringVar(
