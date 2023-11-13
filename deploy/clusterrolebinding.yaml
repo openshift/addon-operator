@@ -9,4 +9,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: addon-operator
-  namespace: addon-operator
+  namespace: openshift-addon-operator

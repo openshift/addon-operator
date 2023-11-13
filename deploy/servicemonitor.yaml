@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: addon-operator-servicemonitor
-  namespace: addon-operator
+  namespace: openshift-addon-operator
   labels:
       app.kubernetes.io/name: addon-operator
 spec:
