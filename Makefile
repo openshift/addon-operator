@@ -295,6 +295,13 @@ push-image-%:
 clean-config-openshift:
 	@rm -rf "config/openshift/*"
 
+# ------------------
+##@ Codecov.io
+# ------------------
+.PHONY: coverage
+coverage:
+	hack/codecov.sh
+
 ensure-govulncheck:
 	@ls $(GOPATH)/bin/govulncheck 1>/dev/null || go install golang.org/x/vuln/cmd/govulncheck@${GOVULNCHECK_VERSION}
 
