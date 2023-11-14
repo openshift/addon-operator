@@ -1,4 +1,4 @@
-# Build the manager binary
+FROM quay.io/app-sre/boilerplate:image-v4.0.0 AS builder
 FROM golang:1.19 as builder
 ARG TARGETOS
 ARG TARGETARCH

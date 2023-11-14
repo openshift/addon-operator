@@ -307,3 +307,7 @@ ensure-govulncheck:
 
 scan: ensure-govulncheck
 	govulncheck ./...
+
+.PHONY: boilerplate-update
+boilerplate-update:
+	@boilerplate/update
