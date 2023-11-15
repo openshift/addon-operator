@@ -7,5 +7,10 @@ LABEL operators.operatorframework.io.bundle.package.v1=addon-operator
 LABEL operators.operatorframework.io.bundle.channels.v1=alpha
 LABEL operators.operatorframework.io.bundle.channel.default.v1=alpha
 
-ADD manifests/*.yaml /manifests/
-ADD metadata/annotations.yaml /metadata/annotations.yaml
+ADD deploy/crds/*.yaml /manifests/
+ADD deploy/50_servicemonitor.yaml /manifests/
+ADD deploy/45_metrics-service.yaml /manifests/
+ADD deploy/35_prometheus-role.yaml /manifests/
+ADD deploy/40_prometheus-rolebinding.yaml /manifests/
+ADD deploy-extras/olm/addon-operator.csv.yaml /manifests/
+ADD deploy-extras/olm/annotations.yaml /metadata/annotations.yaml

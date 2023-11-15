@@ -272,10 +272,10 @@ openshift-ci-test-build: \
 	@mkdir -p "config/openshift/metadata";
 	@cp "deploy-extras/docker/${IMAGE_NAME}.Dockerfile" "config/openshift/${IMAGE_NAME}.Dockerfile";
 	@cp "deploy-extras/olm/annotations.yaml" "config/openshift/metadata";
-	@cp "deploy/metrics-service.yaml" "config/openshift/manifests/metrics.service.yaml";
-	@cp "deploy/servicemonitor.yaml" "config/openshift/manifests/addon-operator-servicemonitor.yaml";
-	@cp "deploy/prometheus-role.yaml" "config/openshift/manifests/prometheus-role.yaml";
-	@cp "deploy/prometheus-rolebinding.yaml" "config/openshift/manifests/prometheus-rb.yaml";
+	@cp "deploy/45_metrics-service.yaml" "config/openshift/manifests/metrics.service.yaml";
+	@cp "deploy/50_servicemonitor.yaml" "config/openshift/manifests/addon-operator-servicemonitor.yaml";
+	@cp "deploy/35_prometheus-role.yaml" "config/openshift/manifests/prometheus-role.yaml";
+	@cp "deploy/40_prometheus-rolebinding.yaml" "config/openshift/manifests/prometheus-rb.yaml";
 	@cp "deploy-extras/olm/addon-operator.csv.yaml" "config/openshift/manifests/addon-operator.csv.yaml";
 	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addons.yaml" > "config/openshift/manifests/addons.crd.yaml";
 	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addonoperators.yaml" > "config/openshift/manifests/addonoperators.crd.yaml";

@@ -229,12 +229,12 @@ func populateOLMBundleCache(imageCacheDir string) error {
 			imageCacheDir + "/Dockerfile"},
 
 		{"cp", "-a", "deploy-extras/olm/addon-operator.csv.yaml", manifestsDir},
-		{"cp", "-a", "deploy/metrics-service.yaml", manifestsDir},
-		{"cp", "-a", "deploy/servicemonitor.yaml", manifestsDir},
-		{"cp", "-a", "deploy/prometheus-role.yaml", manifestsDir},
-		{"cp", "-a", "deploy/prometheus-rolebinding.yaml", manifestsDir},
+		{"cp", "-a", "deploy/45_metrics-service.yaml", manifestsDir},
+		{"cp", "-a", "deploy/50_servicemonitor.yaml", manifestsDir},
+		{"cp", "-a", "deploy/35_prometheus-role.yaml", manifestsDir},
+		{"cp", "-a", "deploy/40_prometheus-rolebinding.yaml", manifestsDir},
 		{"cp", "-a", "deploy-extras/olm/annotations.yaml", metadataDir},
-		{"cp", "-a", "deploy-extras/olm/trusted_ca_bundle_configmap.yaml", manifestsDir},
+		{"cp", "-a", "deploy/55_trusted_ca_bundle_configmap.yaml", manifestsDir},
 		// copy CRDs
 		// The first few lines of the CRD file need to be removed:
 		// https://github.com/operator-framework/operator-registry/issues/222
@@ -271,7 +271,7 @@ func populatePkgCache(imageCacheDir string) error {
 		{"mkdir", "-p", manifestsDir},
 		{"bash", "-c", "cp deploy-extras/package/hc/*.yaml " + manifestsDir},
 		{"cp", "deploy-extras/package/hcp/addon-operator.yaml", manifestsDir},
-		{"cp", "deploy-extras/package/hcp/metrics.service.yaml", manifestsDir},
+		{"cp", "deploy-extras/package/hcp/metrics-service.yaml", manifestsDir},
 		{"cp", "deploy-extras/package/manifest.yaml", manifestsDir},
 		{"cp", "deploy-extras/package/addon-operator-package.Containerfile", manifestsDir},
 	} {

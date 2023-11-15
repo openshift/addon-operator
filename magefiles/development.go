@@ -346,7 +346,7 @@ func postClusterCreationFeatureToggleSetup(ctx context.Context, cluster *dev.Clu
 // deploy the Addon Operator Manager from local files.
 func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluster) error {
 	deployment := &appsv1.Deployment{}
-	err := loadAndConvertIntoObject(cluster.Scheme, "deploy/deployment.yaml", deployment)
+	err := loadAndConvertIntoObject(cluster.Scheme, "deploy/60_deployment.yaml", deployment)
 	if err != nil {
 		return fmt.Errorf("loading addon-operator-manager deployment.yaml: %w", err)
 	}
@@ -364,13 +364,13 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 		"deploy/crds/addons.managed.openshift.io_addoninstances.yaml",
 		"deploy/crds/addons.managed.openshift.io_addonoperators.yaml",
 		"deploy/crds/addons.managed.openshift.io_addons.yaml",
-		"deploy/metrics-service.yaml",
-		"deploy/serviceaccount.yaml",
-		"deploy/role.yaml",
-		"deploy/rolebinding.yaml",
-		"deploy/clusterrole.yaml",
-		"deploy/clusterrolebinding.yaml",
-		"deploy/trusted_ca_bundle_configmap.yaml",
+		"deploy/45_metrics-service.yaml",
+		"deploy/10_serviceaccount.yaml",
+		"deploy/25_role.yaml",
+		"deploy/30_rolebinding.yaml",
+		"deploy/15_clusterrole.yaml",
+		"deploy/20_clusterrolebinding.yaml",
+		"deploy/55_trusted_ca_bundle_configmap.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
