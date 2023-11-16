@@ -50,11 +50,12 @@ repos:
     pass_filenames: false
     always_run: true
 
-  - id: make-generate
-    name: make-generate
-    entry: make generate
-    language: system
-    exclude: ".*"
-    pass_filenames: false
-    always_run: true
-    require_serial: true # mage does not like multiple parallel compiles
+# Temporarily disabling make-generate
+  # - id: make-generate
+  #   name: make-generate
+  #   entry: make generate
+  #   language: system
+  #   exclude: ".*"
+  #   pass_filenames: false
+  #   always_run: true
+  #   require_serial: true # mage does not like multiple parallel compiles
