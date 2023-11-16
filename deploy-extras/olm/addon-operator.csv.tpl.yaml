@@ -6,6 +6,8 @@ metadata:
     containerImage: quay.io/openshift/addon-operator:latest
     olm.skipRange: '>=0.0.1 <1.14.0'
     repository: https://github.com/openshift/addon-operator
+    operators.operatorframework.io/builder: operator-sdk-v1.29.0
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
     support: "false"
   creationTimestamp: null
   name: addon-operator.v1.14.0

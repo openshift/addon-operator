@@ -30,7 +30,6 @@ type Test mg.Namespace
 func (Test) Lint() error {
 	mg.Deps(
 		Dependency.GolangciLint,
-		Generate.All,
 	)
 
 	for _, cmd := range [][]string{
