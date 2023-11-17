@@ -143,7 +143,7 @@ lint:
 .PHONY: lint
 
 ## Runs unittests.
-test-unit: generate
+test-unit:
 	@echo "running unit tests..."
 	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/... ./controllers/...
 .PHONY: test-unit
