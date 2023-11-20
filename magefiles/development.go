@@ -430,8 +430,10 @@ func patchDeployment(deployment *appsv1.Deployment, name string, container strin
 				},
 			}
 
-			// Remove '--metrics-tls-dir' arg
-			containerObj.Args = removeArg(containerObj.Args, 2)
+			if name == "addon-operator-manager" {
+				// Remove '--metrics-tls-dir' arg
+				containerObj.Args = removeArg(containerObj.Args, 2)
+			}
 
 			break
 		}
