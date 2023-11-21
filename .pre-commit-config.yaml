@@ -51,6 +51,7 @@ repos:
     always_run: true
 
 # Temporarily disabling make-generate
+# TODO: Add this back in after boilerplate migration complete
   # - id: make-generate
   #   name: make-generate
   #   entry: make generate

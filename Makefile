@@ -90,9 +90,9 @@ version:
 .PHONY: version
 
 ## Cleans cached binaries, dependencies and container image tars.
-clean-binaries: delete-kind-cluster
+clean-setup: delete-kind-cluster
 	@rm -rf bin .cache
-.PHONY: clean-binaries
+.PHONY: clean-setup
 
 # ---------
 ##@ Compile
@@ -123,15 +123,6 @@ helm:
 ## Run go mod tidy in all go modules
 tidy:
 	@go mod tidy
-
-# ------------
-##@ Generators
-# ------------
-
-## Generate deepcopy code, kubernetes manifests and docs.
-generate-all:
-	./mage generate:all
-.PHONY: generate-all
 
 # ---------------------
 ##@ Testing and Linting
