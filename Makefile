@@ -1,5 +1,7 @@
 include boilerplate/generated-includes.mk
 
+include boilerplate/generated-includes.mk
+
 SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 
@@ -310,6 +312,6 @@ ensure-govulncheck:
 scan: ensure-govulncheck
 	govulncheck ./...
 
-.PHONY: boilerplate-update
+.PHONY:
 boilerplate-update:
 	@boilerplate/update
