@@ -129,9 +129,9 @@ tidy:
 # ---------------------
 
 ## Runs code-generators, checks for clean directory and lints the source code.
-lint-mage:
+lint:
 	./mage test:lint
-.PHONY: lint-mage
+.PHONY: lint
 
 ## Runs unittests.
 test-unit:
