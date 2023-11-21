@@ -1,3 +1,5 @@
+include boilerplate/generated-includes.mk
+
 SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 

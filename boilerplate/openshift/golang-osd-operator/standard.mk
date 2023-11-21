@@ -199,16 +199,17 @@ op-generate:
 	cd ./api; $(CONTROLLER_GEN) crd:crdVersions=v1,generateEmbeddedObjectMeta=true paths=./... output:dir=$(PWD)/deploy/crds
 	cd ./api; $(CONTROLLER_GEN) object paths=./...
 
-.PHONY: openapi-generate
-openapi-generate:
-	find ./api -maxdepth 2 -mindepth 1 -type d | xargs -t -I% \
-		$(OPENAPI_GEN) --logtostderr=true \
-			-i % \
-			-o "" \
-			-O zz_generated.openapi \
-			-p % \
-			-h /dev/null \
-			-r "-"
+# TODO: Add it back in after boilerplate migration. Ref: MTSRE-1584
+# .PHONY: openapi-generate
+# openapi-generate:
+# 	find ./api -maxdepth 2 -mindepth 1 -type d | xargs -t -I% \
+# 		$(OPENAPI_GEN) --logtostderr=true \
+# 			-i % \
+# 			-o "" \
+# 			-O zz_generated.openapi \
+# 			-p % \
+# 			-h /dev/null \
+# 			-r "-"
 
 .PHONY: manifests
 manifests:
@@ -221,7 +222,7 @@ else
 endif
 
 .PHONY: generate
-generate: op-generate go-generate openapi-generate manifests
+generate: op-generate go-generate manifests # openapi-generate TODO: add it back in
 
 ifeq (${FIPS_ENABLED}, true)
 go-build: ensure-fips
