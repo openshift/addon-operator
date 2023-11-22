@@ -212,8 +212,6 @@ spec:
                 env:
                 - name: ENABLE_STATUS_REPORTING
                   value: "true"
-                - name: ENABLE_UPGRADEPOLICY_STATUS
-                  value: "true"
                 image: quay.io/openshift/addon-operator:latest
                 livenessProbe:
                   httpGet:

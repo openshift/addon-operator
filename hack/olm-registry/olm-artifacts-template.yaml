@@ -24,6 +24,8 @@ parameters:
   - name: FEATURE_FLAGS
     value: ""
     required: true
+  - name: ENABLE_UPGRADEPOLICY_STATUS
+    required: true
 objects:
   - apiVersion: hive.openshift.io/v1
     kind: SelectorSyncSet
@@ -90,6 +92,10 @@ objects:
             name: addon-operator
             source: addon-operator-catalog
             sourceNamespace: openshift-addon-operator
+            config:
+              env:
+              - name: ENABLE_UPGRADEPOLICY_STATUS
+                value: ${ENABLE_UPGRADEPOLICY_STATUS}
         - apiVersion: addons.managed.openshift.io/v1alpha1
           kind: AddonOperator
           metadata:
