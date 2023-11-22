@@ -131,10 +131,10 @@ tidy:
 # -----------
 
 ## Runs unittests.
-test-unit:
+go-test:
 	@echo "running unit tests..."
 	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/... ./controllers/...
-.PHONY: test-unit
+.PHONY: go-test
 
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster
 test-integration: export ENABLE_WEBHOOK=true
