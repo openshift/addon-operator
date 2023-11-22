@@ -1,7 +1,5 @@
 include boilerplate/generated-includes.mk
 
-include boilerplate/generated-includes.mk
-
 SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 
@@ -128,14 +126,18 @@ helm:
 tidy:
 	@go mod tidy
 
-# ---------------------
-##@ Testing and Linting
-# ---------------------
+# ------------
+##@ Generators
+# ------------
 
-## Runs code-generators, checks for clean directory and lints the source code.
-lint:
-	./mage test:lint
-.PHONY: lint
+## Generate deepcopy code, kubernetes manifests and docs.
+generate:
+	./mage generate:all
+.PHONY: generate
+
+# -----------
+##@ Testing
+# -----------
 
 ## Runs unittests.
 test-unit:
@@ -289,13 +291,6 @@ push-image-%:
 # cleans the config/openshift folder for addon-operator-bundle openshift test folder
 clean-config-openshift:
 	@rm -rf "config/openshift/*"
-
-# ------------------
-##@ Codecov.io
-# ------------------
-.PHONY: coverage
-coverage:
-	hack/codecov.sh
 
 ensure-govulncheck:
 	@ls $(GOPATH)/bin/govulncheck 1>/dev/null || go install golang.org/x/vuln/cmd/govulncheck@${GOVULNCHECK_VERSION}
