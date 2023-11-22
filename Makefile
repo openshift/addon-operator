@@ -42,7 +42,6 @@ export PATH:=$(DEPENDENCY_BIN):$(PATH)
 KIND_KUBECONFIG_DIR:=.cache/integration
 KIND_KUBECONFIG:=$(KIND_KUBECONFIG_DIR)/kubeconfig
 export KUBECONFIG?=$(abspath $(KIND_KUBECONFIG))
-export GOLANGCI_LINT_CACHE=$(abspath .cache/golangci-lint)
 export SKIP_TEARDOWN?=
 KIND_CLUSTER_NAME:="addon-operator" # name of the kind cluster for local development.
 ENABLE_API_MOCK?="false"
