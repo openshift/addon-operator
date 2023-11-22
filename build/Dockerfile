@@ -1,4 +1,4 @@
-FROM quay.io/app-sre/boilerplate:image-v4.0.0 AS builder
+FROM quay.io/app-sre/boilerplate:image-v4.0.2 AS builder
 FROM golang:1.19 as builder
 ARG TARGETOS
 ARG TARGETARCH
