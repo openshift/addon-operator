@@ -1,5 +1,7 @@
 include boilerplate/generated-includes.mk
 
+OPERATOR_NAME=addon-operator
+
 SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 

@@ -5,6 +5,9 @@
 *.so
 *.dylib
 
+# Container runtime artifacts
+.docker
+
 # Test binary, built with `go test -c`
 *.test
 
