@@ -126,15 +126,6 @@ helm:
 tidy:
 	@go mod tidy
 
-# ------------
-##@ Generators
-# ------------
-
-## Generate deepcopy code, kubernetes manifests and docs.
-generate:
-	./mage generate:all
-.PHONY: generate
-
 # -----------
 ##@ Testing
 # -----------
@@ -221,7 +212,7 @@ setup-addon-operator:
 .PHONY: setup-addon-operator
 
 ## Installs Addon Operator CRDs in to the currently selected cluster.
-setup-addon-operator-crds: generate
+setup-addon-operator-crds:
 	@for crd in $(wildcard deploy/crds/*.openshift.io_*.yaml); do \
 		kubectl apply -f $$crd; \
 	done
