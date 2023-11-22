@@ -17,6 +17,7 @@ bin/
 .cache
 .deps
 .envrc
+.venv
 
 # IDEs
 .idea/

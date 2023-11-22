@@ -31,9 +31,8 @@ func (c *Client) GetCluster(
 	urlParams.Add("search",
 		fmt.Sprintf("external_id = '%s'", c.opts.ClusterExternalID))
 
-	return res, c.do(ctx, http.MethodGet, fmt.Sprintf(
+	return res, c.do(ctx, http.MethodGet,
 		"/api/clusters_mgmt/v1/clusters",
-	),
 		urlParams,
 		req,
 		&res,
