@@ -47,11 +47,12 @@ type AddonReconciler struct {
 	// Namespace the AddonOperator is deployed into
 	AddonOperatorNamespace string
 
-	operatorResourceHandler operatorResourceHandler
-	globalPause             bool
-	globalPauseMux          sync.RWMutex
-	statusReportingEnabled  bool
-	addonRequeueCh          chan event.GenericEvent
+	operatorResourceHandler    operatorResourceHandler
+	globalPause                bool
+	globalPauseMux             sync.RWMutex
+	statusReportingEnabled     bool
+	upgradePolicyStatusEnabled bool
+	addonRequeueCh             chan event.GenericEvent
 
 	ocmClient    ocmClient
 	ocmClientMux sync.RWMutex
@@ -76,19 +77,21 @@ func NewAddonReconciler(
 	clusterExternalID string,
 	addonOperatorNamespace string,
 	enableStatusReporting bool,
+	enableUpgradePolicyStatus bool,
 	opts ...AddonReconcilerOptions,
 ) *AddonReconciler {
 	operatorResourceHandler := internalhandler.NewOperatorResourceHandler()
 	adoReconciler := &AddonReconciler{
-		Client:                  client,
-		UncachedClient:          uncachedClient,
-		Log:                     log,
-		Scheme:                  scheme,
-		Recorder:                recorder,
-		ClusterExternalID:       clusterExternalID,
-		AddonOperatorNamespace:  addonOperatorNamespace,
-		operatorResourceHandler: operatorResourceHandler,
-		statusReportingEnabled:  enableStatusReporting,
+		Client:                     client,
+		UncachedClient:             uncachedClient,
+		Log:                        log,
+		Scheme:                     scheme,
+		Recorder:                   recorder,
+		ClusterExternalID:          clusterExternalID,
+		AddonOperatorNamespace:     addonOperatorNamespace,
+		operatorResourceHandler:    operatorResourceHandler,
+		statusReportingEnabled:     enableStatusReporting,
+		upgradePolicyStatusEnabled: enableUpgradePolicyStatus,
 		subReconcilers: []addonReconciler{
 			// Step 1: Check if addon is being deleted.
 			&addonDeletionReconciler{

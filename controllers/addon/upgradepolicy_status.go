@@ -17,7 +17,7 @@ func (r *AddonReconciler) handleUpgradePolicyStatusReporting(
 	log logr.Logger,
 	addon *addonsv1alpha1.Addon,
 ) error {
-	if !requiresReporting(addon) {
+	if !(requiresReporting(addon) && r.upgradePolicyStatusEnabled) {
 		return nil
 	}
 

@@ -422,10 +422,15 @@ func patchDeployment(deployment *appsv1.Deployment, name string, container strin
 
 		if containerObj.Name == container {
 			containerObj.Image = image
-			// Set status reporting env variable to true.
+			// Set status reporting env variable to true. Also set Upgrade policy status reporting env variable to true.
+
 			containerObj.Env = []corev1.EnvVar{
 				{
 					Name:  "ENABLE_STATUS_REPORTING",
+					Value: "true",
+				},
+				{
+					Name:  "ENABLE_UPGRADEPOLICY_STATUS",
 					Value: "true",
 				},
 			}

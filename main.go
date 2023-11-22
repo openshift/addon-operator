@@ -67,6 +67,7 @@ func initReconcilers(mgr ctrl.Manager,
 	enableRecorder bool,
 	addonOperatorInCluster addonsv1alpha1.AddonOperator,
 	enableStatusReporting bool,
+	enableUpgradePolicyStatus bool,
 	opts ...addoncontroller.AddonReconcilerOptions) error {
 	ctx := context.Background()
 
@@ -100,6 +101,7 @@ func initReconcilers(mgr ctrl.Manager,
 		clusterExternalID,
 		namespace,
 		enableStatusReporting,
+		enableUpgradePolicyStatus,
 		opts...,
 	)
 	if err := addonReconciler.SetupWithManager(mgr, opts...); err != nil {
@@ -297,7 +299,7 @@ func setup() error {
 	}
 
 	if err := initReconcilers(mgr, opts.Namespace,
-		opts.EnableMetricsRecorder, addonOperatorObjectInCluster, opts.StatusReportingEnabled, addonReconcilerOptions...); err != nil {
+		opts.EnableMetricsRecorder, addonOperatorObjectInCluster, opts.StatusReportingEnabled, opts.EnableUpgradePolicyStatus, addonReconcilerOptions...); err != nil {
 		return fmt.Errorf("init reconcilers: %w", err)
 	}
 

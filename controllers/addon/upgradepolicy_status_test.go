@@ -20,6 +20,7 @@ import (
 func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 	t.Run("noop without .spec.upgradePolicy", func(t *testing.T) {
 		r := &AddonReconciler{}
+		r.upgradePolicyStatusEnabled = true
 		log := testutil.NewLogger(t)
 
 		err := r.handleUpgradePolicyStatusReporting(
@@ -32,6 +33,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 
 	t.Run("noop when upgrade already completed", func(t *testing.T) {
 		r := &AddonReconciler{}
+		r.upgradePolicyStatusEnabled = true
 		log := testutil.NewLogger(t)
 
 		err := r.handleUpgradePolicyStatusReporting(
@@ -56,6 +58,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 
 	t.Run("noop when OCM client is missing", func(t *testing.T) {
 		r := &AddonReconciler{}
+		r.upgradePolicyStatusEnabled = true
 		log := testutil.NewLogger(t)
 
 		err := r.handleUpgradePolicyStatusReporting(
@@ -85,7 +88,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 			ocmClient: ocmClient,
 			Recorder:  recorder,
 		}
-
+		r.upgradePolicyStatusEnabled = true
 		var Version = "1.0.0"
 
 		log := testutil.NewLogger(t)
@@ -159,6 +162,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 		r := &AddonReconciler{
 			ocmClient: ocmClient,
 		}
+		r.upgradePolicyStatusEnabled = true
 		log := testutil.NewLogger(t)
 
 		var Version = "1.0.0"
@@ -200,6 +204,7 @@ func TestAddonReconciler_handleUpgradePolicyStatusReporting(t *testing.T) {
 			ocmClient: ocmClient,
 			Recorder:  recorder,
 		}
+		r.upgradePolicyStatusEnabled = true
 		log := testutil.NewLogger(t)
 		addon := &addonsv1alpha1.Addon{
 			ObjectMeta: metav1.ObjectMeta{
