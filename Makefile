@@ -115,9 +115,6 @@ kind:
 yq:
 	./mage dependency:yq
 
-golangci-lint:
-	./mage dependency:golangcilint
-
 opm:
 	./mage dependency:opm
 
