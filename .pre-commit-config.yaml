@@ -34,14 +34,6 @@ repos:
     types: [go]
     require_serial: true # mage does not like multiple parallel compiles
 
-  - id: golangci-lint
-    name: golangci-lint
-    entry: hack/ensure-and-run-golangci-lint.sh
-    language: script
-    pass_filenames: false
-    types: [go]
-    require_serial: true # mage does not like multiple parallel compiles
-
   - id: go-mod-tidy
     name: go-mod-tidy
     entry: make tidy

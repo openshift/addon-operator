@@ -5,6 +5,9 @@
 *.so
 *.dylib
 
+# Container runtime artifacts
+.docker
+
 # Test binary, built with `go test -c`
 *.test
 
@@ -14,9 +17,11 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 bin/
+!build/bin
 .cache
 .deps
 .envrc
+.venv
 
 # IDEs
 .idea/

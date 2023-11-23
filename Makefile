@@ -1,3 +1,7 @@
+include boilerplate/generated-includes.mk
+
+OPERATOR_NAME=addon-operator
+
 SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 
@@ -111,9 +115,6 @@ kind:
 yq:
 	./mage dependency:yq
 
-golangci-lint:
-	./mage dependency:golangcilint
-
 opm:
 	./mage dependency:opm
 
@@ -124,20 +125,15 @@ helm:
 tidy:
 	@go mod tidy
 
-# ---------------------
-##@ Testing and Linting
-# ---------------------
-
-## Runs code-generators, checks for clean directory and lints the source code.
-lint:
-	./mage test:lint
-.PHONY: lint
+# -----------
+##@ Testing
+# -----------
 
 ## Runs unittests.
-test-unit:
+go-test:
 	@echo "running unit tests..."
 	CGO_ENABLED=1 go test $(TESTOPTS) ./internal/... ./cmd/... ./pkg/... ./controllers/...
-.PHONY: test-unit
+.PHONY: go-test
 
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster
 test-integration: export ENABLE_WEBHOOK=true
@@ -215,7 +211,7 @@ setup-addon-operator:
 .PHONY: setup-addon-operator
 
 ## Installs Addon Operator CRDs in to the currently selected cluster.
-setup-addon-operator-crds: generate
+setup-addon-operator-crds:
 	@for crd in $(wildcard deploy/crds/*.openshift.io_*.yaml); do \
 		kubectl apply -f $$crd; \
 	done
@@ -286,15 +282,12 @@ push-image-%:
 clean-config-openshift:
 	@rm -rf "config/openshift/*"
 
-# ------------------
-##@ Codecov.io
-# ------------------
-.PHONY: coverage
-coverage:
-	hack/codecov.sh
-
 ensure-govulncheck:
 	@ls $(GOPATH)/bin/govulncheck 1>/dev/null || go install golang.org/x/vuln/cmd/govulncheck@${GOVULNCHECK_VERSION}
 
 scan: ensure-govulncheck
 	govulncheck ./...
+
+.PHONY: boilerplate-update
+boilerplate-update:
+	@boilerplate/update

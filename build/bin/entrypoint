@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+# This is documented here:
+# https://docs.openshift.com/container-platform/4.10/openshift_images/create-images.html#images-create-guide-openshift_create-images
+
+if ! whoami &>/dev/null; then
+  if [ -w /etc/passwd ]; then
+    echo "${USER_NAME:-addon-operator}:x:$(id -u):$(id -g):${USER_NAME:-addon-operator} user:${HOME}:/sbin/nologin" >> /etc/passwd
+  fi
+fi
+
+exec ${OPERATOR} $@
