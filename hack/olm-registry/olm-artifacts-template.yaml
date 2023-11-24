@@ -25,6 +25,7 @@ parameters:
     value: ""
     required: true
   - name: ENABLE_UPGRADEPOLICY_STATUS
+    value: "true"
     required: true
 objects:
   - apiVersion: hive.openshift.io/v1
