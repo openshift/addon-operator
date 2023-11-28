@@ -145,10 +145,10 @@ func (Build) BuildImages() {
 
 func (Build) PushImages() {
 	mg.Deps(
-		mg.F(Build.imagePush, "addon-operator-manager"),
-		mg.F(Build.imagePush, "addon-operator-webhook"),
-		mg.F(Build.imagePush, "addon-operator-index"), // also pushes bundle
-		mg.F(Build.imagePush, "addon-operator-package"),
+		mg.F(Build.ImagePush, "addon-operator-manager"),
+		mg.F(Build.ImagePush, "addon-operator-webhook"),
+		mg.F(Build.ImagePush, "addon-operator-index"), // also pushes bundle
+		mg.F(Build.ImagePush, "addon-operator-package"),
 	)
 }
 
@@ -204,7 +204,7 @@ func newImageBuildInfo(imageName, imageCacheDir string) *dev.ImageBuildInfo {
 func (b Build) buildOLMIndexImage() error {
 	mg.Deps(
 		Dependency.Opm,
-		mg.F(Build.imagePush, "addon-operator-bundle"),
+		mg.F(Build.ImagePush, "addon-operator-bundle"),
 	)
 
 	if err := sh.RunV("opm", "index", "add",
@@ -271,7 +271,7 @@ func populatePkgCache(imageCacheDir string) error {
 		{"mkdir", "-p", manifestsDir},
 		{"bash", "-c", "cp deploy-extras/package/hc/*.yaml " + manifestsDir},
 		{"cp", "deploy-extras/package/hcp/addon-operator.yaml", manifestsDir},
-		{"cp", "deploy-extras/package/hcp/metrics-service.yaml", manifestsDir},
+		{"cp", "deploy-extras/package/hcp/metrics.service.yaml", manifestsDir},
 		{"cp", "deploy-extras/package/manifest.yaml", manifestsDir},
 		{"cp", "deploy-extras/package/addon-operator-package.Containerfile", manifestsDir},
 	} {
@@ -413,10 +413,10 @@ func (b Build) imagePushOnce(imageName string) error {
 		return nil
 	}
 
-	return b.imagePush(imageName)
+	return b.ImagePush(imageName)
 }
 
-func (Build) imagePush(imageName string) error {
+func (Build) ImagePush(imageName string) error {
 	mg.SerialDeps(setupContainerRuntime, Build.init)
 
 	pushInfo := newImagePushInfo(imageName)

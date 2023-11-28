@@ -231,6 +231,17 @@ push-images:
 	./mage build:pushimages
 .PHONY: push-images
 
+## Build and push only the addon-operator-package
+build-push-aopackage:
+	@echo "-------------------------------------------------"
+	@echo "Running addon-operator-package build and push"
+	@echo "-------------------------------------------------"
+	./mage build:ImageBuild addon-operator-package
+	@echo "End of addon-operator-package build"
+	./mage build:ImagePush addon-operator-package
+	@echo "End of addon-operator-package build"
+.PHONY: build-push-aopackage
+
 # App Interface specific push-images target, to run within a docker container.
 app-interface-push-images:
 	@echo "-------------------------------------------------"
