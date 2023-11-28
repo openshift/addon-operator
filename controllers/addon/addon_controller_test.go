@@ -32,7 +32,7 @@ type reconcileErrorTestCase struct {
 
 var (
 	_                   addonReconciler = (*mockSubReconciler)(nil)
-	errMockSubReconcile                 = errors.New("failed to reconcile")
+	errMockSubReconcile                 = controllers.ErrGetAddon
 )
 
 type mockSubReconciler struct {
@@ -119,7 +119,7 @@ func TestReconcileErrorHandling(t *testing.T) {
 		}
 
 		if testCase.externalAPISyncErrPresent {
-			ocmClient.On("PostAddOnStatus", mock.Anything, mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, errors.New("gateway timeout"))
+			ocmClient.On("PostAddOnStatus", mock.Anything, mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, controllers.ErrSyncWithExternalAPIs)
 		} else {
 			ocmClient.On("PostAddOnStatus", mock.Anything, mock.Anything, mock.Anything).Return(ocm.AddOnStatusResponse{}, nil)
 		}

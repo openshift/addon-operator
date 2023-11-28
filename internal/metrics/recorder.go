@@ -13,6 +13,8 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
+
+	controllers "github.com/openshift/addon-operator/controllers"
 )
 
 // addonState is a helper type that will help us
@@ -330,19 +332,20 @@ func NewReconcileError(
 }
 
 // Reports a reconcile error as a prometheus metric. The parameter crName
-// is the name of the CR being reconciled by the controller.
+// is the name of the CR being reconciled by the controller and returns the
+// processed error.
 func (r *ReconcileError) Report(err error, crName string) {
 	if r.recorder == nil {
 		return
 	}
-	newErr := err.Error()
-	// Retrieve the specific subreconciler error if present
-	if r.isSubReconcilerError {
-		if unwrapped := errors.Unwrap(err); unwrapped != nil {
-			newErr = unwrapped.Error()
-		}
+	var ctlrReconcileErr *controllers.ControllerReconcileError
+	// Errors can be arbitrarily returned anywhere in the reconcile loop.
+	// To avoid collecting arbitrary/unclassified ones a check for its type
+	// is necessary.
+	if !errors.As(err, &ctlrReconcileErr) {
+		return
 	}
-	r.reason = newErr
+	r.reason = ctlrReconcileErr.Error()
 	r.recorder.reconcileError.WithLabelValues(
 		r.controller,
 		r.reason,
@@ -355,11 +358,18 @@ func (r *ReconcileError) Reason() string {
 }
 
 // Wraps 2 errors and handles nil errors
-func (r *ReconcileError) Join(err1 error, err2 error) error {
-	if err1 == nil || err2 == nil {
-		return err1
+func (r *ReconcileError) Join(err1 error, err2 error) (err error) {
+	switch {
+	case err1 == nil && err2 != nil:
+		err = err2
+	case err1 != nil && err2 == nil:
+		err = err1
+	case err1 != nil && err2 != nil:
+		err = fmt.Errorf("%v: %w", err1.Error(), err2)
+	default:
+		err = nil
 	}
-	return fmt.Errorf("%v %w", err1.Error(), err2)
+	return
 }
 
 func (r *ReconcileError) SetRecorder(rec *Recorder) {
