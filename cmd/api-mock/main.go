@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/openshift/addon-operator/internal/ocm"
 	"github.com/openshift/addon-operator/internal/ocm/ocmtest"
 )
 
@@ -36,6 +37,7 @@ func main() {
 		"/api/addons_mgmt/v1/clusters/{cluster_id}/status",
 		NewAddonStatusCreateEndpoint(addonStatusStore),
 	)
+	r.HandleFunc("/configure", configure).Methods(http.MethodPatch)
 
 	addr := ":8080"
 	log.Printf("listening on %s\n", addr)
@@ -164,6 +166,28 @@ func (a *AddonStatusCreateEndpoint) ServeHTTP(w http.ResponseWriter, r *http.Req
 			log.Printf("reading request body: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintln(w, `{}`)
+			return
+		}
+
+		if apiMockConfig.FailOnAddonStatusCreateEndpoint {
+			log.Println("Fail on addon status create endpoint")
+			resp, err := json.Marshal(
+				ocm.OCMError{
+					StatusCode: http.StatusBadRequest,
+					Code:       "OCM-MGMT",
+					Reason:     "mock failure on addon status create endpoint",
+				},
+			)
+			if err != nil {
+				log.Printf("Failed to marshal OCMError: %v", err)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			if _, err = w.Write(resp); err != nil {
+				log.Printf("Failed to write response body: %v", err)
+				return
+			}
 			return
 		}
 		// unmarshal payload.
@@ -341,4 +365,29 @@ func unmarshalPayloadToAddonStatus(data []byte) (addonStatus, error) {
 		return addonStatus{}, err
 	}
 	return status, nil
+}
+
+type APIMockConfig struct {
+	FailOnAddonStatusCreateEndpoint bool `json:"failOnAddonStatusCreateEndpoint"`
+}
+
+var apiMockConfig = APIMockConfig{
+	FailOnAddonStatusCreateEndpoint: false,
+}
+
+// Configures this api mock server on-the-fly
+func configure(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+
+	var conf APIMockConfig
+
+	if err := decoder.Decode(&conf); err != nil {
+		fmt.Printf("Failed to decode config: %v\n", err)
+		w.WriteHeader(http.StatusBadRequest)
+	} else {
+		fmt.Printf("Patching server with: %v\n", conf)
+		if conf.FailOnAddonStatusCreateEndpoint {
+			apiMockConfig.FailOnAddonStatusCreateEndpoint = conf.FailOnAddonStatusCreateEndpoint
+		}
+	}
 }

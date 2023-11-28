@@ -11,6 +11,8 @@ var (
 	ErrGetAddon = errors.New("err_get_addon")
 	// An error happened while syncing with external APIs
 	ErrSyncWithExternalAPIs = errors.New("err_sync_with_external_apis")
+	// An OCM client request error was encountred
+	ErrOCMClientRequest = errors.New("err_ocm_client_request")
 	// Failed to update an addon
 	ErrUpdateAddon = errors.New("err_update_addon")
 	// Failed to notify addon
