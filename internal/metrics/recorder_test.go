@@ -7,6 +7,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	promTestUtil "github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
+
+	controllers "github.com/openshift/addon-operator/controllers"
 )
 
 // TestRecorder_RecordOCMAPIRequests ensure the RecordOCMAPIRequests method correctly
@@ -96,9 +98,8 @@ func TestRecorder_RecordAddonServiceAPIRequests(t *testing.T) {
 // Tests ReconcileError
 func TestReconcileError(t *testing.T) {
 	expect_controller_name := "addon"
-	expect_reconciler_error := "a top-level reconciler error"
-	expect_subreconciler_error := "a sub reconciler error"
 	expect_addon_name := "reference-addon"
+
 	var recorder *Recorder
 	reconErr := NewReconcileError(
 		expect_controller_name,
@@ -112,23 +113,21 @@ func TestReconcileError(t *testing.T) {
 	)
 
 	// 1. Ensure it does not panic when no metrics recorder was created
-	reconErr.Report(fmt.Errorf("an error"), expect_addon_name)
+	reconErr.Report(controllers.ErrGetAddon, expect_addon_name)
 
 	recorder = NewRecorder(true, "clusterID")
 	reconErr.SetRecorder(recorder)
 	subReconErr.SetRecorder(recorder)
 
-	errFromReconciler := fmt.Errorf(expect_reconciler_error)
-	errFromSubReconciler := fmt.Errorf(expect_subreconciler_error)
-	err := reconErr.Join(errFromReconciler, errFromSubReconciler)
+	err := reconErr.Join(fmt.Errorf("an arbitrary error"), controllers.ErrUpdateAddon)
 
 	// 2. Ensure error from reconciler is processed correctly
-	reconErr.Report(errFromReconciler, expect_addon_name)
-	assert.Equal(t, errFromReconciler.Error(), reconErr.Reason())
+	reconErr.Report(controllers.ErrGetAddon, expect_addon_name)
+	assert.Equal(t, controllers.ErrGetAddon.Error(), reconErr.Reason())
 
-	// 3. Ensure error from reconciler is processed correctly
+	// 3. Ensure error from subreconciler is processed correctly
 	subReconErr.Report(err, expect_addon_name)
-	assert.Equal(t, expect_subreconciler_error, subReconErr.Reason())
+	assert.Equal(t, controllers.ErrUpdateAddon.Error(), subReconErr.Reason())
 
 	// 4. Ensure metric is collected
 	metric := recorder.GetReconcileErrorMetric()
@@ -139,7 +138,7 @@ func TestReconcileError(t *testing.T) {
 	controllerMetricVal := promTestUtil.ToFloat64(
 		metric.WithLabelValues(
 			expect_controller_name,
-			expect_reconciler_error,
+			controllers.ErrGetAddon.Error(),
 			expect_addon_name,
 		),
 	)
@@ -147,16 +146,27 @@ func TestReconcileError(t *testing.T) {
 	controllerMetricVal = promTestUtil.ToFloat64(
 		metric.WithLabelValues(
 			expect_controller_name,
-			expect_subreconciler_error,
+			controllers.ErrUpdateAddon.Error(),
 			expect_addon_name,
 		),
 	)
 	assert.Equal(t, float64(1), controllerMetricVal)
 
-	// 5. Ensure Join is returing as expected when values are nil
+	//5. Ensure Join is returning as expected when values are nil
 	var nilErr error
-	err = reconErr.Join(nilErr, errFromSubReconciler)
+	err = reconErr.Join(nilErr, controllers.ErrGetAddon)
+	assert.Equal(t, controllers.ErrGetAddon, err)
+	err = reconErr.Join(controllers.ErrGetAddon, nilErr)
+	assert.Equal(t, controllers.ErrGetAddon, err)
+	err = reconErr.Join(nil, nil)
 	assert.Equal(t, nilErr, err)
-	err = reconErr.Join(errFromReconciler, nilErr)
-	assert.Equal(t, errFromReconciler, err)
+
+	// 6. Ensure it only reports errors of type "ControllerReconcileError"
+	unclassifiedErr := fmt.Errorf("this is an unclassified error")
+	expectReason := subReconErr.Reason()
+	subReconErr.Report(unclassifiedErr, expect_addon_name)
+	assert.Equal(t, expectReason, subReconErr.Reason())
+	classifiedErr := controllers.ErrGetAddon
+	subReconErr.Report(classifiedErr, expect_addon_name)
+	assert.Equal(t, subReconErr.Reason(), controllers.ErrGetAddon.Error())
 }

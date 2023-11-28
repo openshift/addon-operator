@@ -32,7 +32,7 @@ type reconcileErrorTestCase struct {
 
 var (
 	_                   addonReconciler = (*mockSubReconciler)(nil)
-	errMockSubReconcile                 = errors.New("failed to reconcile")
+	errMockSubReconcile                 = controllers.ErrGetAddon
 )
 
 type mockSubReconciler struct {
