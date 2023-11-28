@@ -24,9 +24,9 @@ var (
 	// Failed to get an addon
 	ErrGetAddon = newControllerReconcileError("err_get_addon")
 	// An error happened while syncing with external APIs
-	ErrSyncWithExternalAPIs = errors.New("err_sync_with_external_apis")
+	ErrSyncWithExternalAPIs = newControllerReconcileError("err_sync_with_external_apis")
 	// An OCM client request error was encountred
-	ErrOCMClientRequest = errors.New("err_ocm_client_request")
+	ErrOCMClientRequest = newControllerReconcileError("err_ocm_client_request")
 	// Failed to update an addon
 	ErrUpdateAddon = newControllerReconcileError("err_update_addon")
 	// Failed to notify addon
