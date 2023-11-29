@@ -180,6 +180,11 @@ func patchAddonOperatorCSV(ctx context.Context,
 						Name:  "ENABLE_STATUS_REPORTING",
 						Value: "true"},
 					)
+					// Set Upgrade policy status reporting env variable to true.
+					containerObj.Env = append(containerObj.Env, corev1.EnvVar{
+						Name:  "ENABLE_UPGRADEPOLICY_STATUS",
+						Value: "true"},
+					)
 					break
 				}
 			}

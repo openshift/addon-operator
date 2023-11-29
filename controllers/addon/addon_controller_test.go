@@ -108,6 +108,7 @@ func TestReconcileErrorHandling(t *testing.T) {
 		}
 
 		r.statusReportingEnabled = true
+		r.upgradePolicyStatusEnabled = true
 		// set up mock calls based on the test case.
 		addon := testutil.NewTestAddonWithCatalogSourceImage()
 		addon.Finalizers = append(addon.Finalizers, cacheFinalizer)

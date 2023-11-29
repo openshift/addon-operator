@@ -9,15 +9,16 @@ import (
 )
 
 type options struct {
-	EnableLeaderElection    bool
-	EnableMetricsRecorder   bool
-	LeaderElectionNamespace string
-	MetricsAddr             string
-	MetricsTlsDir           string
-	Namespace               string
-	PprofAddr               string
-	ProbeAddr               string
-	StatusReportingEnabled  bool
+	EnableLeaderElection      bool
+	EnableMetricsRecorder     bool
+	LeaderElectionNamespace   string
+	MetricsAddr               string
+	MetricsTlsDir             string
+	Namespace                 string
+	PprofAddr                 string
+	ProbeAddr                 string
+	StatusReportingEnabled    bool
+	EnableUpgradePolicyStatus bool
 }
 
 // Process retrieves values from flags, environment values,
@@ -113,6 +114,12 @@ func (o *options) processEnv() {
 		o.StatusReportingEnabled = true
 	} else {
 		o.StatusReportingEnabled = false
+	}
+	enableUpgradePolicyStatus, ok := os.LookupEnv("ENABLE_UPGRADEPOLICY_STATUS")
+	if ok && enableUpgradePolicyStatus == "true" {
+		o.EnableUpgradePolicyStatus = true
+	} else {
+		o.EnableUpgradePolicyStatus = false
 	}
 }
 
