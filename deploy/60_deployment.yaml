@@ -49,6 +49,9 @@ spec:
         - --enable-leader-election
         - --metrics-addr=:8443
         - --metrics-tls-dir=/etc/tls/manager/metrics
+        env:
+        - name: ENABLE_STATUS_REPORTING
+          value: "true"
         volumeMounts:
         - mountPath: /etc/pki/ca-trust/extracted/pem
           name: trusted-ca-bundle

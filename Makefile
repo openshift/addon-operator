@@ -1,6 +1,13 @@
 include boilerplate/generated-includes.mk
 
-OPERATOR_NAME=addon-operator
+# Additional Deployment Image
+define ADDITIONAL_IMAGE_SPECS
+build/Dockerfile.webhook $(SUPPLEMENTARY_IMAGE_URI)
+endef
+
+# Operator versioning for Boilerplate
+VERSION_MAJOR=1
+VERSION_MINOR=15
 
 SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c

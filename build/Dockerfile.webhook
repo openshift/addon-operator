@@ -7,7 +7,7 @@ COPY go.sum go.sum
 RUN go mod download
 COPY . .
 
-RUN make go-build
+RUN GOOS=linux CGO_ENABLED=1 GOARCH=amd64 CGO_ENABLED=1 GOFLAGS="" go build -o build/_output/bin/addon-operator-webhook ./cmd/addon-operator-webhook
 
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9-1029
@@ -20,9 +20,6 @@ COPY --from=builder /workdir/build/_output/bin/* /usr/local/bin/
 COPY build/bin /usr/local/bin
 RUN /usr/local/bin/user_setup
 
-ENTRYPOINT ["/usr/local/bin/entrypoint"]
+ENTRYPOINT ["/usr/local/bin/addon-operator-webhook"]
 
 USER ${USER_UID}
-
-LABEL io.openshift.managed.name="addon-operator" \
-    io.openshift.managed.description="Addon Operator"
