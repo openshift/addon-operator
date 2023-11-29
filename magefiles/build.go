@@ -145,10 +145,10 @@ func (Build) BuildImages() {
 
 func (Build) PushImages() {
 	mg.Deps(
-		mg.F(Build.ImagePush, "addon-operator-manager"),
-		mg.F(Build.ImagePush, "addon-operator-webhook"),
-		mg.F(Build.ImagePush, "addon-operator-index"), // also pushes bundle
-		mg.F(Build.ImagePush, "addon-operator-package"),
+		mg.F(Build.imagePush, "addon-operator-manager"),
+		mg.F(Build.imagePush, "addon-operator-webhook"),
+		mg.F(Build.imagePush, "addon-operator-index"), // also pushes bundle
+		mg.F(Build.imagePush, "addon-operator-package"),
 	)
 }
 
@@ -190,6 +190,13 @@ func (b Build) ImageBuild(cmd string) error {
 	}
 }
 
+func (Build) BuildAndPushPackage() {
+	mg.Deps(
+		mg.F(Build.ImageBuild, "addon-operator-package"),
+		mg.F(Build.imagePush, "addon-operator-package"),
+	)
+}
+
 func newImageBuildInfo(imageName, imageCacheDir string) *dev.ImageBuildInfo {
 	imageTag := imageURL(imageName)
 	return &dev.ImageBuildInfo{
@@ -204,7 +211,7 @@ func newImageBuildInfo(imageName, imageCacheDir string) *dev.ImageBuildInfo {
 func (b Build) buildOLMIndexImage() error {
 	mg.Deps(
 		Dependency.Opm,
-		mg.F(Build.ImagePush, "addon-operator-bundle"),
+		mg.F(Build.imagePush, "addon-operator-bundle"),
 	)
 
 	if err := sh.RunV("opm", "index", "add",
@@ -413,10 +420,10 @@ func (b Build) imagePushOnce(imageName string) error {
 		return nil
 	}
 
-	return b.ImagePush(imageName)
+	return b.imagePush(imageName)
 }
 
-func (Build) ImagePush(imageName string) error {
+func (Build) imagePush(imageName string) error {
 	mg.SerialDeps(setupContainerRuntime, Build.init)
 
 	pushInfo := newImagePushInfo(imageName)
