@@ -4,13 +4,13 @@ metadata:
   annotations:
     capabilities: Full Lifecycle
     containerImage: quay.io/openshift/addon-operator:latest
-    olm.skipRange: '>=0.0.1 <1.14.0'
-    repository: https://github.com/openshift/addon-operator
+    olm.skipRange: '>=0.0.1 <1.14.1'
     operators.operatorframework.io/builder: operator-sdk-v1.29.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+    repository: https://github.com/openshift/addon-operator
     support: "false"
   creationTimestamp: null
-  name: addon-operator.v1.14.0
+  name: addon-operator.v1.14.1
 spec:
   apiservicedefinitions: {}
   cleanup:
@@ -210,8 +210,6 @@ spec:
                 - name: ENABLE_UPGRADEPOLICY_STATUS
                   value: "true"
                 image: quay.io/openshift/addon-operator:latest
-                ports:
-                - containerPort: 8443
                 livenessProbe:
                   httpGet:
                     path: /healthz
@@ -219,6 +217,8 @@ spec:
                   initialDelaySeconds: 15
                   periodSeconds: 20
                 name: manager
+                ports:
+                - containerPort: 8443
                 readinessProbe:
                   httpGet:
                     path: /readyz
@@ -361,7 +361,7 @@ spec:
   provider:
     name: Red Hat
     url: www.redhat.com
-  version: 1.14.0
+  version: 1.14.1
   webhookdefinitions:
   - admissionReviewVersions:
     - v1

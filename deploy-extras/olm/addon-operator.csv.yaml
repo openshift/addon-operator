@@ -4,26 +4,23 @@ metadata:
   annotations:
     capabilities: Full Lifecycle
     containerImage: quay.io/openshift/addon-operator:latest
-    olm.skipRange: '>=0.0.1 <1.14.0'
-    repository: https://github.com/openshift/addon-operator
+    olm.skipRange: '>=0.0.1 <1.14.1'
     operators.operatorframework.io/builder: operator-sdk-v1.29.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+    repository: https://github.com/openshift/addon-operator
+    support: "false"
   creationTimestamp: null
-  name: addon-operator.v1.14.0
-  namespace: openshift-addon-operator
+  name: addon-operator.v1.14.1
 spec:
   apiservicedefinitions: {}
   cleanup:
     enabled: false
   customresourcedefinitions:
     owned:
-    - kind: AddonInstance
-      name: addoninstances.addons.managed.openshift.io
-      version: v1alpha1
-    - kind: Addon
-      name: addons.addons.managed.openshift.io
-      description: Represents the deployment of an Addon for Managed OpenShift
+    - description: Represents the deployment of an Addon for Managed OpenShift
       displayName: Managed Openshift Addon
+      kind: Addon
+      name: addons.addons.managed.openshift.io
       statusDescriptors:
       - description: The deployment phase.
         displayName: Phase
@@ -36,10 +33,10 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:io.kubernetes.conditions
       version: v1alpha1
-    - kind: AddonOperator
-      name: addonoperators.addons.managed.openshift.io
-      description: Represents the overall status of the Addon Operator
+    - description: Represents the overall status of the Addon Operator
       displayName: Addon Operator
+      kind: AddonOperator
+      name: addonoperators.addons.managed.openshift.io
       version: v1alpha1
   description: Addon Operator coordinates the lifecycle of Addons in managed OpenShift.
   displayName: Managed OpenShift Addon Operator
@@ -182,9 +179,7 @@ spec:
           - patch
         serviceAccountName: addon-operator
       deployments:
-      - label:
-          app.kubernetes.io/name: addon-operator
-        name: addon-operator-manager
+      - name: addon-operator-manager
         spec:
           replicas: 1
           selector:
@@ -243,11 +238,6 @@ spec:
                   readOnly: true
                 - mountPath: /etc/tls/manager/metrics
                   name: manager-metrics-tls
-                  readOnly: true
-              securityContext:
-                runAsNonRoot: true
-                seccompProfile:
-                  type: RuntimeDefault
               serviceAccountName: addon-operator
               tolerations:
               - effect: NoSchedule
@@ -360,7 +350,7 @@ spec:
     type: MultiNamespace
   keywords:
   - addons
-  - addon-operator
+  - managed
   links:
   - name: Source Code
     url: https://github.com/openshift/addon-operator
@@ -371,7 +361,7 @@ spec:
   provider:
     name: Red Hat
     url: www.redhat.com
-  version: 1.14.0
+  version: 1.14.1
   webhookdefinitions:
   - admissionReviewVersions:
     - v1
@@ -393,3 +383,5 @@ spec:
     targetPort: 8080
     type: ValidatingAdmissionWebhook
     webhookPath: /validate-addon
+status:
+  cleanup: {}
