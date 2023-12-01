@@ -190,6 +190,13 @@ func (b Build) ImageBuild(cmd string) error {
 	}
 }
 
+func (Build) BuildAndPushPackage() {
+	mg.Deps(
+		mg.F(Build.ImageBuild, "addon-operator-package"),
+		mg.F(Build.imagePushOnce, "addon-operator-package"),
+	)
+}
+
 func newImageBuildInfo(imageName, imageCacheDir string) *dev.ImageBuildInfo {
 	imageTag := imageURL(imageName)
 	return &dev.ImageBuildInfo{
@@ -271,7 +278,7 @@ func populatePkgCache(imageCacheDir string) error {
 		{"mkdir", "-p", manifestsDir},
 		{"bash", "-c", "cp deploy-extras/package/hc/*.yaml " + manifestsDir},
 		{"cp", "deploy-extras/package/hcp/addon-operator.yaml", manifestsDir},
-		{"cp", "deploy-extras/package/hcp/metrics-service.yaml", manifestsDir},
+		{"cp", "deploy-extras/package/hcp/metrics.service.yaml", manifestsDir},
 		{"cp", "deploy-extras/package/manifest.yaml", manifestsDir},
 		{"cp", "deploy-extras/package/addon-operator-package.Containerfile", manifestsDir},
 	} {
