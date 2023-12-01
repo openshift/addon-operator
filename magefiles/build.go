@@ -193,7 +193,7 @@ func (b Build) ImageBuild(cmd string) error {
 func (Build) BuildAndPushPackage() {
 	mg.Deps(
 		mg.F(Build.ImageBuild, "addon-operator-package"),
-		mg.F(Build.imagePush, "addon-operator-package"),
+		mg.F(Build.imagePushOnce, "addon-operator-package"),
 	)
 }
 
