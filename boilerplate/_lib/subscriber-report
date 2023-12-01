@@ -11,3 +11,4 @@ SUBCOMMANDS=(
 )
 
 source $REPO_ROOT/boilerplate/_lib/subscriber.sh
+
