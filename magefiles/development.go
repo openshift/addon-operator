@@ -396,7 +396,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 // Addon Operator Webhook server from local files.
 func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluster) error {
 	deployment := &appsv1.Deployment{}
-	err := loadAndConvertIntoObject(cluster.Scheme, "deploy-extras/webhook/deployment.yaml", deployment)
+	err := loadAndConvertIntoObject(cluster.Scheme, "deploy/70_webhook-deployment.yaml", deployment)
 	if err != nil {
 		return fmt.Errorf("loading addon-operator-webhook deployment.yaml: %w", err)
 	}

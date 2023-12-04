@@ -1,3 +1,5 @@
+# Used for local dev only
+# TODO: Deprecate post Boilerplate adoption
 FROM registry.access.redhat.com/ubi8/ubi:8.8-1032
 
 # Install go1.20.6

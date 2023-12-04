@@ -1,6 +1,7 @@
 package config
 
 const (
-	OperatorName      string = "addon-operator"
-	OperatorNamespace string = "openshift-addon-operator"
+	OperatorName       string = "addon-operator"
+	OperatorNamespace  string = "openshift-addon-operator"
+	SupplementaryImage string = "addon-operator-webhook"
 )
