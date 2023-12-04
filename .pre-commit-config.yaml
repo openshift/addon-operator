@@ -14,7 +14,7 @@ repos:
   - id: check-merge-conflict
   - id: check-symlinks
   - id: detect-private-key
-  #- id: end-of-file-fixer (Temporarily disabling it)
+  - id: end-of-file-fixer
   - id: pretty-format-json
     args:
     - --autofix
