@@ -4,4 +4,4 @@
 
 set -exv
 
-make -C $(dirname $0)/../ build-package-push
+make -C $(dirname $0)/../ build-push-package
