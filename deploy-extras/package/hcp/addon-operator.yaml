@@ -22,46 +22,9 @@ spec:
       automountServiceAccountToken: false
       containers:
       - args:
-        - --secure-listen-address=0.0.0.0:8443
-        - --upstream=http://127.0.0.1:8080/
-        - --tls-cert-file=/tmp/k8s-metrics-server/serving-certs/tls.crt
-        - --tls-private-key-file=/tmp/k8s-metrics-server/serving-certs/tls.key
-        - --logtostderr=true
-        - --kubeconfig=/etc/openshift/kubeconfig/kubeconfig
-        - --ignore-paths=/metrics,/healthz
-        env:
-        - name: KUBECONFIG
-          value: /etc/openshift/kubeconfig/kubeconfig
-        image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
-        livenessProbe:
-          initialDelaySeconds: 15
-          periodSeconds: 20
-          tcpSocket:
-            port: 8443
-        name: metrics-relay-server
-        ports:
-        - containerPort: 8443
-        readinessProbe:
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          tcpSocket:
-            port: 8443
-        resources:
-          limits:
-            cpu: 100m
-            memory: 30Mi
-          requests:
-            cpu: 100m
-            memory: 30Mi
-        volumeMounts:
-        - mountPath: /tmp/k8s-metrics-server/serving-certs/
-          name: tls
-          readOnly: true
-        - mountPath: /etc/openshift/kubeconfig
-          name: kubeconfig
-          readOnly: true
-      - args:
         - --enable-leader-election
+        - --metrics-addr=:8443
+        - --metrics-tls-dir=/etc/tls/manager/metrics
         env:
         - name: KUBECONFIG
           value: /etc/openshift/kubeconfig/kubeconfig
@@ -92,12 +55,13 @@ spec:
         - mountPath: /etc/openshift/kubeconfig
           name: kubeconfig
           readOnly: true
+        - mountPath: /etc/tls/manager/metrics
+          name: manager-metrics-tls
       volumes:
       - name: kubeconfig
         secret:
           defaultMode: 420
           secretName: service-network-admin-kubeconfig
-      - name: tls
+      - name: manager-metrics-tls
         secret:
-          secretName: metrics-server-cert
-status: {}
+          secretName: manager-metrics-tls

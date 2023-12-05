@@ -12,6 +12,8 @@ VERSION_MINOR=15
 SHELL=/bin/bash
 .SHELLFLAGS=-euo pipefail -c
 
+CONTAINER_ENGINE ?= $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null)
+
 # Dependency Versions
 CONTROLLER_GEN_VERSION:=v0.6.2
 OLM_VERSION:=v0.20.0
@@ -37,6 +39,12 @@ LD_FLAGS=-X $(MODULE)/internal/version.Version=$(VERSION) \
 UNAME_OS:=$(shell uname -s)
 UNAME_OS_LOWER:=$(shell uname -s | awk '{ print tolower($$0); }') # UNAME_OS but in lower case
 UNAME_ARCH:=$(shell uname -m)
+
+PKG_BASE_IMG ?= addon-operator-package
+PKG_IMG_REGISTRY ?= quay.io
+PKG_IMG_ORG ?= app-sre
+PKG_IMG ?= $(PKG_IMG_REGISTRY)/$(PKG_IMG_ORG)/${PKG_BASE_IMG}
+PKG_IMAGETAG ?= ${SHORT_SHA}
 
 # PATH/Bin
 PROJECT_DIR:=$(shell pwd)
@@ -238,14 +246,6 @@ push-images:
 	./mage build:pushimages
 .PHONY: push-images
 
-## Build and push only the addon-operator-package
-build-push-package:
-	@echo "-------------------------------------------------"
-	@echo "Running addon-operator-package build and push"
-	@echo "-------------------------------------------------"
-	./mage build:BuildAndPushPackage
-.PHONY: build-push-package
-
 # App Interface specific push-images target, to run within a docker container.
 app-interface-push-images:
 	@echo "-------------------------------------------------"
@@ -306,3 +306,28 @@ scan: ensure-govulncheck
 .PHONY: boilerplate-update
 boilerplate-update:
 	@boilerplate/update
+
+## Build and push only the addon-operator-package
+.PHONY: build-package-push
+build-package-push: 
+	hack/build-package.sh ${PKG_IMG}:${PKG_IMAGETAG}
+
+.PHONY: build-package
+build-package:
+		$(CONTAINER_ENGINE) build -t $(PKG_IMG):$(PKG_IMAGETAG) -f $(join $(CURDIR),/hack/hypershift/package/addon-operator-package.Containerfile) . && \
+		$(CONTAINER_ENGINE) tag $(PKG_IMG):$(PKG_IMAGETAG) $(PKG_IMG):latest
+
+.PHONY: skopeo-push
+skopeo-push-package:
+	@if [[ -z $$QUAY_USER || -z $$QUAY_TOKEN ]]; then \
+		echo "You must set QUAY_USER and QUAY_TOKEN environment variables" ;\
+		echo "ex: make QUAY_USER=value QUAY_TOKEN=value $@" ;\
+		exit 1 ;\
+	fi
+	# QUAY_USER and QUAY_TOKEN are supplied as env vars
+	skopeo copy --dest-creds "${QUAY_USER}:${QUAY_TOKEN}" \
+		"docker-daemon:${PKG_IMG}:${PKG_IMAGETAG}" \
+		"docker://${PKG_IMG}:latest"
+	skopeo copy --dest-creds "${QUAY_USER}:${QUAY_TOKEN}" \
+		"docker-daemon:${PKG_IMG}:${PKG_IMAGETAG}" \
+		"docker://${PKG_IMG}:${PKG_IMAGETAG}"
