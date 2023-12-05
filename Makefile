@@ -314,7 +314,7 @@ build-push-package:
 
 .PHONY: build-package
 build-package:
-		$(CONTAINER_ENGINE) build -t $(PKG_IMG):$(PKG_IMAGETAG) -f $(join $(CURDIR),/hack/hypershift/package/addon-operator-package.Containerfile) . && \
+		$(CONTAINER_ENGINE) build -t $(PKG_IMG):$(PKG_IMAGETAG) -f $(join $(CURDIR),/deploy-extras/package/addon-operator-package.Containerfile) . && \
 		$(CONTAINER_ENGINE) tag $(PKG_IMG):$(PKG_IMAGETAG) $(PKG_IMG):latest
 
 .PHONY: skopeo-push
