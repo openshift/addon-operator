@@ -308,8 +308,8 @@ boilerplate-update:
 	@boilerplate/update
 
 ## Build and push only the addon-operator-package
-.PHONY: build-package-push
-build-package-push: 
+.PHONY: build-push-package
+build-push-package: 
 	hack/build-package.sh ${PKG_IMG}:${PKG_IMAGETAG}
 
 .PHONY: build-package
