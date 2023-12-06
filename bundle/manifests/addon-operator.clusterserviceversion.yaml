@@ -4,7 +4,7 @@ metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
-    createdAt: "2023-12-06T12:14:48Z"
+    createdAt: "2023-12-06T15:51:35Z"
     operators.operatorframework.io/builder: operator-sdk-v1.29.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
   name: addon-operator.v1.0.0
@@ -191,6 +191,8 @@ spec:
                 - --metrics-tls-dir=/etc/tls/manager/metrics
                 env:
                 - name: ENABLE_STATUS_REPORTING
+                  value: "true"
+                - name: ENABLE_UPGRADEPOLICY_STATUS
                   value: "true"
                 image: quay.io/openshift/addon-operator:latest
                 livenessProbe:
