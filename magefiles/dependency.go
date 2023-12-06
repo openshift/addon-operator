@@ -23,6 +23,7 @@ const (
 	opmVersion           = "1.24.0"
 	pkoCliVersion        = "1.6.1"
 	helmVersion          = "3.12.2"
+	OperatorSDKVersion   = "1.29.0"
 )
 
 type Dependency mg.Namespace
@@ -36,6 +37,7 @@ func (d Dependency) All() {
 		Dependency.GolangciLint,
 		Dependency.Helm,
 		Dependency.Opm,
+		Dependency.OperatorSDK,
 	)
 }
 
@@ -156,6 +158,51 @@ func (d Dependency) PkoCli() error {
 	// Move
 	if err := os.Rename(tempPkoCliBin, path.Join(depsDir.Bin(), "kubectl-package")); err != nil {
 		return fmt.Errorf("move kubectl-package: %w", err)
+	}
+	return nil
+}
+
+func (d Dependency) OperatorSDK() error {
+	// TODO: move this into devkube library, to ensure the depsDir is present, even if you just call "NeedsRebuild"
+	if err := os.MkdirAll(depsDir.Bin(), os.ModePerm); err != nil {
+		return fmt.Errorf("create dependency dir: %w", err)
+	}
+
+	needsRebuild, err := depsDir.NeedsRebuild("operator-sdk", OperatorSDKVersion)
+	if err != nil {
+		return err
+	}
+	if !needsRebuild {
+		return nil
+	}
+
+	// Tempdir
+	tempDir, err := os.MkdirTemp(cacheDir, "")
+	if err != nil {
+		return fmt.Errorf("temp dir: %w", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Download
+	operatorsdkBIN := path.Join(tempDir, "operator-sdk")
+	if err := sh.RunV(
+		"curl", "-L", "--fail",
+		"-o", operatorsdkBIN,
+		fmt.Sprintf(
+			"https://github.com/operator-framework/operator-sdk/releases/download/v%s/operator-sdk_linux_amd64",
+			OperatorSDKVersion,
+		),
+	); err != nil {
+		return fmt.Errorf("downloading operator-sdk : %w", err)
+	}
+
+	if err := os.Chmod(operatorsdkBIN, 0755); err != nil {
+		return fmt.Errorf("make operator-sdk executable: %w", err)
+	}
+
+	// Move
+	if err := os.Rename(operatorsdkBIN, path.Join(depsDir.Bin(), "operator-sdk")); err != nil {
+		return fmt.Errorf("move operator-sdk: %w", err)
 	}
 	return nil
 }

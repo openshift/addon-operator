@@ -136,6 +136,8 @@ opm:
 helm:
 	./mage dependency:helm
 
+operatorSDK:
+	./mage dependency:OperatorSDK
 ## Run go mod tidy in all go modules
 tidy:
 	@go mod tidy
@@ -186,6 +188,10 @@ dependencies:
 
 ## Run cmd/addon-operator-manager against $KUBECONFIG.
 run-addon-operator-manager:
+
+## Generates the OLM bundle 
+generate-bundle:
+	$(PROJECT_DIR)/$(DEPENDENCIES)/bin/operator-sdk  generate bundle --input-dir $(PROJECT_DIR)/deploy --version 1.0.0
 
 ## Run cmd/% against $KUBECONFIG.
 run-%: generate
