@@ -189,7 +189,7 @@ run-addon-operator-manager:
 
 ## Generates the OLM bundle 
 generate-bundle:
-	$(PROJECT_DIR)/$(DEPENDENCIES)/bin/operator-sdk  generate bundle --input-dir $(PROJECT_DIR)/deploy --version 1.0.0
+	$(PROJECT_DIR)/$(DEPENDENCIES)/bin/operator-sdk  generate bundle --input-dir $(PROJECT_DIR)/deploy --version 1.0.0 --overwrite
 
 ## Run cmd/% against $KUBECONFIG.
 run-%: generate
