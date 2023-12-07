@@ -52,6 +52,8 @@ spec:
         env:
         - name: ENABLE_STATUS_REPORTING
           value: "true"
+        - name: ENABLE_UPGRADEPOLICY_STATUS
+          value: "true"        
         volumeMounts:
         - mountPath: /etc/pki/ca-trust/extracted/pem
           name: trusted-ca-bundle
