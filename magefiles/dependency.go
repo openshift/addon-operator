@@ -159,7 +159,6 @@ func (d Dependency) PkoCli() error {
 }
 
 func (d Dependency) OperatorSDK() error {
-	// TODO: move this into devkube library, to ensure the depsDir is present, even if you just call "NeedsRebuild"
 	if err := os.MkdirAll(depsDir.Bin(), os.ModePerm); err != nil {
 		return fmt.Errorf("create dependency dir: %w", err)
 	}
