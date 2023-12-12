@@ -8,7 +8,6 @@ RUN go mod download
 COPY . .
 
 RUN make go-build
-RUN GOOS=linux CGO_ENABLED=1 GOARCH=amd64 CGO_ENABLED=1 GOFLAGS="" go build -o build/_output/bin/addon-operator-manager .
 
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9-1029
