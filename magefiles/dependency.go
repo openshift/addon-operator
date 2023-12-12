@@ -14,11 +14,9 @@ import (
 
 // Dependency Versions
 const (
-	controllerGenVersion = "0.6.2"
 	kindVersion          = "0.20.0"
 	yqVersion            = "4.35.1"
 	goimportsVersion     = "0.12.0"
-	golangciLintVersion  = "1.54.2"
 	olmVersion           = "0.20.0"
 	opmVersion           = "1.24.0"
 	pkoCliVersion        = "1.6.1"
@@ -30,10 +28,8 @@ type Dependency mg.Namespace
 func (d Dependency) All() {
 	mg.Deps(
 		Dependency.Kind,
-		Dependency.ControllerGen,
 		Dependency.YQ,
 		Dependency.Goimports,
-		Dependency.GolangciLint,
 		Dependency.Helm,
 		Dependency.Opm,
 	)
@@ -45,11 +41,11 @@ func (d Dependency) Kind() error {
 		"sigs.k8s.io/kind", kindVersion)
 }
 
-// Ensure controller-gen - kubebuilder code and manifest generator.
-func (d Dependency) ControllerGen() error {
-	return depsDir.GoInstall("controller-gen",
-		"sigs.k8s.io/controller-tools/cmd/controller-gen", controllerGenVersion)
-}
+// // Ensure controller-gen - kubebuilder code and manifest generator.
+// func (d Dependency) ControllerGen() error {
+// 	return depsDir.GoInstall("controller-gen",
+// 		"sigs.k8s.io/controller-tools/cmd/controller-gen", controllerGenVersion)
+// }
 
 // Ensure yq - jq but for Yaml, written in Go.
 func (d Dependency) YQ() error {
@@ -62,10 +58,10 @@ func (d Dependency) Goimports() error {
 		"golang.org/x/tools/cmd/goimports", goimportsVersion)
 }
 
-func (d Dependency) GolangciLint() error {
-	return depsDir.GoInstall("golangci-lint",
-		"github.com/golangci/golangci-lint/cmd/golangci-lint", golangciLintVersion)
-}
+// func (d Dependency) GolangciLint() error {
+// 	return depsDir.GoInstall("golangci-lint",
+// 		"github.com/golangci/golangci-lint/cmd/golangci-lint", golangciLintVersion)
+// }
 
 func (d Dependency) Helm() error {
 	return depsDir.GoInstall("helm", "helm.sh/helm/v3/cmd/helm", helmVersion)
