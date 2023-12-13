@@ -9,7 +9,9 @@ if [[ -e "$file_path" ]]; then
 line=$(git diff -U0 -I'^   createdAt: ')
   if [[  -n "$line" ]] ;then
       make generate-bundle
+      make patch-csv-webhook
   fi
 else
       make generate-bundle
+      make patch-csv-webhook
 fi

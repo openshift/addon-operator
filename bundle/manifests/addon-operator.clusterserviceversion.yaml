@@ -4,13 +4,16 @@ metadata:
   annotations:
     alm-examples: '[]'
     capabilities: Basic Install
-    createdAt: "2023-12-13T09:50:04Z"
+    createdAt: "2023-12-13T11:17:28Z"
     operators.operatorframework.io/builder: operator-sdk-v1.29.0
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+  creationTimestamp: null
   name: addon-operator.v1.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
+  cleanup:
+    enabled: false
   customresourcedefinitions:
     owned:
     - kind: AddonInstance
@@ -174,6 +177,7 @@ spec:
           strategy: {}
           template:
             metadata:
+              creationTimestamp: null
               labels:
                 app.kubernetes.io/name: addon-operator
             spec:
@@ -262,6 +266,7 @@ spec:
             type: RollingUpdate
           template:
             metadata:
+              creationTimestamp: null
               labels:
                 app.kubernetes.io/name: addon-operator-webhook-server
             spec:
@@ -364,3 +369,26 @@ spec:
     name: Provider Name
     url: https://your.domain
   version: 1.0.0
+  webhookdefinitions:
+  - admissionReviewVersions:
+    - v1
+    containerPort: 443
+    deploymentName: addon-operator-webhooks
+    failurePolicy: Fail
+    generateName: vaddons.managed.openshift.io
+    rules:
+    - apiGroups:
+      - addons.managed.openshift.io
+      apiVersions:
+      - v1alpha1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - addons
+    sideEffects: None
+    targetPort: 8080
+    type: ValidatingAdmissionWebhook
+    webhookPath: /validate-addon
+status:
+  cleanup: {}

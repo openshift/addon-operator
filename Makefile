@@ -79,6 +79,9 @@ GREEN  := $(shell tput -Txterm setaf 2)
 YELLOW := $(shell tput -Txterm setaf 3)
 RESET  := $(shell tput -Txterm sgr0)
 
+OUTPUT=$(shell grep -e 'webhookdefinitions' /home/ves/Desktop/demo/tmp/addon-operator/bundle/manifests/addon-operator.clusterserviceversion.yaml)
+   
+
 # ---------
 ##@ General
 # ---------
@@ -177,9 +180,9 @@ test-integration-local:
 	./mage dev:integration
 .PHONY: test-integration-local
 
-test-patch-webhook-e2e:
-	./mage test:PatchAddonOperatorCSVWebhook
-.PHONY: test-patch-webhook-e2e
+patch-csv-webhook:
+	@(if [[ -z "${OUTPUT}" ]]; then echo "paching webhook csv "; ./mage test:PatchAddonOperatorCSVWebhook; fi)
+.PHONY: patch-csv-webhook
 # -------------------------
 ##@ Development Environment
 # -------------------------
