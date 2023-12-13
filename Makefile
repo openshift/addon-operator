@@ -15,12 +15,10 @@ SHELL=/bin/bash
 CONTAINER_ENGINE ?= $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null)
 
 # Dependency Versions
-CONTROLLER_GEN_VERSION:=v0.6.2
 OLM_VERSION:=v0.20.0
 KIND_VERSION:=v0.20.0
 YQ_VERSION:=v4@v4.12.0
 GOIMPORTS_VERSION:=v0.12.0
-GOLANGCI_LINT_VERSION:=v1.54.2
 OPM_VERSION:=v1.24.0
 
 # Build Flags
@@ -189,7 +187,7 @@ dependencies:
 ## Run cmd/addon-operator-manager against $KUBECONFIG.
 run-addon-operator-manager:
 
-## Generates the OLM bundle 
+## Generates the OLM bundle
 generate-bundle:
 	$(PROJECT_DIR)/$(DEPENDENCIES)/bin/operator-sdk  generate bundle --input-dir $(PROJECT_DIR)/deploy --version 1.0.0 --overwrite
 
@@ -315,7 +313,7 @@ boilerplate-update:
 
 ## Build and push only the addon-operator-package
 .PHONY: build-push-package
-build-push-package: 
+build-push-package:
 	hack/build-package.sh ${PKG_IMG}:${PKG_IMAGETAG}
 
 .PHONY: build-package

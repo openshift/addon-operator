@@ -409,9 +409,9 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
-		"deploy-extras/webhook/00-tls-secret.yaml",
-		"deploy-extras/webhook/service.yaml",
-		"deploy-extras/webhook/validatingwebhookconfig.yaml",
+		"deploy-extras/development/webhook/00-tls-secret.yaml",
+		"deploy-extras/development/webhook/service.yaml",
+		"deploy-extras/development/webhook/validatingwebhookconfig.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
 	}
