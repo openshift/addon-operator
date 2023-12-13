@@ -1,0 +1,20 @@
+    - admissionReviewVersions:
+        - v1
+      containerPort: 443
+      deploymentName: addon-operator-webhooks
+      failurePolicy: Fail
+      generateName: vaddons.managed.openshift.io
+      rules:
+        - apiGroups:
+            - addons.managed.openshift.io
+          apiVersions:
+            - v1alpha1
+          operations:
+            - CREATE
+            - UPDATE
+          resources:
+            - addons
+      sideEffects: None
+      targetPort: 8080
+      type: ValidatingAdmissionWebhook
+      webhookPath: /validate-addon

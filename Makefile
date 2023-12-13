@@ -177,6 +177,9 @@ test-integration-local:
 	./mage dev:integration
 .PHONY: test-integration-local
 
+test-patch-webhook-e2e:
+	./mage test:PatchAddonOperatorCSVWebhook
+.PHONY: test-patch-webhook-e2e
 # -------------------------
 ##@ Development Environment
 # -------------------------
