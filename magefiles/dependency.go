@@ -14,14 +14,14 @@ import (
 
 // Dependency Versions
 const (
-	kindVersion          = "0.20.0"
-	yqVersion            = "4.35.1"
-	goimportsVersion     = "0.12.0"
-	olmVersion           = "0.20.0"
-	opmVersion           = "1.24.0"
-	pkoCliVersion        = "1.6.1"
-	helmVersion          = "3.12.2"
-	OperatorSDKVersion   = "1.29.0"
+	kindVersion        = "0.20.0"
+	yqVersion          = "4.35.1"
+	goimportsVersion   = "0.12.0"
+	olmVersion         = "0.20.0"
+	opmVersion         = "1.24.0"
+	pkoCliVersion      = "1.6.1"
+	helmVersion        = "3.12.2"
+	OperatorSDKVersion = "1.29.0"
 )
 
 type Dependency mg.Namespace
