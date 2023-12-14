@@ -278,7 +278,7 @@ func (Test) IntegrationShort() error {
 		"-timeout=20m", "./integration/...")
 }
 
-func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
+func (t Test) PatchAddonOperatorCSVBundle(ctx context.Context) error {
 	var csv operatorsv1alpha1.ClusterServiceVersion
 	// read CSV
 	csvADO, err := os.ReadFile(path.Join(workDir, "bundle/manifests/addon-operator.clusterserviceversion.yaml"))
@@ -299,8 +299,24 @@ func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
 		return fmt.Errorf("error unmarshalling CSV : %w", err)
 	}
 
-	for i := range csv.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
-		currentDeployment := &csv.
+	csv = injectENVcsv(csv, "ENABLE_UPGRADEPOLICY_STATUS", "true")
+
+	csvBytes, err := yaml.Marshal(csv)
+	if err != nil {
+		return fmt.Errorf("error Marshallling the CSV : %w", err)
+	}
+	if err := os.WriteFile("bundle/manifests/addon-operator.clusterserviceversion.yaml",
+		csvBytes, os.ModePerm); err != nil {
+		return fmt.Errorf("error writing CSV file : %w", err)
+	}
+
+	return nil
+}
+
+func injectENVcsv(csvInput operatorsv1alpha1.ClusterServiceVersion, key string, value string) (csvOut operatorsv1alpha1.ClusterServiceVersion) {
+
+	for i := range csvInput.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
+		currentDeployment := &csvInput.
 			Spec.
 			InstallStrategy.
 			StrategySpec.DeploymentSpecs[i]
@@ -315,8 +331,8 @@ func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
 					}
 					// Set Upgrade policy status reporting env variable to true.
 					containerObj.Env = append(containerObj.Env, corev1.EnvVar{
-						Name:  "ENABLE_UPGRADEPOLICY_STATUS",
-						Value: "true"},
+						Name:  key,
+						Value: value},
 					)
 					break
 				}
@@ -324,15 +340,5 @@ func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
 			break
 		}
 	}
-
-	csvBytes, err := yaml.Marshal(csv)
-	if err != nil {
-		return fmt.Errorf("error Marshallling the CSV : %w", err)
-	}
-	if err := os.WriteFile("bundle/manifests/addon-operator.clusterserviceversion.yaml",
-		csvBytes, os.ModePerm); err != nil {
-		return fmt.Errorf("error writing CSV file : %w", err)
-	}
-
-	return nil
+	return csvInput
 }

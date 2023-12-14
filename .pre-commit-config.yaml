@@ -41,13 +41,6 @@ repos:
     pass_filenames: false
     always_run: true
 
-  - id: operatorsdk-generate-bundle
-    name: operatorsdk-generate-bundle
-    entry: hack/operator-sdk-run.sh
-    language: system
-    always_run: true
-    require_serial: true
-
 # Temporarily disabling make-generate
 # TODO: Add this back in after boilerplate migration complete
   # - id: make-generate
