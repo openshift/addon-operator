@@ -79,6 +79,9 @@ GREEN  := $(shell tput -Txterm setaf 2)
 YELLOW := $(shell tput -Txterm setaf 3)
 RESET  := $(shell tput -Txterm sgr0)
 
+OUTPUT=$(shell grep -e 'webhookdefinitions' $(PROJECT_DIR)/bundle/manifests/addon-operator.clusterserviceversion.yaml)
+   
+
 # ---------
 ##@ General
 # ---------
@@ -177,6 +180,9 @@ test-integration-local:
 	./mage dev:integration
 .PHONY: test-integration-local
 
+patch-csv-webhook:
+	@(if [[ -z "${OUTPUT}" ]]; then echo "Patching CSV with webhook definition at $(PROJECT_DIR)/bundle/manifests/addon-operator.clusterserviceversion.yaml"; ./mage test:PatchAddonOperatorCSVWebhook; fi)
+.PHONY: patch-csv-webhook
 # -------------------------
 ##@ Development Environment
 # -------------------------
@@ -192,6 +198,7 @@ run-addon-operator-manager:
 ## Generates the OLM bundle 
 generate-bundle:
 	$(PROJECT_DIR)/$(DEPENDENCIES)/bin/operator-sdk  generate bundle --input-dir $(PROJECT_DIR)/deploy --version 1.0.0 --overwrite
+	@(if [[ -z "${OUTPUT}" ]]; then echo "Patching CSV with webhook definition at $(PROJECT_DIR)/bundle/manifests/addon-operator.clusterserviceversion.yaml"; ./mage test:PatchAddonOperatorCSVWebhook; fi)
 
 ## Run cmd/% against $KUBECONFIG.
 run-%: generate
