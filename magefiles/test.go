@@ -278,7 +278,7 @@ func (Test) IntegrationShort() error {
 		"-timeout=20m", "./integration/...")
 }
 
-func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
+func (t Test) PatchAddonOperatorCSVBundle(ctx context.Context) error {
 	var csv operatorsv1alpha1.ClusterServiceVersion
 	// read CSV
 	csvADO, err := os.ReadFile(path.Join(workDir, "bundle/manifests/addon-operator.clusterserviceversion.yaml"))
@@ -298,6 +298,9 @@ func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
 	if err := yaml.Unmarshal(data, &csv.Spec.WebhookDefinitions); err != nil {
 		return fmt.Errorf("error unmarshalling CSV : %w", err)
 	}
+
+	csv = injectEnv(csv, "ENABLE_UPGRADEPOLICY_STATUS", "true")
+
 	csvBytes, err := yaml.Marshal(csv)
 	if err != nil {
 		return fmt.Errorf("error Marshallling the CSV : %w", err)
@@ -308,4 +311,34 @@ func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func injectEnv(csv operatorsv1alpha1.ClusterServiceVersion, key string, value string) operatorsv1alpha1.ClusterServiceVersion {
+
+	for i := range csv.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
+		currentDeployment := &csv.
+			Spec.
+			InstallStrategy.
+			StrategySpec.DeploymentSpecs[i]
+		// Find the addon operator deployment.
+		if currentDeployment.Name == "addon-operator-manager" {
+			for i := range currentDeployment.Spec.Template.Spec.Containers {
+				containerObj := &currentDeployment.Spec.Template.Spec.Containers[i]
+				// Find the addon operator manager container from the pod.
+				if containerObj.Name == "manager" {
+					if containerObj.Env == nil {
+						containerObj.Env = []corev1.EnvVar{}
+					}
+					// Set Upgrade policy status reporting env variable to true.
+					containerObj.Env = append(containerObj.Env, corev1.EnvVar{
+						Name:  key,
+						Value: value},
+					)
+					break
+				}
+			}
+			break
+		}
+	}
+	return csv
 }
