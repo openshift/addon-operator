@@ -299,7 +299,7 @@ func (t Test) PatchAddonOperatorCSVBundle(ctx context.Context) error {
 		return fmt.Errorf("error unmarshalling CSV : %w", err)
 	}
 
-	csv = injectENVcsv(csv, "ENABLE_UPGRADEPOLICY_STATUS", "true")
+	csv = injectEnv(csv, "ENABLE_UPGRADEPOLICY_STATUS", "true")
 
 	csvBytes, err := yaml.Marshal(csv)
 	if err != nil {
@@ -313,10 +313,10 @@ func (t Test) PatchAddonOperatorCSVBundle(ctx context.Context) error {
 	return nil
 }
 
-func injectENVcsv(csvInput operatorsv1alpha1.ClusterServiceVersion, key string, value string) operatorsv1alpha1.ClusterServiceVersion {
+func injectEnv(csv operatorsv1alpha1.ClusterServiceVersion, key string, value string) operatorsv1alpha1.ClusterServiceVersion {
 
-	for i := range csvInput.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
-		currentDeployment := &csvInput.
+	for i := range csv.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
+		currentDeployment := &csv.
 			Spec.
 			InstallStrategy.
 			StrategySpec.DeploymentSpecs[i]
@@ -340,5 +340,5 @@ func injectENVcsv(csvInput operatorsv1alpha1.ClusterServiceVersion, key string, 
 			break
 		}
 	}
-	return csvInput
+	return csv
 }
