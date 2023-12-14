@@ -313,7 +313,7 @@ func (t Test) PatchAddonOperatorCSVBundle(ctx context.Context) error {
 	return nil
 }
 
-func injectENVcsv(csvInput operatorsv1alpha1.ClusterServiceVersion, key string, value string) (csvOut operatorsv1alpha1.ClusterServiceVersion) {
+func injectENVcsv(csvInput operatorsv1alpha1.ClusterServiceVersion, key string, value string) operatorsv1alpha1.ClusterServiceVersion {
 
 	for i := range csvInput.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
 		currentDeployment := &csvInput.
