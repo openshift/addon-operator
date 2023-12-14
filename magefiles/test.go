@@ -279,32 +279,32 @@ func (Test) IntegrationShort() error {
 }
 
 func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
-
+	var csv operatorsv1alpha1.ClusterServiceVersion
 	// read CSV
 	csvADO, err := os.ReadFile(path.Join(workDir, "bundle/manifests/addon-operator.clusterserviceversion.yaml"))
 	if err != nil {
-		return fmt.Errorf("reading CSV : %w", err)
+		return fmt.Errorf("error reading CSV : %w", err)
 	}
 
-	data, err := os.ReadFile(path.Join(workDir, "hack/webhookdefinations.yaml"))
+	data, err := os.ReadFile(path.Join(workDir, "hack/webhookdefinition.yaml"))
 	if err != nil {
-		return fmt.Errorf("reading CSV error : %w", err)
+		return fmt.Errorf("error reading CSV : %w", err)
 	}
-	var csv operatorsv1alpha1.ClusterServiceVersion
+
 	if err := yaml.Unmarshal(csvADO, &csv); err != nil {
-		return err
+		return fmt.Errorf("error unmarshalling CSV : %w", err)
 	}
 
 	if err := yaml.Unmarshal(data, &csv.Spec.WebhookDefinitions); err != nil {
-		return err
+		return fmt.Errorf("error unmarshalling CSV : %w", err)
 	}
 	csvBytes, err := yaml.Marshal(csv)
 	if err != nil {
-		return err
+		return fmt.Errorf("error Marshallling the CSV : %w", err)
 	}
 	if err := os.WriteFile("bundle/manifests/addon-operator.clusterserviceversion.yaml",
 		csvBytes, os.ModePerm); err != nil {
-		return err
+		return fmt.Errorf("error writing CSV file : %w", err)
 	}
 
 	return nil
