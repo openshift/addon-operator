@@ -298,6 +298,33 @@ func (t Test) PatchAddonOperatorCSVWebhook(ctx context.Context) error {
 	if err := yaml.Unmarshal(data, &csv.Spec.WebhookDefinitions); err != nil {
 		return fmt.Errorf("error unmarshalling CSV : %w", err)
 	}
+
+	for i := range csv.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
+		currentDeployment := &csv.
+			Spec.
+			InstallStrategy.
+			StrategySpec.DeploymentSpecs[i]
+		// Find the addon operator deployment.
+		if currentDeployment.Name == "addon-operator-manager" {
+			for i := range currentDeployment.Spec.Template.Spec.Containers {
+				containerObj := &currentDeployment.Spec.Template.Spec.Containers[i]
+				// Find the addon operator manager container from the pod.
+				if containerObj.Name == "manager" {
+					if containerObj.Env == nil {
+						containerObj.Env = []corev1.EnvVar{}
+					}
+					// Set Upgrade policy status reporting env variable to true.
+					containerObj.Env = append(containerObj.Env, corev1.EnvVar{
+						Name:  "ENABLE_UPGRADEPOLICY_STATUS",
+						Value: "true"},
+					)
+					break
+				}
+			}
+			break
+		}
+	}
+
 	csvBytes, err := yaml.Marshal(csv)
 	if err != nil {
 		return fmt.Errorf("error Marshallling the CSV : %w", err)
