@@ -181,7 +181,7 @@ test-integration-local:
 .PHONY: test-integration-local
 
 patch-csv-webhook:
-	@(if [[ -z "${OUTPUT}" ]]; then echo "Patching CSV with webhook definition at $(OUTPUT)"; ./mage test:PatchAddonOperatorCSVWebhook; fi)
+	@(if [[ -z "${OUTPUT}" ]]; then echo "Patching CSV with webhook definition at $(PROJECT_DIR)/bundle/manifests/addon-operator.clusterserviceversion.yaml"; ./mage test:PatchAddonOperatorCSVWebhook; fi)
 .PHONY: patch-csv-webhook
 # -------------------------
 ##@ Development Environment
