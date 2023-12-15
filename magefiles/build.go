@@ -239,13 +239,13 @@ func populateOLMBundleCache(imageCacheDir string) error {
 		// The first few lines of the CRD file need to be removed:
 		// https://github.com/operator-framework/operator-registry/issues/222
 		{"bash", "-c", "tail -n+3 " +
-			"deploy/crds/addons.managed.openshift.io_addons.yaml " +
+			"bundle/manifests/addons.managed.openshift.io_addons.yaml " +
 			"> " + path.Join(manifestsDir, "addons.yaml")},
 		{"bash", "-c", "tail -n+3 " +
-			"deploy/crds/addons.managed.openshift.io_addonoperators.yaml " +
+			"bundle/manifests/addons.managed.openshift.io_addonoperators.yaml " +
 			"> " + path.Join(manifestsDir, "addonoperators.yaml")},
 		{"bash", "-c", "tail -n+3 " +
-			"deploy/crds/addons.managed.openshift.io_addoninstances.yaml " +
+			"bundle/manifests/addons.managed.openshift.io_addoninstances.yaml " +
 			"> " + path.Join(manifestsDir, "addoninstances.yaml")},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
