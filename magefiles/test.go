@@ -19,6 +19,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/yaml"
 
 	aoapisv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/internal/featuretoggle"
@@ -271,4 +272,69 @@ func (Test) IntegrationShort() error {
 		"-count=1", // will force a new run, instead of using the cache
 		"-short",
 		"-timeout=20m", "./integration/...")
+}
+
+func (t Test) PatchAddonOperatorCSVBundle(ctx context.Context) error {
+	var csv operatorsv1alpha1.ClusterServiceVersion
+	// read CSV
+	csvADO, err := os.ReadFile(path.Join(workDir, "bundle/manifests/addon-operator.clusterserviceversion.yaml"))
+	if err != nil {
+		return fmt.Errorf("error reading CSV : %w", err)
+	}
+
+	data, err := os.ReadFile(path.Join(workDir, "hack/webhookdefinition.yaml"))
+	if err != nil {
+		return fmt.Errorf("error reading CSV : %w", err)
+	}
+
+	if err := yaml.Unmarshal(csvADO, &csv); err != nil {
+		return fmt.Errorf("error unmarshalling CSV : %w", err)
+	}
+
+	if err := yaml.Unmarshal(data, &csv.Spec.WebhookDefinitions); err != nil {
+		return fmt.Errorf("error unmarshalling CSV : %w", err)
+	}
+
+	csv = injectEnv(csv, "ENABLE_UPGRADEPOLICY_STATUS", "true")
+
+	csvBytes, err := yaml.Marshal(csv)
+	if err != nil {
+		return fmt.Errorf("error Marshallling the CSV : %w", err)
+	}
+	if err := os.WriteFile("bundle/manifests/addon-operator.clusterserviceversion.yaml",
+		csvBytes, os.ModePerm); err != nil {
+		return fmt.Errorf("error writing CSV file : %w", err)
+	}
+
+	return nil
+}
+
+func injectEnv(csv operatorsv1alpha1.ClusterServiceVersion, key string, value string) operatorsv1alpha1.ClusterServiceVersion {
+
+	for i := range csv.Spec.InstallStrategy.StrategySpec.DeploymentSpecs {
+		currentDeployment := &csv.
+			Spec.
+			InstallStrategy.
+			StrategySpec.DeploymentSpecs[i]
+		// Find the addon operator deployment.
+		if currentDeployment.Name == "addon-operator-manager" {
+			for i := range currentDeployment.Spec.Template.Spec.Containers {
+				containerObj := &currentDeployment.Spec.Template.Spec.Containers[i]
+				// Find the addon operator manager container from the pod.
+				if containerObj.Name == "manager" {
+					if containerObj.Env == nil {
+						containerObj.Env = []corev1.EnvVar{}
+					}
+					// Set Upgrade policy status reporting env variable to true.
+					containerObj.Env = append(containerObj.Env, corev1.EnvVar{
+						Name:  key,
+						Value: value},
+					)
+					break
+				}
+			}
+			break
+		}
+	}
+	return csv
 }
