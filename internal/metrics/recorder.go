@@ -199,17 +199,24 @@ func (r *Recorder) SetAddonOperatorPaused(paused bool) {
 	}
 }
 
+type AddonHealth interface {
+	GetReason() string
+}
+
 // RecordAddonMetrics is responsible for reconciling the following metrics:
 // - addon_operator_addons_available
 // - addon_operator_addons_paused
 // - addon_operator_addons_total
 // - addon_operator_addon_health_info
-func (r *Recorder) RecordAddonMetrics(addon *addonsv1alpha1.Addon) {
+func (r *Recorder) RecordAddonMetrics(
+	addon *addonsv1alpha1.Addon,
+	addonHealth AddonHealth,
+) {
 	r.addonState.lock.Lock()
 	defer r.addonState.lock.Unlock()
 
 	// record addon_operator_addon_health_info
-	r.recordAddonHealthInfo(addon)
+	r.recordAddonHealthInfo(addon, addonHealth)
 
 	// reconcile addon_operator_addons_(available|paused|total)
 	currCondition := addonConditions{
@@ -270,7 +277,10 @@ func (r *Recorder) RecordAddonMetrics(addon *addonsv1alpha1.Addon) {
 	}
 }
 
-func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
+func (r *Recorder) recordAddonHealthInfo(
+	addon *addonsv1alpha1.Addon,
+	addonHealth AddonHealth,
+) {
 	var (
 		// `healthStatus` defaults to unknown unless status conditions say otherwise
 		healthStatus = 2
@@ -289,12 +299,14 @@ func (r *Recorder) recordAddonHealthInfo(addon *addonsv1alpha1.Addon) {
 		switch healthCond.Status {
 		case metav1.ConditionFalse:
 			healthStatus = 0
+			if len(addonHealth.GetReason()) > 0 {
+				healthReason = addonHealth.GetReason()
+			}
 		case metav1.ConditionTrue:
 			healthStatus = 1
 		default:
 			healthStatus = 2
 		}
-
 	}
 
 	if addon.Status.ObservedVersion != "" {

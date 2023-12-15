@@ -37,6 +37,7 @@ rules:
   resources:
   - namespaces
   - secrets
+  - pods
   verbs:
   - create
   - get
