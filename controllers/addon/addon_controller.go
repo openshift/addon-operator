@@ -19,6 +19,8 @@ import (
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -63,6 +65,18 @@ type AddonReconciler struct {
 	// in the order in which they appear in this slice.
 	subReconcilers []addonReconciler
 }
+
+type addonHealth struct {
+	reason string
+}
+
+func (a addonHealth) GetReason() string {
+	return a.reason
+}
+
+var (
+	UnschedulableAddonPod = addonHealth{reason: "UnschedulableAddonPod"}
+)
 
 type addonReconciler interface {
 	Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error)
@@ -293,10 +307,10 @@ func (r *AddonReconciler) Reconcile(
 
 	reconcileResult, reconcileErr := r.reconcile(ctx, addon, logger)
 
-	// Update metrics only if a Recorder is initialized
-	if r.Recorder != nil {
-		r.Recorder.RecordAddonMetrics(addon)
+	if err := r.recordAddonMetrics(ctx, addon); err != nil {
+		r.Log.Error(err, "failed to record addon metrics")
 	}
+
 	multiErr := r.syncWithExternalAPIs(ctx, logger, addon)
 
 	if multiErr.ErrorOrNil() != nil {
@@ -401,4 +415,65 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	}
 
 	return ctrl.Result{}, nil
+}
+
+// Lists and filters pods with corev1.PodReasonUnschedulable status
+func (r *AddonReconciler) listUnschedulableAddonPods(
+	ctx context.Context,
+	addon *addonsv1alpha1.Addon,
+) (*corev1.PodList, error) {
+	addonPods := &corev1.PodList{}
+	unschedulablePods := &corev1.PodList{}
+
+	if err := r.Client.List(
+		ctx,
+		addonPods,
+		client.InNamespace(addon.Spec.Install.OLMOwnNamespace.Namespace),
+	); err != nil {
+		return unschedulablePods, fmt.Errorf("failed listing addon pods: %w", err)
+	}
+
+	for _, pod := range addonPods.Items {
+		for _, podCond := range pod.Status.Conditions {
+			if podCond.Type == corev1.PodScheduled &&
+				podCond.Reason == corev1.PodReasonUnschedulable &&
+				podCond.Status == corev1.ConditionFalse {
+				unschedulablePods.Items = append(unschedulablePods.Items, pod)
+			}
+		}
+	}
+	return unschedulablePods, nil
+
+}
+
+// Gathers addon data for metric collection
+func (r *AddonReconciler) recordAddonMetrics(
+	ctx context.Context,
+	addon *addonsv1alpha1.Addon) (err error) {
+
+	if r.Recorder == nil {
+		return
+	}
+
+	unschedPods := &corev1.PodList{}
+	if availableCond := meta.FindStatusCondition(
+		addon.Status.Conditions,
+		addonsv1alpha1.Available,
+	); availableCond != nil && availableCond.Status == metav1.ConditionFalse {
+		unschedPods, err = r.listUnschedulableAddonPods(ctx, addon)
+		if err != nil {
+			return err
+		}
+	}
+
+	health := addonHealth{}
+	if len(unschedPods.Items) > 0 {
+		health = UnschedulableAddonPod
+	}
+
+	r.Recorder.RecordAddonMetrics(
+		addon,
+		health,
+	)
+	return
 }

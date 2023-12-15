@@ -137,6 +137,10 @@ func TestReconcileErrorHandling(t *testing.T) {
 			*passedAddon = *addon
 		}).Return(nil)
 
+		client.On("List", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
+
+		}).Return(nil)
+
 		// invoke Reconciler
 		_, err := r.Reconcile(context.Background(), reconcile.Request{})
 

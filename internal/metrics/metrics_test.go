@@ -15,6 +15,14 @@ import (
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 )
 
+type mockAddonHealth struct {
+	reason string
+}
+
+func (m mockAddonHealth) GetReason() string {
+	return m.reason
+}
+
 func newTestAddon(uid string, conditions []metav1.Condition) *addonsv1alpha1.Addon {
 	return &addonsv1alpha1.Addon{
 		ObjectMeta: metav1.ObjectMeta{
@@ -42,14 +50,14 @@ func TestAddonMetrics_InstallCount(t *testing.T) {
 	})
 
 	t.Run("new addon(s) installed", func(t *testing.T) {
-		recorder.RecordAddonMetrics(addons[0])
+		recorder.RecordAddonMetrics(addons[0], mockAddonHealth{})
 
 		// Expected:
 		// addon_operator_addons_count{count_by="total"} 1
 		assert.Equal(t, float64(1), testutil.ToFloat64(
 			recorder.addonsCount.WithLabelValues(string(total))))
 
-		recorder.RecordAddonMetrics(addons[1])
+		recorder.RecordAddonMetrics(addons[1], mockAddonHealth{})
 
 		// Expected:
 		// addon_operator_addons_count{count_by="total"} 2
@@ -60,7 +68,7 @@ func TestAddonMetrics_InstallCount(t *testing.T) {
 	t.Run("addon(s) uninstalled", func(t *testing.T) {
 		now := metav1.NewTime(time.Now())
 		addons[0].DeletionTimestamp = &now
-		recorder.RecordAddonMetrics(addons[0])
+		recorder.RecordAddonMetrics(addons[0], mockAddonHealth{})
 
 		// Expected:
 		// addon_operator_addons_count{count_by="total"} 1
@@ -68,7 +76,7 @@ func TestAddonMetrics_InstallCount(t *testing.T) {
 			recorder.addonsCount.WithLabelValues(string(total))))
 
 		addons[1].DeletionTimestamp = &now
-		recorder.RecordAddonMetrics(addons[1])
+		recorder.RecordAddonMetrics(addons[1], mockAddonHealth{})
 
 		// Expected:
 		// addon_operator_addons_count{count_by="total"} 0
@@ -137,7 +145,7 @@ func TestAddonMetrics_AddonHealth(t *testing.T) {
 				healthReason = addonConditions[0].Reason
 			}
 
-			recorder.recordAddonHealthInfo(addon)
+			recorder.recordAddonHealthInfo(addon, mockAddonHealth{})
 			assert.Equal(t, float64(tc.expected), testutil.ToFloat64(
 				recorder.addonHealthInfo.WithLabelValues(
 					addon.Name,
@@ -154,7 +162,7 @@ func TestAddonMetrics_AddonConditions(t *testing.T) {
 	addon := newTestAddon("o672wxBaW9iR", []metav1.Condition{})
 
 	t.Run("uninitialized conditions", func(t *testing.T) {
-		recorder.RecordAddonMetrics(addon)
+		recorder.RecordAddonMetrics(addon, mockAddonHealth{})
 
 		// Expected:
 		// addon_operator_addons_count{count_by="paused"} 0
@@ -193,7 +201,7 @@ func TestAddonMetrics_AddonConditions(t *testing.T) {
 					},
 				}
 				addon.Status.Conditions = conditions
-				recorder.RecordAddonMetrics(addon)
+				recorder.RecordAddonMetrics(addon, mockAddonHealth{})
 
 				assert.Equal(t, float64(expectedPaused),
 					testutil.ToFloat64(recorder.addonsCount.WithLabelValues(string(paused))))
