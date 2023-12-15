@@ -230,29 +230,22 @@ func populateOLMBundleCache(imageCacheDir string) error {
 		{"mkdir", "-p", manifestsDir},
 		{"mkdir", "-p", metadataDir},
 
-		// Copy files for build environment
-		{"cp", "-a",
-			"deploy-extras/docker/addon-operator-bundle.Dockerfile",
-			imageCacheDir + "/Dockerfile"},
-
-		{"cp", "-a", "deploy-extras/olm/addon-operator.csv.yaml", manifestsDir},
 		{"cp", "-a", "deploy/45_metrics-service.yaml", manifestsDir},
 		{"cp", "-a", "deploy/50_servicemonitor.yaml", manifestsDir},
 		{"cp", "-a", "deploy/35_prometheus-role.yaml", manifestsDir},
 		{"cp", "-a", "deploy/40_prometheus-rolebinding.yaml", manifestsDir},
-		{"cp", "-a", "deploy-extras/olm/annotations.yaml", metadataDir},
 		{"cp", "-a", "deploy/55_trusted_ca_bundle_configmap.yaml", manifestsDir},
 		// copy CRDs
 		// The first few lines of the CRD file need to be removed:
 		// https://github.com/operator-framework/operator-registry/issues/222
 		{"bash", "-c", "tail -n+3 " +
-			"deploy/crds/addons.managed.openshift.io_addons.yaml " +
+			"bundle/manifests/addons.managed.openshift.io_addons.yaml " +
 			"> " + path.Join(manifestsDir, "addons.yaml")},
 		{"bash", "-c", "tail -n+3 " +
-			"deploy/crds/addons.managed.openshift.io_addonoperators.yaml " +
+			"bundle/manifests/addons.managed.openshift.io_addonoperators.yaml " +
 			"> " + path.Join(manifestsDir, "addonoperators.yaml")},
 		{"bash", "-c", "tail -n+3 " +
-			"deploy/crds/addons.managed.openshift.io_addoninstances.yaml " +
+			"bundle/manifests/addons.managed.openshift.io_addoninstances.yaml " +
 			"> " + path.Join(manifestsDir, "addoninstances.yaml")},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
@@ -471,7 +464,31 @@ func cleanImageCache(imageCacheDir string) error {
 func populateCmdCache(imageCacheDir, cmd string) error {
 	commands := [][]string{
 		{"cp", "-a", "bin/linux_amd64/" + cmd, imageCacheDir + "/" + cmd},
-		{"cp", "-a", "deploy-extras/docker/" + cmd + ".Dockerfile", imageCacheDir + "/Dockerfile"},
+		{"cp", "-a", "go.mod", imageCacheDir},
+		{"cp", "-a", "go.sum", imageCacheDir},
+		{"mkdir", "-pv", imageCacheDir + "/cmd/"},
+		{"mkdir", "-pv", imageCacheDir + "/internal/"},
+		{"mkdir", "-pv", imageCacheDir + "/api/"},
+		{"mkdir", "-pv", imageCacheDir + "/build/bin"},
+		{"cp", "-a", "cmd/", imageCacheDir},
+		{"cp", "-a", "internal/", imageCacheDir},
+		{"cp", "-a", "api/", imageCacheDir},
+		{"cp", "-a", "build/bin/", imageCacheDir + "/build/"},
+	}
+	if cmd == "addon-operator-webhook" {
+		commands = append(commands, []string{"cp", "-a", "build/Dockerfile.webhook", imageCacheDir + "/Dockerfile"})
+	} else if cmd == "addon-operator-manager" {
+		commands = append(commands, []string{"cp", "-a", "build/Dockerfile", imageCacheDir + "/Dockerfile"})
+		commands = append(commands, []string{"cp", "-a", "boilerplate/", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "config/", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "controllers/", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "hack/", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "pkg/", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "Makefile", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "main.go", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "options.go", imageCacheDir})
+	} else {
+		commands = append(commands, []string{"cp", "-a", "deploy-extras/docker/" + cmd + ".Dockerfile", imageCacheDir + "/Dockerfile"})
 	}
 	for _, command := range commands {
 		if err := sh.Run(command[0], command[1:]...); err != nil {

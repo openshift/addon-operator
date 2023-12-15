@@ -370,9 +370,9 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
 		"deploy-extras/development/00-namespace.yaml",
 		"deploy-extras/development/01-metrics-server-tls-secret.yaml",
-		"deploy/crds/addons.managed.openshift.io_addoninstances.yaml",
-		"deploy/crds/addons.managed.openshift.io_addonoperators.yaml",
-		"deploy/crds/addons.managed.openshift.io_addons.yaml",
+		"bundle/manifests/addons.managed.openshift.io_addoninstances.yaml",
+		"bundle/manifests/addons.managed.openshift.io_addonoperators.yaml",
+		"bundle/manifests/addons.managed.openshift.io_addons.yaml",
 		"deploy/45_metrics-service.yaml",
 		"deploy/10_serviceaccount.yaml",
 		"deploy/25_role.yaml",
@@ -409,9 +409,9 @@ func (d Dev) deployAddonOperatorWebhook(ctx context.Context, cluster *dev.Cluste
 	// Deploy
 	if err := cluster.CreateAndWaitFromFiles(ctx, []string{
 		// TODO: replace with CreateAndWaitFromFolders when deployment.yaml is gone.
-		"deploy-extras/webhook/00-tls-secret.yaml",
-		"deploy-extras/webhook/service.yaml",
-		"deploy-extras/webhook/validatingwebhookconfig.yaml",
+		"deploy-extras/development/webhook/00-tls-secret.yaml",
+		"deploy-extras/development/webhook/service.yaml",
+		"deploy-extras/development/webhook/validatingwebhookconfig.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-webhook dependencies: %w", err)
 	}

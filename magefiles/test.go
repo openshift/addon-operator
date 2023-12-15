@@ -29,10 +29,6 @@ type Test mg.Namespace
 
 // Linting
 func (Test) Lint() error {
-	mg.Deps(
-		Dependency.GolangciLint,
-	)
-
 	for _, cmd := range [][]string{
 		{"go", "fmt", "./..."},
 		{"bash", "./hack/validate-directory-clean.sh"},

@@ -3,7 +3,6 @@ module github.com/openshift/addon-operator
 go 1.20
 
 require (
-	github.com/blang/semver/v4 v4.0.0
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/go-logr/logr v1.3.0
 	github.com/go-logr/stdr v1.2.2
@@ -30,6 +29,7 @@ require (
 	k8s.io/apiextensions-apiserver v0.28.3
 	k8s.io/apimachinery v0.28.4
 	k8s.io/client-go v0.28.4
+	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00
 	k8s.io/kubectl v0.28.1
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
 	package-operator.run/apis v1.9.2
@@ -44,6 +44,7 @@ require (
 	github.com/alessio/shellescape v1.4.2 // indirect
 	github.com/aws/aws-sdk-go v1.44.302 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20211011173535-cb28da3451f1 // indirect
@@ -112,7 +113,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/component-base v0.28.3 // indirect
 	k8s.io/klog/v2 v2.110.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 )
