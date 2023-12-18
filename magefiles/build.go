@@ -269,11 +269,8 @@ func populatePkgCache(imageCacheDir string) error {
 	manifestsDir := path.Join(imageCacheDir, "manifests")
 	for _, command := range [][]string{
 		{"mkdir", "-p", manifestsDir},
-		{"bash", "-c", "cp deploy-extras/package/hc/*.yaml " + manifestsDir},
-		{"cp", "deploy-extras/package/hcp/addon-operator.yaml", manifestsDir},
-		{"cp", "deploy-extras/package/hcp/metrics.service.yaml", manifestsDir},
-		{"cp", "deploy-extras/package/manifest.yaml", manifestsDir},
-		{"cp", "deploy-extras/package/addon-operator-package.Containerfile", manifestsDir},
+		{"bash", "-c", "cp hack/hypershift/package/*.yaml " + manifestsDir},
+		{"cp", "hack/hypershift/package/addon-operator-package.Containerfile", manifestsDir},
 	} {
 		if err := sh.RunV(command[0], command[1:]...); err != nil {
 			return err
@@ -319,7 +316,7 @@ func (b Build) buildPackageOperatorImage(imageCacheDir string) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile("deploy-extras/package/hcp/addon-operator.yaml",
+	if err := os.WriteFile("hack/hypershift/addon-operator.yaml",
 		depBytes, os.ModePerm); err != nil {
 		return err
 	}
