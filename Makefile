@@ -327,8 +327,10 @@ build-push-package:
 
 .PHONY: build-package
 build-package:
-		$(CONTAINER_ENGINE) build -t $(PKG_IMG):$(PKG_IMAGETAG) -f $(join $(CURDIR),/hack/hypershift/package/addon-operator-package.Containerfile) . && \
-		$(CONTAINER_ENGINE) tag $(PKG_IMG):$(PKG_IMAGETAG) $(PKG_IMG):latest
+	$(CONTAINER_ENGINE) run --rm -v ${PWD}:/workdir quay.io/app-sre/yq:4 -i '.spec.template.spec.containers[0].image = "$(OPERATOR_IMAGE_URI)"' \
+	hack/hypershift/package/hcp/addon-operator.yaml
+	$(CONTAINER_ENGINE) build -t $(PKG_IMG):$(PKG_IMAGETAG) -f $(join $(CURDIR),/hack/hypershift/package/addon-operator-package.Containerfile) . && \
+	$(CONTAINER_ENGINE) tag $(PKG_IMG):$(PKG_IMAGETAG) $(PKG_IMG):latest
 
 .PHONY: skopeo-push
 skopeo-push-package:

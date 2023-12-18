@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: addon-operator
+  name: openshift-addon-operator
   annotations:
     package-operator.run/phase: hosted-cluster
   labels:
