@@ -44,6 +44,8 @@ PKG_IMG_ORG ?= app-sre
 PKG_IMG ?= $(PKG_IMG_REGISTRY)/$(PKG_IMG_ORG)/${PKG_BASE_IMG}
 PKG_IMAGETAG ?= ${SHORT_SHA}
 
+PKO_CLI_IMAGE = quay.io/app-sre/package-operator-cli:d2e3523
+
 # PATH/Bin
 PROJECT_DIR:=$(shell pwd)
 DEPENDENCIES:=.deps
@@ -327,7 +329,8 @@ build-push-package:
 
 .PHONY: build-package
 build-package:
-	$(CONTAINER_ENGINE) run --rm -v ${PWD}:/workdir quay.io/app-sre/yq:4 -i '.spec.template.spec.containers[0].image = "$(OPERATOR_IMAGE_URI)"' \
+	@chmod 777 ${PWD}/hack/hypershift/package/hcp/addon-operator.yaml
+	$(CONTAINER_ENGINE) run --privileged --rm -v ${PWD}:/workdir quay.io/app-sre/yq:4 -i '.spec.template.spec.containers[0].image = "$(OPERATOR_IMAGE_URI)"' \
 	hack/hypershift/package/hcp/addon-operator.yaml
 	$(CONTAINER_ENGINE) build -t $(PKG_IMG):$(PKG_IMAGETAG) -f $(join $(CURDIR),/hack/hypershift/package/addon-operator-package.Containerfile) . && \
 	$(CONTAINER_ENGINE) tag $(PKG_IMG):$(PKG_IMAGETAG) $(PKG_IMG):latest
