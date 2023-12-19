@@ -40,14 +40,3 @@ repos:
     exclude: ".*"
     pass_filenames: false
     always_run: true
-
-# Temporarily disabling make-generate
-# TODO: Add this back in after boilerplate migration complete
-  # - id: make-generate
-  #   name: make-generate
-  #   entry: make generate
-  #   language: system
-  #   exclude: ".*"
-  #   pass_filenames: false
-  #   always_run: true
-  #   require_serial: true # mage does not like multiple parallel compiles

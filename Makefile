@@ -197,10 +197,11 @@ run-addon-operator-manager:
 
 ## Generates the OLM bundle
 generate-bundle:
-    ./mage dependency:operatorSDK
+	./mage dependency:operatorSDK
 	$(PROJECT_DIR)/$(DEPENDENCIES)/bin/operator-sdk  generate bundle --input-dir $(PROJECT_DIR)/deploy --version 1.0.0 --overwrite
 	@echo "Patching CSV with webhook definition at $(PROJECT_DIR)/bundle/manifests/addon-operator.clusterserviceversion.yaml"
 	./mage test:PatchAddonOperatorCSVBundle
+.PHONY: generate-bundle
 
 ## Run cmd/% against $KUBECONFIG.
 run-%: generate
