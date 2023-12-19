@@ -11,7 +11,6 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: addon-operator
-  strategy: {}
   template:
     metadata:
       labels:
@@ -20,17 +19,17 @@ spec:
       automountServiceAccountToken: false
       containers:
         - args:
-          - --enable-leader-election
-          - --metrics-addr=:8443
-          - --metrics-tls-dir=/etc/tls/manager/metrics
+            - --enable-leader-election
+            - --metrics-addr=:8443
+            - --metrics-tls-dir=/etc/tls/manager/metrics
           env:
             - name: KUBECONFIG
               value: /etc/openshift/kubeconfig/kubeconfig
             - name: ADDON_OPERATOR_NAMESPACE
               value: addon-operator
-          image: quay.io/app-sre/addon-operator-manager:replaced-in-pipeline
+          image: quay.io/app-sre/addon-operator:replaced-in-ci
           ports:
-          - containerPort: 8443
+            - containerPort: 8443
           livenessProbe:
             httpGet:
               path: /healthz
@@ -52,16 +51,21 @@ spec:
               cpu: 100m
               memory: 300Mi
           volumeMounts:
-          - mountPath: /etc/openshift/kubeconfig
-            name: kubeconfig
-            readOnly: true
-          - mountPath: /etc/tls/manager/metrics
-            name: manager-metrics-tls
+            - mountPath: /etc/openshift/kubeconfig
+              name: kubeconfig
+              readOnly: true
+            - mountPath: /etc/tls/manager/metrics
+              name: manager-metrics-tls
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
       volumes:
-      - name: kubeconfig
-        secret:
-          defaultMode: 420
-          secretName: service-network-admin-kubeconfig
-      - name: manager-metrics-tls
-        secret:
-          secretName: manager-metrics-tls
+        - name: kubeconfig
+          secret:
+            defaultMode: 420
+            secretName: service-network-admin-kubeconfig
+        - name: manager-metrics-tls
+          secret:
+            secretName: manager-metrics-tls
