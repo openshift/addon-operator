@@ -331,12 +331,19 @@ build-push-package:
 	hack/build-package.sh ${PKG_IMG}:${PKG_IMAGETAG}
 
 .PHONY: build-package
-build-package:
+build-package: validate-package
 	@chmod 777 ${PWD}/hack/hypershift/package/hcp/addon-operator.yaml
 	$(CONTAINER_ENGINE) run --privileged --rm -v ${PWD}:/workdir quay.io/app-sre/yq:4 -i '.spec.template.spec.containers[0].image = "$(OPERATOR_IMAGE_URI)"' \
 	hack/hypershift/package/hcp/addon-operator.yaml
 	$(CONTAINER_ENGINE) build -t $(PKG_IMG):$(PKG_IMAGETAG) -f $(join $(CURDIR),/hack/hypershift/package/addon-operator-package.Containerfile) . && \
 	$(CONTAINER_ENGINE) tag $(PKG_IMG):$(PKG_IMAGETAG) $(PKG_IMG):latest
+
+
+.PHONY: validate-package
+validate-package:
+	@echo "-------- Running package validation --------"
+	$(CONTAINER_ENGINE) run --rm -v $(PWD):/workdir:z $(PKO_CLI_IMAGE) validate ./workdir/hack/hypershift/package
+	@echo "-------- Package validated successfully --------"
 
 .PHONY: skopeo-push
 skopeo-push-package:
