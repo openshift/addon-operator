@@ -17,7 +17,7 @@ require (
 	github.com/openshift/api v0.0.0-20230911150451-1b50bb45038b
 	github.com/operator-framework/api v0.20.0
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.68.0
-	github.com/prometheus/client_golang v1.17.0
+	github.com/prometheus/client_golang v1.18.0
 	github.com/prometheus/client_model v0.5.0
 	github.com/prometheus/common v0.45.0
 	github.com/prometheus/prometheus v1.8.2-0.20211105201321-411021ada9ab
@@ -90,7 +90,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/common/sigv4 v0.1.0 // indirect
-	github.com/prometheus/procfs v0.11.1 // indirect
+	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/sirupsen/logrus v1.9.2 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
