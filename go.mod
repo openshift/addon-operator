@@ -21,7 +21,7 @@ require (
 	github.com/prometheus/client_model v0.5.0
 	github.com/prometheus/common v0.45.0
 	github.com/prometheus/prometheus v1.8.2-0.20211105201321-411021ada9ab
-	github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring v0.68.0-rhobs2
+	github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring v0.71.0-rhobs1
 	github.com/rhobs/observability-operator v0.0.25
 	github.com/sethvargo/go-retry v0.2.4
 	github.com/stretchr/testify v1.8.4
@@ -31,11 +31,11 @@ require (
 	k8s.io/client-go v0.29.0
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00
 	k8s.io/kubectl v0.29.0
-	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
+	k8s.io/utils v0.0.0-20231127182322-b307cd553661
 	package-operator.run/apis v1.9.3
 	sigs.k8s.io/controller-runtime v0.16.3
 	sigs.k8s.io/kind v0.20.0
-	sigs.k8s.io/yaml v1.3.0
+	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
