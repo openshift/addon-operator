@@ -14,4 +14,3 @@ _Fixes #_
 - [ ] Tested latest changes against a cluster
 - [ ] Ran `make go-test` command locally to run all the unit tests and mock tests locally.
 - [ ] Included documentation changes with PR
-- [ ] Squashed your commits
