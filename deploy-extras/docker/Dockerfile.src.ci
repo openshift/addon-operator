@@ -1,5 +1,5 @@
 # Used for local dev only
-FROM registry.access.redhat.com/ubi8/ubi:8.8-1032
+FROM registry.access.redhat.com/ubi8/ubi:8.9-1107.1705420509
 
 RUN yum update -y && yum install -y python3 python3-pip
 
