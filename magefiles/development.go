@@ -444,9 +444,20 @@ func patchDeployment(deployment *appsv1.Deployment, name string, container strin
 				},
 			}
 
-			if name == "addon-operator-manager" {
-				// Remove '--metrics-tls-dir' arg
-				containerObj.Args = removeArg(containerObj.Args, 2)
+			if name == "addon-operator-webhook" {
+				deployment.Spec.Template.Spec.Containers[0].VolumeMounts = append(deployment.Spec.Template.Spec.Containers[0].VolumeMounts, corev1.VolumeMount{
+					Name:      "tls",
+					MountPath: "/tmp/k8s-webhook-server/serving-certs/",
+					ReadOnly:  true,
+				})
+				deployment.Spec.Template.Spec.Volumes = append(deployment.Spec.Template.Spec.Volumes, corev1.Volume{
+					Name: "tls",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName: "webhook-server-cert",
+						},
+					},
+				})
 			}
 
 			break
