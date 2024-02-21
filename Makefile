@@ -171,6 +171,11 @@ test-e2e:
 	./mage test:integrationci
 .PHONY: test-e2e
 
+# Target to run PKO integration tests
+test-pko-e2e:
+	./mage test:integrationPKO
+.PHONY: test-pko-e2e
+
 ## Runs the Integration testsuite against the current $KUBECONFIG cluster. Skips operator setup and teardown.
 test-integration-short:
 	@echo "running [short] integration tests..."
