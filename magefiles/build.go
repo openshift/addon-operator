@@ -467,20 +467,20 @@ func populateCmdCache(imageCacheDir, cmd string) error {
 		{"mkdir", "-pv", imageCacheDir + "/internal/"},
 		{"mkdir", "-pv", imageCacheDir + "/api/"},
 		{"mkdir", "-pv", imageCacheDir + "/build/bin"},
-		{"cp", "-a", "cmd/", imageCacheDir},
-		{"cp", "-a", "internal/", imageCacheDir},
-		{"cp", "-a", "api/", imageCacheDir},
-		{"cp", "-a", "build/bin/", imageCacheDir + "/build/"},
+		{"cp", "-a", "cmd", imageCacheDir},
+		{"cp", "-a", "internal", imageCacheDir},
+		{"cp", "-a", "api", imageCacheDir},
+		{"cp", "-a", "build/bin", imageCacheDir + "/build/"},
 	}
 	if cmd == "addon-operator-webhook" {
 		commands = append(commands, []string{"cp", "-a", "build/Dockerfile.webhook", imageCacheDir + "/Dockerfile"})
 	} else if cmd == "addon-operator-manager" {
 		commands = append(commands, []string{"cp", "-a", "build/Dockerfile", imageCacheDir + "/Dockerfile"})
-		commands = append(commands, []string{"cp", "-a", "boilerplate/", imageCacheDir})
-		commands = append(commands, []string{"cp", "-a", "config/", imageCacheDir})
-		commands = append(commands, []string{"cp", "-a", "controllers/", imageCacheDir})
-		commands = append(commands, []string{"cp", "-a", "hack/", imageCacheDir})
-		commands = append(commands, []string{"cp", "-a", "pkg/", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "boilerplate", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "config", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "controllers", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "hack", imageCacheDir})
+		commands = append(commands, []string{"cp", "-a", "pkg", imageCacheDir})
 		commands = append(commands, []string{"cp", "-a", "Makefile", imageCacheDir})
 		commands = append(commands, []string{"cp", "-a", "main.go", imageCacheDir})
 		commands = append(commands, []string{"cp", "-a", "options.go", imageCacheDir})
