@@ -50,15 +50,16 @@ func (Test) Unit() error {
 }
 
 // Integration tests
-
-func (t Test) Integration(ctx context.Context) error { return t.integration(ctx, "") }
+func (t Test) Integration(ctx context.Context) error {
+	return t.integration(ctx, "", "")
+}
 
 // Allows specifying a subset of tests to run e.g. ./mage test:integrationrun TestIntegration/TestPackageOperatorAddon
 func (t Test) IntegrationRun(ctx context.Context, filter string) error {
-	return t.integration(ctx, filter)
+	return t.integration(ctx, filter, "")
 }
 
-func (Test) integration(ctx context.Context, filter string) error {
+func (Test) integration(ctx context.Context, filter string, skip string) error {
 	workDir, ok := ctx.Value("workDir").(string)
 	if !ok || workDir == "" {
 		workDir = path.Join(cacheDir, "dev-env")
@@ -84,6 +85,10 @@ func (Test) integration(ctx context.Context, filter string) error {
 	args := []string{"test", "-v", "-failfast", "-count=1", "-timeout=40m"}
 	if len(filter) > 0 {
 		args = append(args, "-run", filter)
+	}
+
+	if len(skip) > 0 {
+		args = append(args, "-skip", skip)
 	}
 	args = append(args, "./integration/...")
 
@@ -264,7 +269,31 @@ func (t Test) IntegrationCI(ctx context.Context) error {
 	os.Setenv("ENABLE_API_MOCK", "true")
 
 	ctx = context.WithValue(ctx, "workDir", workDir)
-	return t.Integration(ctx)
+	// Skip PKO tests.
+	return t.integration(ctx, "", "^TestIntegration/TestPackageOperator")
+}
+
+// This target will only run the PKO integration tests within the openshift CI.
+func (t Test) IntegrationPKO(ctx context.Context) error {
+	workDir := path.Join(cacheDir, "ci")
+	cluster, err := dev.NewCluster(workDir,
+		dev.WithKubeconfigPath(os.Getenv("KUBECONFIG")))
+	if err != nil {
+		return fmt.Errorf("creating cluster client: %w", err)
+	}
+
+	ctx = logr.NewContext(ctx, logger)
+
+	var dev Dev
+	if err := dev.deployAPIMock(ctx, cluster); err != nil {
+		return fmt.Errorf("deploy API mock: %w", err)
+	}
+
+	os.Setenv("ENABLE_WEBHOOK", "true")
+	os.Setenv("ENABLE_API_MOCK", "true")
+
+	ctx = context.WithValue(ctx, "workDir", workDir)
+	return t.IntegrationRun(ctx, "^TestIntegration/TestPackageOperator")
 }
 
 func (Test) IntegrationShort() error {
