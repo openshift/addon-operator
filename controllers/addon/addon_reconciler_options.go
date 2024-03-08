@@ -6,6 +6,7 @@ import (
 	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
 type AddonReconcilerOptions interface {
@@ -47,5 +48,5 @@ func (w WithPackageOperatorReconciler) ApplyToAddonReconciler(config *AddonRecon
 }
 
 func (w WithPackageOperatorReconciler) ApplyToControllerBuilder(b *builder.Builder) {
-	b.Owns(&pkov1alpha1.ClusterObjectTemplate{})
+	b.Owns(&pkov1alpha1.ClusterObjectTemplate{}, builder.WithPredicates(predicate.GenerationChangedPredicate{}))
 }
