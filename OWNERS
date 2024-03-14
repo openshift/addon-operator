@@ -5,27 +5,20 @@ approvers:
 - aditya-konarde
 - ashishmax31
 - yashvardhan-kukreja
-- sandhyadalavi
 - ajpantuso
-- garrettthomaskth
 - Ankit152
 - eqrx
 - kostola
 - chamalabey
-- pepedocs
 - sclarkso
-- vinaybommana
-- garrettthomaskth
 - npecka
 - jessesarn
-- maryfrances01
 - Nanyte25
 - pat-cremin
 - robshelly
 - supreeth7
 - ahrabovs
 - venkateshsredhat
-- nikhil-thomas
 options: {}
 reviewers:
 - thetechnick
@@ -33,6 +26,7 @@ reviewers:
 - ashishmax31
 - yashvardhan-kukreja
 - ajpantuso
-- pepedocs
-- nikhil-thomas
 - supreeth7
+- Ankit152
+- venkateshsredhat
+- chamalabey
