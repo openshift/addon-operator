@@ -230,7 +230,7 @@ func TestEnableGlobalPause(t *testing.T) {
 	}
 
 	addonList := &addonsv1alpha1.AddonList{}
-	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+	client.On("List", mock.Anything, addonList, mock.Anything).Return(nil).Once()
 
 	ctx := context.Background()
 
@@ -261,7 +261,7 @@ func TestDisableGlobalPause(t *testing.T) {
 	r.globalPause = true
 
 	addonList := &addonsv1alpha1.AddonList{}
-	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+	client.On("List", mock.Anything, addonList, mock.Anything).Return(nil).Once()
 
 	err := r.DisableGlobalPause(ctx)
 
@@ -289,7 +289,7 @@ func TestInjectOCMClient(t *testing.T) {
 	ctx := context.Background()
 
 	addonList := &addonsv1alpha1.AddonList{}
-	client.On("List", mock.AnythingOfType("*context.emptyCtx"), addonList, mock.Anything).Return(nil).Once()
+	client.On("List", mock.Anything, addonList, mock.Anything).Return(nil).Once()
 
 	reconcilerMock.On("requeueAllAddons", ctx).Return(nil)
 

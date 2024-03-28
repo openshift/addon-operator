@@ -41,6 +41,6 @@ var (
 	IsAddonsv1alpha1AddonOperatorListPtr = mock.IsType(&addonsv1alpha1.AddonOperatorList{})
 
 	// misc
-	IsContext   = mock.IsType(context.TODO())
+	IsContext   = mock.IsType(context.Background())
 	IsObjectKey = mock.IsType(client.ObjectKey{})
 )
