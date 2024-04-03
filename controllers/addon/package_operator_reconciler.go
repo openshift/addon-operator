@@ -93,6 +93,9 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		return ctrl.Result{}, err
 	}
 
+
+
+	
 	ocmClusterInfo := r.OcmClusterInfo()
 
 	templateString := fmt.Sprintf(PkoPkgTemplate,
