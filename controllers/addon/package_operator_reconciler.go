@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"k8s.io/apimachinery/pkg/api/equality"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -196,15 +197,21 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 		)
 		return ctrl.Result{}, newErr
 	}
-
-	clusterObjectTemplate.ResourceVersion = existingClusterObjectTemplate.ResourceVersion
-	if err := r.Client.Update(ctx, clusterObjectTemplate); err != nil {
-		newErr := reconErr.Join(
-			fmt.Errorf("updating ClusterObjectTemplate object: %w", err),
-			controllers.ErrReconcileClusterObjectTemplate,
-		)
-		return ctrl.Result{}, newErr
+	ownedByAdo := controllers.HasSameController(existingClusterObjectTemplate, clusterObjectTemplate)
+	specChanged := !equality.Semantic.DeepEqual(existingClusterObjectTemplate.Spec, clusterObjectTemplate.Spec)
+	if specChanged || !ownedByAdo {
+		existingClusterObjectTemplate.Spec = clusterObjectTemplate.Spec
+		existingClusterObjectTemplate.OwnerReferences = clusterObjectTemplate.OwnerReferences
+		if err := r.Client.Update(ctx, existingClusterObjectTemplate); err != nil {
+			newErr := reconErr.Join(
+				fmt.Errorf("updating ClusterObjectTemplate object: %w", err),
+				controllers.ErrReconcileClusterObjectTemplate,
+			)
+			return ctrl.Result{}, newErr
+		}
+		return ctrl.Result{}, nil
 	}
+
 	r.updateAddonStatus(addon, existingClusterObjectTemplate)
 
 	return ctrl.Result{}, nil
