@@ -33,7 +33,7 @@ require (
 	k8s.io/kubectl v0.29.3
 	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
 	package-operator.run/apis v1.10.0
-	sigs.k8s.io/controller-runtime v0.16.3
+	sigs.k8s.io/controller-runtime v0.16.5
 	sigs.k8s.io/kind v0.22.0
 	sigs.k8s.io/yaml v1.3.0
 )
