@@ -1,6 +1,7 @@
 module github.com/openshift/addon-operator
 
 go 1.21
+toolchain go1.22.2
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
@@ -27,9 +28,9 @@ require (
 	github.com/stretchr/testify v1.9.0
 	k8s.io/api v0.29.3
 	k8s.io/apiextensions-apiserver v0.29.3
-	k8s.io/apimachinery v0.29.3
+	k8s.io/apimachinery v0.30.0
 	k8s.io/client-go v0.29.3
-	k8s.io/kube-openapi v0.0.0-20231129212854-f0671cc7e66a
+	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340
 	k8s.io/kubectl v0.29.3
 	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
 	package-operator.run/apis v1.10.0
