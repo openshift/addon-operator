@@ -675,7 +675,7 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 
 		val, found := cm.Labels[fmt.Sprintf("api.openshift.com/addon-%v-delete", addon.Name)]
 		s.Require().True(found)
-		s.Require().Equal("", val)
+		s.Require().Equal("true", val)
 
 		// Assert that the addon instance's spec.markedForDeletion is set to true.
 		instance := &addonsv1alpha1.AddonInstance{}
@@ -770,7 +770,7 @@ func (s *integrationTestSuite) TestAddonDeletionFlow() {
 
 		val, found := cm.Labels[fmt.Sprintf("api.openshift.com/addon-%v-delete", addon.Name)]
 		s.Require().True(found)
-		s.Require().Equal("", val)
+		s.Require().Equal("true", val)
 
 		err = integration.Client.Get(ctx, client.ObjectKeyFromObject(addon), addon)
 		s.Require().NoError(err)
