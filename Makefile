@@ -16,21 +16,11 @@ SHELL=/bin/bash
 
 CONTAINER_ENGINE ?= $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null)
 
-# Dependency Versions
-OLM_VERSION:=v0.20.0
-KIND_VERSION:=v0.20.0
-YQ_VERSION:=v4@v4.12.0
-GOIMPORTS_VERSION:=v0.12.0
-OPM_VERSION:=v1.24.0
-
 # Build Flags
 export CGO_ENABLED:=0
-BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 SHORT_SHA=$(shell git rev-parse --short HEAD)
 VERSION?=${SHORT_SHA}
-BUILD_DATE=$(shell date +%s)
 MODULE:=github.com/openshift/addon-operator
-GOFLAGS=
 LD_FLAGS=-X $(MODULE)/internal/version.Version=$(VERSION) \
 			-X $(MODULE)/internal/version.Branch=$(BRANCH) \
 			-X $(MODULE)/internal/version.Commit=$(SHORT_SHA) \
@@ -40,6 +30,7 @@ UNAME_OS:=$(shell uname -s)
 UNAME_OS_LOWER:=$(shell uname -s | awk '{ print tolower($$0); }') # UNAME_OS but in lower case
 UNAME_ARCH:=$(shell uname -m)
 
+# Operator package metadata
 PKG_BASE_IMG ?= addon-operator-package
 PKG_IMG_REGISTRY ?= quay.io
 PKG_IMG_ORG ?= app-sre
@@ -47,6 +38,8 @@ PKG_IMG ?= $(PKG_IMG_REGISTRY)/$(PKG_IMG_ORG)/${PKG_BASE_IMG}
 PKG_IMAGETAG ?= ${SHORT_SHA}
 
 PKO_CLI_IMAGE = quay.io/app-sre/package-operator-cli:d2e3523
+
+GOVULNCHECK_VERSION=v1.0.1
 
 # PATH/Bin
 PROJECT_DIR:=$(shell pwd)
@@ -67,8 +60,7 @@ ENABLE_WEBHOOK?="false"
 ENABLE_MONITORING?="false"
 ENABLE_REMOTE_STORAGE_MOCK="true"
 WEBHOOK_PORT?=8080
-TESTOPTS?=-cover -race -v
-GOVULNCHECK_VERSION=v1.0.1
+
 
 # Container
 IMAGE_ORG?=quay.io/app-sre
@@ -269,45 +261,6 @@ push-images:
 	./mage build:pushimages
 .PHONY: push-images
 
-# App Interface specific push-images target, to run within a docker container.
-app-interface-push-images:
-	@echo "-------------------------------------------------"
-	@echo "running in app-interface-push-images container..."
-	@echo "-------------------------------------------------"
-	$(eval IMAGE_NAME := app-interface-push-images)
-	@(source hack/determine-container-runtime.sh; \
-		$$CONTAINER_COMMAND build -t "${IMAGE_ORG}/${IMAGE_NAME}:${VERSION}" -f "config/docker/${IMAGE_NAME}.Dockerfile" --pull .; \
-		$$CONTAINER_COMMAND run --rm \
-			--privileged \
-			-e JENKINS_HOME=${JENKINS_HOME} \
-			-e QUAY_USER=${QUAY_USER} \
-			-e QUAY_TOKEN=${QUAY_TOKEN} \
-			"${IMAGE_ORG}/${IMAGE_NAME}:${VERSION}" \
-			./mage build:pushimagesonce; \
-	echo) 2>&1 | sed 's/^/  /'
-.PHONY: app-interface-push-images
-
-## openshift release openshift-ci operator
-openshift-ci-test-build: \
-	clean-config-openshift
-	@ADDON_OPERATOR_MANAGER_IMAGE=quay.io/openshift/addon-operator:latest ADDON_OPERATOR_WEBHOOK_IMAGE=quay.io/openshift/addon-operator-webhook:latest ./mage build:TemplateAddonOperatorCSV
-	$(eval IMAGE_NAME := addon-operator-bundle)
-	@echo "preparing files for config/openshift ${IMAGE_ORG}/${IMAGE_NAME}:${VERSION}..."
-	@mkdir -p "config/openshift/manifests";
-	@mkdir -p "config/openshift/metadata";
-	@cp "deploy-extras/docker/${IMAGE_NAME}.Dockerfile" "config/openshift/${IMAGE_NAME}.Dockerfile";
-	@cp "deploy-extras/olm/annotations.yaml" "config/openshift/metadata";
-	@cp "deploy/45_metrics-service.yaml" "config/openshift/manifests/metrics.service.yaml";
-	@cp "deploy/50_servicemonitor.yaml" "config/openshift/manifests/addon-operator-servicemonitor.yaml";
-	@cp "deploy/35_prometheus-role.yaml" "config/openshift/manifests/prometheus-role.yaml";
-	@cp "deploy/40_prometheus-rolebinding.yaml" "config/openshift/manifests/prometheus-rb.yaml";
-	@cp "deploy-extras/olm/addon-operator.csv.yaml" "config/openshift/manifests/addon-operator.csv.yaml";
-	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addons.yaml" > "config/openshift/manifests/addons.crd.yaml";
-	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addonoperators.yaml" > "config/openshift/manifests/addonoperators.crd.yaml";
-	@tail -n"+3" "deploy/crds/addons.managed.openshift.io_addoninstances.yaml" > "config/openshift/manifests/addoninstances.crd.yaml";
-
-.SECONDEXPANSION:
-
 ## Builds config/docker/%.Dockerfile using a binary build from cmd/%.
 build-image-%:
 	./mage build:imagebuild $*
@@ -344,6 +297,7 @@ build-package: validate-package
 	$(CONTAINER_ENGINE) tag $(PKG_IMG):$(PKG_IMAGETAG) $(PKG_IMG):latest
 
 
+## Validate ADO package
 .PHONY: validate-package
 validate-package:
 	@echo "-------- Running package validation --------"
