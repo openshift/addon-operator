@@ -47,7 +47,7 @@ func TestNotifyAddonLegacy(t *testing.T) {
 				require.Equal(t, addon.Name, cm.Name)
 				require.Equal(t, GetCommonInstallOptions(addon).Namespace, cm.Namespace)
 				val, found := cm.Labels[fmt.Sprintf(DeleteConfigMapLabel, addon.Name)]
-				return found && val == ""
+				return found && val == "true"
 			}),
 			[]ctrlclient.CreateOption(nil),
 		)
@@ -96,7 +96,7 @@ func TestNotifyAddonLegacy(t *testing.T) {
 				require.Equal(t, addon.Name, cm.Name)
 				require.Equal(t, GetCommonInstallOptions(addon).Namespace, cm.Namespace)
 				val, found := cm.Labels[fmt.Sprintf(DeleteConfigMapLabel, addon.Name)]
-				return found && val == ""
+				return found && val == "true"
 			}),
 			mock.Anything,
 			[]ctrlclient.PatchOption(nil),
@@ -117,7 +117,7 @@ func TestNotifyAddonLegacy(t *testing.T) {
 				Name:      addon.Name,
 				Namespace: GetCommonInstallOptions(addon).Namespace,
 				Labels: map[string]string{
-					fmt.Sprintf(DeleteConfigMapLabel, addon.Name): "",
+					fmt.Sprintf(DeleteConfigMapLabel, addon.Name): "true",
 				},
 			},
 		}

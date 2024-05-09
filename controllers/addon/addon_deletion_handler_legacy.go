@@ -37,7 +37,7 @@ func (l *legacyDeletionHandler) NotifyAddon(ctx context.Context, addon *addonsv1
 		return err
 	}
 
-	if _, labelFound := currentDeleteCM.Labels[fmt.Sprintf(DeleteConfigMapLabel, addon.Name)]; labelFound {
+	if labelValue, labelFound := currentDeleteCM.Labels[fmt.Sprintf(DeleteConfigMapLabel, addon.Name)]; labelFound && labelValue == "true" {
 		return nil
 	}
 
@@ -47,7 +47,7 @@ func (l *legacyDeletionHandler) NotifyAddon(ctx context.Context, addon *addonsv1
 	if modifiedCM.Labels == nil {
 		modifiedCM.Labels = make(map[string]string)
 	}
-	modifiedCM.Labels[fmt.Sprintf(DeleteConfigMapLabel, addon.Name)] = ""
+	modifiedCM.Labels[fmt.Sprintf(DeleteConfigMapLabel, addon.Name)] = "true"
 	return l.client.Patch(ctx, modifiedCM, client.MergeFrom(currentDeleteCM))
 }
 
@@ -100,7 +100,7 @@ func (l *legacyDeletionHandler) createDeleteConfigMap(ctx context.Context, addon
 			Name:      addon.Name,
 			Namespace: addonTargetNS,
 			Labels: map[string]string{
-				fmt.Sprintf(DeleteConfigMapLabel, addon.Name): "",
+				fmt.Sprintf(DeleteConfigMapLabel, addon.Name): "true",
 			},
 		},
 	}
