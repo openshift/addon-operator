@@ -16,6 +16,11 @@ spec:
       labels:
         app.kubernetes.io/name: addon-operator
     spec:
+      tolerations:
+      - effect: NoSchedule
+        key: hypershift.openshift.io/request-serving-component
+        operator: Equal
+        value: "true"
       automountServiceAccountToken: false
       containers:
         - args:
