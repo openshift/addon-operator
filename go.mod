@@ -19,7 +19,7 @@ require (
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.68.0
 	github.com/prometheus/client_golang v1.19.0
 	github.com/prometheus/client_model v0.6.1
-	github.com/prometheus/common v0.51.1
+	github.com/prometheus/common v0.53.0
 	github.com/prometheus/prometheus v1.8.2-0.20211105201321-411021ada9ab
 	github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring v0.71.0-rhobs1
 	github.com/rhobs/observability-operator v0.2.0
