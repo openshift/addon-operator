@@ -16,7 +16,7 @@ require (
 	github.com/openshift/addon-operator/apis v0.0.0-20230908020307-fe70c681ed8b
 	github.com/openshift/api v0.0.0-20240301093301-ce10821dc999
 	github.com/operator-framework/api v0.21.0
-	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.68.0
+	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.73.2
 	github.com/prometheus/client_golang v1.19.0
 	github.com/prometheus/client_model v0.6.1
 	github.com/prometheus/common v0.53.0
@@ -31,7 +31,7 @@ require (
 	k8s.io/client-go v0.29.3
 	k8s.io/kube-openapi v0.0.0-20231129212854-f0671cc7e66a
 	k8s.io/kubectl v0.29.3
-	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
+	k8s.io/utils v0.0.0-20240310230437-4693a0247e57
 	package-operator.run/apis v1.10.0
 	sigs.k8s.io/controller-runtime v0.17.3
 	sigs.k8s.io/kind v0.22.0
