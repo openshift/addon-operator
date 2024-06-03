@@ -16,11 +16,31 @@ spec:
       labels:
         app.kubernetes.io/name: addon-operator
     spec:
-      tolerations:
-      - effect: NoSchedule
-        key: hypershift.openshift.io/request-serving-component
-        operator: Equal
-        value: "true"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: hypershift.openshift.io/control-plane
+                operator: In
+                values:
+                - "true"
+            weight: 50
+          - preference:
+              matchExpressions:
+              - key: hypershift.openshift.io/cluster
+                operator: In
+                values:
+                - 'ocm-staging-2bjb6klkupkpg4ovp0srqcteotev0773-ves-hcp'
+            weight: 100
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  hypershift.openshift.io/hosted-control-plane: 'ocm-staging-2bjb6klkupkpg4ovp0srqcteotev0773-ves-hcp'
+              topologyKey: kubernetes.io/hostname
+            weight: 100
       automountServiceAccountToken: false
       containers:
         - args:
@@ -66,6 +86,15 @@ spec:
             capabilities:
               drop:
                 - ALL
+      tolerations:
+        - effect: NoSchedule
+          key: hypershift.openshift.io/control-plane
+          operator: Equal
+          value: "true"
+        - effect: NoSchedule
+          key: hypershift.openshift.io/cluster
+          operator: Equal
+          value: 'ocm-staging-2bjb6klkupkpg4ovp0srqcteotev0773-ves-hcp'            
       volumes:
         - name: kubeconfig
           secret:
