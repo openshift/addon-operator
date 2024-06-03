@@ -290,9 +290,9 @@ build-push-package:
 
 .PHONY: build-package
 build-package: validate-package
-	@chmod 777 ${PWD}/hack/hypershift/package/hcp/addon-operator.yaml
+	@chmod 777 ${PWD}/hack/hypershift/package/hcp/addon-operator.yaml.gotmpl
 	$(CONTAINER_ENGINE) run --privileged --rm -v ${PWD}:/workdir quay.io/app-sre/yq:4 -i '.spec.template.spec.containers[0].image = "$(OPERATOR_IMAGE_URI)"' \
-	hack/hypershift/package/hcp/addon-operator.yaml
+	hack/hypershift/package/hcp/addon-operator.yaml.gotmpl
 	$(CONTAINER_ENGINE) build -t $(PKG_IMG):$(PKG_IMAGETAG) -f $(join $(CURDIR),/hack/hypershift/package/addon-operator-package.Containerfile) . && \
 	$(CONTAINER_ENGINE) tag $(PKG_IMG):$(PKG_IMAGETAG) $(PKG_IMG):latest
 
