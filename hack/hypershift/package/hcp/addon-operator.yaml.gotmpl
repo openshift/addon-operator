@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: addon-operator-manager
+  labels:
+    app.kubernetes.io/name: addon-operator
+  annotations:
+    package-operator.run/phase: hosted-control-plane
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: addon-operator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: addon-operator
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: hypershift.openshift.io/control-plane
+                operator: In
+                values:
+                - "true"
+            weight: 50
+          - preference:
+              matchExpressions:
+              - key: hypershift.openshift.io/cluster
+                operator: In
+                values:
+                - '{{.package.metadata.namespace}}'
+            weight: 100
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  hypershift.openshift.io/hosted-control-plane: '{{.package.metadata.namespace}}'
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      automountServiceAccountToken: false
+      containers:
+        - args:
+            - --enable-leader-election
+            - --metrics-addr=:8443
+            - --metrics-tls-dir=/etc/tls/manager/metrics
+          env:
+            - name: KUBECONFIG
+              value: /etc/openshift/kubeconfig/kubeconfig
+            - name: ADDON_OPERATOR_NAMESPACE
+              value: addon-operator
+          image: quay.io/app-sre/addon-operator:replaced-in-ci
+          ports:
+            - containerPort: 8443
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          name: manager
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 100m
+              memory: 600Mi
+            requests:
+              cpu: 100m
+              memory: 300Mi
+          volumeMounts:
+            - mountPath: /etc/openshift/kubeconfig
+              name: kubeconfig
+              readOnly: true
+            - mountPath: /etc/tls/manager/metrics
+              name: manager-metrics-tls
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      tolerations:
+        - effect: NoSchedule
+          key: hypershift.openshift.io/control-plane
+          operator: Equal
+          value: "true"
+        - effect: NoSchedule
+          key: hypershift.openshift.io/cluster
+          operator: Equal
+          value: '{{.package.metadata.namespace}}'            
+      volumes:
+        - name: kubeconfig
+          secret:
+            defaultMode: 420
+            secretName: service-network-admin-kubeconfig
+        - name: manager-metrics-tls
+          secret:
+            secretName: manager-metrics-tls
