@@ -49,8 +49,8 @@ DEPENDENCY_VERSIONS:=$(abspath $(DEPENDENCIES)/$(UNAME_OS)/$(UNAME_ARCH)/version
 export PATH:=$(DEPENDENCY_BIN):$(PATH)
 
 # Config
-KIND_KUBECONFIG_DIR:=.cache/integration
-KIND_KUBECONFIG:=$(KIND_KUBECONFIG_DIR)/kubeconfig
+KIND_KUBECONFIG_DIR:=.cache/dev-env
+KIND_KUBECONFIG:=$(KIND_KUBECONFIG_DIR)/kubeconfig.yaml
 export KUBECONFIG?=$(abspath $(KIND_KUBECONFIG))
 export GOLANGCI_LINT_CACHE=$(abspath .cache/golangci-lint)
 export SKIP_TEARDOWN?=
@@ -66,7 +66,8 @@ WEBHOOK_PORT?=8080
 IMAGE_ORG?=quay.io/app-sre
 ADDON_OPERATOR_MANAGER_IMAGE?=$(IMAGE_ORG)/addon-operator-manager:$(VERSION)
 ADDON_OPERATOR_WEBHOOK_IMAGE?=$(IMAGE_ORG)/addon-operator-webhook:$(VERSION)
-API_MOCK_IMAGE?=$(IMAGE_ORG)/api-mock:$(VERSION)
+API_MOCK_IM?=$(IMAGE_ORG)/api-mock:$(VERSION)
+export API_MOCK_IMAGE?=$(API_MOCK_IM)
 
 # COLORS
 GREEN  := $(shell tput -Txterm setaf 2)
@@ -74,7 +75,6 @@ YELLOW := $(shell tput -Txterm setaf 3)
 RESET  := $(shell tput -Txterm sgr0)
 
 OUTPUT=$(shell grep -e 'webhookdefinitions' $(PROJECT_DIR)/bundle/manifests/addon-operator.clusterserviceversion.yaml)
-   
 
 # ---------
 ##@ General
