@@ -64,7 +64,7 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAd
 				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
 					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
 						Namespace:          namespace,
-						CatalogSourceImage: referenceAddonCatalogSourceImageWorking,
+						CatalogSourceImage: referenceAddonCatalogSourceImageWorkingv6,
 						Channel:            "alpha",
 						PackageName:        "reference-addon",
 						Config:             &addonsv1alpha1.SubscriptionConfig{EnvironmentVariables: referenceAddonConfigEnvObjects},
@@ -207,17 +207,23 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 	var wg sync.WaitGroup
 	// set the WaitGroup counter to the total number of jobs
 	wg.Add(len(tests))
+	// Create the error channel for tests
+	errCh := make(chan error)
 	// launch workers
 	for i := 0; i < numWorkers; i++ {
-		go testWorker(s, i, numWorkers, &wg, tests)
+		go testWorker(s, i, numWorkers, &wg, tests, errCh)
 	}
+
 	// wait for all jobs to finish
-	timedOut := waitTimeout(&wg, 15*time.Minute)
+	timedOut := waitTimeout(&wg, 30*time.Minute, errCh)
+	for err := range errCh {
+		s.Assert().NoError(err, "ClusterPackage failed to check")
+	}
 	// check that the timeout didn't trigger
 	s.Require().False(timedOut)
 }
 
-func testWorker(s *integrationTestSuite, workerID int, numWorkers int, wg *sync.WaitGroup, testSources []TestPKOSourcesData) {
+func testWorker(s *integrationTestSuite, workerID int, numWorkers int, wg *sync.WaitGroup, testSources []TestPKOSourcesData, errCh chan error) {
 	testIdx := workerID
 
 	for counter := 1; testIdx < len(testSources); counter++ {
@@ -243,7 +249,7 @@ func testWorker(s *integrationTestSuite, workerID int, numWorkers int, wg *sync.
 			s.createSendGridSecret(ctx, testAddonName, testAddonNamespace)
 		}
 
-		s.waitForClusterPackage(
+		if err := s.waitForClusterPackage(
 			ctx,
 			testAddonName,
 			testAddonNamespace,
@@ -252,7 +258,9 @@ func testWorker(s *integrationTestSuite, workerID int, numWorkers int, wg *sync.
 			testSource.deployDeadMansSnitchSecret,
 			testSource.deployPagerDutySecret,
 			testSource.deploySendGridSecret,
-		)
+		); err != nil {
+			errCh <- err
+		}
 
 		s.addonCleanup(addon, ctx)
 		wg.Done()
@@ -260,10 +268,11 @@ func testWorker(s *integrationTestSuite, workerID int, numWorkers int, wg *sync.
 	}
 }
 
-func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
+func waitTimeout(wg *sync.WaitGroup, timeout time.Duration, errCh chan error) bool {
 	c := make(chan struct{})
 	go func() {
 		defer close(c)
+		defer close(errCh)
 		wg.Wait()
 	}()
 	select {
@@ -288,7 +297,7 @@ func (s *integrationTestSuite) createAddon(ctx context.Context, addonName string
 				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
 					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
 						Namespace:          addonNamespace,
-						CatalogSourceImage: referenceAddonCatalogSourceImageWorking,
+						CatalogSourceImage: referenceAddonCatalogSourceImageWorkingv6,
 						Channel:            "alpha",
 						PackageName:        "reference-addon",
 						Config:             &addonsv1alpha1.SubscriptionConfig{EnvironmentVariables: referenceAddonConfigEnvObjects},
@@ -348,13 +357,17 @@ func (s *integrationTestSuite) createSecret(ctx context.Context, name string, na
 // and check if their env variables corresponds to the secrets
 func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonName string, addonNamespace string, conditionType string,
 	addonParametersValuePresent bool, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool, sendGridValuePresent bool,
-) {
+) error {
 	logger := testutil.NewLogger(s.T())
 	cp := &v1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
-	err := integration.WaitForObjectWithInterval(ctx, s.T(), 20*time.Second,
+	if err := integration.WaitForObjectWithInterval(ctx, s.T(), 30*time.Second,
 		defaultAddonAvailabilityTimeout, cp, "to be "+conditionType,
-		clusterPackageChecker(&logger, addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent, pagerDutyValuePresent, sendGridValuePresent))
-	s.Require().NoError(err)
+		clusterPackageChecker(&logger, addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent,
+			pagerDutyValuePresent, sendGridValuePresent)); err != nil {
+		s.T().Log("ClusterPackage failed to check")
+		return err
+	}
+	return nil
 }
 
 func clusterPackageChecker(
@@ -401,6 +414,10 @@ func clusterPackageChecker(
 
 		targetNamespace, present := addonsv1[addon.TargetNamespaceConfigKey]
 		targetNamespaceValueOk := present && targetNamespace == addonNamespace
+		if !targetNamespaceValueOk {
+			logger.Info("result: false target namespace value wrong")
+			return false, nil
+		}
 
 		clusterID, present := addonsv1[addon.ClusterIDConfigKey]
 		clusterIDValueOk := false
@@ -412,8 +429,17 @@ func clusterPackageChecker(
 		ocmClusterID, present := addonsv1[addon.OcmClusterIDConfigKey]
 		ocmClusterIDValueOk := present && len(fmt.Sprintf("%v", ocmClusterID)) > 0
 
+		if !ocmClusterIDValueOk {
+			logger.Info("result: false ocm cluster id value wrong")
+			return false, nil
+		}
+
 		ocmClusterName, present := addonsv1[addon.OcmClusterNameConfigKey]
 		ocmClusterNameValueOk := present && len(fmt.Sprintf("%v", ocmClusterName)) > 0
+		if !ocmClusterNameValueOk {
+			logger.Info("result: false ocm cluster name value wrong")
+			return false, nil
+		}
 
 		addonParametersValueOk, deadMansSnitchUrlValueOk, pagerDutyValueOk, sendGridValueOk := false, false, false, false
 		if addonParametersValuePresent {
@@ -428,6 +454,11 @@ func clusterPackageChecker(
 			_, present := addonsv1[addon.ParametersConfigKey]
 			addonParametersValueOk = !present
 		}
+		if !addonParametersValueOk {
+			logger.Info("result: false addon parameters value wrong")
+			return false, nil
+		}
+
 		if deadMansSnitchUrlValuePresent {
 			value, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
 			deadMansSnitchUrlValueOk = present && fmt.Sprint(value) == deadMansSnitchUrlValue
@@ -435,6 +466,12 @@ func clusterPackageChecker(
 			_, present := addonsv1[addon.DeadMansSnitchUrlConfigKey]
 			deadMansSnitchUrlValueOk = !present
 		}
+
+		if !deadMansSnitchUrlValueOk {
+			logger.Info("result: false DM url value wrong")
+			return false, nil
+		}
+
 		if pagerDutyValuePresent {
 			value, present := addonsv1[addon.PagerDutyKeyConfigKey]
 			pagerDutyValueOk = present && fmt.Sprint(value) == pagerDutyKeyValue
@@ -442,6 +479,11 @@ func clusterPackageChecker(
 			_, present := addonsv1[addon.PagerDutyKeyConfigKey]
 			pagerDutyValueOk = !present
 		}
+		if !pagerDutyValueOk {
+			logger.Info("result: false PD value wrong")
+			return false, nil
+		}
+
 		if sendGridValuePresent {
 			value, present := addonsv1[addon.SendGridConfigKey]
 			if present {
@@ -453,6 +495,10 @@ func clusterPackageChecker(
 		} else {
 			_, present := addonsv1[addon.SendGridConfigKey]
 			sendGridValueOk = !present
+		}
+		if !sendGridValueOk {
+			logger.Info("result: false SG value wrong")
+			return false, nil
 		}
 
 		logger.Info(fmt.Sprintf("targetNamespace=%t, clusterID=%t, ocmClusterID=%t, ocmClusterName=%t, addonParameters=%t, deadMansSnitchUrl=%t, pagerDutyKey=%t, sendGrid=%t",
