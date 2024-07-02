@@ -37,7 +37,6 @@ func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
 	addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	log := controllers.LoggerFromContext(ctx)
 	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
-	log.Info(fmt.Sprint("in monitoringFederationReconciler"))
 	// Possibly ensure monitoring federation
 	// Normally this would be configured before the addon workload is installed
 	// but currently the addon workload creates the monitoring stack by itself
