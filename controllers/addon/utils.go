@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"hash/fnv"
+	"log"
 	"strings"
 
 	"github.com/davecgh/go-spew/spew"
@@ -504,7 +505,7 @@ func GetMonitoringFederationServiceMonitorName(addon *addonsv1alpha1.Addon) stri
 
 // GetMonitoringFederationServiceMonitorEndpoints generates a slice of monitoringv1.Endpoint
 // instances from an addon's Monitoring.Federation specification.
-func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon) []monitoringv1.Endpoint {
+func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon, bearertokensecret *corev1.Secret) []monitoringv1.Endpoint {
 	const cacert = "/etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt"
 
 	tlsConfig := &monitoringv1.TLSConfig{
@@ -519,16 +520,18 @@ func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon)
 	for _, name := range addon.Spec.Monitoring.Federation.MatchNames {
 		matchParams = append(matchParams, fmt.Sprintf(`{__name__="%s"}`, name))
 	}
+	auth := &monitoringv1.SafeAuthorization{Type: "Bearer", Credentials: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: bearertokensecret.Name}, Key: "token"}}
 
+	log.Println("the Auth struct ", auth)
 	return []monitoringv1.Endpoint{{
-		BearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token",
-		HonorLabels:     true,
-		Port:            addon.Spec.Monitoring.Federation.PortName,
-		Path:            "/federate",
-		Scheme:          "https",
-		Interval:        "30s",
-		TLSConfig:       tlsConfig,
-		Params:          map[string][]string{"match[]": matchParams},
+		Authorization: auth,
+		HonorLabels:   true,
+		Port:          addon.Spec.Monitoring.Federation.PortName,
+		Path:          "/federate",
+		Scheme:        "https",
+		Interval:      "30s",
+		TLSConfig:     tlsConfig,
+		Params:        map[string][]string{"match[]": matchParams},
 	}}
 }
 

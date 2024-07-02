@@ -380,6 +380,7 @@ func (d Dev) deployAddonOperatorManager(ctx context.Context, cluster *dev.Cluste
 		"deploy/15_clusterrole.yaml",
 		"deploy/20_clusterrolebinding.yaml",
 		"deploy/55_trusted_ca_bundle_configmap.yaml",
+		"deploy/80_addon-sermon-fedaration-token.yaml",
 	}); err != nil {
 		return fmt.Errorf("deploy addon-operator-manager dependencies: %w", err)
 	}
