@@ -112,7 +112,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secre
 }
 
 // desired secret in Addon monitoring NS being present with different owner
-func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secret_PresentDiffAttribute_NotPresentInCluster(t *testing.T) {
+func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secret_PresentDiffAttribute_SMNotPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 	uncachedC := testutil.NewClient()
 	r := &monitoringFederationReconciler{
@@ -192,7 +192,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secre
 }
 
 // desired secret in Addon monitoring NS being present so reconciler proceeds with SM creation
-func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secret_Present_NotPresentInCluster(t *testing.T) {
+func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secret_Present_SMNotPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 	uncachedC := testutil.NewClient()
 	r := &monitoringFederationReconciler{
@@ -290,7 +290,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secre
 
 }
 
-func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *testing.T) {
+func TestEnsureMonitoringFederation_MonitoringPresentInSpec_SMPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 	uncachedC := testutil.NewClient()
 

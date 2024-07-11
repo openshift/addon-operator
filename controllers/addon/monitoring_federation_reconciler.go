@@ -236,7 +236,6 @@ func (r *monitoringFederationReconciler) reconcileBearerTokenSecretForAddon(ctx 
 		Namespace: r.addonOperatorNamespace,
 	}
 
-	//client.ObjectKey{}
 	log := controllers.LoggerFromContext(ctx)
 	log.Info("finding token secret openshift-addon-operator")
 	addonOperatorPromTokenSecret := &corev1.Secret{}
@@ -263,7 +262,6 @@ func (r *monitoringFederationReconciler) reconcileBearerTokenSecretForAddon(ctx 
 		types.NamespacedName{Name: desiredBearertokensecret.Name, Namespace: desiredBearertokensecret.Namespace},
 		existingBearerTokenSecret,
 	); err != nil {
-		fmt.Print("reached with error  get call", err)
 		if k8sApiErrors.IsNotFound(err) {
 			log.Info("creating the sa secret in the monitoring namespace")
 			return ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil, r.client.Create(ctx, desiredBearertokensecret)
