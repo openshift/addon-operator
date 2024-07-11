@@ -12,13 +12,3 @@ updates:
         # don't upgrade boilerplate via these means
       - dependency-name: "openshift4/ose-operator-registry"
         # don't upgrade ose-operator-registry via these means
-  - package-ecosystem: gomod
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    labels:
-    - "area/dependency"
-    - "ok-to-test"
-    commit-message:
-      prefix: fix
-      include: scope
