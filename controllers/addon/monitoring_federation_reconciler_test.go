@@ -12,6 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -23,11 +24,15 @@ import (
 func TestEnsureMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 
+	uncachedC := testutil.NewClient()
+
 	addon := testutil.NewTestAddonWithoutNamespace()
 
 	r := &monitoringFederationReconciler{
-		client: c,
-		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		client:                 c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	ctx := context.Background()
@@ -36,12 +41,15 @@ func TestEnsureMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInClu
 	c.AssertExpectations(t)
 }
 
-func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(t *testing.T) {
+// desired secret in Addon monitoring NS not being present
+func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secret_Not_Present(t *testing.T) {
 	c := testutil.NewClient()
-
+	uncachedC := testutil.NewClient()
 	r := &monitoringFederationReconciler{
-		client: c,
-		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		client:                 c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	addon := testutil.NewTestAddonWithMonitoringFederation()
@@ -49,40 +57,248 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_NotPresentInCluster(
 
 	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&corev1.Namespace{}), mock.Anything).
 		Return(testutil.NewTestErrNotFound())
+
 	c.On("Create", testutil.IsContext, mock.IsType(&corev1.Namespace{}), mock.Anything).
 		Run(func(args mock.Arguments) {
 			// mocked Namespace is immediately active
 			namespace := args.Get(1).(*corev1.Namespace)
 			namespace.Status.Phase = corev1.NamespaceActive
 			assert.Equal(t, GetMonitoringNamespaceName(addon), namespace.Name)
+
 		}).
 		Return(nil)
-	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).
+
+	secretADOtoken := corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "addon-operator-prom-token",
+			Namespace: r.addonOperatorNamespace},
+		Data: map[string][]byte{
+			"token": []byte("mock-token"),
+		},
+	}
+
+	uncachedC.On("Get",
+		testutil.IsContext,
+		types.NamespacedName{
+			Name:      "addon-operator-prom-token",
+			Namespace: r.addonOperatorNamespace,
+		},
+		mock.IsType(&corev1.Secret{}), mock.Anything).Run(func(args mock.Arguments) {
+		secretADOtoken.DeepCopyInto(args.Get(2).(*corev1.Secret))
+		secret := args.Get(2).(*corev1.Secret)
+		err := controllerutil.SetControllerReference(addon, secret, r.scheme)
+		controllers.AddCommonLabels(secret, addon)
+		assert.NoError(t, err)
+	}).
+		Return(nil)
+	uncachedC.On("Get",
+		testutil.IsContext,
+		types.NamespacedName{
+			Name:      fmt.Sprintf("%s-bearertoken-secret", addon.Name),
+			Namespace: GetMonitoringNamespaceName(addon),
+		},
+		mock.IsType(&corev1.Secret{}), mock.Anything).Return(testutil.NewTestErrNotFound())
+
+	c.On("Create", mock.Anything, mock.IsType(&corev1.Secret{}), mock.Anything).Return(nil)
+
+	ctx := context.Background()
+	result, err := r.ensureMonitoringFederation(ctx, addon)
+	require.NoError(t, err)
+	assert.Equal(t, ctrl.Result{
+		RequeueAfter: defaultRetryAfterTime,
+	}, result)
+	c.AssertExpectations(t)
+
+}
+
+// desired secret in Addon monitoring NS being present with different owner
+func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secret_PresentDiffAttribute_SMNotPresentInCluster(t *testing.T) {
+	c := testutil.NewClient()
+	uncachedC := testutil.NewClient()
+	r := &monitoringFederationReconciler{
+		client:                 c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
+	}
+
+	addon := testutil.NewTestAddonWithMonitoringFederation()
+	addon.Spec.Monitoring.Federation.PortName = "https"
+
+	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&corev1.Namespace{}), mock.Anything).
 		Return(testutil.NewTestErrNotFound())
+
+	c.On("Create", testutil.IsContext, mock.IsType(&corev1.Namespace{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			// mocked Namespace is immediately active
+			namespace := args.Get(1).(*corev1.Namespace)
+			namespace.Status.Phase = corev1.NamespaceActive
+			assert.Equal(t, GetMonitoringNamespaceName(addon), namespace.Name)
+
+		}).
+		Return(nil)
+
+	secretADOtoken := corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "addon-operator-prom-token",
+			Namespace: r.addonOperatorNamespace},
+		Data: map[string][]byte{
+			"token": []byte("mock-token"),
+		},
+	}
+	addonADOtoken := corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{Name: fmt.Sprintf("%s-bearertoken-secret", addon.Name), Namespace: GetMonitoringNamespaceName(addon)},
+		Data: map[string][]byte{
+			"token": []byte("mock-token"),
+		},
+	}
+
+	uncachedC.On("Get",
+		testutil.IsContext,
+		types.NamespacedName{
+			Name:      "addon-operator-prom-token",
+			Namespace: r.addonOperatorNamespace,
+		},
+		mock.IsType(&corev1.Secret{}), mock.Anything).Run(func(args mock.Arguments) {
+		secretADOtoken.DeepCopyInto(args.Get(2).(*corev1.Secret))
+		secret := args.Get(2).(*corev1.Secret)
+		err := controllerutil.SetControllerReference(addon, secret, r.scheme)
+		controllers.AddCommonLabels(secret, addon)
+		assert.NoError(t, err)
+	}).
+		Return(nil)
+
+	uncachedC.On("Get",
+		testutil.IsContext,
+		types.NamespacedName{
+			Name:      fmt.Sprintf("%s-bearertoken-secret", addon.Name),
+			Namespace: GetMonitoringNamespaceName(addon),
+		},
+		mock.IsType(&corev1.Secret{}), mock.Anything).Run(func(args mock.Arguments) {
+		addonADOtoken.DeepCopyInto(args.Get(2).(*corev1.Secret))
+
+	}).Return(nil)
+
+	c.On("Update", mock.Anything, mock.IsType(&corev1.Secret{}), mock.Anything).Return(nil)
+
+	ctx := context.Background()
+	result, err := r.ensureMonitoringFederation(ctx, addon)
+	require.NoError(t, err)
+	assert.Equal(t, ctrl.Result{
+		RequeueAfter: defaultRetryAfterTime,
+	}, result)
+	c.AssertExpectations(t)
+
+}
+
+// desired secret in Addon monitoring NS being present so reconciler proceeds with SM creation
+func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secret_Present_SMNotPresentInCluster(t *testing.T) {
+	c := testutil.NewClient()
+	uncachedC := testutil.NewClient()
+	r := &monitoringFederationReconciler{
+		client:                 c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
+	}
+
+	addon := testutil.NewTestAddonWithMonitoringFederation()
+	addon.Spec.Monitoring.Federation.PortName = "https"
+
+	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&corev1.Namespace{}), mock.Anything).
+		Return(testutil.NewTestErrNotFound())
+
+	c.On("Create", testutil.IsContext, mock.IsType(&corev1.Namespace{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			// mocked Namespace is immediately active
+			namespace := args.Get(1).(*corev1.Namespace)
+			namespace.Status.Phase = corev1.NamespaceActive
+			assert.Equal(t, GetMonitoringNamespaceName(addon), namespace.Name)
+
+		}).
+		Return(nil)
+
+	secretADOtoken := corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "addon-operator-prom-token",
+			Namespace: r.addonOperatorNamespace},
+		Data: map[string][]byte{
+			"token": []byte("mock-token"),
+		},
+	}
+	addonADOtoken := corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{Name: fmt.Sprintf("%s-bearertoken-secret", addon.Name), Namespace: GetMonitoringNamespaceName(addon)},
+		Data: map[string][]byte{
+			"token": []byte("mock-token"),
+		},
+	}
+
+	uncachedC.
+		On("Get",
+			testutil.IsContext,
+			types.NamespacedName{
+				Name:      "addon-operator-prom-token",
+				Namespace: r.addonOperatorNamespace,
+			},
+			mock.IsType(&corev1.Secret{}), mock.Anything).Run(func(args mock.Arguments) {
+		secretADOtoken.DeepCopyInto(args.Get(2).(*corev1.Secret))
+		secret := args.Get(2).(*corev1.Secret)
+		err := controllerutil.SetControllerReference(addon, secret, r.scheme)
+		controllers.AddCommonLabels(secret, addon)
+		assert.NoError(t, err)
+	}).
+		Return(nil)
+
+	uncachedC.
+		On("Get",
+			testutil.IsContext,
+			types.NamespacedName{
+				Name:      fmt.Sprintf("%s-bearertoken-secret", addon.Name),
+				Namespace: GetMonitoringNamespaceName(addon),
+			},
+			mock.IsType(&corev1.Secret{}), mock.Anything).Run(func(args mock.Arguments) {
+		addonADOtoken.DeepCopyInto(args.Get(2).(*corev1.Secret))
+		secret := args.Get(2).(*corev1.Secret)
+		err := controllerutil.SetControllerReference(addon, secret, r.scheme)
+		controllers.AddCommonLabels(secret, addon)
+		assert.NoError(t, err)
+
+	}).Return(nil)
+
+	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).Return(testutil.NewTestErrNotFound())
+
 	c.On("Create", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).
 		Run(func(args mock.Arguments) {
+
 			serviceMonitor := args.Get(1).(*monitoringv1.ServiceMonitor)
 			assert.Equal(t, "https", serviceMonitor.Spec.Endpoints[0].Port)
-			assert.Equal(t, "/var/run/secrets/kubernetes.io/serviceaccount/token", serviceMonitor.Spec.Endpoints[0].BearerTokenFile)
 			assert.Equal(t, GetMonitoringFederationServiceMonitorName(addon), serviceMonitor.Name)
 			assert.Equal(t, GetMonitoringNamespaceName(addon), serviceMonitor.Namespace)
+			assert.Equal(t, "Bearer", serviceMonitor.Spec.Endpoints[0].Authorization.Type)
+
 		}).
 		Return(nil)
 
 	ctx := context.Background()
-	_, err := r.ensureMonitoringFederation(ctx, addon)
+	result, err := r.ensureMonitoringFederation(ctx, addon)
 	require.NoError(t, err)
+	assert.Equal(t, ctrl.Result{}, result)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", 2)
 	c.AssertNumberOfCalls(t, "Create", 2)
+	uncachedC.AssertNumberOfCalls(t, "Get", 2)
+
 }
 
-func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *testing.T) {
+func TestEnsureMonitoringFederation_MonitoringPresentInSpec_SMPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
+	uncachedC := testutil.NewClient()
 
 	r := &monitoringFederationReconciler{
-		client: c,
-		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		client:                 c,
+		uncachedClient:         uncachedC,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	addon := testutil.NewTestAddonWithMonitoringFederation()
@@ -101,8 +317,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 			namespace.Labels = map[string]string{"openshift.io/cluster-monitoring": "true"}
 			controllers.AddCommonLabels(namespace, addon)
 			assert.NoError(t, err)
-		}).
-		Return(nil)
+		}).Return(nil)
 
 	c.On("Get", testutil.IsContext, mock.IsType(types.NamespacedName{}), mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).
 		Run(func(args mock.Arguments) {
@@ -118,11 +333,11 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 			serviceMonitor.Spec = monitoringv1.ServiceMonitorSpec{
 				Endpoints: []monitoringv1.Endpoint{
 					{
-						BearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token",
-						HonorLabels:     true,
-						Port:            "portName",
-						Path:            "/federate",
-						Scheme:          "https",
+						Authorization: &monitoringv1.SafeAuthorization{Type: "Bearer", Credentials: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: "addon-foo-bearertoken-secret"}, Key: "token"}},
+						HonorLabels:   true,
+						Port:          "portName",
+						Path:          "/federate",
+						Scheme:        "https",
 						Params: map[string][]string{
 							"match[]": {
 								`ALERTS{alertstate="firing"}`,
@@ -148,6 +363,33 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_PresentInCluster(t *
 					MatchLabels: addon.Spec.Monitoring.Federation.MatchLabels,
 				},
 			}
+		}).
+		Return(nil)
+
+	uncachedC.On("Get",
+		testutil.IsContext,
+		mock.Anything,
+		mock.IsType(&corev1.Secret{}), mock.Anything).
+		Return(nil)
+
+	uncachedC.On("Get",
+		testutil.IsContext,
+		mock.Anything,
+		mock.IsType(&corev1.Secret{}), mock.Anything).
+		Return(nil)
+
+	c.On("Create", mock.Anything, mock.IsType(&corev1.Secret{}), mock.Anything).Return(nil)
+
+	c.On("Update", mock.Anything, mock.IsType(&corev1.Secret{}), mock.Anything).Return(nil)
+
+	c.On("Create", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitor{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			serviceMonitor := args.Get(1).(*monitoringv1.ServiceMonitor)
+			assert.Equal(t, "https", serviceMonitor.Spec.Endpoints[0].Port)
+			assert.Equal(t, "Bearer", serviceMonitor.Spec.Endpoints[0].Authorization.Type)
+			assert.Equal(t, "addon-foo-bearertoken-secret", serviceMonitor.Spec.Endpoints[0].Authorization.Credentials.LocalObjectReference.Name)
+			assert.Equal(t, GetMonitoringFederationServiceMonitorName(addon), serviceMonitor.Name)
+			assert.Equal(t, GetMonitoringNamespaceName(addon), serviceMonitor.Namespace)
 		}).
 		Return(nil)
 
@@ -186,6 +428,15 @@ func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
 	} {
 		t.Run(name, func(t *testing.T) {
 			c := testutil.NewClient()
+			uncachedC := testutil.NewClient()
+			rec := &monitoringFederationReconciler{
+				client:         c,
+				uncachedClient: uncachedC,
+
+				scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+				addonOperatorNamespace: "xxx-addon-operator",
+			}
+
 			c.On("Get",
 				testutil.IsContext,
 				mock.IsType(types.NamespacedName{}),
@@ -203,6 +454,26 @@ func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
 				Return(nil).
 				Maybe()
 
+			c.On("Update",
+				testutil.IsContext,
+				testutil.IsMonitoringV1ServiceMonitorPtr,
+				mock.Anything).
+				Return(nil).
+				Maybe()
+
+			uncachedC.
+				On("Get",
+					testutil.IsContext,
+					mock.Anything,
+					mock.IsType(&corev1.Secret{}), mock.Anything).
+				Return(nil)
+			uncachedC.
+				On("Get",
+					testutil.IsContext,
+					mock.Anything,
+					mock.IsType(&corev1.Secret{}), mock.Anything).
+				Return(nil)
+
 			c.On("Get",
 				testutil.IsContext,
 				mock.IsType(types.NamespacedName{}),
@@ -211,19 +482,10 @@ func TestEnsureMonitoringFederation_Adoption(t *testing.T) {
 				Run(func(args mock.Arguments) {
 					tc.ActualServiceMonitor.DeepCopyInto(args.Get(2).(*monitoringv1.ServiceMonitor))
 				}).
-				Return(nil)
+				Return(nil).Maybe()
 
-			c.On("Update",
-				testutil.IsContext,
-				testutil.IsMonitoringV1ServiceMonitorPtr,
-				mock.Anything).
-				Return(nil).
-				Maybe()
-
-			rec := &monitoringFederationReconciler{
-				client: c,
-				scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
-			}
+			c.On("Create", mock.Anything, mock.IsType(&corev1.Secret{}), mock.Anything).Return(nil).Maybe()
+			c.On("Update", mock.Anything, mock.IsType(&corev1.Secret{}), mock.Anything).Return(nil)
 
 			addonCopy := addon.DeepCopy()
 
@@ -276,13 +538,23 @@ func testServiceMonitorAlteredSpec(addon *addonsv1alpha1.Addon) *monitoringv1.Se
 }
 
 func testServiceMonitor(addon *addonsv1alpha1.Addon) *monitoringv1.ServiceMonitor {
+	existingBearerTokenSecret := &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      fmt.Sprintf("%s-bearertoken-secret", addon.Name),
+			Namespace: addon.Namespace,
+		},
+		Data: map[string][]byte{
+			"token": []byte("mock-token"),
+		},
+	}
+
 	return &monitoringv1.ServiceMonitor{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      GetMonitoringFederationServiceMonitorName(addon),
 			Namespace: GetMonitoringNamespaceName(addon),
 		},
 		Spec: monitoringv1.ServiceMonitorSpec{
-			Endpoints: GetMonitoringFederationServiceMonitorEndpoints(addon),
+			Endpoints: GetMonitoringFederationServiceMonitorEndpoints(addon, existingBearerTokenSecret),
 			NamespaceSelector: monitoringv1.NamespaceSelector{
 				MatchNames: []string{addon.Spec.Monitoring.Federation.Namespace},
 			},
@@ -292,7 +564,6 @@ func testServiceMonitor(addon *addonsv1alpha1.Addon) *monitoringv1.ServiceMonito
 		},
 	}
 }
-
 func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_NotPresentInCluster(t *testing.T) {
 	c := testutil.NewClient()
 
@@ -308,8 +579,9 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_NotPr
 		Return(testutil.NewTestErrNotFound())
 
 	r := &monitoringFederationReconciler{
-		client: c,
-		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		client:                 c,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	ctx := context.Background()
@@ -369,9 +641,17 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_Prese
 		}).
 		Return(nil)
 
+	c.On("Delete", testutil.IsContext, mock.IsType(&corev1.Secret{}), mock.Anything).
+		Run(func(args mock.Arguments) {
+			ns := args.Get(1).(*corev1.Secret)
+			assert.Equal(t, fmt.Sprintf("%s-bearertoken-secret", addon.Name), ns.Name)
+		}).
+		Return(nil)
+
 	r := &monitoringFederationReconciler{
-		client: c,
-		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		client:                 c,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	ctx := context.Background()
@@ -406,8 +686,9 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_Prese
 		Return(nil)
 
 	r := &monitoringFederationReconciler{
-		client: c,
-		scheme: testutil.NewTestSchemeWithAddonsv1alpha1(),
+		client:                 c,
+		scheme:                 testutil.NewTestSchemeWithAddonsv1alpha1(),
+		addonOperatorNamespace: "xxx-addon-operator",
 	}
 
 	ctx := context.Background()

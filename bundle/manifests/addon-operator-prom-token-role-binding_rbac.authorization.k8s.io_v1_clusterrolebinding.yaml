@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  name: addon-operator-prom-token-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: addon-operator-prom-token-role
+subjects:
+- kind: ServiceAccount
+  name: addon-operator-prom-token
+  namespace: openshift-addon-operator
