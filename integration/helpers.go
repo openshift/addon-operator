@@ -212,7 +212,7 @@ func WaitForObject(
 	object client.Object, reason string,
 	checkFn func(obj client.Object) (done bool, err error),
 ) error {
-	return WaitForObjectWithInterval(ctx, t, time.Second, timeout, object, reason, checkFn)
+	return WaitForObjectWithInterval(ctx, t, 15*time.Second, timeout, object, reason, checkFn)
 }
 
 func WaitForObjectWithInterval(

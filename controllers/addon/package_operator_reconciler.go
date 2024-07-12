@@ -77,11 +77,12 @@ func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addons
 		}
 		return ctrl.Result{}, err
 	}
-
 	return r.reconcileClusterObjectTemplate(ctx, addon)
 }
 
 func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	log := controllers.LoggerFromContext(ctx)
+	log.Info("Start reconciling PKO for addon: " + addon.Name)
 	addonDestNamespace := extractDestinationNamespace(addon)
 	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 
@@ -213,7 +214,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 	}
 
 	r.updateAddonStatus(addon, existingClusterObjectTemplate)
-
+	log.Info("Finish reconciling PKO for addon: " + addon.Name)
 	return ctrl.Result{}, nil
 }
 
@@ -223,6 +224,8 @@ func (r *PackageOperatorReconciler) updateAddonStatus(addon *addonsv1alpha1.Addo
 		availableCondition.ObservedGeneration != clusterObjectTemplate.GetGeneration() ||
 		availableCondition.Status != metav1.ConditionTrue {
 		reportUnreadyClusterObjectTemplate(addon)
+	} else if availableCondition != nil && availableCondition.Status == metav1.ConditionTrue {
+		reportReadinessStatus(addon)
 	}
 }
 

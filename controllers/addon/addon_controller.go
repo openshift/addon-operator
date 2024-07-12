@@ -84,6 +84,12 @@ type addonReconciler interface {
 	Name() string
 }
 
+type SubControllerError struct {
+	Name   string
+	Err    error
+	Result ctrl.Result
+}
+
 func NewAddonReconciler(
 	client client.Client,
 	uncachedClient client.Client,
@@ -407,11 +413,73 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 		}
 	}
 
-	// Run each sub reconciler serially
-	for _, reconciler := range r.subReconcilers {
-		if result, err := reconciler.Reconcile(ctx, addon); err != nil {
+	var lastController addonReconciler
+	var parallelControllers []addonReconciler
+
+	// Run sub-controllers in serial, except the last two with names for olm and pko
+	for _, sc := range r.subReconcilers {
+		switch sc.Name() {
+		case OLM_RECONCILER_NAME:
+			parallelControllers = append(parallelControllers, sc)
+		case packageOperatorName:
+			parallelControllers = append(parallelControllers, sc)
+		default:
+			if len(parallelControllers) == 0 {
+				// Run the sub-controllers in serial until the parallel ones are encountered
+				if result, err := sc.Reconcile(ctx, addon); err != nil {
+					subReconErr.Report(err, addon.Name)
+					return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", sc.Name(), err)
+				} else if !result.IsZero() {
+					return result, nil
+				}
+			} else {
+				// Identify the last controller to run after the parallel ones
+				lastController = sc
+			}
+		}
+	}
+
+	// Synchronize the parallel execution of olm and pko
+	var wg sync.WaitGroup
+	errCh := make(chan SubControllerError, len(parallelControllers))
+
+	for _, sc := range parallelControllers {
+		wg.Add(1)
+		go func(sc addonReconciler) {
+			defer wg.Done()
+			if result, err := sc.Reconcile(ctx, addon); err != nil {
+				errCh <- SubControllerError{Name: sc.Name(), Err: err, Result: ctrl.Result{}}
+			} else if !result.IsZero() {
+				errCh <- SubControllerError{Name: sc.Name(), Err: nil, Result: result}
+			}
+		}(sc)
+	}
+
+	// Wait for the parallel sub-controllers to finish
+	go func() {
+		defer close(errCh)
+		wg.Wait()
+	}()
+
+	var results []SubControllerError
+	for result := range errCh {
+		results = append(results, result)
+	}
+
+	for _, result := range results {
+		if result.Err != nil {
+			subReconErr.Report(result.Err, addon.Name)
+			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", result.Name, result.Err)
+		} else if !result.Result.IsZero() {
+			return result.Result, nil
+		}
+	}
+
+	// Run the last sub-controller
+	if lastController != nil {
+		if result, err := lastController.Reconcile(ctx, addon); err != nil {
 			subReconErr.Report(err, addon.Name)
-			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", reconciler.Name(), err)
+			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", lastController.Name(), err)
 		} else if !result.IsZero() {
 			return result, nil
 		}

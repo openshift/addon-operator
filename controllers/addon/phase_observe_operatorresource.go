@@ -110,7 +110,9 @@ func (r *olmReconciler) observeOperatorResource(
 
 	// If CSV is present and is in succeeded phase we report
 	// the addon as available.
-	reportReadinessStatus(addon)
+	if !r.IsPKOFailed(addon) {
+		reportReadinessStatus(addon)
+	}
 	return resultNil, nil
 }
 

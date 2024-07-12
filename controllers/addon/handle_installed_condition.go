@@ -3,6 +3,7 @@ package addon
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	operatorsv1 "github.com/operator-framework/api/pkg/operators/v1"
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
@@ -37,6 +38,14 @@ func (r *olmReconciler) handleInstalledCondition(ctx context.Context,
 	}
 
 	return resultNil, nil
+}
+
+func (r *olmReconciler) IsPKOFailed(addon *addonsv1alpha1.Addon) bool {
+	availableCondition := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.Available)
+	if availableCondition != nil && strings.Contains(availableCondition.Message, "PackageOperator") {
+		return true
+	}
+	return false
 }
 
 func (r *olmReconciler) handleMissingCSV(ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
