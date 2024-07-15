@@ -274,7 +274,7 @@ Tracks the last state last reported to the Upgrade Policy endpoint.
 
 | Field | Description | Scheme | Required |
 | ----- | ----------- | ------ | -------- |
-| federation | Configuration parameters to be injected in the ServiceMonitor used for federation. The target prometheus server found by matchLabels needs to serve service-ca signed TLS traffic (https://docs.openshift.com/container-platform/4.6/security/certificate_types_descriptions/service-ca-certificates.html), and it needs to be runing inside the namespace specified by `.monitoring.federation.namespace` with the service name 'prometheus'. | *[MonitoringFederationSpec.api.managed.openshift.io/v1alpha1](#monitoringfederationspecapimanagedopenshiftiov1alpha1) | false |
+| federation | Configuration parameters to be injected in the ServiceMonitor used for federation. The target prometheus server found by matchLabels needs to serve service-ca signed TLS traffic (https://docs.openshift.com/container-platform/4.6/security/certificate_types_descriptions/service-ca-certificates.html), and it needs to be running inside the namespace specified by `.monitoring.federation.namespace` with the service name 'prometheus'. | *[MonitoringFederationSpec.api.managed.openshift.io/v1alpha1](#monitoringfederationspecapimanagedopenshiftiov1alpha1) | false |
 | monitoringStack | Settings For Monitoring Stack | *[MonitoringStackSpec.api.managed.openshift.io/v1alpha1](#monitoringstackspecapimanagedopenshiftiov1alpha1) | false |
 
 [Back to Group]()

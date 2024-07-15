@@ -111,7 +111,7 @@ const (
 	// Higher level controllers are advised to stop actions that might further worsen the state of the service.
 	// For example: delaying upgrades until the status is cleared.
 	AddonInstanceConditionHealthy AddonInstanceCondition = "Healthy"
-	// AddonInstanceDegraded reports partial lose of functionallity which otherwise
+	// AddonInstanceDegraded reports partial lose of functionality which otherwise
 	// does not affect the availability of an addon.
 	AddonInstanceConditionDegraded AddonInstanceCondition = "Degraded"
 	// AddonInstanceConditionInstalled reports installation status as either

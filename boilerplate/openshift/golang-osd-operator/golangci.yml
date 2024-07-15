@@ -31,3 +31,7 @@ linters-settings:
     extra-words:
       - typo: "openshit"
         correction: "OpenShift"
+    ignore-words:
+      - reconcilation
+      - reconcilations
+      - Reconcilation
