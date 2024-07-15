@@ -100,7 +100,7 @@ func (r *olmReconciler) observeOperatorResource(
 	case operatorsv1alpha1.CSVPhaseFailed:
 		message = "failed"
 	default:
-		message = "unkown/pending"
+		message = "unknown/pending"
 	}
 
 	if message != "" {

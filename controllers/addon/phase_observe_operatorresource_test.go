@@ -100,7 +100,7 @@ func TestObserveOperatorResource(t *testing.T) {
 				Result:     resultRetry,
 			},
 		},
-		"Phase succeded": {
+		"Phase succeeded": {
 			operatorResource: &operatorsv1.Operator{
 				Status: operatorsv1.OperatorStatus{
 					Components: &operatorsv1.Components{

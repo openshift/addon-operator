@@ -21,6 +21,17 @@ linters:
   - gosimple
   - govet
   - ineffassign
+  - misspell
   - staticcheck
   - typecheck
   - unused
+
+linters-settings:
+  misspell:
+    extra-words:
+      - typo: "openshit"
+        correction: "OpenShift"
+    ignore-words:
+      - reconcilation
+      - reconcilations
+      - Reconcilation
