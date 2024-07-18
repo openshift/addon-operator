@@ -313,8 +313,8 @@ skopeo-push-package:
 	fi
 	# QUAY_USER and QUAY_TOKEN are supplied as env vars
 	skopeo copy --dest-creds "${QUAY_USER}:${QUAY_TOKEN}" \
-		"docker-daemon:${PKG_IMG}:${PKG_IMAGETAG}" \
+		"containers-storage:${PKG_IMG}:${PKG_IMAGETAG}" \
 		"docker://${PKG_IMG}:latest"
 	skopeo copy --dest-creds "${QUAY_USER}:${QUAY_TOKEN}" \
-		"docker-daemon:${PKG_IMG}:${PKG_IMAGETAG}" \
+		"containers-storage:${PKG_IMG}:${PKG_IMAGETAG}" \
 		"docker://${PKG_IMG}:${PKG_IMAGETAG}"
