@@ -307,6 +307,7 @@ func setup() error {
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		return fmt.Errorf("problem running manager: %w", err)
 	}
+
 	return nil
 }
 
