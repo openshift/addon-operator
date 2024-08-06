@@ -19,7 +19,7 @@ func (r *olmReconciler) observeOperatorResource(
 	ctx context.Context,
 	addon *addonsv1alpha1.Addon,
 	csvKey client.ObjectKey,
-) (requeueResult, error) {
+) (subReconcilerResult, error) {
 	installOLMCommon, err := addon.GetInstallOLMCommon()
 	if err != nil {
 		return resultRetry, err
@@ -47,7 +47,7 @@ func (r *olmReconciler) observeOperatorResource(
 		if currentIp.Status.Phase == operatorsv1alpha1.InstallPlanPhaseRequiresApproval {
 			reportInstallPlanPending(addon)
 			// CSV will not be available at this stage
-			return resultNil, nil
+			return resultStop, nil
 		}
 	}
 
@@ -108,9 +108,6 @@ func (r *olmReconciler) observeOperatorResource(
 		return resultRetry, nil
 	}
 
-	// If CSV is present and is in succeeded phase we report
-	// the addon as available.
-	reportReadinessStatus(addon)
 	return resultNil, nil
 }
 

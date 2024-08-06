@@ -18,7 +18,7 @@ import (
 
 // Ensures the presence or absence of an OperatorGroup depending on the Addon install type.
 func (r *olmReconciler) ensureOperatorGroup(
-	ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
+	ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	log := controllers.LoggerFromContext(ctx)
 	commonConfig, stop := parseAddonInstallConfig(log, addon)
 	if stop {

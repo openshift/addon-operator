@@ -23,7 +23,7 @@ const catalogSourcePublisher = "OSD Red Hat Addons"
 // stop or retry reconciliation of the surrounding Addon resource
 func (r *olmReconciler) ensureCatalogSource(
 	ctx context.Context, addon *addonsv1alpha1.Addon,
-) (requeueResult, *operatorsv1alpha1.CatalogSource, error) {
+) (subReconcilerResult, *operatorsv1alpha1.CatalogSource, error) {
 	log := controllers.LoggerFromContext(ctx)
 
 	commonConfig, stop := parseAddonInstallConfig(log, addon)
@@ -86,7 +86,7 @@ func (r *olmReconciler) ensureCatalogSource(
 
 func (r *olmReconciler) ensureAdditionalCatalogSources(
 	ctx context.Context, addon *addonsv1alpha1.Addon,
-) (requeueResult, error) {
+) (subReconcilerResult, error) {
 	if !HasAdditionalCatalogSources(addon) {
 		return resultNil, nil
 	}

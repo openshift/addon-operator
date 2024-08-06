@@ -16,7 +16,7 @@ import (
 )
 
 func (r *olmReconciler) handleInstalledCondition(ctx context.Context,
-	addon *addonsv1alpha1.Addon, addonCSVRef *operatorsv1.RichReference) (requeueResult, error) {
+	addon *addonsv1alpha1.Addon, addonCSVRef *operatorsv1.RichReference) (subReconcilerResult, error) {
 	// Handle missing CSV, addon might have been uninstalled?.
 	if addonCSVRef == nil {
 		return r.handleMissingCSV(ctx, addon)
@@ -39,14 +39,14 @@ func (r *olmReconciler) handleInstalledCondition(ctx context.Context,
 	return resultNil, nil
 }
 
-func (r *olmReconciler) handleMissingCSV(ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
+func (r *olmReconciler) handleMissingCSV(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	// Since CSV is missing, we report the addon as unavailable.
 	reportMissingCSV(addon)
 	// Check if the addon removed its CSV as part of the uninstallation
 	// process by looking for the delete configmap created.
 	found, err := r.deleteConfigMapPresent(ctx, addon)
 	if err != nil {
-		return resultRetry, err
+		return resultRequeue, err
 	}
 	if found {
 		reportUninstalledCondition(addon)
@@ -54,7 +54,7 @@ func (r *olmReconciler) handleMissingCSV(ctx context.Context, addon *addonsv1alp
 	}
 	// If delete configmap is not present but the CSV is missing
 	// we want to requeue this request since we dont watch configmaps.
-	return resultRetry, nil
+	return resultRequeue, nil
 }
 
 func (r *olmReconciler) deleteConfigMapPresent(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error) {
@@ -77,14 +77,14 @@ func (r *olmReconciler) deleteConfigMapPresent(ctx context.Context, addon *addon
 
 // handleInstallAck handles installation acknowledgement from
 // the addon instance if specified in the addon CR
-func (r *olmReconciler) handleInstallAck(ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
+func (r *olmReconciler) handleInstallAck(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	installed, err := r.isAddonInstanceInstalled(ctx, addon)
 	if err != nil {
 		return resultNil, err
 	}
 
 	if !installed {
-		return resultRetry, nil
+		return resultRequeue, nil
 	}
 
 	reportInstalledCondition(addon)

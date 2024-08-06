@@ -9,7 +9,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -66,22 +65,28 @@ type PackageOperatorReconciler struct {
 	recorder       *metrics.Recorder
 }
 
+var _ nonBlockingReconciler = &PackageOperatorReconciler{}
+
 func (r *PackageOperatorReconciler) Name() string { return packageOperatorName }
 
-func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+func (r *PackageOperatorReconciler) Order() subReconcilerOrder {
+	return PackageReconcilerOrder
+}
+
+func (r *PackageOperatorReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 	if addon.Spec.AddonPackageOperator == nil {
 		err := r.ensureClusterObjectTemplateTornDown(ctx, addon)
 		if err != nil {
 			err = reconErr.Join(err, controllers.ErrEnsureDeleteClusterObjectTemplate)
 		}
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 
 	return r.reconcileClusterObjectTemplate(ctx, addon)
 }
 
-func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	addonDestNamespace := extractDestinationNamespace(addon)
 	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 
@@ -90,7 +95,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 			fmt.Errorf("no destination namespace configured in addon %s", addon.Name),
 			controllers.ErrReconcileClusterObjectTemplate,
 		)
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 
 	ocmClusterInfo := r.OcmClusterInfo()
@@ -175,7 +180,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 			fmt.Errorf("setting owner reference: %w", err),
 			controllers.ErrReconcileClusterObjectTemplate,
 		)
-		return ctrl.Result{}, newErr
+		return resultNil, newErr
 	}
 
 	existingClusterObjectTemplate, err := r.getExistingClusterObjectTemplate(ctx, addon)
@@ -187,15 +192,15 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 					controllers.ErrReconcileClusterObjectTemplate,
 				)
 
-				return ctrl.Result{}, newErr
+				return resultNil, newErr
 			}
-			return ctrl.Result{}, nil
+			return resultNil, nil
 		}
 		newErr := reconErr.Join(
 			fmt.Errorf("getting ClusterObjectTemplate object: %w", err),
 			controllers.ErrReconcileClusterObjectTemplate,
 		)
-		return ctrl.Result{}, newErr
+		return resultNil, newErr
 	}
 	ownedByAdo := controllers.HasSameController(existingClusterObjectTemplate, clusterObjectTemplate)
 	specChanged := !equality.Semantic.DeepEqual(existingClusterObjectTemplate.Spec, clusterObjectTemplate.Spec)
@@ -207,14 +212,34 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 				fmt.Errorf("updating ClusterObjectTemplate object: %w", err),
 				controllers.ErrReconcileClusterObjectTemplate,
 			)
-			return ctrl.Result{}, newErr
+			return resultNil, newErr
 		}
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	}
 
 	r.updateAddonStatus(addon, existingClusterObjectTemplate)
 
-	return ctrl.Result{}, nil
+	return resultNil, nil
+}
+
+func (r *PackageOperatorReconciler) IsReconcilationSuccessful(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error) {
+	// If the addon doesnt have a package image defined, we consider it reconciled.
+	if addon.Spec.AddonPackageOperator == nil {
+		return true, nil
+	}
+	existingClusterObjectTemplate := &pkov1alpha1.ClusterObjectTemplate{}
+	err := r.Client.Get(ctx, client.ObjectKey{Namespace: addon.Namespace, Name: addon.Name}, existingClusterObjectTemplate)
+	if err != nil {
+		return false, fmt.Errorf("getting ClusterObjectTemplate object: %w", err)
+	}
+	availableCondition := meta.FindStatusCondition(existingClusterObjectTemplate.Status.Conditions, pkov1alpha1.PackageAvailable)
+	available := availableCondition != nil && availableCondition.Status == metav1.ConditionTrue &&
+		availableCondition.ObservedGeneration == existingClusterObjectTemplate.GetGeneration()
+	return available, nil
+}
+
+func (r *PackageOperatorReconciler) SetAddonUnreadyStatus(addon *addonsv1alpha1.Addon) {
+	reportUnreadyClusterObjectTemplate(addon)
 }
 
 func (r *PackageOperatorReconciler) updateAddonStatus(addon *addonsv1alpha1.Addon, clusterObjectTemplate *pkov1alpha1.ClusterObjectTemplate) {
@@ -222,7 +247,7 @@ func (r *PackageOperatorReconciler) updateAddonStatus(addon *addonsv1alpha1.Addo
 	if availableCondition == nil ||
 		availableCondition.ObservedGeneration != clusterObjectTemplate.GetGeneration() ||
 		availableCondition.Status != metav1.ConditionTrue {
-		reportUnreadyClusterObjectTemplate(addon)
+		r.SetAddonUnreadyStatus(addon)
 	}
 }
 

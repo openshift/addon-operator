@@ -8,7 +8,6 @@ import (
 	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -27,7 +26,7 @@ type addonSecretPropagationReconciler struct {
 	recorder                     *metrics.Recorder
 }
 
-func (r *addonSecretPropagationReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+func (r *addonSecretPropagationReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 	if addon.Spec.SecretPropagation == nil ||
 		len(addon.Spec.SecretPropagation.Secrets) == 0 {
@@ -36,13 +35,13 @@ func (r *addonSecretPropagationReconciler) Reconcile(ctx context.Context, addon 
 			err = reconErr.Join(err, controllers.ErrCleanupUnknownSecrets)
 		}
 		// just ensure all propagated secrets are gone
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 
 	destinationSecretsWithoutNamespace, result, err := r.getDestinationSecretsWithoutNamespace(ctx, addon)
 	if err != nil {
 		err := reconErr.Join(err, controllers.ErrGetDestinationSecretsWithoutNamespace)
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 	if !result.IsZero() {
 		return result, nil
@@ -51,19 +50,23 @@ func (r *addonSecretPropagationReconciler) Reconcile(ctx context.Context, addon 
 	knownSecrets, err := r.reconcileSecretsInAddonNamespaces(ctx, destinationSecretsWithoutNamespace, addon)
 	if err != nil {
 		err := reconErr.Join(err, controllers.ErrReconcileSecretsInAddonNamespaces)
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 
 	if err := r.cleanupUnknownSecrets(ctx, knownSecrets, addon); err != nil {
 		err := reconErr.Join(err, controllers.ErrCleanupUnknownSecrets)
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 
-	return ctrl.Result{}, nil
+	return resultNil, nil
 }
 
 func (r *addonSecretPropagationReconciler) Name() string {
 	return SECRET_RECONCILER_NAME
+}
+
+func (r *addonSecretPropagationReconciler) Order() subReconcilerOrder {
+	return AddonSecretPropagationReconcilerOrder
 }
 
 // Lookup all secret sources for secret propagation
@@ -71,10 +74,10 @@ func (r *addonSecretPropagationReconciler) Name() string {
 func (r *addonSecretPropagationReconciler) getDestinationSecretsWithoutNamespace(
 	ctx context.Context,
 	addon *addonsv1alpha1.Addon,
-) ([]corev1.Secret, ctrl.Result, error) {
+) ([]corev1.Secret, subReconcilerResult, error) {
 	var destinationSecrets []corev1.Secret
 	if addon.Spec.SecretPropagation == nil {
-		return nil, ctrl.Result{}, nil
+		return nil, resultNil, nil
 	}
 
 	for _, secretRef := range addon.Spec.SecretPropagation.Secrets {
@@ -83,7 +86,7 @@ func (r *addonSecretPropagationReconciler) getDestinationSecretsWithoutNamespace
 			Namespace: r.addonOperatorNamespace,
 		})
 		if err != nil {
-			return nil, ctrl.Result{}, err
+			return nil, resultNil, err
 		}
 		if !result.IsZero() {
 			return nil, result, nil
@@ -100,17 +103,17 @@ func (r *addonSecretPropagationReconciler) getDestinationSecretsWithoutNamespace
 		controllers.AddCommonLabels(destSecret, addon)
 		controllers.AddCommonAnnotations(destSecret, addon)
 		if err := controllerutil.SetControllerReference(addon, destSecret, r.scheme); err != nil {
-			return nil, ctrl.Result{}, fmt.Errorf("setting owner reference: %w", err)
+			return nil, resultNil, fmt.Errorf("setting owner reference: %w", err)
 		}
 		destinationSecrets = append(destinationSecrets, *destSecret)
 	}
-	return destinationSecrets, ctrl.Result{}, nil
+	return destinationSecrets, resultNil, nil
 }
 
 // Get a single referenced source secret for propagation
 func (r *addonSecretPropagationReconciler) getReferencedSecret(
 	ctx context.Context, addon *addonsv1alpha1.Addon, secretKey client.ObjectKey,
-) (*corev1.Secret, ctrl.Result, error) {
+) (*corev1.Secret, subReconcilerResult, error) {
 	// Lookup configured secret.
 	referencedSecret := &corev1.Secret{}
 
@@ -121,27 +124,27 @@ func (r *addonSecretPropagationReconciler) getReferencedSecret(
 		if err := r.uncachedClient.Get(ctx, secretKey, referencedSecret); apiErrors.IsNotFound(err) {
 			// Secret does not exist for sure, break and keep retrying later.
 			reportPendingStatus(addon, addonsv1alpha1.AddonReasonMissingSecretForPropagation, err.Error())
-			return nil, ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil
+			return nil, resultRequeueAfter(defaultRetryAfterTime), nil
 		} else if err != nil {
-			return nil, ctrl.Result{}, fmt.Errorf("getting source Secret for propagation via uncached client: %w", err)
+			return nil, resultNil, fmt.Errorf("getting source Secret for propagation via uncached client: %w", err)
 		}
 
 		// Update Secret to ensure it is part of our cache and we get events to reconcile.
 		updatedReferenceSecret := referencedSecret.DeepCopy()
 		if err := controllerutil.SetOwnerReference(addon, updatedReferenceSecret, r.scheme); err != nil {
-			return nil, ctrl.Result{}, fmt.Errorf("adding OwnerReference for AddonOperator to referenced source Secret: %w", err)
+			return nil, resultNil, fmt.Errorf("adding OwnerReference for AddonOperator to referenced source Secret: %w", err)
 		}
 		if updatedReferenceSecret.Labels == nil {
 			updatedReferenceSecret.Labels = map[string]string{}
 		}
 		updatedReferenceSecret.Labels[controllers.CommonCacheLabel] = controllers.CommonCacheValue
 		if err := r.cachedClient.Patch(ctx, updatedReferenceSecret, client.MergeFrom(referencedSecret)); err != nil {
-			return nil, ctrl.Result{}, fmt.Errorf("patching source Secret for cache and ownership: %w", err)
+			return nil, resultNil, fmt.Errorf("patching source Secret for cache and ownership: %w", err)
 		}
 	} else if err != nil {
-		return referencedSecret, ctrl.Result{}, fmt.Errorf("getting source Secret for propagation: %w", err)
+		return referencedSecret, resultNil, fmt.Errorf("getting source Secret for propagation: %w", err)
 	}
-	return referencedSecret, ctrl.Result{}, nil
+	return referencedSecret, resultNil, nil
 }
 
 // Reconcile secrets into all addon namespaces, returns a map of reconciled and thus known secret keys.

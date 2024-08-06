@@ -94,22 +94,6 @@ var (
 	UnschedulableAddonPod = addonHealth{reason: "UnschedulableAddonPod"}
 )
 
-type subReconcilerResult struct {
-	resultNil          bool
-	resultStop         bool
-	resultRequeue      bool
-	resultRequeueAfter *time.Duration
-}
-
-func (r *subReconcilerResult) IsZero() bool {
-	if r == nil {
-		return true
-	}
-	return *r == subReconcilerResult{
-		resultNil: true,
-	}
-}
-
 var (
 	resultNil          = subReconcilerResult{resultNil: true}
 	resultRetry        = subReconcilerResult{resultRequeue: true}
