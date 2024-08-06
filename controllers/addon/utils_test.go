@@ -15,8 +15,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 
-	ctrl "sigs.k8s.io/controller-runtime"
-
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -934,29 +932,6 @@ func TestReportAddonPauseStatus(t *testing.T) {
 	assert.Equal(t, addon.Generation, addon.Status.ObservedGeneration)
 }
 
-// TestHandleExit tests the behavior of the handleExit function by
-// checking its return value under different conditions.
-func TestHandleExit(t *testing.T) {
-	t.Run("Retry result", func(t *testing.T) {
-		expectedResult := ctrl.Result{
-			RequeueAfter: defaultRetryAfterTime,
-		}
-		result := handleExit(resultRetry)
-		assert.Equal(t, expectedResult, result, "Expected %v, but got %v", expectedResult, result)
-	})
-
-	t.Run("Other result", func(t *testing.T) {
-		expectedResult := ctrl.Result{}
-		result := handleExit(resultStop)
-		assert.Equal(t, expectedResult, result, "Expected %v, but got %v", expectedResult, result)
-	})
-
-	t.Run("Result nil", func(t *testing.T) {
-		expectedResult := ctrl.Result{}
-		result := handleExit(resultNil)
-		assert.Equal(t, expectedResult, result, "Expected %v, but got %v", expectedResult, result)
-	})
-}
 func TestAddonReconciler_ensureClusterPackageDeletion(t *testing.T) {
 	c := testutil.NewClient()
 

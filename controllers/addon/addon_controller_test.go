@@ -11,7 +11,6 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	promTestUtil "github.com/prometheus/client_golang/prometheus/testutil"
@@ -43,11 +42,15 @@ func (m *mockSubReconciler) Name() string {
 	return "mock-sub-reconciler"
 }
 
-func (m *mockSubReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+func (m *mockSubReconciler) Order() subReconcilerOrder {
+	return subReconcilerOrder(1)
+}
+
+func (m *mockSubReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	if m.returnErr {
-		return ctrl.Result{}, errMockSubReconcile
+		return resultNil, errMockSubReconcile
 	}
-	return ctrl.Result{}, nil
+	return resultNil, nil
 }
 
 func TestReconcileErrorHandling(t *testing.T) {

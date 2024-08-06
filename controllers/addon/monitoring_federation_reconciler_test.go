@@ -12,7 +12,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -104,9 +103,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secre
 	ctx := context.Background()
 	result, err := r.ensureMonitoringFederation(ctx, addon)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{
-		RequeueAfter: defaultRetryAfterTime,
-	}, result)
+	assert.Equal(t, resultRequeueAfter(defaultRetryAfterTime), result)
 	c.AssertExpectations(t)
 
 }
@@ -184,9 +181,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secre
 	ctx := context.Background()
 	result, err := r.ensureMonitoringFederation(ctx, addon)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{
-		RequeueAfter: defaultRetryAfterTime,
-	}, result)
+	assert.Equal(t, resultRequeueAfter(defaultRetryAfterTime), result)
 	c.AssertExpectations(t)
 
 }
@@ -282,12 +277,11 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_ServiceAccount_Secre
 	ctx := context.Background()
 	result, err := r.ensureMonitoringFederation(ctx, addon)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{}, result)
+	assert.Equal(t, resultNil, result)
 	c.AssertExpectations(t)
 	c.AssertNumberOfCalls(t, "Get", 2)
 	c.AssertNumberOfCalls(t, "Create", 2)
 	uncachedC.AssertNumberOfCalls(t, "Get", 2)
-
 }
 
 func TestEnsureMonitoringFederation_MonitoringPresentInSpec_SMPresentInCluster(t *testing.T) {

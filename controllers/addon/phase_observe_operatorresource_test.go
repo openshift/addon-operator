@@ -36,7 +36,7 @@ const (
 func TestObserveOperatorResource(t *testing.T) {
 	type Expected struct {
 		Conditions []metav1.Condition
-		Result     requeueResult
+		Result     subReconcilerResult
 	}
 
 	testCases := map[string]struct {
@@ -128,7 +128,8 @@ func TestObserveOperatorResource(t *testing.T) {
 				LastObservedAvailableCSV: "reference-addon-prev",
 			},
 			expected: Expected{
-				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue), availableCondition()},
+				// Available condition is not set by this sub-reconciler. It is set at the end by the addon reconciler.
+				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue)},
 				Result:     resultNil,
 			},
 		},
@@ -157,7 +158,7 @@ func TestObserveOperatorResource(t *testing.T) {
 				},
 			},
 			expected: Expected{
-				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue), availableCondition()},
+				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue)},
 				Result:     resultNil,
 			},
 		},
@@ -190,7 +191,7 @@ func TestObserveOperatorResource(t *testing.T) {
 				Conditions: []metav1.Condition{addonInstanceInstalledCondition()},
 			},
 			expected: Expected{
-				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue), availableCondition()},
+				Conditions: []metav1.Condition{installedCondition(metav1.ConditionTrue)},
 				Result:     resultNil,
 			},
 		},
@@ -365,7 +366,7 @@ func TestObserveOperatorResource(t *testing.T) {
 				addon.Status = *tc.addonStatus
 			}
 
-			var res requeueResult
+			var res subReconcilerResult
 			var err error
 			if tc.isSubNotFound || tc.isInstallOLMCommonNotFound {
 				res, err = r.observeOperatorResource(context.Background(), addon, csvKey)
@@ -387,7 +388,7 @@ func TestObserveOperatorResource(t *testing.T) {
 func TestObserveOperatorResourceInstallPlanPending(t *testing.T) {
 	type Expected struct {
 		Conditions []metav1.Condition
-		Result     requeueResult
+		Result     subReconcilerResult
 	}
 
 	testCases := map[string]struct {
@@ -398,7 +399,7 @@ func TestObserveOperatorResourceInstallPlanPending(t *testing.T) {
 		"should set condition to install plan waiting for approval": {
 			expected: Expected{
 				Conditions: []metav1.Condition{installPlanPending()},
-				Result:     resultNil,
+				Result:     resultStop,
 			},
 		},
 	}

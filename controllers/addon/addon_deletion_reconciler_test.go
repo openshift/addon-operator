@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/meta"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	ctrl "sigs.k8s.io/controller-runtime"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/internal/testutil"
@@ -176,28 +175,30 @@ func TestAddonDeletionReconciler(t *testing.T) {
 			OCMTimeoutDuration          string
 			CurrentTime                 time.Time
 			DeletionTimedOutCondPresent bool
-			ExpectedReconcileResult     ctrl.Result
+			ExpectedReconcileResult     subReconcilerResult
 			HandlerErr                  bool
 		}{
 
 			{
-				testCase:             "handler returns error",
-				HandlerErr:           true,
-				AckReceivedFromAddon: false,
-				CurrentTime:          time.Now(),
+				testCase:                "handler returns error",
+				HandlerErr:              true,
+				AckReceivedFromAddon:    false,
+				CurrentTime:             time.Now(),
+				ExpectedReconcileResult: resultNil,
 			},
 			{
 				testCase:                "reconcile result should have the right RequeueAfter interval",
 				HandlerErr:              false,
 				AckReceivedFromAddon:    false,
 				CurrentTime:             time.Now(),
-				ExpectedReconcileResult: ctrl.Result{RequeueAfter: defaultDeleteTimeoutDuration},
+				ExpectedReconcileResult: resultRequeueAfter(defaultDeleteTimeoutDuration),
 			},
 			{
-				testCase:             "no handler errors and ack received from addon",
-				HandlerErr:           false,
-				AckReceivedFromAddon: true,
-				CurrentTime:          time.Now(),
+				testCase:                "no handler errors and ack received from addon",
+				HandlerErr:              false,
+				AckReceivedFromAddon:    true,
+				CurrentTime:             time.Now(),
+				ExpectedReconcileResult: resultNil,
 			},
 			{
 				testCase:                    "reconcile result should have the right RequeueAfter interval",
@@ -206,7 +207,7 @@ func TestAddonDeletionReconciler(t *testing.T) {
 				OCMTimeoutDuration:          "5m",
 				CurrentTime:                 time.Now(),
 				DeletionTimedOutCondPresent: false,
-				ExpectedReconcileResult:     ctrl.Result{RequeueAfter: 5 * time.Minute},
+				ExpectedReconcileResult:     resultRequeueAfter(5 * time.Minute),
 			},
 			{
 				testCase:                    "reconcile result should have the right RequeueAfter interval",
@@ -215,7 +216,7 @@ func TestAddonDeletionReconciler(t *testing.T) {
 				OCMTimeoutDuration:          "5minutes", // time.ParseDuration will fail.
 				CurrentTime:                 time.Now(),
 				DeletionTimedOutCondPresent: false,
-				ExpectedReconcileResult:     ctrl.Result{RequeueAfter: defaultDeleteTimeoutDuration},
+				ExpectedReconcileResult:     resultRequeueAfter(defaultDeleteTimeoutDuration),
 			},
 			{
 				testCase:                    "delete timeout condition should be set",
@@ -224,7 +225,7 @@ func TestAddonDeletionReconciler(t *testing.T) {
 				OCMTimeoutDuration:          "5m",
 				CurrentTime:                 time.Now().Add(10 * time.Minute),
 				DeletionTimedOutCondPresent: true,
-				ExpectedReconcileResult:     ctrl.Result{},
+				ExpectedReconcileResult:     resultNil,
 			},
 		}
 
