@@ -92,7 +92,7 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAd
 		func(obj client.Object) (done bool, err error) {
 			addonBrokenImage := obj.(*addonsv1alpha1.Addon)
 			availableCondition := meta.FindStatusCondition(addonBrokenImage.Status.Conditions, addonsv1alpha1.Available)
-			done = availableCondition.Status == metav1.ConditionFalse &&
+			done = availableCondition != nil && availableCondition.Status == metav1.ConditionFalse &&
 				availableCondition.Reason == addonsv1alpha1.AddonReasonUnreadyClusterPackageTemplate
 			return done, nil
 		})

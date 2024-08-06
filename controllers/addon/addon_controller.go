@@ -95,7 +95,7 @@ var (
 )
 
 var (
-	resultNil          = subReconcilerResult{resultNil: true}
+	resultNil          = subReconcilerResult{}
 	resultRetry        = subReconcilerResult{resultRequeue: true}
 	resultStop         = subReconcilerResult{resultStop: true}
 	resultRequeue      = subReconcilerResult{resultRequeue: true}
@@ -111,7 +111,7 @@ type addonReconciler interface {
 	Order() subReconcilerOrder
 }
 
-// nonBlockingReconciler is a subset of addonReconciler that does not block other reconcilers from running.
+// nonBlockingReconciler is a subreconciler that does not block other reconcilers from running.
 type nonBlockingReconciler interface {
 	addonReconciler
 	IsReconcilationSuccessful(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error)

@@ -24,7 +24,6 @@ import (
 )
 
 type subReconcilerResult struct {
-	resultNil          bool
 	resultStop         bool
 	resultRequeue      bool
 	resultRequeueAfter *time.Duration

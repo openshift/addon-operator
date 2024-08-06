@@ -497,15 +497,6 @@ func addonInstanceInstalledCondition() metav1.Condition {
 	}
 }
 
-func availableCondition() metav1.Condition {
-	return metav1.Condition{
-		Type:    addonsv1alpha1.Available,
-		Status:  metav1.ConditionTrue,
-		Message: "All components are ready.",
-		Reason:  addonsv1alpha1.AddonReasonFullyReconciled,
-	}
-}
-
 func unreadyCSVCondition(msg string) metav1.Condition {
 	return metav1.Condition{
 		Type:    addonsv1alpha1.Available,
