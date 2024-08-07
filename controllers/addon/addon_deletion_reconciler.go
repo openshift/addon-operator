@@ -6,7 +6,6 @@ import (
 
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	ctrl "sigs.k8s.io/controller-runtime"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
@@ -39,17 +38,17 @@ type addonDeletionReconciler struct {
 	recorder *metrics.Recorder
 }
 
-func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	if !markedForDeletion(addon) || awaitingRemoteDeletion(addon) {
 		// Nothing to do.
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	}
 
 	// if spec.DeleteAckRequired is false, we directly report ReadyToBeDeleted=true Status condition.
 	if !addon.Spec.DeleteAckRequired {
 		removeDeleteTimeoutCondition(addon)
 		reportAddonReadyToBeDeletedStatus(addon, metav1.ConditionTrue)
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	}
 
 	// We set ReadyToBeDeleted=false status condition in response to the delete signal received from OCM.
@@ -60,28 +59,28 @@ func (r *addonDeletionReconciler) Reconcile(ctx context.Context, addon *addonsv1
 	for _, handler := range r.handlers {
 		if err := handler.NotifyAddon(ctx, addon); err != nil {
 			err = reconErr.Join(err, controllers.ErrNotifyAddon)
-			return ctrl.Result{}, err
+			return resultNil, err
 		}
 		// If ack is received from the underlying addon, we report ReadyToBeDeleted = true.
 		ackReceived, err := handler.AckReceivedFromAddon(ctx, addon)
 		if err != nil {
 			err = reconErr.Join(err, controllers.ErrAckReceivedFromAddon)
-			return ctrl.Result{}, err
+			return resultNil, err
 		}
 		if ackReceived {
 			removeDeleteTimeoutCondition(addon)
 			reportAddonReadyToBeDeletedStatus(addon, metav1.ConditionTrue)
-			return ctrl.Result{}, nil
+			return resultNil, nil
 		}
 	}
 
 	// If deletion has timed out.
 	if r.deletionTimedOut(addon) {
 		reportAddonDeletionTimedOut(addon)
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	}
 	// If no ack is received from the addon, we arrange for a requeue after the deletetimeout duration.
-	return ctrl.Result{RequeueAfter: deleteTimeoutInterval(addon)}, nil
+	return resultRequeueAfter(deleteTimeoutInterval(addon)), nil
 }
 
 // Deletion is timed out when (ReadyToBeDeleted=false) condition's last transition time + deleteTimeoutInterval
@@ -122,4 +121,8 @@ func awaitingRemoteDeletion(addon *addonsv1alpha1.Addon) bool {
 
 func (r *addonDeletionReconciler) Name() string {
 	return DELETION_RECONCILER_NAME
+}
+
+func (r *addonDeletionReconciler) Order() subReconcilerOrder {
+	return AddonDeletionReconcilerOrder
 }

@@ -13,10 +13,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
@@ -37,27 +35,31 @@ func (r *monitoringStackReconciler) Name() string {
 	return MONITORING_STACK_RECONCILER_NAME
 }
 
+func (r *monitoringStackReconciler) Order() subReconcilerOrder {
+	return MonitoringStackReconcilerOrder
+}
+
 func (r *monitoringStackReconciler) Reconcile(ctx context.Context,
-	addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 
 	// ensure creation of MonitoringStack object
 	latestMonitoringStack, err := r.ensureMonitoringStack(ctx, addon)
 	if err != nil {
 		if errors.Is(err, errMonitoringStackSpecNotFound) {
-			return reconcile.Result{}, nil
+			return resultNil, nil
 		}
 
 		err = reconErr.Join(err, controllers.ErrEnsureCreateMonitoringStack)
-		return reconcile.Result{}, err
+		return resultNil, err
 	}
 
 	// propagate the recently reconciled (created/updated) monitoring stack's status to the owner Addon
 	if monitoringStackAvailable := r.propagateMonitoringStackStatusToAddon(latestMonitoringStack, addon); !monitoringStackAvailable {
-		return handleExit(resultRetry), nil
+		return resultRequeue, nil
 	}
 
-	return reconcile.Result{}, nil
+	return resultNil, nil
 }
 
 func (r *monitoringStackReconciler) ensureMonitoringStack(ctx context.Context,

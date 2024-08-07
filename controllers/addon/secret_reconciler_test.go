@@ -13,7 +13,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
@@ -107,7 +106,7 @@ func Test_getReferencedPullSecret_uncachedFallback(t *testing.T) {
 	secret, result, err := r.getReferencedSecret(ctx, addon, addonPullSecretKey)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{}, result) // empty reconcile result
+	assert.Equal(t, resultNil, result) // empty reconcile result
 	assert.NotNil(t, secret)
 }
 
@@ -162,9 +161,7 @@ func Test_getReferencedPullSecret_retry(t *testing.T) {
 	secret, result, err := r.getReferencedSecret(ctx, addon, addonPullSecretKey)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{
-		RequeueAfter: defaultRetryAfterTime,
-	}, result) // retry
+	assert.Equal(t, resultRequeueAfter(defaultRetryAfterTime), result) // retry
 	assert.Nil(t, secret)
 
 	condition := meta.FindStatusCondition(addon.Status.Conditions, addonsv1alpha1.AddonOperatorAvailable)
@@ -370,7 +367,7 @@ func TestEnsureSecretPropagation(t *testing.T) {
 	result, err := r.Reconcile(ctx, addon)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{}, result)
+	assert.Equal(t, resultNil, result)
 
 	if assert.NotNil(t, createdDestSecret) {
 		assert.Equal(t, srcSecret1.Type, createdDestSecret.Type)
@@ -438,13 +435,13 @@ func TestEnsureSecretPropagation_cleanup_when_nil(t *testing.T) {
 	result, err := r.Reconcile(ctx, addon)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{}, result)
+	assert.Equal(t, resultNil, result)
 }
 
 func TestGetDestinationSecretWithoutNamespace_NoSecrets(t *testing.T) {
 	type Expected struct {
 		secret []corev1.Secret
-		result ctrl.Result
+		result subReconcilerResult
 		err    error
 	}
 	testCases := map[string]struct {
@@ -459,7 +456,7 @@ func TestGetDestinationSecretWithoutNamespace_NoSecrets(t *testing.T) {
 			},
 			expected: Expected{
 				secret: nil,
-				result: ctrl.Result{},
+				result: resultNil,
 				err:    nil,
 			},
 		},
@@ -473,7 +470,7 @@ func TestGetDestinationSecretWithoutNamespace_NoSecrets(t *testing.T) {
 			},
 			expected: Expected{
 				secret: nil,
-				result: ctrl.Result{},
+				result: resultNil,
 				err:    nil,
 			},
 		},
@@ -559,9 +556,7 @@ func TestGetDestinationSecretWithoutNamespace_WithSecrets(t *testing.T) {
 	secret, result, err := r.getDestinationSecretsWithoutNamespace(ctx, addon)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{
-		RequeueAfter: defaultRetryAfterTime,
-	}, result)
+	assert.Equal(t, resultRequeueAfter(defaultRetryAfterTime), result)
 	assert.Nil(t, secret)
 }
 
@@ -624,7 +619,7 @@ func TestGetDestinationSecretWithoutNamespace_WithSecretsUncachedFallback(t *tes
 	secret, result, err := r.getDestinationSecretsWithoutNamespace(ctx, addon)
 	c.AssertExpectations(t)
 	require.NoError(t, err)
-	assert.Equal(t, ctrl.Result{}, result)
+	assert.True(t, result.IsZero())
 	assert.NotNil(t, secret)
 }
 

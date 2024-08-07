@@ -26,7 +26,7 @@ func (r *olmReconciler) ensureSubscription(
 	addon *addonsv1alpha1.Addon,
 	catalogSource *operatorsv1alpha1.CatalogSource,
 ) (
-	requeueResult,
+	subReconcilerResult,
 	client.ObjectKey,
 	error,
 ) {

@@ -9,10 +9,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
@@ -28,24 +26,28 @@ type namespaceReconciler struct {
 }
 
 func (r *namespaceReconciler) Reconcile(ctx context.Context,
-	addon *addonsv1alpha1.Addon) (reconcile.Result, error) {
+	addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	// Ensure wanted namespaces
 	result, err := r.ensureWantedNamespaces(ctx, addon)
 	if err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure wanted Namespaces: %w", err)
+		return resultNil, fmt.Errorf("failed to ensure wanted Namespaces: %w", err)
 	} else if !result.IsZero() {
 		return result, nil
 	}
 
 	// Ensure unwanted namespaces are removed
 	if err := r.ensureDeletionOfUnwantedNamespaces(ctx, addon); err != nil {
-		return ctrl.Result{}, fmt.Errorf("failed to ensure deletion of unwanted Namespaces: %w", err)
+		return resultNil, fmt.Errorf("failed to ensure deletion of unwanted Namespaces: %w", err)
 	}
-	return reconcile.Result{}, nil
+	return resultNil, nil
 }
 
 func (r *namespaceReconciler) Name() string {
 	return NAMESPACE_RECONCILER_NAME
+}
+
+func (r *namespaceReconciler) Order() subReconcilerOrder {
+	return NamespaceReconcilerOrder
 }
 
 // Ensure cleanup of Namespaces that are not needed anymore for the given Addon resource
@@ -118,13 +120,13 @@ func getOwnedNamespacesViaCommonLabels(
 // Ensure existence of Namespaces specified in the given Addon resource
 // returns a bool that signals the caller to stop reconciliation and retry later
 func (r *namespaceReconciler) ensureWantedNamespaces(
-	ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	var unreadyNamespaces []string
 
 	for _, namespace := range addon.Spec.Namespaces {
 		ensuredNamespace, err := r.ensureNamespace(ctx, addon, namespace.Name, WithNamespaceLabels(namespace.Labels), WithNamespaceAnnotations(namespace.Annotations))
 		if err != nil {
-			return ctrl.Result{}, err
+			return resultNil, err
 		}
 
 		if ensuredNamespace.Status.Phase != corev1.NamespaceActive {
@@ -134,10 +136,10 @@ func (r *namespaceReconciler) ensureWantedNamespaces(
 
 	if len(unreadyNamespaces) > 0 {
 		reportUnreadyNamespaces(addon, unreadyNamespaces)
-		return ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil
+		return resultRequeueAfter(defaultRetryAfterTime), nil
 	}
 
-	return ctrl.Result{}, nil
+	return resultNil, nil
 }
 
 // Ensure a single Namespace for the given Addon resource

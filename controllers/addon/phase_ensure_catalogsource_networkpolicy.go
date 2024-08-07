@@ -20,7 +20,7 @@ import (
 )
 
 // Ensures the presence of a NetworkPolicy allowing ingress to the Addon's CatalogSources
-func (r *olmReconciler) ensureCatalogSourcesNetworkPolicy(ctx context.Context, addon *addonsv1alpha1.Addon) (requeueResult, error) {
+func (r *olmReconciler) ensureCatalogSourcesNetworkPolicy(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	desired, err := r.desiredCatalogSourcesNetworkPolicy(ctx, addon)
 	if err != nil {
 		if errors.Is(err, errInstallConfigParseFailure) {

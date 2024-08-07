@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"strings"
+	"time"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/go-logr/logr"
@@ -22,34 +23,18 @@ import (
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 )
 
-// use this type for exit handling
-type requeueResult int
-
-const (
-	// Should be used when requeue result does not matter.
-	// For example, when an error is returned along with it.
-	resultNil requeueResult = iota
-
-	// Should be used when request needs to be retried
-	resultRetry
-
-	// Should be used when reconciler needs to stop and exit.
-	resultStop
-)
-
-// This method should be called ONLY if result is NOT `resultNil`, or it could
-// lead to unpredictable behaviour.
-func handleExit(result requeueResult) ctrl.Result {
-	switch result {
-	case resultRetry:
-		return ctrl.Result{
-			RequeueAfter: defaultRetryAfterTime,
-		}
-	default:
-		return ctrl.Result{}
-	}
+type subReconcilerResult struct {
+	resultStop         bool
+	resultRequeue      bool
+	resultRequeueAfter *time.Duration
 }
 
+func (r *subReconcilerResult) IsZero() bool {
+	if r == nil {
+		return true
+	}
+	return *r == resultNil
+}
 func markedForDeletion(addon *addonsv1alpha1.Addon) bool {
 	_, found := addon.Annotations[addonsv1alpha1.DeleteAnnotationFlag]
 	return found

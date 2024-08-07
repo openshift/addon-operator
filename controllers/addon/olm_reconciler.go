@@ -5,9 +5,7 @@ import (
 
 	operatorsv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
@@ -25,7 +23,7 @@ type olmReconciler struct {
 }
 
 func (r *olmReconciler) Reconcile(ctx context.Context,
-	addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	log := controllers.LoggerFromContext(ctx)
 
 	var err error
@@ -35,9 +33,9 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 	// Ensure OperatorGroup
 	if requeueResult, err := r.ensureOperatorGroup(ctx, addon); err != nil {
 		err = reconErr.Join(err, controllers.ErrEnsureOperatorGroup)
-		return ctrl.Result{}, err
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
+		return resultNil, err
+	} else if !requeueResult.IsZero() {
+		return requeueResult, nil
 	}
 
 	// Phase 2.
@@ -47,59 +45,63 @@ func (r *olmReconciler) Reconcile(ctx context.Context,
 	// cannot verify the status of the GRPC connection.
 	if requeueResult, err := r.ensureCatalogSourcesNetworkPolicy(ctx, addon); err != nil {
 		err = reconErr.Join(err, controllers.ErrEnsureNetworkPolicy)
-		return ctrl.Result{}, err
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
+		return resultNil, err
+	} else if !requeueResult.IsZero() {
+		return requeueResult, nil
 	}
 
 	// Phase 3.
 	// Ensure CatalogSource
 	var (
 		catalogSource *operatorsv1alpha1.CatalogSource
-		requeueResult requeueResult
+		result        subReconcilerResult
 	)
-	if requeueResult, catalogSource, err = r.ensureCatalogSource(ctx, addon); err != nil {
+	if result, catalogSource, err = r.ensureCatalogSource(ctx, addon); err != nil {
 		err = reconErr.Join(err, controllers.ErrEnsureCatalogSource)
-		return ctrl.Result{}, err
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
+		return resultNil, err
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// Phase 4.
 	// Ensure Additional CatalogSources
-	if requeueResult, err = r.ensureAdditionalCatalogSources(ctx, addon); err != nil {
+	if result, err = r.ensureAdditionalCatalogSources(ctx, addon); err != nil {
 		err = reconErr.Join(err, controllers.ErrEnsureAdditionalCatalogSource)
-		return ctrl.Result{}, err
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
+		return resultNil, err
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// Phase 5.
 	// Ensure Subscription for this Addon.
-	requeueResult, currentCSVKey, err := r.ensureSubscription(
+	result, currentCSVKey, err := r.ensureSubscription(
 		ctx, log.WithName("phase-ensure-subscription"),
 		addon, catalogSource)
 	if err != nil {
 		err = reconErr.Join(err, controllers.ErrReconcileSubscription)
-		return ctrl.Result{}, err
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
+		return resultNil, err
+	} else if !result.IsZero() {
+		return result, nil
 	}
 
 	// Phase 6
 	// Observe operator API
-	if requeueResult, err := r.observeOperatorResource(ctx, addon, currentCSVKey); err != nil {
+	if result, err := r.observeOperatorResource(ctx, addon, currentCSVKey); err != nil {
 		err = reconErr.Join(err, controllers.ErrObserveCSV)
-		return ctrl.Result{}, err
-	} else if requeueResult != resultNil {
-		return handleExit(requeueResult), nil
+		return resultNil, err
+	} else if !result.IsZero() {
+		return result, nil
 	}
 	reportLastObservedAvailableCSV(addon, currentCSVKey.String())
-	return reconcile.Result{}, nil
+	return resultNil, nil
 }
 
 func (r *olmReconciler) Name() string {
 	return OLM_RECONCILER_NAME
+}
+
+func (r *olmReconciler) Order() subReconcilerOrder {
+	return OLMReconcilerOrder
 }
 
 // Gets a subscription by ObjectKey

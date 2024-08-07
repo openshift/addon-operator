@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -39,6 +40,20 @@ const (
 	// Default timeout when we do a manual RequeueAfter
 	defaultRetryAfterTime = 10 * time.Second
 	cacheFinalizer        = "addons.managed.openshift.io/cache"
+)
+
+// subReconcilerOrder defines the order of execution for addon sub-reconcilers.
+type subReconcilerOrder int
+
+const (
+	AddonDeletionReconcilerOrder subReconcilerOrder = iota * 100
+	NamespaceReconcilerOrder
+	PackageReconcilerOrder
+	AddonSecretPropagationReconcilerOrder
+	AddonInstanceReconcilerOrder
+	OLMReconcilerOrder
+	MonitoringFederationReconcilerOrder
+	MonitoringStackReconcilerOrder
 )
 
 type AddonReconciler struct {
@@ -79,9 +94,28 @@ var (
 	UnschedulableAddonPod = addonHealth{reason: "UnschedulableAddonPod"}
 )
 
+var (
+	resultNil          = subReconcilerResult{}
+	resultRetry        = subReconcilerResult{resultRequeue: true}
+	resultStop         = subReconcilerResult{resultStop: true}
+	resultRequeue      = subReconcilerResult{resultRequeue: true}
+	resultRequeueAfter = func(t time.Duration) subReconcilerResult {
+		return subReconcilerResult{resultRequeueAfter: &t}
+	}
+)
+
 type addonReconciler interface {
-	Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error)
+	Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error)
 	Name() string
+	// Order defines the order of execution for sub-reconciler.
+	Order() subReconcilerOrder
+}
+
+// nonBlockingReconciler is a subreconciler that does not block other reconcilers from running.
+type nonBlockingReconciler interface {
+	addonReconciler
+	IsReconcilationSuccessful(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error)
+	SetAddonUnreadyStatus(addon *addonsv1alpha1.Addon)
 }
 
 func NewAddonReconciler(
@@ -190,6 +224,14 @@ type ocmClient interface {
 		ctx context.Context,
 		addonID string,
 	) (res ocm.AddOnStatusResponse, err error)
+}
+
+func (r *AddonReconciler) getOrderedSubReconcilers() []addonReconciler {
+	sort.Slice(r.subReconcilers, func(i, j int) bool {
+		return r.subReconcilers[i].Order() < r.subReconcilers[j].Order()
+	})
+
+	return r.subReconcilers
 }
 
 func (r *AddonReconciler) InjectOCMClient(ctx context.Context, c *ocm.Client) error {
@@ -408,15 +450,39 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 	}
 
 	// Run each sub reconciler serially
-	for _, reconciler := range r.subReconcilers {
-		if result, err := reconciler.Reconcile(ctx, addon); err != nil {
+	for _, reconciler := range r.getOrderedSubReconcilers() {
+		subReconcilerRes, err := reconciler.Reconcile(ctx, addon)
+		switch {
+		case err != nil:
 			subReconErr.Report(err, addon.Name)
 			return ctrl.Result{}, fmt.Errorf("%s : failed to reconcile : %w", reconciler.Name(), err)
-		} else if !result.IsZero() {
-			return result, nil
+		case subReconcilerRes.resultStop:
+			return ctrl.Result{}, nil
+		case subReconcilerRes.resultRequeue:
+			return ctrl.Result{Requeue: true}, nil
+		case subReconcilerRes.resultRequeueAfter != nil:
+			return ctrl.Result{RequeueAfter: *subReconcilerRes.resultRequeueAfter}, nil
 		}
 	}
 
+	return r.setAddonCRStatus(ctx, addon)
+}
+
+func (r *AddonReconciler) setAddonCRStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	for _, reconciler := range r.getOrderedSubReconcilers() {
+		if nonBlocking, ok := reconciler.(nonBlockingReconciler); ok {
+			success, err := nonBlocking.IsReconcilationSuccessful(ctx, addon)
+			if err != nil {
+				return ctrl.Result{}, fmt.Errorf("failed to check reconcilation status of %s: %w", reconciler.Name(), err)
+			}
+			if !success {
+				nonBlocking.SetAddonUnreadyStatus(addon)
+				return ctrl.Result{}, nil
+			}
+		}
+	}
+	// All sub-reconcilers have succeeded, set the addon to ready.
+	reportReadinessStatus(addon)
 	return ctrl.Result{}, nil
 }
 

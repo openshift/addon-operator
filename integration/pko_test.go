@@ -92,7 +92,7 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAd
 		func(obj client.Object) (done bool, err error) {
 			addonBrokenImage := obj.(*addonsv1alpha1.Addon)
 			availableCondition := meta.FindStatusCondition(addonBrokenImage.Status.Conditions, addonsv1alpha1.Available)
-			done = availableCondition.Status == metav1.ConditionFalse &&
+			done = availableCondition != nil && availableCondition.Status == metav1.ConditionFalse &&
 				availableCondition.Reason == addonsv1alpha1.AddonReasonUnreadyClusterPackageTemplate
 			return done, nil
 		})
@@ -124,6 +124,77 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerStatusPropagatedToAd
 			availableCondition := meta.FindStatusCondition(addonAfterPatch.Status.Conditions, addonsv1alpha1.Available)
 			done = availableCondition.Status == metav1.ConditionTrue
 			return done, nil
+		})
+	s.Require().NoError(err)
+
+	s.T().Cleanup(func() { s.addonCleanup(addon, ctx) })
+}
+
+func (s *integrationTestSuite) TestPackageOperatorReconcilerDecoupledFromOLMReconciler() {
+	if !featuretoggle.IsEnabledOnTestEnv(&featuretoggle.AddonsPlugAndPlayFeatureToggle{}) {
+		s.T().Skip("skipping PackageOperatorReconciler integration tests as the feature toggle for it is disabled in the test environment")
+	}
+
+	ctx := context.Background()
+
+	name := "addonname-pko-boatboat"
+	namespace := "redhat-reference-addon" // This namespace is hard coded in managed tenants bundles
+
+	// Working Package Image, but not working index image.
+	addon := &addonsv1alpha1.Addon{
+		ObjectMeta: metav1.ObjectMeta{Name: name},
+		Spec: addonsv1alpha1.AddonSpec{
+			Version:              "1.0",
+			DisplayName:          name,
+			AddonPackageOperator: &addonsv1alpha1.AddonPackageOperator{Image: "quay.io/osd-addons/reference-addon-package:56916cb"},
+			Namespaces:           []addonsv1alpha1.AddonNamespace{{Name: namespace}},
+			Install: addonsv1alpha1.AddonInstallSpec{
+				Type: addonsv1alpha1.OLMOwnNamespace,
+				OLMOwnNamespace: &addonsv1alpha1.AddonInstallOLMOwnNamespace{
+					AddonInstallOLMCommon: addonsv1alpha1.AddonInstallOLMCommon{
+						Namespace:          namespace,
+						CatalogSourceImage: referenceAddonCatalogSourceImageBroken,
+						Channel:            "alpha",
+						PackageName:        "reference-addon",
+						Config:             &addonsv1alpha1.SubscriptionConfig{EnvironmentVariables: referenceAddonConfigEnvObjects},
+					},
+				},
+			},
+		},
+	}
+
+	tmpl := &pkov1alpha1.ClusterObjectTemplate{ObjectMeta: metav1.ObjectMeta{Name: name, Namespace: namespace}}
+
+	err := integration.Client.Create(ctx, addon)
+	s.Require().NoError(err)
+	// wait until ClusterObjectTemplate is created
+	err = integration.WaitForObject(ctx, s.T(),
+		defaultAddonAvailabilityTimeout, tmpl, "to be created",
+		func(obj client.Object) (done bool, err error) {
+			_ = obj.(*pkov1alpha1.ClusterObjectTemplate)
+			return true, nil
+		})
+	s.Require().NoError(err)
+
+	// Addon is unavailable because of broken index image.
+	err = integration.WaitForObject(ctx, s.T(),
+		defaultAddonAvailabilityTimeout, addon, "to be unavailable",
+		func(obj client.Object) (done bool, err error) {
+			addonBrokenImage := obj.(*addonsv1alpha1.Addon)
+			availableCondition := meta.FindStatusCondition(addonBrokenImage.Status.Conditions, addonsv1alpha1.Available)
+			done = availableCondition != nil && availableCondition.Status == metav1.ConditionFalse &&
+				availableCondition.Reason == addonsv1alpha1.AddonReasonUnreadyCSV
+			return done, nil
+		})
+	s.Require().NoError(err)
+
+	// But ClusterObjectTemplate is available.
+	err = integration.WaitForObject(ctx, s.T(),
+		defaultAddonAvailabilityTimeout, tmpl, "to be available",
+		func(obj client.Object) (done bool, err error) {
+			clusterObjectTemplate := obj.(*pkov1alpha1.ClusterObjectTemplate)
+			meta.IsStatusConditionTrue(clusterObjectTemplate.Status.Conditions, pkov1alpha1.PackageAvailable)
+			return true, nil
 		})
 	s.Require().NoError(err)
 

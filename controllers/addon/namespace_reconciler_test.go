@@ -18,7 +18,6 @@ import (
 
 	//	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 func TestEnsureWantedNamespaces_AddonWithoutNamespaces(t *testing.T) {
@@ -488,7 +487,7 @@ func Test_namespaceReconciler_Reconcile(t *testing.T) {
 
 	// Assert the expected result and error
 	require.NoError(t, err, "Expected no error during reconciliation")
-	require.Equal(t, reconcile.Result{}, result, "Expected empty result after reconciliation")
+	require.Equal(t, resultNil, result, "Expected empty result after reconciliation")
 
 	c.AssertExpectations(t)
 }

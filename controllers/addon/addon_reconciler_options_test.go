@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
@@ -16,14 +15,19 @@ import (
 // Mock implementation of addonReconciler for testing
 type mockReconciler struct{}
 
-func (r *mockReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+func (r *mockReconciler) Reconcile(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	// Mock implementation
-	return ctrl.Result{}, nil
+	return resultNil, nil
 }
 
 func (r *mockReconciler) Name() string {
 	return "MockReconciler"
 }
+
+func (r *mockReconciler) Order() subReconcilerOrder {
+	return subReconcilerOrder(1)
+}
+
 func TestWithMonitoringStackReconciler_ApplyToAddonReconciler(t *testing.T) {
 	c := testutil.NewClient()
 

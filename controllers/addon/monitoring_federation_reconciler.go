@@ -13,10 +13,8 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
@@ -33,7 +31,7 @@ type monitoringFederationReconciler struct {
 }
 
 func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
-	addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	log := controllers.LoggerFromContext(ctx)
 	reconErr := metrics.NewReconcileError("addon", r.recorder, true)
 	// Possibly ensure monitoring federation
@@ -42,16 +40,16 @@ func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
 	// thus we want to create the service monitor as late as possible to ensure that
 	// cluster-monitoring prom does not try to scrape a non-existent addon prometheus.
 
-	result, err := r.ensureMonitoringFederation(ctx, addon)
+	res, err := r.ensureMonitoringFederation(ctx, addon)
 	if errors.Is(err, controllers.ErrNotOwnedByUs) {
 		log.Info("stopping", "reason", "monitoring federation namespace or serviceMonitor owned by something else")
 
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	} else if err != nil {
 		err = reconErr.Join(err, controllers.ErrEnsureCreateServiceMonitor)
-		return ctrl.Result{}, err
-	} else if !result.IsZero() {
-		return result, nil
+		return resultNil, err
+	} else if !res.IsZero() {
+		return res, nil
 	}
 
 	// Remove possibly unwanted monitoring federation
@@ -60,69 +58,73 @@ func (r *monitoringFederationReconciler) Reconcile(ctx context.Context,
 			err,
 			controllers.ErrEnsureDeleteServiceMonitor,
 		)
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
-	return reconcile.Result{}, nil
+	return resultNil, nil
 }
 
 func (r *monitoringFederationReconciler) Name() string {
 	return MONITORING_FEDERATION_RECONCILER_NAME
 }
 
+func (r *monitoringFederationReconciler) Order() subReconcilerOrder {
+	return MonitoringFederationReconcilerOrder
+}
+
 // ensureMonitoringFederation inspects an addon's MonitoringFederation specification
 // and if it exists ensures that a ServiceMonitor is present in the desired monitoring
 // namespace.
-func (r *monitoringFederationReconciler) ensureMonitoringFederation(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+func (r *monitoringFederationReconciler) ensureMonitoringFederation(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	if !HasMonitoringFederation(addon) {
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	}
 
 	result, err := r.ensureMonitoringNamespace(ctx, addon)
 	if err != nil {
-		return ctrl.Result{}, fmt.Errorf("ensuring monitoring Namespace: %w", err)
+		return resultNil, fmt.Errorf("ensuring monitoring Namespace: %w", err)
 	} else if !result.IsZero() {
 		return result, nil
 	}
 	sresult, serr := r.reconcileServiceMonitor(ctx, addon)
 	if serr != nil {
-		return ctrl.Result{}, fmt.Errorf("ensuring ServiceMonitor: %w", err)
+		return resultNil, fmt.Errorf("ensuring ServiceMonitor: %w", err)
 	}
 	if !sresult.IsZero() {
 		return sresult, nil
 	}
 
-	return ctrl.Result{}, nil
+	return resultNil, nil
 }
 
 func (r *monitoringFederationReconciler) ensureMonitoringNamespace(
-	ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+	ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	desired, err := r.desiredMonitoringNamespace(addon)
 	if err != nil {
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 
 	actual, err := r.actualMonitoringNamespace(ctx, addon)
 	if k8sApiErrors.IsNotFound(err) {
-		return ctrl.Result{}, r.client.Create(ctx, desired)
+		return resultNil, r.client.Create(ctx, desired)
 	} else if err != nil {
-		return ctrl.Result{}, fmt.Errorf("getting monitoring namespace: %w", err)
+		return resultNil, fmt.Errorf("getting monitoring namespace: %w", err)
 	}
 
 	ownedByAddon := controllers.HasSameController(actual, desired)
 	labelsChanged := !equality.Semantic.DeepEqual(actual.Labels, desired.Labels)
 
 	if ownedByAddon && !labelsChanged {
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	}
 
 	actual.OwnerReferences, actual.Labels = desired.OwnerReferences, desired.Labels
 
 	if err := r.client.Update(ctx, actual); err != nil {
-		return ctrl.Result{}, fmt.Errorf("updating monitoring namespace: %w", err)
+		return resultNil, fmt.Errorf("updating monitoring namespace: %w", err)
 	}
 
 	if actual.Status.Phase == corev1.NamespaceActive {
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	}
 
 	reportUnreadyMonitoringFederation(addon, fmt.Sprintf("namespace %q is not active", actual.Name))
@@ -130,7 +132,7 @@ func (r *monitoringFederationReconciler) ensureMonitoringNamespace(
 	// Previously this would trigger exit and move on to the next phase.
 	// However, given that the reconciliation is not complete an error should
 	// be returned to requeue the work.
-	return ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil
+	return resultRequeueAfter(defaultRetryAfterTime), nil
 }
 
 func (r *monitoringFederationReconciler) desiredMonitoringNamespace(addon *addonsv1alpha1.Addon) (*corev1.Namespace, error) {
@@ -166,10 +168,10 @@ func (r *monitoringFederationReconciler) actualMonitoringNamespace(
 	return namespace, nil
 }
 
-func (r *monitoringFederationReconciler) reconcileServiceMonitor(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
+func (r *monitoringFederationReconciler) reconcileServiceMonitor(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, error) {
 	bearerTokenReconcileRes, tokenSecret, err := r.reconcileBearerTokenSecretForAddon(ctx, addon)
 	if err != nil {
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 	if !bearerTokenReconcileRes.IsZero() {
 		return bearerTokenReconcileRes, nil
@@ -177,14 +179,14 @@ func (r *monitoringFederationReconciler) reconcileServiceMonitor(ctx context.Con
 
 	desired, err := r.desiredServiceMonitor(addon, tokenSecret)
 	if err != nil {
-		return ctrl.Result{}, err
+		return resultNil, err
 	}
 
 	actual, err := r.actualServiceMonitor(ctx, addon)
 	if k8sApiErrors.IsNotFound(err) {
-		return ctrl.Result{}, r.client.Create(ctx, desired)
+		return resultNil, r.client.Create(ctx, desired)
 	} else if err != nil {
-		return ctrl.Result{}, fmt.Errorf("getting ServiceMonitor: %w", err)
+		return resultNil, fmt.Errorf("getting ServiceMonitor: %w", err)
 	}
 
 	currentLabels := labels.Set(actual.Labels)
@@ -194,14 +196,14 @@ func (r *monitoringFederationReconciler) reconcileServiceMonitor(ctx context.Con
 	labelsChanged := !labels.Equals(currentLabels, newLabels)
 
 	if ownedByAddon && !specChanged && !labelsChanged {
-		return ctrl.Result{}, nil
+		return resultNil, nil
 	}
 
 	actual.Spec = desired.Spec
 	actual.Labels = newLabels
 	actual.OwnerReferences = desired.OwnerReferences
 
-	return ctrl.Result{}, r.client.Update(ctx, actual)
+	return resultNil, r.client.Update(ctx, actual)
 }
 
 func (r *monitoringFederationReconciler) desiredServiceMonitor(addon *addonsv1alpha1.Addon, bearerTokenSecret *corev1.Secret) (*monitoringv1.ServiceMonitor, error) {
@@ -230,7 +232,7 @@ func (r *monitoringFederationReconciler) desiredServiceMonitor(addon *addonsv1al
 	return serviceMonitor, nil
 }
 
-func (r *monitoringFederationReconciler) reconcileBearerTokenSecretForAddon(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, *corev1.Secret, error) {
+func (r *monitoringFederationReconciler) reconcileBearerTokenSecretForAddon(ctx context.Context, addon *addonsv1alpha1.Addon) (subReconcilerResult, *corev1.Secret, error) {
 	key := types.NamespacedName{
 		Name:      "addon-operator-prom-token",
 		Namespace: r.addonOperatorNamespace,
@@ -241,7 +243,7 @@ func (r *monitoringFederationReconciler) reconcileBearerTokenSecretForAddon(ctx 
 	addonOperatorPromTokenSecret := &corev1.Secret{}
 	// check if ADO ns has the SA token required for the SM
 	if err := r.uncachedClient.Get(ctx, key, addonOperatorPromTokenSecret); err != nil {
-		return ctrl.Result{}, nil, fmt.Errorf("addonOperator namespace does not have the prom token secret: %w", err)
+		return resultNil, nil, fmt.Errorf("addonOperator namespace does not have the prom token secret: %w", err)
 	}
 
 	desiredBearertokensecret := &corev1.Secret{
@@ -253,7 +255,7 @@ func (r *monitoringFederationReconciler) reconcileBearerTokenSecretForAddon(ctx 
 	}
 
 	if err := controllerutil.SetControllerReference(addon, desiredBearertokensecret, r.scheme); err != nil {
-		return ctrl.Result{}, nil, fmt.Errorf("setting owner reference: %w", err)
+		return resultNil, nil, fmt.Errorf("setting owner reference: %w", err)
 	}
 
 	existingBearerTokenSecret := &corev1.Secret{}
@@ -264,9 +266,9 @@ func (r *monitoringFederationReconciler) reconcileBearerTokenSecretForAddon(ctx 
 	); err != nil {
 		if k8sApiErrors.IsNotFound(err) {
 			log.Info("creating the sa secret in the monitoring namespace")
-			return ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil, r.client.Create(ctx, desiredBearertokensecret)
+			return resultRequeueAfter(defaultRetryAfterTime), nil, r.client.Create(ctx, desiredBearertokensecret)
 		}
-		return ctrl.Result{}, nil, err
+		return resultNil, nil, err
 	}
 
 	ownedByAddon := controllers.HasSameController(desiredBearertokensecret, existingBearerTokenSecret)
@@ -278,10 +280,10 @@ func (r *monitoringFederationReconciler) reconcileBearerTokenSecretForAddon(ctx 
 		existingBearerTokenSecret.OwnerReferences = desiredBearertokensecret.OwnerReferences
 		existingBearerTokenSecret.Labels = newLabels
 		log.Info("updating the sa secret in the monitoring namespace")
-		return ctrl.Result{RequeueAfter: defaultRetryAfterTime}, nil, r.client.Update(ctx, existingBearerTokenSecret)
+		return resultRequeueAfter(defaultRetryAfterTime), nil, r.client.Update(ctx, existingBearerTokenSecret)
 	}
 	log.Info("Already present Secret")
-	return ctrl.Result{}, existingBearerTokenSecret, nil
+	return resultNil, existingBearerTokenSecret, nil
 }
 
 func (r *monitoringFederationReconciler) actualServiceMonitor(
