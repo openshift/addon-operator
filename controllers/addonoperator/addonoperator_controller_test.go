@@ -11,7 +11,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/util/workqueue"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
@@ -190,14 +189,14 @@ func TestAreSlicesEquivalent(t *testing.T) {
 // a reconcile request for the default addon operator.
 func TestEnqueueAddonOperator(t *testing.T) {
 	ctx := context.Background()
-	q := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
+	q := workqueue.NewTypedRateLimitingQueue(workqueue.DefaultTypedControllerRateLimiter[reconcile.Request]())
 	expectedRequest := reconcile.Request{
 		NamespacedName: types.NamespacedName{
 			Name: addonsv1alpha1.DefaultAddonOperatorName,
 		},
 	}
 
-	err := enqueueAddonOperator(ctx, &handler.EnqueueRequestForObject{}, q)
+	err := enqueueAddonOperator(ctx, q)
 	require.NoError(t, err, "Expected no error")
 
 	// Check that a single request was added to the queue
@@ -205,8 +204,7 @@ func TestEnqueueAddonOperator(t *testing.T) {
 
 	// Retrieve the added request from the queue
 	item, _ := q.Get()
-	request, ok := item.(reconcile.Request)
-	assert.True(t, ok, "Expected item to be of type reconcile.Request")
+	request := item
 	assert.Equal(t, expectedRequest, request, "Expected request does not match the added request")
 }
 

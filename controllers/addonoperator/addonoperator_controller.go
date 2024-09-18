@@ -26,7 +26,6 @@ import (
 	"github.com/openshift/addon-operator/internal/ocm"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
@@ -52,12 +51,11 @@ func (r *AddonOperatorReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&addonsv1alpha1.AddonOperator{}).
 		WithEventFilter(predicate.GenerationChangedPredicate{}).
-		WatchesRawSource(source.Func(enqueueAddonOperator), &handler.EnqueueRequestForObject{}).
+		WatchesRawSource(source.Func(enqueueAddonOperator)).
 		Complete(r)
 }
 
-func enqueueAddonOperator(ctx context.Context, h handler.EventHandler,
-	q workqueue.RateLimitingInterface, p ...predicate.Predicate) error {
+func enqueueAddonOperator(ctx context.Context, q workqueue.TypedRateLimitingInterface[reconcile.Request]) error {
 	q.Add(reconcile.Request{NamespacedName: types.NamespacedName{
 		Name: addonsv1alpha1.DefaultAddonOperatorName,
 	}})

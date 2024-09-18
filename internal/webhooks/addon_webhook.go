@@ -2,6 +2,7 @@ package webhooks
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	v1 "k8s.io/api/admission/v1"
@@ -34,7 +35,12 @@ func (r *AddonWebhookHandler) Handle(ctx context.Context, req admission.Request)
 		return r.validateCreate(&obj)
 	case v1.Operation(adminv1beta1.Update):
 		oldObj := addonsv1alpha1.Addon{}
-		if err := r.decoder.DecodeRaw(req.OldObject, &oldObj); err != nil {
+		if r.decoder == nil {
+			return admission.Errored(http.StatusBadRequest, fmt.Errorf("decoder is nil"))
+		}
+		decoder := *r.decoder
+
+		if err := decoder.DecodeRaw(req.OldObject, &oldObj); err != nil {
 			return admission.Errored(http.StatusBadRequest, err)
 		}
 		return r.validateUpdate(&obj, &oldObj)
@@ -46,7 +52,11 @@ func (r *AddonWebhookHandler) Handle(ctx context.Context, req admission.Request)
 func (r *AddonWebhookHandler) decodeAddon(req admission.Request) (addonsv1alpha1.Addon, error) {
 	obj := addonsv1alpha1.Addon{}
 	if req.Operation != v1.Operation(adminv1beta1.Delete) {
-		if err := r.decoder.Decode(req, &obj); err != nil {
+		if r.decoder == nil {
+			return obj, fmt.Errorf("decoder is nil")
+		}
+		decoder := *r.decoder
+		if err := decoder.Decode(req, &obj); err != nil {
 			return obj, err
 		}
 		return obj, nil

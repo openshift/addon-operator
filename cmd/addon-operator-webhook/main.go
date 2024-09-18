@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -76,7 +77,7 @@ func main() {
 		Client: mgr.GetClient(),
 	}
 
-	if err = wbHandler.InjectDecoder(admission.NewDecoder(mgr.GetScheme())); err != nil {
+	if err = wbHandler.InjectDecoder(ptr.To(admission.NewDecoder(mgr.GetScheme()))); err != nil {
 		setupLog.Error(err, "unable to inject decoder")
 		os.Exit(1)
 	}
