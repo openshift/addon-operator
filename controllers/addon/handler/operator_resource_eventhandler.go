@@ -27,27 +27,27 @@ func NewOperatorResourceHandler() *OperatorResourceHandler {
 }
 
 // Create is called in response to an create event.
-func (h *OperatorResourceHandler) Create(_ context.Context, evt event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (h *OperatorResourceHandler) Create(_ context.Context, evt event.CreateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.enqueueObject(evt.Object, q)
 }
 
 // Update is called in response to an update event.
-func (h *OperatorResourceHandler) Update(_ context.Context, evt event.UpdateEvent, q workqueue.RateLimitingInterface) {
+func (h *OperatorResourceHandler) Update(_ context.Context, evt event.UpdateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.enqueueObject(evt.ObjectNew, q)
 }
 
 // Delete is called in response to a delete event.
-func (h *OperatorResourceHandler) Delete(_ context.Context, evt event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (h *OperatorResourceHandler) Delete(_ context.Context, evt event.DeleteEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.enqueueObject(evt.Object, q)
 }
 
 // Generic is called in response to an event of an unknown type or a synthetic event triggered as a cron or
 // external trigger request - e.g. reconcile Autoscaling, or a Webhook.
-func (h *OperatorResourceHandler) Generic(_ context.Context, evt event.GenericEvent, q workqueue.RateLimitingInterface) {
+func (h *OperatorResourceHandler) Generic(_ context.Context, evt event.GenericEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.enqueueObject(evt.Object, q)
 }
 
-func (h *OperatorResourceHandler) enqueueObject(obj client.Object, q workqueue.RateLimitingInterface) {
+func (h *OperatorResourceHandler) enqueueObject(obj client.Object, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	h.mux.RLock()
 	defer h.mux.RUnlock()
 

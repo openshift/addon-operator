@@ -12,6 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
@@ -342,10 +343,10 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_SMPresentInCluster(t
 						TLSConfig: &monitoringv1.TLSConfig{
 							CAFile: "/etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt",
 							SafeTLSConfig: monitoringv1.SafeTLSConfig{
-								ServerName: fmt.Sprintf(
+								ServerName: ptr.To(fmt.Sprintf(
 									"prometheus.%s.svc",
 									addon.Spec.Monitoring.Federation.Namespace,
-								),
+								)),
 							},
 						},
 					},

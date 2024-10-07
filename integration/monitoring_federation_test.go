@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
@@ -244,10 +245,10 @@ func validateMonitoringFederationServiceMonitor(t *testing.T, ctx context.Contex
 				TLSConfig: &monitoringv1.TLSConfig{
 					CAFile: "/etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt",
 					SafeTLSConfig: monitoringv1.SafeTLSConfig{
-						ServerName: fmt.Sprintf(
+						ServerName: ptr.To(fmt.Sprintf(
 							"prometheus.%s.svc",
 							addon.Spec.Monitoring.Federation.Namespace,
-						),
+						)),
 					},
 				},
 			},

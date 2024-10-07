@@ -16,6 +16,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/apimachinery/pkg/util/rand"
+	"k8s.io/utils/ptr"
 	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -495,7 +496,7 @@ func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon,
 	tlsConfig := &monitoringv1.TLSConfig{
 		CAFile: cacert,
 		SafeTLSConfig: monitoringv1.SafeTLSConfig{
-			ServerName: fmt.Sprintf("prometheus.%s.svc", addon.Spec.Monitoring.Federation.Namespace),
+			ServerName: ptr.To(fmt.Sprintf("prometheus.%s.svc", addon.Spec.Monitoring.Federation.Namespace)),
 		},
 	}
 

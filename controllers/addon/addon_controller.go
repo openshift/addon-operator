@@ -318,16 +318,20 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager, opts ...AddonReconc
 		Owns(&operatorsv1alpha1.Subscription{}).
 		Owns(&addonsv1alpha1.AddonInstance{}).
 		Owns(&monitoringv1.ServiceMonitor{}).
-		WatchesRawSource(source.Kind(
-			mgr.GetCache(), &corev1.Secret{}),
-			handler.EnqueueRequestForOwner(r.Scheme, mgr.GetRESTMapper(), &addonsv1alpha1.Addon{})).
-		WatchesRawSource(source.Kind(
-			mgr.GetCache(), &operatorsv1.Operator{}),
-			r.operatorResourceHandler, builder.OnlyMetadata,
+		Watches(&corev1.Secret{},
+			handler.EnqueueRequestForOwner(
+				mgr.GetScheme(),
+				mgr.GetRESTMapper(),
+				&addonsv1alpha1.Addon{},
+			),
 		).
-		WatchesRawSource(&source.Channel{ // Requeue everything when entering/leaving global pause.
-			Source: r.addonRequeueCh,
-		}, &handler.EnqueueRequestForObject{})
+		Watches(&operatorsv1.Operator{}, r.operatorResourceHandler, builder.OnlyMetadata).
+		WatchesRawSource(
+			source.Channel(
+				r.addonRequeueCh,
+				&handler.EnqueueRequestForObject{},
+			),
+		)
 
 	for _, opt := range opts {
 		opt.ApplyToControllerBuilder(adoControllerBuilder)

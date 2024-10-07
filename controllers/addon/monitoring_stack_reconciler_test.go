@@ -248,11 +248,11 @@ func TestGetWriteRelabelConfigFromAllowlist(t *testing.T) {
 	expectedResult := []monv1.RelabelConfig{
 		{
 			SourceLabels: []monv1.LabelName{"[__name__]"},
-			Separator:    "",
+			Separator:    nil,
 			TargetLabel:  "",
 			Regex:        "(cpu_usage|memory_usage|disk_space_used)",
 			Modulus:      0,
-			Replacement:  "",
+			Replacement:  nil,
 			Action:       "keep",
 		},
 	}

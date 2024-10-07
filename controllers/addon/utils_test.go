@@ -14,6 +14,7 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
 	"github.com/openshift/addon-operator/controllers"
@@ -110,23 +111,23 @@ type operatorResourceHandlerMock struct {
 var _ operatorResourceHandler = (*operatorResourceHandlerMock)(nil)
 
 // Create is called in response to an create event - e.g. Pod Creation.
-func (m *operatorResourceHandlerMock) Create(_ context.Context, e event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Create(_ context.Context, e event.CreateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	m.Called(e, q)
 }
 
 // Update is called in response to an update event -  e.g. Pod Updated.
-func (m *operatorResourceHandlerMock) Update(_ context.Context, e event.UpdateEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Update(_ context.Context, e event.UpdateEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	m.Called(e, q)
 }
 
 // Delete is called in response to a delete event - e.g. Pod Deleted.
-func (m *operatorResourceHandlerMock) Delete(_ context.Context, e event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Delete(_ context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	m.Called(e, q)
 }
 
 // Generic is called in response to an event of an unknown type or a synthetic event triggered as a cron or
 // external trigger request - e.g. reconcile Autoscaling, or a Webhook.
-func (m *operatorResourceHandlerMock) Generic(_ context.Context, e event.GenericEvent, q workqueue.RateLimitingInterface) {
+func (m *operatorResourceHandlerMock) Generic(_ context.Context, e event.GenericEvent, q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 	m.Called(e, q)
 }
 
