@@ -1,18 +1,12 @@
 approvers:
 - erdii
-- thetechnick
 - apahim
-- aditya-konarde
 - ashishmax31
-- yashvardhan-kukreja
 - ajpantuso
 - Ankit152
 - eqrx
 - kostola
-- chamalabey
 - sclarkso
-- npecka
-- jessesarn
 - Nanyte25
 - pat-cremin
 - robshelly
@@ -20,11 +14,8 @@ approvers:
 - venkateshsredhat
 options: {}
 reviewers:
-- thetechnick
 - apahim
 - ashishmax31
-- yashvardhan-kukreja
 - ajpantuso
 - Ankit152
 - venkateshsredhat
-- chamalabey
