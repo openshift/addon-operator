@@ -406,7 +406,7 @@ func parseAddonInstallConfig(
 		// This should never happen, unless the schema validation is wrong.
 		// The .install.type property is set to only allow known enum values.
 		log.Error(fmt.Errorf("invalid Addon install type: %q", addon.Spec.Install.Type),
-			"stopping Addon reconcilation")
+			"stopping Addon reconciliation")
 		return nil, true
 	}
 }
@@ -447,7 +447,7 @@ func parseAddonInstallConfigForAdditionalCatalogSources(
 		// This should never happen, unless the schema validation is wrong.
 		// The .install.type property is set to only allow known enum values.
 		log.Error(fmt.Errorf("invalid Addon install type: %q", addon.Spec.Install.Type),
-			"stopping Addon reconcilation")
+			"stopping Addon reconciliation")
 		return []addonsv1alpha1.AdditionalCatalogSource{}, "", "", true
 	}
 	return additionalCatalogSrcs, targetNamespace, pullSecretName, false

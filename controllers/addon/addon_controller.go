@@ -114,7 +114,7 @@ type addonReconciler interface {
 // nonBlockingReconciler is a subreconciler that does not block other reconcilers from running.
 type nonBlockingReconciler interface {
 	addonReconciler
-	IsReconcilationSuccessful(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error)
+	IsReconciliationSuccessful(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error)
 	SetAddonUnreadyStatus(addon *addonsv1alpha1.Addon)
 }
 
@@ -265,12 +265,12 @@ func (r *AddonReconciler) GetOCMClusterInfo() OcmClusterInfo {
 	}
 }
 
-// Pauses reconcilation of all Addon objects. Concurrency safe.
+// Pauses reconciliation of all Addon objects. Concurrency safe.
 func (r *AddonReconciler) EnableGlobalPause(ctx context.Context) error {
 	return r.setGlobalPause(ctx, true)
 }
 
-// Unpauses reconcilation of all Addon objects. Concurrency safe.
+// Unpauses reconciliation of all Addon objects. Concurrency safe.
 func (r *AddonReconciler) DisableGlobalPause(ctx context.Context) error {
 	return r.setGlobalPause(ctx, false)
 }
@@ -475,9 +475,9 @@ func (r *AddonReconciler) reconcile(ctx context.Context, addon *addonsv1alpha1.A
 func (r *AddonReconciler) setAddonCRStatus(ctx context.Context, addon *addonsv1alpha1.Addon) (ctrl.Result, error) {
 	for _, reconciler := range r.getOrderedSubReconcilers() {
 		if nonBlocking, ok := reconciler.(nonBlockingReconciler); ok {
-			success, err := nonBlocking.IsReconcilationSuccessful(ctx, addon)
+			success, err := nonBlocking.IsReconciliationSuccessful(ctx, addon)
 			if err != nil {
-				return ctrl.Result{}, fmt.Errorf("failed to check reconcilation status of %s: %w", reconciler.Name(), err)
+				return ctrl.Result{}, fmt.Errorf("failed to check reconciliation status of %s: %w", reconciler.Name(), err)
 			}
 			if !success {
 				nonBlocking.SetAddonUnreadyStatus(addon)

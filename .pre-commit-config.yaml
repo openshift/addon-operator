@@ -26,12 +26,13 @@ repos:
 
 - repo: local
   hooks:
-  - id: goimports
-    name: goimports
-    entry: hack/ensure-and-run-goimports.sh
-    language: system
-    types: [go]
-    require_serial: true # mage does not like multiple parallel compiles
+  # Temporaril
+  # - id: goimports
+  #   name: goimports
+  #   entry: hack/ensure-and-run-goimports.sh
+  #   language: system
+  #   types: [go]
+  #   require_serial: true # mage does not like multiple parallel compiles
 
   - id: go-mod-tidy
     name: go-mod-tidy

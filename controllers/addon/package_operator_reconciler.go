@@ -222,7 +222,7 @@ func (r *PackageOperatorReconciler) reconcileClusterObjectTemplate(ctx context.C
 	return resultNil, nil
 }
 
-func (r *PackageOperatorReconciler) IsReconcilationSuccessful(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error) {
+func (r *PackageOperatorReconciler) IsReconciliationSuccessful(ctx context.Context, addon *addonsv1alpha1.Addon) (bool, error) {
 	// If the addon doesnt have a package image defined, we consider it reconciled.
 	if addon.Spec.AddonPackageOperator == nil {
 		return true, nil
