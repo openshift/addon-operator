@@ -1,4 +1,4 @@
-FROM quay.io/app-sre/boilerplate:image-v5.0.1 AS builder
+FROM quay.io/redhat-services-prod/openshift/boilerplate:image-v6.0.1 AS builder
 
 WORKDIR /workdir
 
@@ -10,7 +10,7 @@ COPY . .
 RUN make go-build
 
 ###
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.10-1018
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.10-1130
 
 ENV USER_UID=1001 \
     USER_NAME=addon-operator
