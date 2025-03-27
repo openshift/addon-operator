@@ -106,7 +106,6 @@ func ParseDocumentationFrom(src string) []KubeTypes {
 
 func astFrom(filePath string) *doc.Package {
 	fset := token.NewFileSet()
-	m := make(map[string]*ast.File)
 
 	f, err := parser.ParseFile(fset, filePath, nil, parser.ParseComments)
 	if err != nil {
@@ -114,10 +113,13 @@ func astFrom(filePath string) *doc.Package {
 		return nil
 	}
 
-	m[filePath] = f
-	apkg, _ := ast.NewPackage(fset, m, nil, nil)
+	apkg, err := doc.NewFromFiles(fset, []*ast.File{f}, filePath)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
 
-	return doc.New(apkg, "", 0)
+	return apkg
 }
 
 func fmtRawFieldDoc(rawDoc string) string {
