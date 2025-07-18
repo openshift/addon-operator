@@ -14,7 +14,7 @@ metadata:
       && ("**/*.go".pathChanged() ||
           "**/go.*".pathChanged() ||
           "build/Dockerfile".pathChanged() ||
-          ".tekton/addon-operator--pull-request.yaml".pathChanged() )
+          ".tekton/addon-operator-pull-request.yaml".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: addon-operator
