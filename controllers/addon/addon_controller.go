@@ -344,6 +344,7 @@ func (r *AddonReconciler) SetupWithManager(mgr ctrl.Manager, opts ...AddonReconc
 func (r *AddonReconciler) Reconcile(
 	ctx context.Context, req ctrl.Request,
 ) (ctrl.Result, error) {
+	//nolint:staticcheck
 	logger := r.Log.WithValues("addon", req.NamespacedName.String())
 	ctx = controllers.ContextWithLogger(ctx, logger)
 	reconErr := metrics.NewReconcileError("addon", r.Recorder, false)
@@ -514,6 +515,7 @@ func (r *AddonReconciler) listUnschedulableAddonPods(
 		return unschedulablePods, errors.New("failed to get addon's namespace")
 	}
 
+	//nolint:staticcheck
 	if err := r.Client.List(
 		ctx,
 		addonPods,

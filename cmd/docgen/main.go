@@ -32,9 +32,9 @@ var (
 
 func sanitizeSectionLink(link string) string {
 	link = strings.ToLower(link)
-	link = strings.Replace(link, " ", "-", -1)
-	link = strings.Replace(link, "/", "", -1)
-	link = strings.Replace(link, ".", "", -1)
+	link = strings.ReplaceAll(link, " ", "-")
+	link = strings.ReplaceAll(link, "/", "")
+	link = strings.ReplaceAll(link, ".", "")
 	return link
 }
 

@@ -66,6 +66,7 @@ func enqueueAddonOperator(ctx context.Context, q workqueue.TypedRateLimitingInte
 func (r *AddonOperatorReconciler) Reconcile(
 	ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 
+	//nolint:staticcheck
 	log := r.Log.WithValues("addon-operator", req.NamespacedName.String())
 
 	addonOperator := &addonsv1alpha1.AddonOperator{}

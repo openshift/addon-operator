@@ -111,11 +111,11 @@ func init() {
 	}
 	switch len(addonOperatorDeployments) {
 	case 0:
-		panic(fmt.Errorf("no AddonOperator deployment found on the cluster!"))
+		panic(fmt.Errorf("no AddonOperator deployment found on the cluster"))
 	case 1:
 		AddonOperatorNamespace = addonOperatorDeployments[0].Namespace
 	default:
-		panic(fmt.Errorf("multiple AddonOperator deployments found on the cluster!"))
+		panic(fmt.Errorf("multiple AddonOperator deployments found on the cluster"))
 	}
 }
 

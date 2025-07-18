@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
@@ -33,7 +32,7 @@ func TestHasEqualControllerReference(t *testing.T) {
 
 func TestAddCommonLabels(t *testing.T) {
 	addon := &addonsv1alpha1.Addon{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: "test",
 		},
 	}
@@ -57,7 +56,7 @@ func TestAddCommonLabels(t *testing.T) {
 
 func TestCommonLabelsAsLabelSelector(t *testing.T) {
 	addonWithCorrectName := &addonsv1alpha1.Addon{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: "test",
 		},
 	}

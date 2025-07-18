@@ -5,7 +5,6 @@ import (
 	"os"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	k8slabels "k8s.io/apimachinery/pkg/labels"
 
 	addonsv1alpha1 "github.com/openshift/addon-operator/api/v1alpha1"
@@ -50,8 +49,8 @@ func AddCommonAnnotations(obj metav1.Object, addon *addonsv1alpha1.Addon) {
 	obj.SetAnnotations(annotations)
 }
 
-func CommonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) labels.Selector {
-	labelSet := make(labels.Set)
+func CommonLabelsAsLabelSelector(addon *addonsv1alpha1.Addon) k8slabels.Selector {
+	labelSet := make(k8slabels.Set)
 	labelSet[CommonManagedByLabel] = CommonManagedByValue
 	labelSet[CommonCacheLabel] = CommonCacheValue
 	labelSet[CommonInstanceLabel] = addon.Name

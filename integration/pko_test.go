@@ -24,7 +24,6 @@ import (
 	"github.com/openshift/addon-operator/internal/featuretoggle"
 	"github.com/openshift/addon-operator/internal/testutil"
 
-	"package-operator.run/apis/core/v1alpha1"
 	pkov1alpha1 "package-operator.run/apis/core/v1alpha1"
 )
 
@@ -251,7 +250,7 @@ func (s *integrationTestSuite) TestPackageOperatorReconcilerSourceParameterInjec
 							pkoImage = pkoImageRequiredParams
 						}
 
-						status := v1alpha1.PackageAvailable
+						status := pkov1alpha1.PackageAvailable
 						if parV && (!apV || !dsV || !pdV || !sgV) {
 							status = pkov1alpha1.PackageInvalid
 						}
@@ -430,7 +429,7 @@ func (s *integrationTestSuite) waitForClusterPackage(ctx context.Context, addonN
 	addonParametersValuePresent bool, deadMansSnitchUrlValuePresent bool, pagerDutyValuePresent bool, sendGridValuePresent bool,
 ) error {
 	logger := testutil.NewLogger(s.T())
-	cp := &v1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
+	cp := &pkov1alpha1.ClusterPackage{ObjectMeta: metav1.ObjectMeta{Name: addonName}}
 	if err := integration.WaitForObjectWithInterval(ctx, s.T(), 30*time.Second,
 		defaultAddonAvailabilityTimeout, cp, "to be "+conditionType,
 		clusterPackageChecker(&logger, addonNamespace, conditionType, addonParametersValuePresent, deadMansSnitchUrlValuePresent,
@@ -450,9 +449,9 @@ func clusterPackageChecker(
 	pagerDutyValuePresent bool,
 	sendGridValuePresent bool,
 ) func(client.Object) (done bool, err error) {
-	if conditionType == v1alpha1.PackageInvalid {
+	if conditionType == pkov1alpha1.PackageInvalid {
 		return func(obj client.Object) (done bool, err error) {
-			clusterPackage := obj.(*v1alpha1.ClusterPackage)
+			clusterPackage := obj.(*pkov1alpha1.ClusterPackage)
 			logJson(logger, "expecting "+pkov1alpha1.PackageInvalid+" package: ", clusterPackage)
 			result := meta.IsStatusConditionTrue(clusterPackage.Status.Conditions, conditionType)
 			logger.Info(fmt.Sprintf("result: %t", result))
@@ -461,7 +460,7 @@ func clusterPackageChecker(
 	}
 
 	return func(obj client.Object) (done bool, err error) {
-		clusterPackage := obj.(*v1alpha1.ClusterPackage)
+		clusterPackage := obj.(*pkov1alpha1.ClusterPackage)
 		logJson(logger, "expecting "+pkov1alpha1.PackageAvailable+" package: ", clusterPackage)
 
 		if !meta.IsStatusConditionTrue(clusterPackage.Status.Conditions, conditionType) {

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	ioutil "io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -134,7 +133,7 @@ func (c *Client) do(
 
 	// HTTP Error handling
 	if httpRes.StatusCode >= 400 && httpRes.StatusCode <= 599 {
-		body, err := ioutil.ReadAll(httpRes.Body)
+		body, err := io.ReadAll(httpRes.Body)
 		if err != nil {
 			return fmt.Errorf("reading error response body %s: %w", fullUrl, err)
 		}
@@ -150,7 +149,7 @@ func (c *Client) do(
 
 	// Read response
 	if result != nil {
-		body, err := ioutil.ReadAll(httpRes.Body)
+		body, err := io.ReadAll(httpRes.Body)
 		if err != nil {
 			return fmt.Errorf("reading response body %s: %w", fullUrl, err)
 		}
