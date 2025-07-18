@@ -123,6 +123,7 @@ func (s *integrationTestSuite) TestAddonSpecImmutability() {
 		}
 
 		// update field
+		//nolint:staticcheck
 		addon.Spec.Install.
 			OLMOwnNamespace.
 			AddonInstallOLMCommon.

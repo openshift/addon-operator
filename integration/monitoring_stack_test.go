@@ -80,17 +80,18 @@ func (s *integrationTestSuite) TestMonitoringStack_MonitoringInPlaceAtCreationWi
 	availableCondition, reconciledCondition := obov1alpha1.Condition{}, obov1alpha1.Condition{}
 	availableConditionFound, reconciledConditionFound := false, false
 
-	for _, cond := range reconciledMonitoringStack.Status.Conditions {
-		cond := cond
-		if cond.Type == obov1alpha1.AvailableCondition {
-			availableCondition = cond
-			availableConditionFound = true
-		} else if cond.Type == obov1alpha1.ReconciledCondition {
-			reconciledCondition = cond
-			reconciledConditionFound = true
-		}
+	for i, cond := range reconciledMonitoringStack.Status.Conditions {
 		if availableConditionFound && reconciledConditionFound {
 			break
+		}
+
+		switch cond.Type {
+		case obov1alpha1.AvailableCondition:
+			availableCondition = reconciledMonitoringStack.Status.Conditions[i]
+			availableConditionFound = true
+		case obov1alpha1.ReconciledCondition:
+			reconciledCondition = reconciledMonitoringStack.Status.Conditions[i]
+			reconciledConditionFound = true
 		}
 	}
 

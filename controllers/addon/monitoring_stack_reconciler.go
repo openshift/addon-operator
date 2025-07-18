@@ -86,14 +86,17 @@ func (r *monitoringStackReconciler) propagateMonitoringStackStatusToAddon(monito
 	availableConditionFound, reconciledConditionFound := false, false
 
 	// iterate until all conditions have been traversed or both `available` and `reconcile` conditions have been found
-	for i := 0; (i < len(monitoringStack.Status.Conditions)) && !(availableConditionFound && reconciledConditionFound); i++ {
-		cond := monitoringStack.Status.Conditions[i]
+	for i, cond := range monitoringStack.Status.Conditions {
+		if availableConditionFound && reconciledConditionFound {
+			break
+		}
+
 		switch cond.Type {
 		case obov1alpha1.AvailableCondition:
-			availableCondition = cond
+			availableCondition = monitoringStack.Status.Conditions[i]
 			availableConditionFound = true
 		case obov1alpha1.ReconciledCondition:
-			reconciledCondition = cond
+			reconciledCondition = monitoringStack.Status.Conditions[i]
 			reconciledConditionFound = true
 		}
 	}
