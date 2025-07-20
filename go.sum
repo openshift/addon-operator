@@ -1116,8 +1116,8 @@ github.com/opencontainers/runtime-spec v1.0.3-0.20200929063507-e6143ca7d51d/go.m
 github.com/opencontainers/runtime-tools v0.0.0-20181011054405-1d69bd0f9c39/go.mod h1:r3f7wjNzSs2extwzU3Y+6pKfobzPh+kKFJ3ofN+3nfs=
 github.com/opencontainers/selinux v1.6.0/go.mod h1:VVGKuOLlE7v4PJyT6h7mNWvq1rzqiriPsEqVhc+svHE=
 github.com/opencontainers/selinux v1.8.0/go.mod h1:RScLhm78qiWa2gbVCcGkC7tCGdgk3ogry1nUQF8Evvo=
-github.com/openshift/addon-operator/apis v0.0.0-20230908020307-fe70c681ed8b h1:jrCQP+N9OENS/121mNgTqUi1OAJkxGPOIwurhDLMfJg=
-github.com/openshift/addon-operator/apis v0.0.0-20230908020307-fe70c681ed8b/go.mod h1:2hsK4sYLKcjVJ8SziFrzr/c/Tmp5zBDy8aYvrFaRm2o=
+github.com/openshift/addon-operator/apis v0.0.0-20231110045543-dd01f2f5c184 h1:P93o33VcHaOTjOTm6/UojtJdr1qLc2U7vPMBno39rdc=
+github.com/openshift/addon-operator/apis v0.0.0-20231110045543-dd01f2f5c184/go.mod h1:JS2tbakhIZRgBiULsIUSHGsdz7G/Vylvg1mqI1TlXzs=
 github.com/openshift/api v0.0.0-20240830142653-85dc560939ef h1:cDx8V3cfZyAZkvrsabVxJzv5mlPZ6skSKv5VDm275Bs=
 github.com/openshift/api v0.0.0-20240830142653-85dc560939ef/go.mod h1:OOh6Qopf21pSzqNVCB5gomomBXb8o5sGKZxG2KNpaXM=
 github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492/go.mod h1:Ngi6UdF0k5OKD5t5wlmGhe/EDKPoUM3BXZSSfIuJbis=
