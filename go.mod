@@ -13,7 +13,7 @@ require (
 	github.com/mt-sre/client v0.2.6
 	github.com/mt-sre/devkube v0.7.1
 	github.com/novln/docker-parser v1.0.0
-	github.com/openshift/addon-operator/apis v0.0.0-20230908020307-fe70c681ed8b
+	github.com/openshift/addon-operator/apis v0.0.0-20231110045543-dd01f2f5c184
 	github.com/openshift/api v0.0.0-20240830142653-85dc560939ef
 	github.com/operator-framework/api v0.27.0
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.76.0
