@@ -1,5 +1,5 @@
 # Used for local dev only
-FROM registry.access.redhat.com/ubi8/ubi:8.8-1032
+FROM registry.access.redhat.com/ubi9/ubi:9.7-1770238273
 
 WORKDIR /
 
