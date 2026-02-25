@@ -44,6 +44,11 @@ func (c *Client) Get(ctx context.Context, key types.NamespacedName, obj client.O
 	return args.Error(0)
 }
 
+func (c *Client) Apply(ctx context.Context, obj runtime.ApplyConfiguration, opts ...client.ApplyOption) error {
+	args := c.Called(ctx, obj, opts)
+	return args.Error(0)
+}
+
 func (c *Client) List(ctx context.Context, list client.ObjectList, opts ...client.ListOption) error {
 	args := c.Called(ctx, list, opts)
 	return args.Error(0)
@@ -101,6 +106,11 @@ func (c *StatusClient) Update(
 func (c *StatusClient) Patch(
 	ctx context.Context, obj client.Object, patch client.Patch, opts ...client.SubResourcePatchOption) error {
 	args := c.Called(ctx, obj, patch, opts)
+	return args.Error(0)
+}
+
+func (c *StatusClient) Apply(ctx context.Context, obj runtime.ApplyConfiguration, opts ...client.SubResourceApplyOption) error {
+	args := c.Called(ctx, obj, opts)
 	return args.Error(0)
 }
 
