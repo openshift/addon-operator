@@ -324,15 +324,44 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_SMPresentInCluster(t
 			controllers.AddCommonLabels(serviceMonitor, addon)
 			err := controllerutil.SetControllerReference(addon, serviceMonitor, r.scheme)
 			assert.NoError(t, err)
+
+			var scheme monitoringv1.Scheme
+			scheme = "https"
 			// inject expected ServiceMonitor spec into response
 			serviceMonitor.Spec = monitoringv1.ServiceMonitorSpec{
 				Endpoints: []monitoringv1.Endpoint{
 					{
-						Authorization: &monitoringv1.SafeAuthorization{Type: "Bearer", Credentials: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: "addon-foo-bearertoken-secret"}, Key: "token"}},
-						HonorLabels:   true,
-						Port:          "portName",
-						Path:          "/federate",
-						Scheme:        "https",
+						HTTPConfigWithProxyAndTLSFiles: monitoringv1.HTTPConfigWithProxyAndTLSFiles{
+							HTTPConfigWithTLSFiles: monitoringv1.HTTPConfigWithTLSFiles{
+								HTTPConfigWithoutTLS: monitoringv1.HTTPConfigWithoutTLS{
+									Authorization: &monitoringv1.SafeAuthorization{
+										Type: "Bearer",
+										Credentials: &corev1.SecretKeySelector{
+											LocalObjectReference: corev1.LocalObjectReference{
+												Name: "addon-foo-bearertoken-secret",
+											},
+											Key: "token",
+										},
+									},
+								},
+								TLSConfig: &monitoringv1.TLSConfig{
+									TLSFilesConfig: monitoringv1.TLSFilesConfig{
+										CAFile: "/etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt",
+									},
+									SafeTLSConfig: monitoringv1.SafeTLSConfig{
+										ServerName: ptr.To(fmt.Sprintf(
+											"prometheus.%s.svc",
+											addon.Spec.Monitoring.Federation.Namespace,
+										)),
+									},
+								},
+							},
+						},
+
+						HonorLabels: true,
+						Port:        "portName",
+						Path:        "/federate",
+						Scheme:      &scheme,
 						Params: map[string][]string{
 							"match[]": {
 								`ALERTS{alertstate="firing"}`,
@@ -340,15 +369,6 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_SMPresentInCluster(t
 							},
 						},
 						Interval: "30s",
-						TLSConfig: &monitoringv1.TLSConfig{
-							CAFile: "/etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt",
-							SafeTLSConfig: monitoringv1.SafeTLSConfig{
-								ServerName: ptr.To(fmt.Sprintf(
-									"prometheus.%s.svc",
-									addon.Spec.Monitoring.Federation.Namespace,
-								)),
-							},
-						},
 					},
 				},
 				NamespaceSelector: monitoringv1.NamespaceSelector{
@@ -592,7 +612,7 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyMissingInSpec_Prese
 	addon := testutil.NewTestAddonWithoutNamespace()
 
 	serviceMonitorsInCluster := &monitoringv1.ServiceMonitorList{
-		Items: []*monitoringv1.ServiceMonitor{
+		Items: []monitoringv1.ServiceMonitor{
 			{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "foo",
@@ -667,11 +687,11 @@ func TestEnsureDeletionOfMonitoringFederation_MonitoringFullyPresentInSpec_Prese
 	addon := testutil.NewTestAddonWithMonitoringFederation()
 
 	serviceMonitorsInCluster := &monitoringv1.ServiceMonitorList{
-		Items: []*monitoringv1.ServiceMonitor{
-			testServiceMonitor(addon),
+		Items: []monitoringv1.ServiceMonitor{
+			*testServiceMonitor(addon),
 		},
 	}
-	controllers.AddCommonLabels(serviceMonitorsInCluster.Items[0], addon)
+	controllers.AddCommonLabels(&serviceMonitorsInCluster.Items[0], addon)
 
 	c.On("List", testutil.IsContext, mock.IsType(&monitoringv1.ServiceMonitorList{}), mock.Anything).
 		Run(func(args mock.Arguments) {

@@ -494,7 +494,9 @@ func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon,
 	const cacert = "/etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt"
 
 	tlsConfig := &monitoringv1.TLSConfig{
-		CAFile: cacert,
+		TLSFilesConfig: monitoringv1.TLSFilesConfig{
+			CAFile: cacert,
+		},
 		SafeTLSConfig: monitoringv1.SafeTLSConfig{
 			ServerName: ptr.To(fmt.Sprintf("prometheus.%s.svc", addon.Spec.Monitoring.Federation.Namespace)),
 		},
@@ -507,15 +509,24 @@ func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon,
 	}
 	auth := &monitoringv1.SafeAuthorization{Type: "Bearer", Credentials: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: bearertokensecret.Name}, Key: "token"}}
 
+	var scheme monitoringv1.Scheme
+	scheme = "https"
+
 	return []monitoringv1.Endpoint{{
-		Authorization: auth,
-		HonorLabels:   true,
-		Port:          addon.Spec.Monitoring.Federation.PortName,
-		Path:          "/federate",
-		Scheme:        "https",
-		Interval:      "30s",
-		TLSConfig:     tlsConfig,
-		Params:        map[string][]string{"match[]": matchParams},
+		HTTPConfigWithProxyAndTLSFiles: monitoringv1.HTTPConfigWithProxyAndTLSFiles{
+			HTTPConfigWithTLSFiles: monitoringv1.HTTPConfigWithTLSFiles{
+				HTTPConfigWithoutTLS: monitoringv1.HTTPConfigWithoutTLS{
+					Authorization: auth,
+				},
+				TLSConfig: tlsConfig,
+			},
+		},
+		HonorLabels: true,
+		Port:        addon.Spec.Monitoring.Federation.PortName,
+		Path:        "/federate",
+		Scheme:      &scheme,
+		Interval:    "30s",
+		Params:      map[string][]string{"match[]": matchParams},
 	}}
 }
 
