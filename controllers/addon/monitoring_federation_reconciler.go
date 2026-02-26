@@ -323,7 +323,7 @@ func (r *monitoringFederationReconciler) ensureDeletionOfUnwantedMonitoringFeder
 			continue
 		}
 
-		if err := client.IgnoreNotFound(r.client.Delete(ctx, serviceMonitor)); err != nil {
+		if err := client.IgnoreNotFound(r.client.Delete(ctx, &serviceMonitor)); err != nil {
 			return fmt.Errorf("could not remove monitoring federation ServiceMonitor: %w", err)
 		}
 		if err := client.IgnoreNotFound(r.client.Delete(ctx, &corev1.Secret{
@@ -350,7 +350,7 @@ func (r *monitoringFederationReconciler) ensureDeletionOfUnwantedMonitoringFeder
 func (r *monitoringFederationReconciler) getOwnedServiceMonitorsViaCommonLabels(
 	ctx context.Context,
 	c client.Client,
-	addon *addonsv1alpha1.Addon) ([]*monitoringv1.ServiceMonitor, error) {
+	addon *addonsv1alpha1.Addon) ([]monitoringv1.ServiceMonitor, error) {
 	selector := controllers.CommonLabelsAsLabelSelector(addon)
 
 	list := &monitoringv1.ServiceMonitorList{}

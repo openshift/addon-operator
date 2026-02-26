@@ -227,14 +227,44 @@ func validateMonitoringFederationServiceMonitor(t *testing.T, ctx context.Contex
 		Namespace: monitoringNamespaceName,
 	}, currentServiceMonitor)
 	require.NoError(t, err, "could not get monitoring federation ServiceMonitor %s", serviceMonitorName)
+
+	var scheme monitoringv1.Scheme
+	scheme = "https"
+
 	assert.Equal(t, monitoringv1.ServiceMonitorSpec{
 		Endpoints: []monitoringv1.Endpoint{
 			{
-				Authorization: &monitoringv1.SafeAuthorization{Type: "Bearer", Credentials: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: fmt.Sprintf("%s-bearertoken-secret", addon.Name)}, Key: "token"}},
-				HonorLabels:   true,
-				Port:          "https",
-				Path:          "/federate",
-				Scheme:        "https",
+				HTTPConfigWithProxyAndTLSFiles: monitoringv1.HTTPConfigWithProxyAndTLSFiles{
+					HTTPConfigWithTLSFiles: monitoringv1.HTTPConfigWithTLSFiles{
+						HTTPConfigWithoutTLS: monitoringv1.HTTPConfigWithoutTLS{
+							Authorization: &monitoringv1.SafeAuthorization{
+								Type: "Bearer",
+								Credentials: &corev1.SecretKeySelector{
+									LocalObjectReference: corev1.LocalObjectReference{
+										Name: fmt.Sprintf("%s-bearertoken-secret", addon.Name),
+									},
+									Key: "token",
+								},
+							},
+						},
+						TLSConfig: &monitoringv1.TLSConfig{
+							TLSFilesConfig: monitoringv1.TLSFilesConfig{
+								CAFile: "/etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt",
+							},
+							SafeTLSConfig: monitoringv1.SafeTLSConfig{
+								ServerName: ptr.To(fmt.Sprintf(
+									"prometheus.%s.svc",
+									addon.Spec.Monitoring.Federation.Namespace,
+								)),
+							},
+						},
+					},
+				},
+
+				HonorLabels: true,
+				Port:        "https",
+				Path:        "/federate",
+				Scheme:      &scheme,
 				Params: map[string][]string{
 					"match[]": {
 						`ALERTS{alertstate="firing"}`,
@@ -242,15 +272,6 @@ func validateMonitoringFederationServiceMonitor(t *testing.T, ctx context.Contex
 					},
 				},
 				Interval: "30s",
-				TLSConfig: &monitoringv1.TLSConfig{
-					CAFile: "/etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt",
-					SafeTLSConfig: monitoringv1.SafeTLSConfig{
-						ServerName: ptr.To(fmt.Sprintf(
-							"prometheus.%s.svc",
-							addon.Spec.Monitoring.Federation.Namespace,
-						)),
-					},
-				},
 			},
 		},
 		NamespaceSelector: monitoringv1.NamespaceSelector{
