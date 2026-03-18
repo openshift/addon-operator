@@ -228,8 +228,7 @@ func validateMonitoringFederationServiceMonitor(t *testing.T, ctx context.Contex
 	}, currentServiceMonitor)
 	require.NoError(t, err, "could not get monitoring federation ServiceMonitor %s", serviceMonitorName)
 
-	var scheme monitoringv1.Scheme
-	scheme = "https"
+	scheme := monitoringv1.Scheme("https")
 
 	assert.Equal(t, monitoringv1.ServiceMonitorSpec{
 		Endpoints: []monitoringv1.Endpoint{
