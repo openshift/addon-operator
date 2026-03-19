@@ -509,8 +509,7 @@ func GetMonitoringFederationServiceMonitorEndpoints(addon *addonsv1alpha1.Addon,
 	}
 	auth := &monitoringv1.SafeAuthorization{Type: "Bearer", Credentials: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: bearertokensecret.Name}, Key: "token"}}
 
-	var scheme monitoringv1.Scheme
-	scheme = "https"
+	scheme := monitoringv1.Scheme("https")
 
 	return []monitoringv1.Endpoint{{
 		HTTPConfigWithProxyAndTLSFiles: monitoringv1.HTTPConfigWithProxyAndTLSFiles{

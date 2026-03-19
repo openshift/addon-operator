@@ -325,8 +325,7 @@ func TestEnsureMonitoringFederation_MonitoringPresentInSpec_SMPresentInCluster(t
 			err := controllerutil.SetControllerReference(addon, serviceMonitor, r.scheme)
 			assert.NoError(t, err)
 
-			var scheme monitoringv1.Scheme
-			scheme = "https"
+			scheme := monitoringv1.Scheme("https")
 			// inject expected ServiceMonitor spec into response
 			serviceMonitor.Spec = monitoringv1.ServiceMonitorSpec{
 				Endpoints: []monitoringv1.Endpoint{
