@@ -7,11 +7,10 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: 'false'
     pipelinesascode.tekton.dev/max-keep-runs: '3'
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "main"
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch == "main"
   labels:
     appstudio.openshift.io/application: addon-operator
-    appstudio.openshift.io/component: addon-operator
+    appstudio.openshift.io/component: addon-operator-pko
     pipelines.appstudio.openshift.io/type: build
   name: addon-operator-pko-on-push
   namespace: addon-operator-tenant
