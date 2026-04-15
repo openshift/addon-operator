@@ -49,11 +49,22 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+      volumes:
+      - name: serving-cert
+        secret:
+          secretName: addon-operator-webhook-tls
       containers:
       - name: webhook
         image: '{{ .config.image }}'
+        command:
+        - /usr/local/bin/addon-operator-webhook
+        args:
+        - --cert-dir=/mnt/serving-cert
         ports:
         - containerPort: 8080
+        volumeMounts:
+        - name: serving-cert
+          mountPath: /mnt/serving-cert
         livenessProbe:
           httpGet:
             path: /healthz
