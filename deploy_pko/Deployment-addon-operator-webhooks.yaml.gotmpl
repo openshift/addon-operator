@@ -52,6 +52,8 @@ spec:
       containers:
       - name: webhook
         image: '{{ .config.image }}'
+        command:
+        - /usr/local/bin/addon-operator-webhook
         ports:
         - containerPort: 8080
         livenessProbe:
