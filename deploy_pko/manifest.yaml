@@ -9,6 +9,7 @@ spec:
   - Cluster
   phases:
   - name: crds
+  - name: validatingwebhook
   - name: namespace
   - name: rbac
   - name: deploy
