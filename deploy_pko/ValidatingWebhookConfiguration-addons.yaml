@@ -12,7 +12,7 @@ webhooks:
   - v1
   clientConfig:
     service:
-      name: webhook-service
+      name: addon-operator-webhook
       namespace: openshift-addon-operator
       path: /validate-addon
   failurePolicy: Fail
@@ -28,5 +28,3 @@ webhooks:
     resources:
     - addons
   sideEffects: None
-
-# service.beta.openshift.io/serving-cert-secret-name=<secret_name>
