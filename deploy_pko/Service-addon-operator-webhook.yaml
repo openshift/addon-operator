@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: addon-operator-webhook
   namespace: openshift-addon-operator
-  labels:
-    app.kubernetes.io/name: addon-operator
   annotations:
     service.beta.openshift.io/serving-cert-secret-name: addon-operator-webhook-tls
     package-operator.run/phase: deploy
