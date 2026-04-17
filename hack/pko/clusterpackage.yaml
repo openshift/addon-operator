@@ -16,6 +16,12 @@ parameters:
   - name: REPO_NAME
     value: addon-operator
     required: true
+  - name: OCM_BASE_URL
+    value: http://api-mock.api-mock.svc.cluster.local
+    required: true
+  - name: FEATURE_FLAGS
+    value: ""
+    required: true
 metadata:
   name: selectorsyncset-template
 objects:
@@ -43,3 +49,14 @@ objects:
             image: ${PKO_IMAGE}:${IMAGE_TAG}
             config:
               image: ${OPERATOR_IMAGE}:${IMAGE_TAG}
+        - apiVersion: addons.managed.openshift.io/v1alpha1
+          kind: AddonOperator
+          metadata:
+            name: addon-operator
+          spec:
+            featureFlags: ${FEATURE_FLAGS}
+            ocm:
+              endpoint: ${OCM_BASE_URL}
+              secret:
+                name: pull-secret
+                namespace: openshift-config
