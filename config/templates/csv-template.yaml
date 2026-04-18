@@ -53,7 +53,7 @@ spec:
         - v1
       containerPort: 443
       deploymentName: addon-operator-webhooks
-      failurePolicy: Fail
+      failurePolicy: Ignore
       generateName: vaddons.managed.openshift.io
       rules:
         - apiGroups:

@@ -14,7 +14,7 @@ webhooks:
       name: webhook-service
       namespace: openshift-addon-operator
       path: /validate-addon
-  failurePolicy: Fail
+  failurePolicy: Ignore
   name: vaddons.managed.openshift.io
   rules:
   - apiGroups:
