@@ -53,6 +53,8 @@ spec:
         - v1
       containerPort: 443
       deploymentName: addon-operator-webhooks
+      # Ignore so webhook unavailability during node drains does not block MCO.
+      # Compensating controls: 2 replicas with pod anti-affinity, preStop hook.
       failurePolicy: Ignore
       generateName: vaddons.managed.openshift.io
       rules:

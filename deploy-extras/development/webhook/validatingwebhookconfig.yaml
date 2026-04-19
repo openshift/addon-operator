@@ -14,6 +14,8 @@ webhooks:
       name: webhook-service
       namespace: openshift-addon-operator
       path: /validate-addon
+  # Ignore so webhook unavailability during node drains does not block MCO.
+  # Compensating controls: 2 replicas with pod anti-affinity, preStop hook.
   failurePolicy: Ignore
   name: vaddons.managed.openshift.io
   rules:
