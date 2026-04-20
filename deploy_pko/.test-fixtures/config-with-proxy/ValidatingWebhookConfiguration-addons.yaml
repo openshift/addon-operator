@@ -1,0 +1,30 @@
+# This manifest is only for testing and should be used with `00-tls-secret.yaml`
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: addon-validating-webhook-configuration
+  annotations:
+    package-operator.run/phase: validatingwebhook
+    package-operator.run/collision-protection: IfNoController
+    service.beta.openshift.io/inject-cabundle: "true"
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: addon-operator-webhook
+      namespace: openshift-addon-operator
+      path: /validate-addon
+  failurePolicy: Fail
+  name: vaddons.managed.openshift.io
+  rules:
+  - apiGroups:
+    - addons.managed.openshift.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - addons
+  sideEffects: None

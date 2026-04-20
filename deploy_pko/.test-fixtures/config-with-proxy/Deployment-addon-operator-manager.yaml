@@ -47,7 +47,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: manager
-        image: '{{ .config.image }}'
+        image: 'quay.io/repository/redhat-user-workloads/addon-operator-tenant/openshift/addon-operator:latest'
         args:
         - --enable-leader-election
         - --metrics-addr=:8443
@@ -55,22 +55,12 @@ spec:
         env:
         - name: ENABLE_STATUS_REPORTING
           value: 'true'
-{{- if hasKey . "environment" }}
-{{- if hasKey .environment "proxy" }}
-{{- if hasKey .environment.proxy "httpProxy" }}
         - name: HTTP_PROXY
-          value: {{ .environment.proxy.httpProxy | quote }}
-{{- end}}
-{{- if hasKey .environment.proxy "httpsProxy" }}
+          value: "http"
         - name: HTTPS_PROXY
-          value: {{ .environment.proxy.httpsProxy | quote }}
-{{- end}}
-{{- if hasKey .environment.proxy "noProxy" }}
+          value: "https"
         - name: NO_PROXY
-          value: {{ .environment.proxy.noProxy | quote }}
-{{- end}}
-{{- end}}
-{{- end}}
+          value: "no..."
         volumeMounts:
         - mountPath: /etc/pki/ca-trust/extracted/pem
           name: trusted-ca-bundle
