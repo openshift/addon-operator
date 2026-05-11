@@ -101,7 +101,7 @@ func (s *integrationTestSuite) TestReconcileErrorMetrics() {
 		func(ctx context.Context) error {
 			metricNotFound := errors.New("expected addon_operator metric was not found")
 			podCommand1 := []string{"curl", "https://localhost:8443/metrics", "-k"}
-			// nolint:contextcheck
+			//nolint:contextcheck
 			result, _, err := integration.ExecCommandInPod(
 				integration.AddonOperatorNamespace,
 				adoPod.Name,
@@ -111,7 +111,7 @@ func (s *integrationTestSuite) TestReconcileErrorMetrics() {
 			if err != nil {
 				// Try http if https doesn't work for local dev
 				podCommand2 := []string{"curl", "http://localhost:8443/metrics"}
-				// nolint:contextcheck
+				//nolint:contextcheck
 				result, _, err = integration.ExecCommandInPod(
 					integration.AddonOperatorNamespace,
 					adoPod.Name,
@@ -182,7 +182,7 @@ func configureApiMock(ctx context.Context, failOnAddonStatusCreateEndpoint bool)
 		ctx,
 		retry.WithMaxDuration(time.Minute*1, backoff),
 		func(ctx context.Context) error {
-			// nolint:contextcheck
+			//nolint:contextcheck
 			_, _, err := integration.ExecCommandInPod(
 				"api-mock",
 				apiMockPod.Name,
