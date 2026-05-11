@@ -1,7 +1,7 @@
 ---
 # This Job cleans up old OLM resources after migrating to PKO
 # IMPORTANT: Review and customize this template before deploying!
-# 
+#
 # Things to customize:
 # 1. Adjust the namespace if needed
 # 2. Modify resource filters (CSV names, labels, etc.)
@@ -85,7 +85,7 @@ spec:
               # CUSTOMIZE: Update the label selector for your operator
               # Example pattern: operators.coreos.com/OPERATOR_NAME.NAMESPACE
               oc -n openshift-addon-operator delete csv -l "operators.coreos.com/addon-operator.openshift-addon-operator" || true
-              
+
               # CUSTOMIZE: Add any additional cleanup logic here
               # Examples:
               # - Delete subscriptions

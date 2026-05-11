@@ -94,7 +94,7 @@ spec:
         - effect: NoSchedule
           key: hypershift.openshift.io/cluster
           operator: Equal
-          value: '{{.package.metadata.namespace}}'            
+          value: '{{.package.metadata.namespace}}'
       volumes:
         - name: kubeconfig
           secret:
