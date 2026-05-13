@@ -49,6 +49,10 @@ spec:
       containers:
       - name: webhook
         image: quay.io/openshift/addon-operator-webhook:latest
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sleep", "5"]
         ports:
         - containerPort: 8080
         livenessProbe:
