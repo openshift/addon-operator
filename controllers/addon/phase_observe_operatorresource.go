@@ -99,7 +99,7 @@ func (r *olmReconciler) observeOperatorResource(
 		// do nothing here
 	case operatorsv1alpha1.CSVPhaseFailed:
 		message = "failed"
-	default:
+	case operatorsv1alpha1.CSVPhasePending, operatorsv1alpha1.CSVPhaseInstallReady, operatorsv1alpha1.CSVPhaseInstalling, operatorsv1alpha1.CSVPhaseUnknown, operatorsv1alpha1.CSVPhaseReplacing, operatorsv1alpha1.CSVPhaseDeleting, operatorsv1alpha1.CSVPhaseAny:
 		message = "unknown/pending"
 	}
 

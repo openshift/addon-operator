@@ -98,6 +98,8 @@ func (r *monitoringStackReconciler) propagateMonitoringStackStatusToAddon(monito
 		case obov1alpha1.ReconciledCondition:
 			reconciledCondition = monitoringStack.Status.Conditions[i]
 			reconciledConditionFound = true
+		default:
+			// explicitly ignore other conditions
 		}
 	}
 

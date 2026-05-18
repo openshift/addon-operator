@@ -94,7 +94,7 @@ spec:
         - effect: NoSchedule
           key: hypershift.openshift.io/cluster
           operator: Equal
-          value: 'ocm-staging-2bjb6klkupkpg4ovp0srqcteotev0773-ves-hcp'            
+          value: 'ocm-staging-2bjb6klkupkpg4ovp0srqcteotev0773-ves-hcp'
       volumes:
         - name: kubeconfig
           secret:

@@ -302,6 +302,9 @@ func (r *Recorder) recordAddonHealthInfo(
 			if len(addonHealth.GetReason()) > 0 {
 				healthReason = addonHealth.GetReason()
 			}
+		case metav1.ConditionUnknown:
+			healthStatus = 2
+
 		case metav1.ConditionTrue:
 			healthStatus = 1
 		default:

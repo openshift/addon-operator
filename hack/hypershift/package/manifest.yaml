@@ -36,4 +36,4 @@ test:
       package:
         metadata:
           name: addon-operator-manager
-          namespace: ocm-staging-2bjb6klkupkpg4ovp0srqcteotev0773-ves-hcp    
+          namespace: ocm-staging-2bjb6klkupkpg4ovp0srqcteotev0773-ves-hcp

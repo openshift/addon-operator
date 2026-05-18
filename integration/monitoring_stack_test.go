@@ -89,6 +89,9 @@ func (s *integrationTestSuite) TestMonitoringStack_MonitoringInPlaceAtCreationWi
 		case obov1alpha1.AvailableCondition:
 			availableCondition = reconciledMonitoringStack.Status.Conditions[i]
 			availableConditionFound = true
+		case obov1alpha1.ResourceDiscoveryCondition:
+			// ignore
+
 		case obov1alpha1.ReconciledCondition:
 			reconciledCondition = reconciledMonitoringStack.Status.Conditions[i]
 			reconciledConditionFound = true

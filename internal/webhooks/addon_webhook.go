@@ -33,6 +33,9 @@ func (r *AddonWebhookHandler) Handle(ctx context.Context, req admission.Request)
 	switch req.Operation {
 	case v1.Operation(adminv1beta1.Create):
 		return r.validateCreate(&obj)
+	case v1.Operation(adminv1beta1.Delete), v1.Operation(adminv1beta1.Connect):
+		return admission.Allowed("")
+
 	case v1.Operation(adminv1beta1.Update):
 		oldObj := addonsv1alpha1.Addon{}
 		if r.decoder == nil {
