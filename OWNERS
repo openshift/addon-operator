@@ -1,6 +1,5 @@
 approvers:
 - erdii
-- apahim
 - ashishmax31
 - ajpantuso
 - Ankit152
@@ -14,7 +13,6 @@ approvers:
 - venkateshsredhat
 options: {}
 reviewers:
-- apahim
 - ashishmax31
 - ajpantuso
 - Ankit152
