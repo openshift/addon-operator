@@ -9,6 +9,9 @@ updates:
       - "approved"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "UTC"
     ignore:
       - dependency-name: "redhat-services-prod/openshift/boilerplate"
         # don't upgrade boilerplate via these means

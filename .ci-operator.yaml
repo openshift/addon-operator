@@ -2,8 +2,3 @@ build_root_image:
   name: boilerplate
   namespace: openshift
   tag: image-v8.3.6
-tests:
-- as: precommit-check
-  commands: echo "pre-commit is for local developer use only. CI is the authoritative gate."
-  container:
-    from: src
