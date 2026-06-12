@@ -26,7 +26,6 @@ aliases:
     - cjnovak98
   srep-functional-team-hulk:
     - ravitri
-    - devppratik
     - Tafhim
     - tkong-redhat
     - TheUndeadKing
@@ -81,9 +80,12 @@ aliases:
     - ravitri
   srep-team-leads:
     - rafael-azevedo
-    - iamkirkbater
     - dustman9000
     - bmeng
     - typeid
+  sre-group-leads:
+    - apahim
+    - maorfr
+    - rogbas
   srep-architects:
     - cblecker
