@@ -20,7 +20,7 @@ require (
 	github.com/prometheus/client_golang v1.23.2
 	github.com/prometheus/client_model v0.6.2
 	github.com/prometheus/common v0.67.5
-	github.com/prometheus/prometheus v1.8.2-0.20211105201321-411021ada9ab
+	github.com/prometheus/prometheus/v2 v2.35.0-retract
 	github.com/rhobs/obo-prometheus-operator/pkg/apis/monitoring v0.89.0-rhobs1
 	github.com/rhobs/observability-operator/pkg/apis v0.0.0-20260527124022-ccd02d33e2e9
 	github.com/sethvargo/go-retry v0.3.0
