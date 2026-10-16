@@ -1,11 +1,3 @@
-exclude: |
-  (?x)(
-    (^vendor/)|
-    (.deepcopy.go$)|
-    (mage_output_file.go$)|
-    (.claude/settings.json$)
-  )
-
 # =============================================================================
 # Tier 1 — Common Pre-Commit Hooks for OSD Operators
 # SREP-4485 | Golden rules: SREP-4450
@@ -67,8 +59,6 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0                          # pinned immutable tag
     hooks:
-      - id: check-added-large-files
-        args: [--maxkb=500]
       - id: check-merge-conflict
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
@@ -93,12 +83,13 @@ repos:
   #    Mirrors ci/prow/lint: go-check exactly (same version + config as CI).
   #    Linter config: boilerplate/openshift/golang-osd-operator/golangci.yml
   # ---------------------------------------------------------------------------
-  # ---------------------------------------------------------------------------
-  # NOTE: golangci-lint runs as a local system hook (language: system) to
-  # use the pre-installed binary from the boilerplate image in CI. This
-  # avoids building golangci-lint from source (slow, cold-cache timeout).
-  # Locally, ensure golangci-lint is installed: https://golangci-lint.run
-  # ---------------------------------------------------------------------------
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v2.0.2                          # pinned immutable tag — must match CI (golden rule 15)
+    hooks:
+      - id: golangci-lint
+        args:
+          - --config=boilerplate/openshift/golang-osd-operator/golangci.yml
+          - --timeout=120s                 # graceful timeout (golden rule 3)
 
   # ---------------------------------------------------------------------------
   # Local hooks — compile, dependency, security
@@ -110,19 +101,6 @@ repos:
   # ---------------------------------------------------------------------------
   - repo: local
     hooks:
-      - id: golangci-lint
-        name: golangci-lint
-        language: system
-        entry: bash -c 'test -n "${PRE_COMMIT_CI:-}" && exit 0; golangci-lint run --new-from-rev HEAD --fix --config=boilerplate/openshift/golang-osd-operator/golangci.yml --timeout=120s'
-        types: [go]
-        require_serial: true
-        pass_filenames: false
-
-      - id: go-fmt
-        name: go fmt
-        language: system
-        entry: bash -c "T=$(command -v timeout || command -v gtimeout || echo); ${T:+$T 30s} gofmt -s -w "$@"" --
-        types: [go]
 
       # -----------------------------------------------------------------------
       # 4. COMPILE CHECK  |  target < 10s cached  |  error
@@ -138,18 +116,15 @@ repos:
         pass_filenames: false
 
       # -----------------------------------------------------------------------
-      # 5. DEPENDENCY DRIFT  |  target < 120s cold cache  |  error
-      #    Detects uncommitted go.mod changes after go mod tidy.
-      #    go.sum is intentionally excluded from the diff check: checksums
-      #    are environment-specific (Go version, platform) and go.sum drift
-      #    does not indicate a missing 'go mod tidy' run.
-      #    Fix: run 'go mod tidy' and stage go.mod.
+      # 5. DEPENDENCY DRIFT  |  target < 10s  |  error
+      #    Detects uncommitted go.mod/go.sum changes after go mod tidy.
+      #    Fix: run 'go mod tidy' and stage go.mod and go.sum.
       # -----------------------------------------------------------------------
       - id: go-mod-tidy
         name: go mod tidy
         language: system
-        entry: bash -c 'T=$(command -v timeout || command -v gtimeout || echo); ${T:+$T 300s} go mod tidy && git diff --exit-code go.mod'
-        files: '(\.go$|go\.mod$)'
+        entry: bash -c 'T=$(command -v timeout || command -v gtimeout || echo); ${T:+$T 60s} go mod tidy && git diff --exit-code go.mod go.sum'
+        files: '(\.go$|go\.(mod|sum)$)'
         exclude: '^vendor/'
         pass_filenames: false
 
