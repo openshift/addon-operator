@@ -1,19 +1,9 @@
 approvers:
-- erdii
-- ashishmax31
-- ajpantuso
-- Ankit152
-- eqrx
-- kostola
-- sclarkso
-- Nanyte25
-- pat-cremin
-- robshelly
-- ahrabovs
-- venkateshsredhat
+- rosa-staff-engineers
+- rosa-hcp-platform-staff-engineers
+- rosa-hcp-platform-core-team
 options: {}
 reviewers:
-- ashishmax31
-- ajpantuso
-- Ankit152
-- venkateshsredhat
+- rosa-staff-engineers
+- rosa-hcp-platform-staff-engineers
+- rosa-hcp-platform-core-team
