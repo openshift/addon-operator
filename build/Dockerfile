@@ -1,4 +1,4 @@
-FROM quay.io/redhat-services-prod/openshift/boilerplate:image-v8.3.6 AS builder
+FROM quay.io/redhat-services-prod/openshift/boilerplate:latest AS builder
 
 WORKDIR /workdir
 
@@ -8,10 +8,10 @@ RUN go mod download
 COPY . .
 
 RUN make go-build
-RUN GOOS=linux CGO_ENABLED=1 GOARCH=amd64 GOFLAGS="" go build -o build/_output/bin/addon-operator-webhook ./cmd/addon-operator-webhook
+RUN GOOS=linux CGO_ENABLED=1 GOFLAGS="" go build -o build/_output/bin/addon-operator-webhook ./cmd/addon-operator-webhook
 
 ###
-FROM registry.access.redhat.com/ubi9/ubi-minimal:9.8-1779809423
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.8-1791898448
 
 ENV USER_UID=1001 \
     USER_NAME=addon-operator
