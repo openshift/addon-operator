@@ -10,6 +10,18 @@ RUN pip3 install pre-commit
 # CI already runs golangci-lint via the dedicated 'lint' job (make lint).
 ENV PRE_COMMIT_CI=1
 
+# The build root image ships Go 1.26 with GOFIPS140=certified enabled in
+# its go env. With FIPS mode on, the go toolchain downloads the
+# golang.org/fips140 module into pre-commit's per-hook module cache
+# (golangenv-system/pkg/mod) during 'go install ./...'. The nested
+# fips140 module directory is then matched by the ./... package pattern,
+# failing hook environment installation with:
+#   pattern ./...: directory golangenv-system/pkg/mod/golang.org/fips140@...
+#   outside main module or its selected dependencies
+# Pre-commit only runs linters and secret scanning here; it does not need
+# FIPS crypto, so disable FIPS mode for this container.
+ENV GOFIPS140=off
+
 # Pre-warm Go module download cache and build cache so pre-commit hooks
 # don't time out or hit permission errors in CI.
 # - go mod download: fetches all dependencies (incl. test-only) so
