@@ -37,7 +37,7 @@ Addon Operator is a subscriber of [Boilerplate](https://github.com/openshift/boi
 
 ## Operator Manifests
 
-All operator related manifests reside in the `deploy` folder of the repository. These are all production-grade manifests.
+All operator-related manifests reside in the `deploy` folder of the repository. These are all production-grade manifests.
 
 ## Development
 
