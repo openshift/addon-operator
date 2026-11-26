@@ -1,9 +1,7 @@
 approvers:
-- rosa-staff-engineers
 - rosa-hcp-platform-staff-engineers
 - rosa-hcp-platform-core-team
 options: {}
 reviewers:
-- rosa-staff-engineers
 - rosa-hcp-platform-staff-engineers
 - rosa-hcp-platform-core-team
